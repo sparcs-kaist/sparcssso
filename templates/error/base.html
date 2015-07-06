@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% block gheader %}
+<link rel="stylesheet" href="{% static "css/error.css" %}">
+{% endblock %}
+
+{% block content %}
+<h1>{% block title %} {% endblock %}</h1>
+<p class="err-code">HTTP/1.1 {% block code %}{% endblock %}</p>
+<ul class="list-unstyled">
+    {% block try %}{% endblock %}
+</ul>
+<p>
+    <a href="javascript:window.history.go(-1)" class="btn btn-warning">Go Back</a> &nbsp;
+    <a href="/" class="btn btn-default">Main</a>
+</p>
+{% endblock %}

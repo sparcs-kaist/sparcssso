@@ -1,0 +1,42 @@
+{% extends "session/base.html" %}
+
+{% block htitle %}SPARCS SSO Login{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+<h1>SPARCS SSO Login</h1>
+<p>SPARCS 통합 인증에 오신 것을 환영합니다. KAIST Portal, Facebook, Twitter을 사용하거나 회원가입하여 로그인할 수 있습니다.</p>
+<form class="form-horizontal" action="/session/login/" method="post">
+	<fieldset>
+        {% if msg %}
+        <div class="form-group">
+            <div class="col-xs-offset-1 col-xs-10">
+                <div class="alert alert-danger">
+                    {{ msg }}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+		{% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}">
+        <div class="form-group">
+            <div class="col-xs-offset-1 col-xs-10">
+                <input type="email" class="form-control" name="email" placeholder="Email" required="required">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-xs-offset-1 col-xs-10">
+                <input type="password" class="form-control" name="password" placeholder="Password" required="required">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-xs-12">
+                <button type="submit" class="btn btn-primary">Login</button>
+                <a class="btn btn-warning" href="/session/signup/">Sign Up</a>
+            </div>
+        </div>
+    </fieldset>
+</form>
+{% endblock %}
+

@@ -1,0 +1,10 @@
+{% extends "error/base.html" %}
+
+{% block title %}Bad Request{% endblock %}
+
+{% block code %}400{% endblock %}
+
+{% block try %}
+<li>Server cannot understand your request.</li>
+<li>OR, you sent data that violating forms.</li>
+{% endblock %}

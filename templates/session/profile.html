@@ -1,0 +1,79 @@
+{% extends "session/base.html" %}
+
+{% block htitle %}SPARCS SSO Profile{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+<h1>SPARCS SSO Profile</h1>
+<form id="profile" class="form-horizontal" action="/session/profile/" method="post" enctype="multipart/form-data">
+	<fieldset>
+		{% if msg %}
+		<div class="form-group">
+			<div class="col-sm-12">
+				<div class="alert alert-success">
+				{{ msg }}
+				</div>
+			</div>
+		</div>
+		{% endif %}
+        {% csrf_token %}
+        <div class="form-group">
+			<label class="col-sm-3 control-label">Email <span class="required"></span></label>
+			<div class="col-sm-9">
+				<input type="email" class="form-control" name="email" placeholder="asdf@example.com" required="required" value="{{ user.email }}" maxlength="50" data-remote="/session/email-check/?exclude={{ user.email }}">
+            </div>
+        </div>
+		<input type="hidden" name="password" value="qwerty1234">
+		<div class="form-group">
+			<label class="col-sm-3 control-label">Name <span class="required"></span></label>
+			<div class="form-group col-sm-6">
+				<input type="text" class="form-control" name="first_name" placeholder="First Name" required="required" maxlength="30" value="{{ user.first_name }}">
+			</div>
+			<div class="form-group col-sm-3">
+				<input type="text" class="form-control" name="last_name" placeholder="Last Name" required="required" maxlength="30" value="{{ user.last_name }}">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label">Gender, Birthday</label>
+			<div class="form-group col-sm-3">
+				<select class="form-control" name="gender">
+					<option value="N">Not Selected</option>
+					<option value="M">Male</option>
+					<option value="F">Female</option>
+				</select>
+			</div>
+			<div class="form-group col-sm-6">
+				<input type="text" class="form-control" name="birthday" placeholder="Birthday (YYYY-MM-DD)" value="{{ userprofile.birthday|date:'Y-m-d' }}" data-vbirth="vbirth">
+			</div>
+		</div>
+        <div class="form-group">
+            <div class="col-sm-12">
+                <button type="submit" class="btn btn-primary">Modify</button>
+				<a class="btn btn-warning" href="javascript:window.history.go(-1)">Go Back</a>
+            </div>
+        </div>
+    </fieldset>
+</form>
+
+<script type="text/javascript">
+$(function() {
+	$("select[name=gender]").val('{{ userprofile.gender }}');
+	var option = {
+		disable: true,
+		custom: {
+			vbirth: function(el) { var re = /^\d{4}-\d{2}-\d{2}$/; return el.val().trim() == '' || re.test(el.val()); }
+		},
+		errors: {
+			vbirth: "Format should be YYYY-MM-DD"
+		}
+	};
+	$('#profile').validator(option);
+	
+	$("input[name=birthday]").datepicker({
+		dateFormat: "yy-mm-dd"	
+	});
+});
+</script>
+{% endblock %}
+

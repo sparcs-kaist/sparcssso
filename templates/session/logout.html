@@ -1,0 +1,14 @@
+{% extends "session/base.html" %}
+
+{% block htitle %}SPARCS SSO Logout{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+<h1>SPARCS SSO Logout</h1>
+<p>Successfully signed out.</p>
+<p>Redirecting to main page...</p>
+<script type="text/javascript">
+	setTimeout("location.href='/'", 1000);
+</script>
+{% endblock %}

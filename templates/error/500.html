@@ -1,0 +1,10 @@
+{% extends "error/base.html" %}
+
+{% block title %}Server Error{% endblock %}
+
+{% block code %}500{% endblock %}
+
+{% block try %}
+<li>Server cannot handle your request.</li>
+<li>Please try again after few minutes.</li>
+{% endblock %}

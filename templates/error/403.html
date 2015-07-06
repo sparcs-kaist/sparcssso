@@ -1,0 +1,10 @@
+{% extends "error/base.html" %}
+
+{% block title %}Forbidden{% endblock %}
+
+{% block code %}403{% endblock %}
+
+{% block try %}
+<li>Your request has been rejected.</li>
+<li>Only administrators have rights to do.</li>
+{% endblock %}

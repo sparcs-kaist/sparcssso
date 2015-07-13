@@ -11,6 +11,7 @@ import re
 import os
 
 
+# Helper functions
 def make_username():
     while True:
         username = os.urandom(10).encode('hex')
@@ -42,7 +43,33 @@ def email_check(request):
     return HttpResponse(status=400)
 
 
-def login(request):
+def authenticate_fb(token):
+    args = {
+        'client_id': settings.FACEBOOK_APP_ID,
+        'client_secret': settings.FACEBOOK_APP_SECRET,
+        'redirect_uri': '/account/login/facebook/',
+        'code': token,
+    }
+
+    target = urllib.urlopen('https://graph.facebook.com/oauth/access_token?' + urllib.urlencode(args)).read()
+    response = cgi.parse_qs(target)
+    access_token = response['access_token'][-1]
+
+    fb_profile = urllib.urlopen('https://graph.facebook.com/me?access_token=%s' % access_token)
+    fb_profile = json.load(fb_profile)
+    
+    try:
+        user_profile = UserProfile.objects.get(facebook_id = fb_probile['id'])
+        user_profile.facebook_token = access_token
+        user_profile.save()
+        
+        return uesr_profile.user
+    except UserProfile.DoesNotExist:
+        return None
+
+
+# Email Login
+def login_email(request):
     if request.user.is_authenticated():
         return redirect('/')
 
@@ -61,6 +88,34 @@ def login(request):
                           {'next': nexturl, 'msg': 'Invalid Account Info'})
     return render(request, 'account/login.html',
                   {'next': request.GET.get('next', '/')})
+
+
+# Facebook Login
+def login_fb(request):
+    if request.user.is_authenticated():
+        return redirect('/')
+
+    args = {
+        'client_id': settings.FACEBOOK_APP_ID,
+        'scope': 'email',
+        'redirect_uri': '/account/login/facebook/callback',
+    }
+    return HttpResponseRedirect('https://www.facebook.com/dialog/oauth?' + urllib.urlencode(args))
+
+
+def login_fb_callback(request):
+    if request.user.is_authenticated():
+        return redirect('/')
+
+    code = request.GET.get('code')
+    user = authenticate_fb(code)
+
+    if user is None:
+        # signup routine
+        pass
+    else:
+        auth.login(request, user)
+        return redirect('/')
 
 
 def logout(request):

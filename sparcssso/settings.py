@@ -77,6 +77,14 @@ LOGIN_URL = '/account/login/'
 
 LOGOUT_URL = '/account/logout/'
 
+
+# Facebook settings
+
+FACEBOOK_APP_ID = ""
+
+FACEBOOK_APP_SECRET = ""
+
+
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 

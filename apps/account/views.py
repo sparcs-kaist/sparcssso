@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import check_password, make_password
@@ -7,9 +8,11 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from apps.account.models import UserProfile
 from apps.account.forms import UserForm, UserProfileForm
-import re
+import cgi
+import json
 import os
-
+import re
+import urllib
 
 # Helper functions
 def make_username():
@@ -36,18 +39,11 @@ def validate_email(email, exclude=''):
     return True
 
 
-def email_check(request):
-    if validate_email(request.GET.get('email', ''),
-                      request.GET.get('exclude', '')):
-        return HttpResponse(status=200)
-    return HttpResponse(status=400)
-
-
-def authenticate_fb(token):
+def authenticate_fb(request, token):
     args = {
         'client_id': settings.FACEBOOK_APP_ID,
         'client_secret': settings.FACEBOOK_APP_SECRET,
-        'redirect_uri': '/account/login/facebook/',
+        'redirect_uri': request.build_absolute_uri('/account/login/fb/callback/'),
         'code': token,
     }
 
@@ -59,13 +55,20 @@ def authenticate_fb(token):
     fb_profile = json.load(fb_profile)
     
     try:
-        user_profile = UserProfile.objects.get(facebook_id = fb_probile['id'])
+        user_profile = UserProfile.objects.get(facebook_id = fb_profile['id'])
         user_profile.facebook_token = access_token
         user_profile.save()
         
         return uesr_profile.user
     except UserProfile.DoesNotExist:
         return None
+
+
+# Main screen
+def main(request):
+    if request.user.is_authenticated():
+        return redirect('/account/profile/')
+    return redirect('/account/login/')
 
 
 # Email Login
@@ -90,7 +93,7 @@ def login_email(request):
                   {'next': request.GET.get('next', '/')})
 
 
-# Facebook Login
+# Facebook login
 def login_fb(request):
     if request.user.is_authenticated():
         return redirect('/')
@@ -98,17 +101,18 @@ def login_fb(request):
     args = {
         'client_id': settings.FACEBOOK_APP_ID,
         'scope': 'email',
-        'redirect_uri': '/account/login/facebook/callback',
+        'redirect_uri': request.build_absolute_uri('/account/login/fb/callback/'),
     }
-    return HttpResponseRedirect('https://www.facebook.com/dialog/oauth?' + urllib.urlencode(args))
+    return redirect('https://www.facebook.com/dialog/oauth?' + urllib.urlencode(args))
 
 
+# Facebook login callback
 def login_fb_callback(request):
     if request.user.is_authenticated():
         return redirect('/')
 
     code = request.GET.get('code')
-    user = authenticate_fb(code)
+    user = authenticate_fb(request, code)
 
     if user is None:
         # signup routine
@@ -118,6 +122,17 @@ def login_fb_callback(request):
         return redirect('/')
 
 
+# Twitter login
+def login_tw(request):
+    pass
+
+
+# Twitter login callback
+def login_tw_callback(request):
+    pass
+
+
+# Logout
 def logout(request):
     if not request.user.is_authenticated():
         return redirect('/')
@@ -126,6 +141,7 @@ def logout(request):
     return render(request, 'account/logout.html')
 
 
+# Signup with email
 def signup(request):
     if request.user.is_authenticated():
         return redirect('/')
@@ -158,6 +174,20 @@ def signup(request):
     return render(request, 'account/signup.html')
 
 
+# Signup with social account
+def signup_social(request):
+    pass
+
+
+# Email duplication check
+def email_check(request):
+    if validate_email(request.GET.get('email', ''),
+                      request.GET.get('exclude', '')):
+        return HttpResponse(status=200)
+    return HttpResponse(status=400)
+
+
+# View profile
 @login_required
 def profile(request):
     user = request.user
@@ -183,8 +213,9 @@ def profile(request):
                   {'user': user, 'userprofile': userprofile, 'msg': msg})
 
 
+# Password change
 @login_required
-def changepw(request, uid=''):
+def password_change(request):
     user = request.user
 
     msg = ''
@@ -202,7 +233,7 @@ def changepw(request, uid=''):
     return render(request, 'account/changepw.html', {'user': user, 'msg': msg})
 
 
-def main(request):
-    if request.user.is_authenticated():
-        return redirect('/account/profile/')
-    return redirect('/account/login/')
+# Password reset
+@login_required
+def password_reset(request):
+    pass

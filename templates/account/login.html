@@ -1,4 +1,4 @@
-{% extends "session/base.html" %}
+{% extends "account/base.html" %}
 
 {% block htitle %}SPARCS SSO Login{% endblock %}
 
@@ -7,7 +7,7 @@
 {% block content %}
 <h1>SPARCS SSO Login</h1>
 <p>SPARCS 통합 인증에 오신 것을 환영합니다. KAIST Portal, Facebook, Twitter을 사용하거나 회원가입하여 로그인할 수 있습니다.</p>
-<form class="form-horizontal" action="/session/login/" method="post">
+<form class="form-horizontal" action="/account/login/" method="post">
 	<fieldset>
         {% if msg %}
         <div class="form-group">

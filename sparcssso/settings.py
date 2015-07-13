@@ -37,7 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apps.session',
+    'apps.account',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -73,9 +73,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'sparcssso.wsgi.application'
 
-LOGIN_URL = '/session/login/'
+LOGIN_URL = '/account/login/'
 
-LOGOUT_URL = '/session/logout/'
+LOGOUT_URL = '/account/logout/'
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases

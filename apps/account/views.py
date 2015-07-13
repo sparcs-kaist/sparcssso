@@ -5,8 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import SuspiciousOperation
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from apps.session.models import UserProfile
-from apps.session.forms import UserForm, UserProfileForm
+from apps.account.models import UserProfile
+from apps.account.forms import UserForm, UserProfileForm
 import re
 import os
 
@@ -57,9 +57,9 @@ def login(request):
             auth.login(request, user)
             return redirect(nexturl)
         else:
-            return render(request, 'session/login.html',
+            return render(request, 'account/login.html',
                           {'next': nexturl, 'msg': 'Invalid Account Info'})
-    return render(request, 'session/login.html',
+    return render(request, 'account/login.html',
                   {'next': request.GET.get('next', '/')})
 
 
@@ -68,7 +68,7 @@ def logout(request):
         return redirect('/')
 
     auth.logout(request)
-    return render(request, 'session/logout.html')
+    return render(request, 'account/logout.html')
 
 
 def signup(request):
@@ -100,7 +100,7 @@ def signup(request):
         else:
             raise SuspiciousOperation()
         return redirect('/')
-    return render(request, 'session/signup.html')
+    return render(request, 'account/signup.html')
 
 
 @login_required
@@ -124,7 +124,7 @@ def profile(request):
             userprofile = user_profile_f.save()
             msg = 'Your profile was successfully modified!'
 
-    return render(request, 'session/profile.html',
+    return render(request, 'account/profile.html',
                   {'user': user, 'userprofile': userprofile, 'msg': msg})
 
 
@@ -140,14 +140,14 @@ def changepw(request, uid=''):
         if check_password(oldpw, user.password):
             user.password = make_password(newpw)
             user.save()
-            return redirect('/session/login')
+            return redirect('/account/login')
         else:
             msg = 'Wrong current password.'
 
-    return render(request, 'session/changepw.html', {'user': user, 'msg': msg})
+    return render(request, 'account/changepw.html', {'user': user, 'msg': msg})
 
 
 def main(request):
     if request.user.is_authenticated():
-        return redirect('/session/profile/')
-    return redirect('/session/login/')
+        return redirect('/account/profile/')
+    return redirect('/account/login/')

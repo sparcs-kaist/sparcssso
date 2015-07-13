@@ -20,7 +20,7 @@ from django.shortcuts import render
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^session/', include('apps.session.urls')),
+    url(r'^account/', include('apps.account.urls')),
 ]
 
 handler400 = lambda request: render(request, 'error/400.html')

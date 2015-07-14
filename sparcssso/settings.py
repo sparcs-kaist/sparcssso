@@ -86,10 +86,8 @@ FACEBOOK_APP_SECRET = "f3139ff47ab5b1adc4036c995a75628e"
 
 
 # E-mail settings
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 1025
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases

@@ -1,0 +1,83 @@
+{% extends "account/base.html" %}
+
+{% block htitle %}SPARCS SSO Signup{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block content %}
+<h1>SPARCS SSO Signup</h1>
+<form id="signup" class="form-horizontal" action="/account/signup/fb/{{info.userid}}" method="post" enctype="multipart/form-data">
+	<fieldset>
+        {% csrf_token %}
+        <div class="form-group">
+			<label class="col-sm-3 control-label">Email <span class="required"></span></label>
+			<div class="col-sm-9">
+				<input type="email" class="form-control" name="email" placeholder="asdf@example.com" required="required" maxlength="50" data-remote="/account/email-check/" value="{{info.email}}">
+            </div>
+        </div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label">Password <span class="required"></span></label>
+			<div class="form-group col-sm-4">
+				<input type="password" class="form-control" name="password" placeholder="pAss0wd!" id="password" required="required" maxlength="50" data-minlength="7">
+				<span class="help-block">Password must be at least 7 characters</span>
+			</div>
+			<div class="col-sm-1">
+			</div>
+			<div class="form-group col-sm-4">
+				<input type="password" class="form-control" name="password2" placeholder="Re-type password" data-match="#password" data-match-error="Not match!" required="required" maxlength="50">
+				<div class="help-block with-errors"></div>
+			</div>	
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label">Name <span class="required"></span></label>
+			<div class="form-group col-sm-6">
+				<input type="text" class="form-control" name="first_name" placeholder="First Name" required="required" maxlength="30" value="{{info.first_name}}">
+			</div>
+			<div class="form-group col-sm-3">
+				<input type="text" class="form-control" name="last_name" placeholder="Last Name" required="required" maxlength="30" value="{{info.last_name}}">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label">Gender, Birthday</label>
+			<div class="form-group col-sm-3">
+				<select name="gender" class="form-control">
+					<option value="N" selected>Not Selected</option>
+					<option value="M">Male</option>
+					<option value="F">Female</option>
+				</select>
+			</div>
+			<div class="form-group col-sm-6">
+				<input type="text" class="form-control" name="birthday" placeholder="Birthday (YYYY-MM-DD)" data-vbirth=="vbirth">
+			</div>
+		</div>
+        <div class="form-group">
+            <div class="col-sm-12">
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <a class="btn btn-warning" href="/account/login/">Login</a>
+            </div>
+        </div>
+    </fieldset>
+</form>
+
+<script type="text/javascript">
+$(function() {
+	$("select[name=gender]").val('{{info.gender}}');	
+	var option = {
+		disable: true,
+		custom: {
+			vbirth: function(el) { var re = /^\d{4}-\d{2}-\d{2}$/; return el.val().trim() == '' || re.test(el.val()); }
+		},
+		errors: {
+			vbirth: "Format should be YYYY-MM-DD"
+		}
+	};
+	$('#signup').validator(option);
+	
+	$("input[name=birthday]").datepicker({
+		dateFormat: "yy-mm-dd"	
+	});
+});
+</script>
+{% endblock %}
+

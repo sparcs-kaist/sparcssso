@@ -21,17 +21,17 @@
         <div class="form-group">
 			<label class="col-sm-3 control-label">Email <span class="required"></span></label>
 			<div class="col-sm-9">
-				<input type="email" class="form-control" name="email" placeholder="asdf@example.com" required="required" value="{{ user.email }}" maxlength="50" data-remote="/session/email-check/?exclude={{ user.email }}">
+				<input type="email" class="form-control" name="email" placeholder="asdf@example.com" required="required" maxlength="50" data-remote="/session/email-check/?exclude={{user.email}}" value="{{user.email}}">
             </div>
         </div>
 		<input type="hidden" name="password" value="qwerty1234">
 		<div class="form-group">
 			<label class="col-sm-3 control-label">Name <span class="required"></span></label>
 			<div class="form-group col-sm-6">
-				<input type="text" class="form-control" name="first_name" placeholder="First Name" required="required" maxlength="30" value="{{ user.first_name }}">
+				<input type="text" class="form-control" name="first_name" placeholder="First Name" required="required" maxlength="30" value="{{user.first_name}}">
 			</div>
 			<div class="form-group col-sm-3">
-				<input type="text" class="form-control" name="last_name" placeholder="Last Name" required="required" maxlength="30" value="{{ user.last_name }}">
+				<input type="text" class="form-control" name="last_name" placeholder="Last Name" required="required" maxlength="30" value="{{user.last_name}}">
 			</div>
 		</div>
 		<div class="form-group">
@@ -44,7 +44,7 @@
 				</select>
 			</div>
 			<div class="form-group col-sm-6">
-				<input type="text" class="form-control" name="birthday" placeholder="Birthday (YYYY-MM-DD)" value="{{ userprofile.birthday|date:'Y-m-d' }}" data-vbirth="vbirth">
+				<input type="text" class="form-control" name="birthday" placeholder="Birthday (YYYY-MM-DD)" data-vbirth="vbirth" value="{{userprofile.birthday|date:'Y-m-d'}}">
 			</div>
 		</div>
         <div class="form-group">
@@ -58,7 +58,7 @@
 
 <script type="text/javascript">
 $(function() {
-	$("select[name=gender]").val('{{ userprofile.gender }}');
+	$("select[name=gender]").val('{{userprofile.gender}}');
 	var option = {
 		disable: true,
 		custom: {

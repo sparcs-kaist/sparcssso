@@ -6,8 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import SuspiciousOperation
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
-from apps.account.models import UserProfile
+from django.http import HttpResponse, Http404
+from apps.account.models import UserProfile, SocialSignupInfo
 from apps.account.forms import UserForm, UserProfileForm
 import cgi
 import json
@@ -16,6 +16,15 @@ import re
 import urllib
 
 # Helper functions
+def parse_gender(gender):
+    if gender == 'male':
+        return 'M'
+    elif gender == 'female':
+        return 'F'
+    else:
+        return 'N'
+
+
 def make_username():
     while True:
         username = os.urandom(10).encode('hex')
@@ -60,9 +69,9 @@ def authenticate_fb(request, token):
         user_profile.facebook_token = access_token
         user_profile.save()
         
-        return uesr_profile.user
+        return {'user': uesr_profile.user, 'fb_profile': fb_profile}
     except UserProfile.DoesNotExist:
-        return None
+        return {'user': None, 'fb_profile': fb_profile}
 
 
 # Main screen
@@ -87,7 +96,7 @@ def login_email(request):
         if user is None or not user.is_active:
             return render(request, 'account/login.html',
                           {'next': nexturl, 'msg': 'Invalid Account Info'})
-        elif not user.email_authed:
+        elif not user.user_profile.email_authed:
             return render(request, 'account/email_reauth.html',
                           {'next': nexturl, 'msg': 'Reauth?'})
         else:
@@ -116,11 +125,19 @@ def login_fb_callback(request):
         return redirect('/')
 
     code = request.GET.get('code')
-    user = authenticate_fb(request, code)
+    data = authenticate_fb(request, code)
+    
+    if data['user'] is None:
+        fb_profile = data['fb_profile']
+        fb_signup_info = SocialSignupInfo.objects.filter(userid=fb_profile['id']).first()
 
-    if user is None:
-        # signup routine
-        pass
+        if fb_signup_info is None:
+            fb_signup_info = SocialSignupInfo(userid=fb_profile['id'], email=fb_profile['email'],
+                                          first_name=fb_profile['first_name'],
+                                          last_name=fb_profile['last_name'],
+                                          gender=parse_gender(fb_profile['gender']))
+            fb_signup_info.save()
+        return redirect('/account/signup/fb/' + fb_signup_info.userid) 
     else:
         auth.login(request, user)
         return redirect('/')
@@ -183,9 +200,19 @@ def signup(request):
 
 
 # Signup with social account
-def signup_social(request):
-    pass
+def signup_social(request, uid, type):
+    if request.user.is_authenticated():
+        return redirect('/')
+   
+    fb_signup_info = SocialSignupInfo.objects.filter(uid=uid).first()
+    if fb_signup_info is None:
+        raise Http404()
 
+    if request.method == 'POST':
+        pass
+
+    return render(request, 'account/signup_fb.html', {'info': fb_signup_info})
+    
 
 # Email duplication check
 def email_check(request):

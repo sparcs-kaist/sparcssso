@@ -84,6 +84,10 @@ FACEBOOK_APP_ID = "393161244216747"
 
 FACEBOOK_APP_SECRET = "f3139ff47ab5b1adc4036c995a75628e"
 
+TWITTER_APP_ID = "EBtl0VrzFjwYjc6R83zw7I1d9"
+
+TWITTER_APP_SECRET = "0bkHJrTdAZvUPaaQ6KAmPm7KwGFgm4lz6hqi6PvDaVl9cLLP02"
+
 
 # E-mail settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

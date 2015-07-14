@@ -2,23 +2,35 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+MALE = 'M'
+FEMALE = 'F'
+NONE = 'N'
+GENDER = (
+    (MALE, 'Male'),
+    (FEMALE, 'Female'),
+    (NONE, 'None'),
+)
+
+
 class UserProfile(models.Model):
-    MALE = 'M'
-    FEMALE = 'F'
-    NONE = 'N'
-    GENDER = (
-        (MALE, 'Male'),
-        (FEMALE, 'Female'),
-        (NONE, 'None'),
-    )
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, related_name='user_profile')
     gender = models.CharField(max_length=1, choices=GENDER, default=NONE)
     birthday = models.DateField(blank=True, null=True)
     email_authed = models.BooleanField(default=False)
     facebook_id = models.CharField(max_length=50, blank=True, null=True)
     facebook_token = models.CharField(max_length=255, blank=True, null=True)
 
+
 class EmailAuthToken(models.Model):
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, related_name='email_token')
     token = models.CharField(max_length=32, primary_key=True)
     expire = models.DateField()
+
+
+class SocialSignupInfo(models.Model):
+    uid = models.CharField(max_length=64)
+    userid = models.CharField(max_length=64)
+    email = models.CharField(max_length=100)
+    first_name = models.CharField(max_length=32)
+    last_name = models.CharField(max_length=64)
+    gender = models.CharField(max_length=1, choices=GENDER, default=NONE)

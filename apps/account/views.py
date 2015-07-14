@@ -84,6 +84,9 @@ def email_auth(request, token):
             return redirect('/account/email-auth/success.html')
     return redirect('/account/email-auth/fail.html')
 
+def email_reauth(request, email):
+    pass
+
 # Main screen
 def main(request):
     if request.user.is_authenticated():
@@ -107,8 +110,7 @@ def login_email(request):
             return render(request, 'account/login.html',
                           {'next': nexturl, 'msg': 'Invalid Account Info'})
         elif not user.email_authed:
-            return render(request, 'account/email_reauth.html',
-                          {'next': nexturl, 'msg': 'Reauth?'})
+            return render(request, 'account/email-reauth/', email)
         else:
             auth.login(request, user)
             return redirect(nexturl)

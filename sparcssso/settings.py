@@ -80,9 +80,9 @@ LOGOUT_URL = '/account/logout/'
 
 # Facebook settings
 
-FACEBOOK_APP_ID = ""
+FACEBOOK_APP_ID = "393161244216747"
 
-FACEBOOK_APP_SECRET = ""
+FACEBOOK_APP_SECRET = "f3139ff47ab5b1adc4036c995a75628e"
 
 
 # E-mail settings

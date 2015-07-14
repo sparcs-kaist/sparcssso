@@ -92,6 +92,9 @@ def email_auth(request, token):
             return redirect('/account/email-auth/success.html')
     return redirect('/account/email-auth/fail.html')
 
+def email_reauth(request, email):
+    pass
+
 # Main screen
 def main(request):
     if request.user.is_authenticated():
@@ -115,8 +118,7 @@ def login_email(request):
             return render(request, 'account/login.html',
                           {'next': nexturl, 'msg': 'Invalid Account Info'})
         elif not user.user_profile.email_authed:
-            return render(request, 'account/email_reauth.html',
-                          {'next': nexturl, 'msg': 'Reauth?'})
+            return render(request, 'account/email-reauth/', email)
         else:
             auth.login(request, user)
             return redirect(nexturl)
@@ -144,7 +146,7 @@ def login_fb_callback(request):
 
     code = request.GET.get('code')
     data = authenticate_fb(request, code)
-    
+
     if data['user'] is None:
         fb_profile = data['fb_profile']
         fb_signup_info = SocialSignupInfo.objects.filter(userid=fb_profile['id']).filter(type='FB').first()
@@ -155,7 +157,7 @@ def login_fb_callback(request):
                                           last_name=fb_profile['last_name'],
                                           gender=parse_gender(fb_profile['gender']))
             fb_signup_info.save()
-        return redirect('/account/signup/fb/' + fb_signup_info.userid) 
+        return redirect('/account/signup/fb/' + fb_signup_info.userid)
     else:
         auth.login(request, user)
         return redirect('/')
@@ -241,7 +243,7 @@ def signup_social(request, userid, type):
         pass
 
     return render(request, 'account/signup_social.html', {'info': signup_info})
-    
+
 
 # Email duplication check
 def email_check(request):

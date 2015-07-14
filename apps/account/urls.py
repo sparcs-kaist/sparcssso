@@ -16,12 +16,14 @@ urlpatterns = [
     url(r'^signup/$', 'apps.account.views.signup'),
     url(r'^signup/fb/(?P<uid>\w+)$', 'apps.account.views.signup_social', {'type': 'fb'}),
     url(r'^signup/tw/(?P<uid>\w+)$', 'apps.account.views.signup_social', {'type': 'tw'}),
-    url(r'^signup/kaist/<?P<uid>\w+)$', 'apps.account.views.signup_social', {'type': 'kaist'}),
+    url(r'^signup/kaist/(?P<uid>\w+)$', 'apps.account.views.signup_social', {'type': 'kaist'}),
 
     url(r'^email-check/$', 'apps.account.views.email_check'),
 
     url(r'^email-auth/([\w \[\]\.]{40,})/$', 'apps.account.views.email_auth'),
-    url(r'^email-reauth/', 'apps.account.views.email_reauth'),
+
+    url(r'^email-reauth/(?P<uid>\w+)$', 'apps.account.views.email_reauth'),
+    url(r'^email-reauth/sent/$', 'apps.account.views.email_reauth_sent'),
 
     url(r'^profile/$', 'apps.account.views.profile'),
 

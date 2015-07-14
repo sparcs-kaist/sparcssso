@@ -39,6 +39,23 @@ def make_token():
         if len(EmailAuthToken.objects.filter(token=token)) == 0:
             return token
 
+def give_token(user_profile):
+    tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)
+
+    token = make_token()
+    email_auth_token = EmailAuthToken(token=token,
+                                      expire_time=tomorrow)
+    email_auth_token.user_profile = user_profile
+    email_auth_token.save()
+
+    send_mail('[SPARCS SSO] E-mail Authorization',
+              'To get auth, please enter http://bit.sparcs.org'+
+              ':23232/account/email-auth/'+token,
+              'sparcssso@sparcs.org', [user_profile.email])
+
+    return token
+
+
 
 def get_username(email):
     user = User.objects.filter(email=email)
@@ -89,11 +106,18 @@ def email_auth(request, token):
            token_element.user_profile.email_authed == False:
             token_element.user_profile.email_authed = True
             token_element.user_profile.save()
-            return redirect('/account/email-auth/success.html')
-    return redirect('/account/email-auth/fail.html')
+            return redirect('/account/email-auth/success/')
+    return redirect('/account/email-auth/fail/')
 
 def email_reauth(request, email):
-    pass
+    return render(request, 'account/reauth.html', email)
+
+def email_reauth_send(request, email):
+    user_profile = UserProfile.objects.get(email=email)
+    give_token(user_profile)
+    return render(request, 'account/login.html',
+                  {'next': nexturl, 'msg': 'Auth E-mail was sent.'})
+
 
 # Main screen
 def main(request):
@@ -118,7 +142,7 @@ def login_email(request):
             return render(request, 'account/login.html',
                           {'next': nexturl, 'msg': 'Invalid Account Info'})
         elif not user.user_profile.email_authed:
-            return render(request, 'account/email-reauth/', email)
+            return render(request, 'account/reauth.html')
         else:
             auth.login(request, user)
             return redirect(nexturl)
@@ -199,9 +223,6 @@ def signup(request):
             first_name = user_f.cleaned_data['first_name']
             last_name = user_f.cleaned_data['last_name']
 
-            tomorrow = datetime.datetime.now()\
-                       + datetime.timedelta(days=1)
-
             username = make_username()
             user = User.objects.create_user(username=username,
                                             first_name=first_name,
@@ -212,18 +233,9 @@ def signup(request):
             user_profile = user_profile_f.save(commit=False)
             user_profile.user = user
 
-            token = make_token()
-            email_auth_token = EmailAuthToken(token=token,
-                                              expire_time=tomorrow)
-            email_auth_token.user_profile = user_profile
-            email_auth_token.save()
+            token = give_token(user_profile)
 
             user_profile.save()
-
-            send_mail('[SPARCS SSO] E-mail Authorization',
-                    'To get auth, please enter http://bit.sparcs.org'+
-                    ':23232/account/email-auth/'+token,
-                    'sparcssso@sparcs.org', [email])
         else:
             raise SuspiciousOperation("ERROR")
         return redirect('/')

@@ -147,10 +147,10 @@ def login_fb_callback(request):
     
     if data['user'] is None:
         fb_profile = data['fb_profile']
-        fb_signup_info = SocialSignupInfo.objects.filter(userid=fb_profile['id']).first()
+        fb_signup_info = SocialSignupInfo.objects.filter(userid=fb_profile['id']).filter(type='FB').first()
 
         if fb_signup_info is None:
-            fb_signup_info = SocialSignupInfo(userid=fb_profile['id'], email=fb_profile['email'],
+            fb_signup_info = SocialSignupInfo(userid=fb_profile['id'], type='FB', email=fb_profile['email'],
                                           first_name=fb_profile['first_name'],
                                           last_name=fb_profile['last_name'],
                                           gender=parse_gender(fb_profile['gender']))
@@ -229,18 +229,18 @@ def signup(request):
 
 
 # Signup with social account
-def signup_social(request, uid, type):
+def signup_social(request, userid, type):
     if request.user.is_authenticated():
         return redirect('/')
    
-    fb_signup_info = SocialSignupInfo.objects.filter(uid=uid).first()
-    if fb_signup_info is None:
+    signup_info = SocialSignupInfo.objects.filter(userid=userid).filter(type=type).first()
+    if signup_info is None:
         raise Http404()
 
     if request.method == 'POST':
         pass
 
-    return render(request, 'account/signup_fb.html', {'info': fb_signup_info})
+    return render(request, 'account/signup_social.html', {'info': signup_info})
     
 
 # Email duplication check

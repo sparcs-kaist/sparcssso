@@ -26,7 +26,6 @@ class UserProfile(models.Model):
         (FEMALE, 'Female'),
         (NONE, 'None'),
     )
->>>>>>> b9b4fd3d759f26e3a0e77531e07b4f2a06ea1693
     user = models.OneToOneField(User, related_name='user_profile')
     gender = models.CharField(max_length=1, choices=GENDER, default=NONE)
     birthday = models.DateTimeField(blank=True, null=True)

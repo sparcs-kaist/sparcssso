@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import SuspiciousOperation
+from django.core.mail import send_mail
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from apps.account.models import UserProfile
@@ -83,12 +84,15 @@ def login_email(request):
 
         username = get_username(email)
         user = auth.authenticate(username=username, password=password)
-        if user is not None and user.is_active:
-            auth.login(request, user)
-            return redirect(nexturl)
-        else:
+        if user is None or not user.is_active:
             return render(request, 'account/login.html',
                           {'next': nexturl, 'msg': 'Invalid Account Info'})
+        elif not user.email_authed:
+            return render(request, 'account/email_reauth.html',
+                          {'next': nexturl, 'msg': 'Reauth?'})
+        else:
+            auth.login(request, user)
+            return redirect(nexturl)
     return render(request, 'account/login.html',
                   {'next': request.GET.get('next', '/')})
 
@@ -168,8 +172,12 @@ def signup(request):
             user_profile = user_profile_f.save(commit=False)
             user_profile.user = user
             user_profile.save()
+            # Send Email
+            send_mail('[SPARCS SSO] E-mail Authorization',
+                      'Hello, world!', 'h10.public@gmail.com',
+                      [email])
         else:
-            raise SuspiciousOperation()
+            raise SuspiciousOperation("ERROR")
         return redirect('/')
     return render(request, 'account/signup.html')
 

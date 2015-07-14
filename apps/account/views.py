@@ -7,13 +7,14 @@ from django.core.exceptions import SuspiciousOperation
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404
-from apps.account.models import UserProfile, SocialSignupInfo
+from apps.account.models import UserProfile, SocialSignupInfo, EmailAuthToken
 from apps.account.forms import UserForm, UserProfileForm
 import cgi
 import json
 import os
 import re
 import urllib
+import datetime
 
 # Helper functions
 def parse_gender(gender):
@@ -30,6 +31,13 @@ def make_username():
         username = os.urandom(10).encode('hex')
         if len(User.objects.filter(username=username)) == 0:
             return username
+
+
+def make_token():
+    while True:
+        token = os.urandom(24).encode('hex')
+        if len(EmailAuthToken.objects.filter(token=token)) == 0:
+            return token
 
 
 def get_username(email):
@@ -63,16 +71,26 @@ def authenticate_fb(request, token):
 
     fb_profile = urllib.urlopen('https://graph.facebook.com/me?access_token=%s' % access_token)
     fb_profile = json.load(fb_profile)
-    
+
     try:
         user_profile = UserProfile.objects.get(facebook_id = fb_profile['id'])
         user_profile.facebook_token = access_token
         user_profile.save()
-        
+
         return {'user': uesr_profile.user, 'fb_profile': fb_profile}
     except UserProfile.DoesNotExist:
         return {'user': None, 'fb_profile': fb_profile}
 
+
+def email_auth(request, token):
+    for token_element in EmailAuthToken.objects.filter(token=token):
+        if token_element.expire_time.replace(tzinfo=None) >\
+           datetime.datetime.now().replace(tzinfo=None) and\
+           token_element.user_profile.email_authed == False:
+            token_element.user_profile.email_authed = True
+            token_element.user_profile.save()
+            return redirect('/account/email-auth/success.html')
+    return redirect('/account/email-auth/fail.html')
 
 # Main screen
 def main(request):
@@ -179,6 +197,9 @@ def signup(request):
             first_name = user_f.cleaned_data['first_name']
             last_name = user_f.cleaned_data['last_name']
 
+            tomorrow = datetime.datetime.now()\
+                       + datetime.timedelta(days=1)
+
             username = make_username()
             user = User.objects.create_user(username=username,
                                             first_name=first_name,
@@ -188,11 +209,19 @@ def signup(request):
 
             user_profile = user_profile_f.save(commit=False)
             user_profile.user = user
+
+            token = make_token()
+            email_auth_token = EmailAuthToken(token=token,
+                                              expire_time=tomorrow)
+            email_auth_token.user_profile = user_profile
+            email_auth_token.save()
+
             user_profile.save()
-            # Send Email
+
             send_mail('[SPARCS SSO] E-mail Authorization',
-                      'Hello, world!', 'h10.public@gmail.com',
-                      [email])
+                    'To get auth, please enter http://bit.sparcs.org'+
+                    ':23232/account/email-auth/'+token,
+                    'sparcssso@sparcs.org', [email])
         else:
             raise SuspiciousOperation("ERROR")
         return redirect('/')

@@ -16,6 +16,7 @@ import re
 import urllib
 import datetime
 
+
 # Helper functions
 def parse_gender(gender):
     if gender == 'male':
@@ -78,23 +79,26 @@ def authenticate_fb(request, token):
     args = {
         'client_id': settings.FACEBOOK_APP_ID,
         'client_secret': settings.FACEBOOK_APP_SECRET,
-        'redirect_uri': request.build_absolute_uri('/account/login/fb/callback/'),
+        'redirect_uri': request.build_absolute_uri(
+            '/account/login/fb/callback/'),
         'code': token,
     }
 
-    target = urllib.urlopen('https://graph.facebook.com/oauth/access_token?' + urllib.urlencode(args)).read()
+    target = urllib.urlopen('https://graph.facebook.com/oauth/access_token?' +
+                            urllib.urlencode(args)).read()
     response = cgi.parse_qs(target)
     access_token = response['access_token'][-1]
 
-    fb_profile = urllib.urlopen('https://graph.facebook.com/me?access_token=%s' % access_token)
+    fb_profile = urllib.urlopen('https://graph.facebook.com/me?access_token=%s'
+                                % access_token)
     fb_profile = json.load(fb_profile)
 
     try:
-        user_profile = UserProfile.objects.get(facebook_id = fb_profile['id'])
+        user_profile = UserProfile.objects.get(facebook_id=fb_profile['id'])
         user_profile.facebook_token = access_token
         user_profile.save()
 
-        return {'user': uesr_profile.user, 'fb_profile': fb_profile}
+        return {'user': user_profile.user, 'fb_profile': fb_profile}
     except UserProfile.DoesNotExist:
         return {'user': None, 'fb_profile': fb_profile}
 
@@ -109,6 +113,7 @@ def email_auth(request, token):
             return redirect('/account/email-auth/success/')
     return redirect('/account/email-auth/fail/')
 
+
 def email_reauth(request, email):
     return render(request, 'account/reauth.html', email)
 
@@ -117,6 +122,7 @@ def email_reauth_send(request, email):
     give_token(user_profile)
     return render(request, 'account/login.html',
                   {'next': nexturl, 'msg': 'Auth E-mail was sent.'})
+
 
 
 # Main screen
@@ -158,9 +164,11 @@ def login_fb(request):
     args = {
         'client_id': settings.FACEBOOK_APP_ID,
         'scope': 'email',
-        'redirect_uri': request.build_absolute_uri('/account/login/fb/callback/'),
+        'redirect_uri': request.build_absolute_uri(
+            '/account/login/fb/callback/'),
     }
-    return redirect('https://www.facebook.com/dialog/oauth?' + urllib.urlencode(args))
+    return redirect('https://www.facebook.com/dialog/oauth?' +
+                    urllib.urlencode(args))
 
 
 # Facebook login callback
@@ -172,18 +180,21 @@ def login_fb_callback(request):
     data = authenticate_fb(request, code)
 
     if data['user'] is None:
-        fb_profile = data['fb_profile']
-        fb_signup_info = SocialSignupInfo.objects.filter(userid=fb_profile['id']).first()
+        profile = data['fb_profile']
+        signup_info = SocialSignupInfo.objects.filter(
+            userid=profile['id']).filter(type='FB').first()
 
-        if fb_signup_info is None:
-            fb_signup_info = SocialSignupInfo(userid=fb_profile['id'], email=fb_profile['email'],
-                                          first_name=fb_profile['first_name'],
-                                          last_name=fb_profile['last_name'],
-                                          gender=parse_gender(fb_profile['gender']))
-            fb_signup_info.save()
-        return redirect('/account/signup/fb/' + fb_signup_info.userid)
+        if signup_info is None:
+            signup_info = SocialSignupInfo(userid=profile['id'],
+                                           type='FB', email=profile['email'],
+                                           first_name=profile['first_name'],
+                                           last_name=profile['last_name'],
+                                           gender=parse_gender(
+                                               profile['gender']))
+            signup_info.save()
+        return redirect('/account/signup/fb/' + signup_info.userid)
     else:
-        auth.login(request, user)
+        auth.login(request, data['user'])
         return redirect('/')
 
 
@@ -243,18 +254,20 @@ def signup(request):
 
 
 # Signup with social account
-def signup_social(request, uid, type):
+def signup_social(request, userid, type):
     if request.user.is_authenticated():
         return redirect('/')
 
-    fb_signup_info = SocialSignupInfo.objects.filter(uid=uid).first()
-    if fb_signup_info is None:
+    signup_info = SocialSignupInfo.objects.filter(userid=userid).\
+        filter(type=type).first()
+
+    if signup_info is None:
         raise Http404()
 
     if request.method == 'POST':
         pass
 
-    return render(request, 'account/signup_fb.html', {'info': fb_signup_info})
+    return render(request, 'account/signup_social.html', {'info': signup_info})
 
 
 # Email duplication check

@@ -37,8 +37,17 @@ class UserProfile(models.Model):
 
 
 class SocialSignupInfo(models.Model):
-    uid = models.CharField(max_length=64)
+    FACEBOOK = 'FB'
+    TWITTER = 'TW'
+    KAIST = 'KAIST'
+    SOCIAL_TYPE = (
+        (FACEBOOK, 'Facebook'),
+        (TWITTER, 'Twitter'),
+        (KAIST, 'KAIST SSO'),
+    )
+
     userid = models.CharField(max_length=64)
+    type = models.CharField(max_length=5, choices=SOCIAL_TYPE)
     email = models.CharField(max_length=100)
     first_name = models.CharField(max_length=32)
     last_name = models.CharField(max_length=64)

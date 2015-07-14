@@ -14,9 +14,12 @@ urlpatterns = [
     url(r'^logout/$', 'apps.account.views.logout'),
 
     url(r'^signup/$', 'apps.account.views.signup'),
-    url(r'^signup/fb/(?P<userid>\w+)$', 'apps.account.views.signup_social', {'type': 'FB'}),
-    url(r'^signup/tw/(?P<userid>\w+)$', 'apps.account.views.signup_social', {'type': 'TW'}),
-    url(r'^signup/kaist/(?P<userid>\w+)$', 'apps.account.views.signup_social', {'type': 'KAIST'}),
+    url(r'^signup/fb/(?P<userid>\w+)$',
+        'apps.account.views.signup_social', {'type': 'FB'}),
+    url(r'^signup/tw/(?P<userid>\w+)$',
+        'apps.account.views.signup_social', {'type': 'TW'}),
+    url(r'^signup/kaist/(?P<userid>\w+)$',
+        'apps.account.views.signup_social', {'type': 'KAIST'}),
 
     url(r'^email-check/$', 'apps.account.views.email_check'),
 

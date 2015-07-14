@@ -18,4 +18,5 @@ class UserProfileForm(ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = ('gender', 'birthday')
+        fields = ('gender', 'birthday', 'email_authed',
+                  'facebook_id', 'facebook_token')

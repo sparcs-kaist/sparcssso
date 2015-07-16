@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
-from apps.account.models import UserProfile
+from apps.account.models import UserProfile, SocialSignupInfo
 
 
 class UserProfileInline(admin.StackedInline):
@@ -12,5 +12,7 @@ class UserProfileInline(admin.StackedInline):
 class UserAdmin(admin.ModelAdmin):
     inlines = (UserProfileInline, )
 
+
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
+admin.site.register(SocialSignupInfo)

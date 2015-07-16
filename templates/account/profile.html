@@ -21,7 +21,7 @@
         <div class="form-group">
 			<label class="col-sm-3 control-label">Email <span class="required"></span></label>
 			<div class="col-sm-9">
-				<input type="email" class="form-control" name="email" placeholder="asdf@example.com" required="required" maxlength="50" data-remote="/account/email-check/?exclude={{user.email}}" value="{{user.email}}">
+				<input type="email" class="form-control" name="email" value="{{user.email}}" disabled>
             </div>
         </div>
 		<input type="hidden" name="password" value="qwerty1234">
@@ -38,7 +38,7 @@
 			<label class="col-sm-3 control-label">Gender, Birthday</label>
 			<div class="form-group col-sm-3">
 				<select class="form-control" name="gender">
-					<option value="N">Not Selected</option>
+					<option value="E">etc</option>
 					<option value="M">Male</option>
 					<option value="F">Female</option>
 				</select>

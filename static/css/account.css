@@ -49,3 +49,8 @@ img.profile {
     width:auto;
     float:left;
 }
+
+.login-icon > img {
+    width:83px;
+    height:83px;
+}

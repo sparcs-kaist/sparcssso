@@ -12,6 +12,8 @@ from apps.account.forms import UserForm, UserProfileForm
 import cgi
 import json
 import os
+import oauth2 as oauth
+import time
 import re
 import urllib
 import datetime
@@ -66,22 +68,22 @@ def get_username(email):
     return ''
 
 
-def validate_email(email, exclude=''):
+def validate_email(email):
     if not re.match(r'[^@]+@[^@]+\.[^@]+', email):
         return False
 
-    users = User.objects.filter(email=email).exclude(email=exclude)
+    users = User.objects.filter(email=email)
     if len(users) > 0:
         return False
     return True
 
 
-def authenticate_fb(request, token):
+def authenticate_fb(request, mode, token):
     args = {
         'client_id': settings.FACEBOOK_APP_ID,
         'client_secret': settings.FACEBOOK_APP_SECRET,
         'redirect_uri': request.build_absolute_uri(
-            '/account/login/fb/callback/'),
+            '/account/' + mode + '/fb/callback/'),
         'code': token,
     }
 
@@ -94,13 +96,13 @@ def authenticate_fb(request, token):
                                 % access_token)
     fb_profile = json.load(fb_profile)
 
-    try:
-        user_profile = UserProfile.objects.get(facebook_id=fb_profile['id'])
-        user_profile.save()
-
-        return {'user': user_profile.user, 'fb_profile': fb_profile}
-    except UserProfile.DoesNotExist:
+    user_profiles = UserProfile.objects.filter(facebook_id=fb_profile['id'])
+    
+    if len(user_profiles) == 1:
+        return {'user': user_profiles[0].user, 'fb_profile': fb_profile}
+    elif len(user_profiles) == 0:
         return {'user': None, 'fb_profile': fb_profile}
+    raise SuspiciousOperation('Multiple users')
 
 
 def email_auth(request, token):
@@ -186,16 +188,18 @@ def login_email(request):
                   {'next': request.GET.get('next', '/')})
 
 
-# Facebook login
-def login_fb(request):
-    if request.user.is_authenticated():
+# Facebook login & connect init
+def fb_auth_init(request, mode):
+    is_authed = request.user.is_authenticated()
+    if (mode == 'login' and is_authed) or \
+       (mode == 'connect' and not is_authed):
         return redirect('/')
 
     args = {
         'client_id': settings.FACEBOOK_APP_ID,
         'scope': 'email',
         'redirect_uri': request.build_absolute_uri(
-            '/account/login/fb/callback/'),
+            '/account/' + mode + '/fb/callback/'),
     }
     return redirect('https://www.facebook.com/dialog/oauth?' +
                     urllib.urlencode(args))
@@ -207,7 +211,7 @@ def login_fb_callback(request):
         return redirect('/')
 
     code = request.GET.get('code')
-    data = authenticate_fb(request, code)
+    data = authenticate_fb(request, 'login', code)
 
     if data['user'] is None:
         profile = data['fb_profile']
@@ -229,13 +233,37 @@ def login_fb_callback(request):
         return redirect('/')
 
 
+# Facebook connect
+@login_required
+def connect_fb_callback(request):
+    code = request.GET.get('code')
+    data = authenticate_fb(request, 'connect', code)
+  
+    profile = request.user.user_profile
+    if profile.facebook_id is not None and profile.facebook_id != '':
+        return redirect('/account/profile/?con=1')
+
+    users = UserProfile.objects.filter(facebook_id=data['fb_profile']['id'])
+    if len(users) > 0:
+        return redirect('/account/profile/?con=2')
+
+    profile.facebook_id = data['fb_profile']['id']
+    profile.save()
+    return redirect('/account/profile/?con=0')
+
+
 # Twitter login
-def login_tw(request):
+def tw_auth_init(request, mode):
     pass
 
 
 # Twitter login callback
 def login_tw_callback(request):
+    pass
+
+
+# Twitter connect
+def connect_tw_callback(request):
     pass
 
 
@@ -294,10 +322,26 @@ def signup_social(request, userid, type):
     return render(request, 'account/signup_social.html', {'info': signup_info})
 
 
+@login_required
+def disconnect(request, type):
+    # if request.method != 'POST':
+    #    return SuspiciousOperation('Only post permitted')
+    
+    profile = request.user.user_profile
+    if type == 'FB':
+        profile.facebook_id = ''
+    elif type == 'TW':
+        profile.twitter_id = ''
+    elif type == 'KAIST':
+        profile.kaist_id = ''
+    profile.save()
+    
+    return redirect('/account/profile/?con=5')
+
+
 # Email duplication check
 def email_check(request):
-    if validate_email(request.GET.get('email', ''),
-                      request.GET.get('exclude', '')):
+    if validate_email(request.GET.get('email', '')):
         return HttpResponse(status=200)
     return HttpResponse(status=400)
 
@@ -312,11 +356,8 @@ def profile(request):
     if request.method == "POST":
         user_f = UserForm(request.POST)
         user_profile_f = UserProfileForm(request.POST, instance=userprofile)
-        raw_email = request.POST.get('email', '')
 
-        if validate_email(raw_email, user.email) and user_f.is_valid() \
-                and user_profile_f.is_valid():
-            user.email = user_f.cleaned_data['email']
+        if user_f.is_valid() and user_profile_f.is_valid():
             user.first_name = user_f.cleaned_data['first_name']
             user.last_name = user_f.cleaned_data['last_name']
             user.save()

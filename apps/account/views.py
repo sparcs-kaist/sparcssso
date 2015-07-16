@@ -24,7 +24,7 @@ def parse_gender(gender):
     elif gender == 'female':
         return 'F'
     else:
-        return 'N'
+        return 'E'
 
 
 def make_username():
@@ -96,7 +96,6 @@ def authenticate_fb(request, token):
 
     try:
         user_profile = UserProfile.objects.get(facebook_id=fb_profile['id'])
-        user_profile.facebook_token = access_token
         user_profile.save()
 
         return {'user': user_profile.user, 'fb_profile': fb_profile}
@@ -125,6 +124,35 @@ def email_reauth_sent(request):
                   {'next': nexturl, 'msg': 'Auth E-mail was sent. \
                                             Please check your e-mail.'})
 
+
+
+def signup_backend(post):
+    user_f = UserForm(post)
+    user_profile_f = UserProfileForm(post)
+    raw_email = post.get('email', '')
+
+    if validate_email(raw_email) and user_f.is_valid() \
+            and user_profile_f.is_valid():
+        email = user_f.cleaned_data['email']
+        password = user_f.cleaned_data['password']
+        first_name = user_f.cleaned_data['first_name']
+        last_name = user_f.cleaned_data['last_name']
+        username = make_username()
+        user = User.objects.create_user(username=username,
+                                        first_name=first_name,
+                                        last_name=last_name,
+                                        email=email, password=password)
+
+        give_token(user)
+
+        user.save()
+
+        user_profile = user_profile_f.save(commit=False)
+        user_profile.user = user
+
+        return user
+    else:
+        return None
 
 
 # Main screen
@@ -196,6 +224,7 @@ def login_fb_callback(request):
             signup_info.save()
         return redirect('/account/signup/fb/' + signup_info.userid)
     else:
+        data['user'].backend = 'django.contrib.auth.backends.ModelBackend'
         auth.login(request, data['user'])
         return redirect('/')
 
@@ -225,34 +254,12 @@ def signup(request):
         return redirect('/')
 
     if request.method == 'POST':
-        user_f = UserForm(request.POST)
-        user_profile_f = UserProfileForm(request.POST)
-        raw_email = request.POST.get('email', '')
+        user = signup_backend(request.POST)
 
-        if validate_email(raw_email) and user_f.is_valid() \
-                and user_profile_f.is_valid():
-            email = user_f.cleaned_data['email']
-            password = user_f.cleaned_data['password']
-            first_name = user_f.cleaned_data['first_name']
-            last_name = user_f.cleaned_data['last_name']
-
-            username = make_username()
-            user = User.objects.create_user(username=username,
-                                            first_name=first_name,
-                                            last_name=last_name,
-                                            email=email, password=password)
-
-            give_token(user)
-
-            user.save()
-
-            user_profile = user_profile_f.save(commit=False)
-            user_profile.user = user
-
-            user_profile.save()
-        else:
-            raise SuspiciousOperation("ERROR")
+        if user is None:
+            raise SuspiciousOperation("Not valid POST data")
         return redirect('/')
+
     return render(request, 'account/signup.html')
 
 
@@ -268,7 +275,21 @@ def signup_social(request, userid, type):
         raise Http404()
 
     if request.method == 'POST':
-        pass
+        user = signup_backend(request.POST)
+
+        if user is None:
+            raise SuspiciousOperation("Not valid POST data")
+
+        if type == 'FB':
+            user.user_profile.facebook_id = signup_info.userid
+        elif type == 'TW':
+            user.user_profile.twitter_id = signup_info.userid
+        elif type == 'KAIST':
+            user.user_profile.kaist_id = signup_info.userid
+        user.user_profile.save()
+
+        signup_info.delete()
+        return redirect('/')
 
     return render(request, 'account/signup_social.html', {'info': signup_info})
 

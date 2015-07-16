@@ -4,11 +4,11 @@ from django.contrib.auth.models import User
 
 MALE = 'M'
 FEMALE = 'F'
-NONE = 'N'
+ETC = 'E'
 GENDER = (
     (MALE, 'Male'),
     (FEMALE, 'Female'),
-    (NONE, 'None'),
+    (ETC, 'etc'),
 )
 
 
@@ -18,22 +18,15 @@ class EmailAuthToken(models.Model):
 
 
 class UserProfile(models.Model):
-    MALE = 'M'
-    FEMALE = 'F'
-    NONE = 'N'
-    GENDER = (
-        (MALE, 'Male'),
-        (FEMALE, 'Female'),
-        (NONE, 'None'),
-    )
     user = models.OneToOneField(User, related_name='user_profile')
-    gender = models.CharField(max_length=1, choices=GENDER, default=NONE)
+    gender = models.CharField(max_length=1, choices=GENDER, default=ETC)
     birthday = models.DateTimeField(blank=True, null=True)
     email_authed = models.BooleanField(default=False)
     email_auth_token = models.OneToOneField(EmailAuthToken,
                                             related_name='user_profile')
     facebook_id = models.CharField(max_length=50, blank=True, null=True)
-    facebook_token = models.CharField(max_length=255, blank=True, null=True)
+    twitter_id = models.CharField(max_length=50, blank=True, null=True)
+    kaist_id = models.CharField(max_length=50, blank=True, null=True)
 
 
 class SocialSignupInfo(models.Model):
@@ -51,4 +44,4 @@ class SocialSignupInfo(models.Model):
     email = models.CharField(max_length=100)
     first_name = models.CharField(max_length=32)
     last_name = models.CharField(max_length=64)
-    gender = models.CharField(max_length=1, choices=GENDER, default=NONE)
+    gender = models.CharField(max_length=1, choices=GENDER, default=ETC)

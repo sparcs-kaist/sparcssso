@@ -60,7 +60,6 @@ def give_token(user):
     return token
 
 
-
 def get_username(email):
     user = User.objects.filter(email=email)
     if len(user) > 0:
@@ -102,6 +101,32 @@ def authenticate_fb(request, mode, token):
         return {'user': user_profiles[0].user, 'fb_profile': fb_profile}
     elif len(user_profiles) == 0:
         return {'user': None, 'fb_profile': fb_profile}
+    raise SuspiciousOperation('Multiple users')
+
+
+# Twitter OAuth
+tw_consumer = oauth.Consumer(settings.TWITTER_APP_ID, settings.TWITTER_APP_SECRET)
+tw_client = oauth.Client(tw_consumer)
+tw_request_url = 'https://twitter.com/oauth/request_token'
+tw_access_url = 'https://twitter.com/oauth/access_token'
+tw_auth_url = 'https://twitter.com/oauth/authenticate'
+
+
+def authenticate_tw(request):
+    token = oauth.Token(request.session['request_token']['oauth_token'],
+                        request.session['request_token']['oauth_token_secret'])
+    token.set_verifier(request.GET['oauth_verifier'])
+    client = oauth.Client(tw_consumer, token)
+
+    resp, content = client.request(tw_access_url, 'POST')
+    tw_profile = dict(cgi.parse_qsl(content))
+    
+    user_profiles = UserProfile.objects.filter(twitter_id=tw_profile['user_id'])
+
+    if len(user_profiles) == 1:
+        return {'user': user_profiles[0].user, 'tw_profile': tw_profile}
+    elif len(user_profiles) == 0:
+        return {'user': None, 'tw_profile': tw_profile}
     raise SuspiciousOperation('Multiple users')
 
 
@@ -240,7 +265,7 @@ def connect_fb_callback(request):
     data = authenticate_fb(request, 'connect', code)
   
     profile = request.user.user_profile
-    if profile.facebook_id is not None and profile.facebook_id != '':
+    if profile.facebook_id != '':
         return redirect('/account/profile/?con=1')
 
     users = UserProfile.objects.filter(facebook_id=data['fb_profile']['id'])
@@ -254,17 +279,64 @@ def connect_fb_callback(request):
 
 # Twitter login
 def tw_auth_init(request, mode):
-    pass
+    is_authed = request.user.is_authenticated()
+    if (mode == 'login' and is_authed) or \
+       (mode == 'connect' and not is_authed):
+        return redirect('/')
+    
+    resp, content = tw_client.request(tw_request_url, 'POST', 
+        body='oauth_callback=' + request.build_absolute_uri(
+            '/account/' + mode + '/tw/callback/')
+    )
+
+    request.session['request_token'] = dict(cgi.parse_qsl(content))
+    url = '%s?oauth_token=%s' % (tw_auth_url,
+        request.session['request_token']['oauth_token'])
+
+    return redirect(url)
 
 
 # Twitter login callback
 def login_tw_callback(request):
-    pass
+    if request.user.is_authenticated():
+        return redirect('/')
+
+    data = authenticate_tw(request)
+
+    if data['user'] is None:
+        profile = data['tw_profile']
+        signup_info = SocialSignupInfo.objects.filter(
+            userid=profile['user_id']).filter(type='TW').first()
+
+        if signup_info is None:
+            signup_info = SocialSignupInfo(userid=profile['user_id'],
+                                           type='TW', email='',
+                                           first_name=profile['screen_name'],
+                                           last_name='', gender='E')
+            signup_info.save()
+        return redirect('/account/signup/tw/' + signup_info.userid)
+    else:
+        data['user'].backend = 'django.contrib.auth.backends.ModelBackend'
+        auth.login(request, data['user'])
+        return redirect('/')
 
 
 # Twitter connect
+@login_required
 def connect_tw_callback(request):
-    pass
+    data = authenticate_tw(request)
+  
+    profile = request.user.user_profile
+    if profile.twitter_id != '':
+        return redirect('/account/profile/?con=1')
+
+    users = UserProfile.objects.filter(twitter_id=data['tw_profile']['user_id'])
+    if len(users) > 0:
+        return redirect('/account/profile/?con=2')
+
+    profile.twitter_id = data['tw_profile']['user_id']
+    profile.save()
+    return redirect('/account/profile/?con=0')
 
 
 # Logout

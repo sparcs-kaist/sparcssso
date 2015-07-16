@@ -40,7 +40,8 @@ def make_token():
         if len(EmailAuthToken.objects.filter(token=token)) == 0:
             return token
 
-def give_token(user_profile):
+def give_token(user):
+    user_profile = user.user_profile
     tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)
 
     token = make_token()
@@ -51,8 +52,8 @@ def give_token(user_profile):
 
     send_mail('[SPARCS SSO] E-mail Authorization',
               'To get auth, please enter http://bit.sparcs.org'+
-              ':23232/account/email-auth/'+token,
-              'sparcssso@sparcs.org', [user_profile.email])
+              ':23232/account/email-auth/'+token+' until tomrrow.',
+              'sparcssso@sparcs.org', [user.email])
 
     return token
 
@@ -114,14 +115,15 @@ def email_auth(request, token):
     return redirect('/account/email-auth/fail/')
 
 
-def email_reauth(request, email):
-    return render(request, 'account/reauth.html', email)
-
-def email_reauth_send(request, email):
-    user_profile = UserProfile.objects.get(email=email)
-    give_token(user_profile)
+def email_reauth_sent(request):
+    if request.method == 'POST':
+        nexturl = request.POST.get('next', '/')
+        username = request.POST.get('username', 'none')
+    user = User.objects.get(username=username)
+    give_token(user)
     return render(request, 'account/login.html',
-                  {'next': nexturl, 'msg': 'Auth E-mail was sent.'})
+                  {'next': nexturl, 'msg': 'Auth E-mail was sent. \
+                                            Please check your e-mail.'})
 
 
 
@@ -148,7 +150,7 @@ def login_email(request):
             return render(request, 'account/login.html',
                           {'next': nexturl, 'msg': 'Invalid Account Info'})
         elif not user.user_profile.email_authed:
-            return render(request, 'account/reauth.html')
+            return render(request, 'account/reauth.html', {'username': username})
         else:
             auth.login(request, user)
             return redirect(nexturl)
@@ -239,12 +241,13 @@ def signup(request):
                                             first_name=first_name,
                                             last_name=last_name,
                                             email=email, password=password)
+
+            give_token(user)
+
             user.save()
 
             user_profile = user_profile_f.save(commit=False)
             user_profile.user = user
-
-            token = give_token(user_profile)
 
             user_profile.save()
         else:

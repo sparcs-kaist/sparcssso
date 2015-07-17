@@ -18,14 +18,14 @@ from django.conf.urls import include, url, \
 from django.contrib import admin
 from django.shortcuts import render
 from django.views.generic import RedirectView
-from apps.oauth.views import ApiEndpoint
+from apps.oauth.views import GetUserInform
 
 urlpatterns = [
     url(r'^$', RedirectView.as_view(url='/account/profile/')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     url(r'^account/', include('apps.account.urls')),
-    url(r'^api/hello', ApiEndpoint.as_view()),
+    url(r'^api/hello', GetUserInform.as_view()),
 ]
 
 handler400 = lambda request: render(request, 'error/400.html')

@@ -1,7 +1,7 @@
 from django.conf.urls import url
 
 urlpatterns = [
-    url(r'^$', 'apps.account.views.main'),
+    url(r'^$', 'apps.account.views.profile'),
 
     # login section
     url(r'^login/$', 'apps.account.views.login_email'),

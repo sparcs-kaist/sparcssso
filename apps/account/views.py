@@ -184,9 +184,7 @@ def signup_backend(post):
 
 # Main screen
 def main(request):
-    if request.user.is_authenticated():
-        return redirect('/account/profile/')
-    return redirect('/account/login/')
+    return render(request, 'main.html')
 
 
 # Email Login

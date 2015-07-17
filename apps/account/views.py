@@ -1,3 +1,4 @@
+#-*- coding: utf-8 -*-
 from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth.models import User
@@ -394,8 +395,8 @@ def signup_social(request, userid, type):
 
 @login_required
 def disconnect(request, type):
-    # if request.method != 'POST':
-    #    return SuspiciousOperation('Only post permitted')
+    if request.method != 'POST':
+        return SuspiciousOperation('Only post permitted')
     
     profile = request.user.user_profile
     if type == 'FB':
@@ -423,6 +424,8 @@ def profile(request):
     userprofile = UserProfile.objects.get(user=user)
 
     msg = ''
+    conn_msg = ''
+    conn_msg_mode = 'success'
     if request.method == "POST":
         user_f = UserForm(request.POST)
         user_profile_f = UserProfileForm(request.POST, instance=userprofile)
@@ -434,9 +437,20 @@ def profile(request):
 
             userprofile = user_profile_f.save()
             msg = 'Your profile was successfully modified!'
+    elif request.method == "GET":
+        con = request.GET.get('con', '')
+        if con == '0':
+            conn_msg = '성공적으로 연동되었습니다!!'
+        elif con == '5':
+            conn_msg = '연동 해제되었습니다.'
+        elif con == '1':
+            conn_msg = '이미 해당 Social 계정을 연동하셨습니다.'; conn_msg_mode = 'danger'
+        elif con == '2':
+            conn_msg = '다른 사람이 연동한 계정입니다.'; conn_msg_mode = 'danger'
 
     return render(request, 'account/profile.html',
-                  {'user': user, 'userprofile': userprofile, 'msg': msg})
+            {'user': user, 'userprofile': userprofile, 'msg': msg,
+             'conn_msg': conn_msg, 'conn_msg_mode': conn_msg_mode})
 
 
 # Password change

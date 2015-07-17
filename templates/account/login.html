@@ -8,22 +8,22 @@
 {% block content %}
 <h1>SPARCS SSO Login</h1>
 <p>SPARCS 통합 인증에 오신 것을 환영합니다.</p>
-<p>KAIST Portal, Facebook, Twitter을 사용하거나 회원가입하여 로그인할 수 있습니다.</p>
-<form class="form-horizontal" action="/account/login/" method="post" style="margin-top:20px;">
+<form class="form-horizontal" action="/account/login/" method="post">
 	<fieldset>
-        {% if msg %}
-        <div class="form-group">
-            <div class="col-xs-12">
-                <div class="alert alert-danger">
-                    {{ msg }}
-                </div>
-            </div>
-        </div>
-        {% endif %}
-		{% csrf_token %}
+       {% csrf_token %}
 		<input type="hidden" name="next" value="{{ next }}">
 		<div class="row">
-			<div class="col-xs-7">
+			<div class="col-xs-offset-1 col-xs-5">
+				<h4>Email으로 로그인 / 회원가입</h4>
+				{% if msg %}
+        		<div class="form-group">
+            		<div class="col-xs-12">
+                		<div class="alert alert-danger">
+                    	{{ msg }}
+                		</div>
+            		</div>
+        		</div>
+        		{% endif %}
         		<div class="form-group">
             		<div class="col-xs-12">
                 		<input type="email" class="form-control" name="email" placeholder="Email" required="required">
@@ -42,10 +42,11 @@
 				</div>
 			</div>
 			<div class="col-xs-5">
+				<h4>Social 계정으로 로그인 / 회원가입</h4>
 				<p>
-				<a class="login-icon" href="/account/login/fb/"><img src="{% static "img/fb.png" %}" alt="Facebook Login"></a> &nbsp;
-					<a class="login-icon" href="/account/login/tw/"><img src="{% static "img/tw.png" %}" alt="Twitter Login"></a> &nbsp;
-					<a class="login-icon" href="/account/login/kaist/"><img src="{% static "img/kaist.png" %}" alt="KAIST SSO Login"></a> &nbsp;
+				<a class="social-icon" href="/account/login/fb/"><img src="{% static "img/fb.png" %}" alt="Facebook Login"></a> &nbsp; &nbsp; &nbsp;
+					<a class="social-icon" href="/account/login/tw/"><img src="{% static "img/tw.png" %}" alt="Twitter Login"></a> &nbsp; &nbsp; &nbsp;
+					<a class="social-icon" href="/account/login/kaist/"><img src="{% static "img/kaist.png" %}" alt="KAIST SSO Login"></a>
 				</p>
 			</div>
 		</div>

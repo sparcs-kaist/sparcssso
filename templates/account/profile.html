@@ -1,16 +1,18 @@
 {% extends "account/base.html" %}
-
+{% load staticfiles %}
 {% block htitle %}SPARCS SSO Profile{% endblock %}
 
 {% block header %}{% endblock %}
 
 {% block content %}
 <h1>SPARCS SSO Profile</h1>
+<p>회원 정보를 수정하거나 Social 계정을 연동 / 연동 해제할 수 있습니다.</p>
+<p>회원 정보가 변경되어도 다른 SPARCS 서비스에 즉시 반영되지 않을 수 있습니다.</p>
 <form id="profile" class="form-horizontal" action="/account/profile/" method="post" enctype="multipart/form-data">
 	<fieldset>
 		{% if msg %}
 		<div class="form-group">
-			<div class="col-sm-12">
+			<div class="col-xs-12">
 				<div class="alert alert-success">
 				{{ msg }}
 				</div>
@@ -19,42 +21,106 @@
 		{% endif %}
         {% csrf_token %}
         <div class="form-group">
-			<label class="col-sm-3 control-label">Email <span class="required"></span></label>
-			<div class="col-sm-9">
+			<label class="col-xs-2 control-label">Email <span class="required"></span></label>
+			<div class="col-xs-8">
 				<input type="email" class="form-control" name="email" value="{{user.email}}" disabled>
             </div>
         </div>
 		<input type="hidden" name="password" value="qwerty1234">
 		<div class="form-group">
-			<label class="col-sm-3 control-label">Name <span class="required"></span></label>
-			<div class="form-group col-sm-6">
+			<label class="col-xs-2 control-label">Name <span class="required"></span></label>
+			<div class="form-group col-xs-5">
 				<input type="text" class="form-control" name="first_name" placeholder="First Name" required="required" maxlength="30" value="{{user.first_name}}">
 			</div>
-			<div class="form-group col-sm-3">
+			<div class="form-group col-xs-3">
 				<input type="text" class="form-control" name="last_name" placeholder="Last Name" required="required" maxlength="30" value="{{user.last_name}}">
 			</div>
 		</div>
 		<div class="form-group">
-			<label class="col-sm-3 control-label">Gender, Birthday</label>
-			<div class="form-group col-sm-3">
+			<label class="col-xs-2 control-label">Gender, Birthday</label>
+			<div class="form-group col-xs-3">
 				<select class="form-control" name="gender">
 					<option value="E">etc</option>
 					<option value="M">Male</option>
 					<option value="F">Female</option>
 				</select>
 			</div>
-			<div class="form-group col-sm-6">
+			<div class="form-group col-xs-5">
 				<input type="text" class="form-control" name="birthday" placeholder="Birthday (YYYY-MM-DD)" data-vbirth="vbirth" value="{{userprofile.birthday|date:'Y-m-d'}}">
 			</div>
 		</div>
         <div class="form-group">
-            <div class="col-sm-12">
+            <div class="col-xs-12">
                 <button type="submit" class="btn btn-primary">Modify</button>
 				<a class="btn btn-warning" href="javascript:window.history.go(-1)">Go Back</a>
             </div>
-        </div>
+		</div>
     </fieldset>
 </form>
+
+<h3>Social Accounts</h3>
+{% if userprofile.kaist_id == '' %}
+<p class="text-info">KAIST 재학생 인증을 받으려면 KAIST SSO을 연동하시기 바랍니다.</p>
+{% elif userprofile.kaist_id != '' %}
+<p class="text-danger">KAIST SSO연동을 해제할 경우 재학생 인증이 필요한 서비스에 접근할 수 없게 됩니다.</p>
+{% endif %}
+{% if conn_msg %}
+<div class="col-xs-offset-3 col-xs-6" style="padding-bottom:15px">
+	<div class="alert alert-{{conn_msg_mode}}">
+		{{conn_msg}}
+	</div>
+</div>
+{% endif %}
+<div class="row">
+	<div class="col-xs-offset-2 col-xs-3 social-panel">
+		<div class="social-icon">
+			<img class="{% if userprofile.facebook_id == '' %}disabled{% endif %}" src="{% static "img/fb.png" %}" alt="Facebook">
+		</div>
+		{% if userprofile.facebook_id == ''%}
+		<form class="social-form" action="/account/connect/fb/" method="post">
+			{% csrf_token %}
+			<button type="submit" class="btn btn-primary">Connect</button>
+		</form>
+		{% else %}
+		<form class="social-form" action="/account/disconnect/fb/" method="post">
+			{% csrf_token %}
+			<button type="submit" class="btn btn-danger">Disconnect</button>
+		</form>
+		{% endif %}
+	</div>
+	<div class="col-xs-2 social-panel">
+		<div class="social-icon">
+			<img class="{% if userprofile.twitter_id == '' %}disabled{% endif %}" src="{% static "img/tw.png" %}" alt="Twitter">
+		</div>
+		{% if userprofile.twitter_id == ''%}
+		<form class="social-form" action="/account/connect/tw/" method="post">
+			{% csrf_token %}
+			<button type="submit" class="btn btn-primary">Connect</button>
+		</form>
+		{% else %}
+		<form class="social-form" action="/account/disconnect/tw/" method="post">
+			{% csrf_token %}
+			<button type="submit" class="btn btn-danger">Disconnect</button>
+		</form>
+		{% endif %}
+	</div>
+	<div class="col-xs-3 social-panel">
+		<div class="social-icon">
+			<img class="{% if userprofile.kaist_id == '' %}disabled{% endif %}" src="{% static "img/kaist.png" %}" alt="KAIST">
+		</div>
+		{% if userprofile.kaist_id == ''%}
+		<form class="social-form" action="/account/connect/kaist/" method="post">
+			{% csrf_token %}
+			<button type="submit" class="btn btn-primary">Connect</button>
+		</form>
+		{% else %}
+		<form class="social-form" action="/account/disconnect/kaist/" method="post">
+			{% csrf_token %}
+			<button type="submit" class="btn btn-danger">Disconnect</button>
+		</form>
+		{% endif %}
+	</div>
+</div>
 
 <script type="text/javascript">
 $(function() {

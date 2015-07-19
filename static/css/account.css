@@ -3,7 +3,7 @@ body {
 }
 
 .container {
-    width:860px;
+    width:970px;
     text-align:center;
 }
 
@@ -15,6 +15,17 @@ body {
 p {
     font-size:16px;
     margin-bottom:5px;
+}
+
+form {
+    margin-top:20px;
+}
+
+
+.form-horizontal .control-label {
+    padding-top:7px;
+    margin-bottom:0;
+    text-align:right;
 }
 
 .help-block {
@@ -48,4 +59,14 @@ img.profile {
     height:200px;
     width:auto;
     float:left;
+}
+
+.social-icon > img {
+    width:83px;
+    height:83px;
+}
+
+.social-icon > img.disabled {
+    filter:grayscale(100%);
+    -webkit-filter:grayscale(100%);
 }

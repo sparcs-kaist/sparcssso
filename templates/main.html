@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% block gheader %}
+<link rel="stylesheet" type="text/css" href="{% static "css/account.css" %}">
+
+{% block header %}{% endblock %}
+{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+	<h1>SPARCS SSO</h1>
+	<p>SPARCS 통합 인증에 오신 것을 환영합니다! 현재 다음의 서비스를 SPARCS 통합 인증으로 사용할 수 있습니다.</p>
+</div>
+{% endblock %}
+

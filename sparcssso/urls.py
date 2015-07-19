@@ -20,7 +20,7 @@ from django.shortcuts import render
 from django.views.generic import RedirectView
 
 urlpatterns = [
-    url(r'^$', RedirectView.as_view(url='/account/profile/')),
+    url(r'^$', 'apps.account.views.main'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^account/', include('apps.account.urls')),
 ]

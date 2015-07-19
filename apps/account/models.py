@@ -17,6 +17,11 @@ class EmailAuthToken(models.Model):
     expire_time = models.DateTimeField()
 
 
+class ResetPWToken(models.Model):
+    token = models.CharField(max_length=48, primary_key=True)
+    expire_time = models.DateTimeField()
+
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, related_name='user_profile')
     gender = models.CharField(max_length=1, choices=GENDER, default=ETC)
@@ -24,6 +29,8 @@ class UserProfile(models.Model):
     email_authed = models.BooleanField(default=False)
     email_auth_token = models.OneToOneField(EmailAuthToken,
                                             related_name='user_profile')
+    reset_pw_token = models.OneToOneField(ResetPWToken,
+                                           related_name='user_profile')
     facebook_id = models.CharField(max_length=50, blank=True, null=True)
     twitter_id = models.CharField(max_length=50, blank=True, null=True)
     kaist_id = models.CharField(max_length=50, blank=True, null=True)

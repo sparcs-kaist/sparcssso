@@ -25,7 +25,7 @@
 			<div class="collapse navbar-collapse" id="navbar">
 				<ul class="nav navbar-nav">
 					{% if user.is_authenticated %}
-					<li><a href="/status/">Status</a></li>
+                    <li><a href="/status/">Status</a></li>
 					{% endif %}
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
@@ -40,7 +40,8 @@
 					<li><a href="/account/logout/">Logout</a></li>
 					{% else %}
 					<li><a href="/account/signup/">Sign Up</a></li>
-					<li><a href="/account/login/">Login</a></li>
+                    <li><a href="/account/login/">Login</a></li>
+                    <li><a href="/account/change-pw/">Reset Password</a></li>
 					{% endif %}
 				</ul>
 			</div>

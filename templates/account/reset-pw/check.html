@@ -1,0 +1,28 @@
+{% extends "account/base.html" %}
+
+{% load staticfiles %}
+{% block htitle %}SPARCS SSO Login{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+<h1>SPARCS SSO Reset Password</h1>
+<p>비밀번호를 재설정하려면 가입할 때 사용한 이메일을 입력해주세요.</p>
+<form class="form-horizontal" action="/account/reset-pw/reset.html" method="post">
+	<fieldset>
+		{% csrf_token %}
+		<div class="row">
+			<div class="col-xs-9">
+                <input type="email" class="form-control" name="email" placeholder="Email" required="required">
+			</div>
+		</div>
+        <div class="form-group">
+            <div class="col-xs-12">
+                <button type="submit" class="btn btn-primary">Send E-mail</button>
+                <a class="btn btn-warning" href="/account/login/">Login Page</a>
+            </div>
+        </div>
+    </fieldset>
+</form>
+{% endblock %}
+

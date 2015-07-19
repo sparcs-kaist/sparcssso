@@ -7,7 +7,8 @@ from django.core.exceptions import SuspiciousOperation
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404
-from apps.account.models import UserProfile, SocialSignupInfo, EmailAuthToken
+from apps.account.models import UserProfile, SocialSignupInfo,\
+                                EmailAuthToken, ResetPWToken
 from apps.account.forms import UserForm, UserProfileForm
 import cgi
 import json
@@ -34,17 +35,23 @@ def make_username():
             return username
 
 
-def make_token():
+def make_auth_token():
     while True:
         token = os.urandom(24).encode('hex')
         if len(EmailAuthToken.objects.filter(token=token)) == 0:
             return token
 
-def give_token(user):
+def make_resetpw_token():
+    while True:
+        token = os.urandom(24).encode('hex')
+        if len(ResetPWToken.objects.filter(token=token)) == 0:
+            return token
+
+def give_auth_token(user):
     user_profile = user.user_profile
     tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)
 
-    token = make_token()
+    token = make_auth_token()
     email_auth_token = EmailAuthToken(token=token,
                                       expire_time=tomorrow)
     email_auth_token.user_profile = user_profile
@@ -52,11 +59,24 @@ def give_token(user):
 
     send_mail('[SPARCS SSO] E-mail Authorization',
               'To get auth, please enter http://bit.sparcs.org'+
-              ':23232/account/email-auth/'+token+' until tomrrow.',
+              ':23232/account/email-auth/'+token+' until tomorrow this time.',
               'sparcssso@sparcs.org', [user.email])
 
-    return token
 
+def give_resetpw_token(user):
+    user_profile = user.user_profile
+    tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)
+
+    token = make_resetpw_token()
+    reset_pw_token = ResetPWToken(token=token,
+                                  expire_time=tomorrow)
+    reset_pw_token.user_profile = user_profile
+    reset_pw_token.save()
+
+    send_mail('[SPARCS SSO] Reset Your Password',
+              'To reset your password, please enter http://bit.sparcs.org'+
+              ':23232/account/email-auth/'+token+' until tomorrow this time.',
+              'sparcsss@sparcs.org', [user.email])
 
 
 def get_username(email):
@@ -106,24 +126,55 @@ def authenticate_fb(request, token):
 def email_auth(request, token):
     for token_element in EmailAuthToken.objects.filter(token=token):
         if token_element.expire_time.replace(tzinfo=None) >\
-           datetime.datetime.now().replace(tzinfo=None) and\
-           token_element.user_profile.email_authed == False:
+           datetime.datetime.now().replace(tzinfo=None):
             token_element.user_profile.email_authed = True
             token_element.user_profile.save()
-            return redirect('/account/email-auth/success/')
-    return redirect('/account/email-auth/fail/')
+            token_element.delete()
+            return render(request, '/account/email-auth/success.html')
+    return render(request, '/account/email-auth/fail.html')
+
+
+def reset_pw_check(request):
+    if request.method == 'POST':
+        email = request.POST.get('email', '')
+        if (email != ''):
+            user = User.objects.get(email=email)
+            if (user is not None):
+                give_resetpw_token(user)
+                return render(request, 'account/reset-pw/sent.html')
+            else:
+                return render(request, 'account/reset-pw/check.html',
+                              {'msg': 'Cannot find user with such e-mail.'})
+    return render(request, 'account/reset-pw/check.html')
+
+
+def reset_pw(request, token):
+    for token_element in ResetPWToken.objects.filter(token=token):
+        if token_element.expire_time.repalce(tzinfo=None) >\
+           datetime.datetime.now().replace(tzinfo=None):
+            if request.method == 'POST':
+                new_pw = request.POST.get('new_pw', '')
+                if (new_pw != ''):
+                    token_element.user_profile.user.set_password(new_pw)
+                    token_element.delete()
+                    return render(request, 'account/reset-pw/success.html')
+            else:
+                return render(request, 'account/reset-pw/reset.html')
+    return render(request, 'account/reset-pw/fail.html')
 
 
 def email_reauth_sent(request):
     if request.method == 'POST':
         nexturl = request.POST.get('next', '/')
         username = request.POST.get('username', 'none')
+    else:
+        return render(request, 'account/login.html')
     user = User.objects.get(username=username)
-    give_token(user)
+    give_auth_token(user)
+    user.user_profile.save()
     return render(request, 'account/login.html',
                   {'next': nexturl, 'msg': 'Auth E-mail was sent. \
                                             Please check your e-mail.'})
-
 
 
 def signup_backend(post):
@@ -143,12 +194,15 @@ def signup_backend(post):
                                         last_name=last_name,
                                         email=email, password=password)
 
-        give_token(user)
-
         user.save()
 
         user_profile = user_profile_f.save(commit=False)
         user_profile.user = user
+
+        give_auth_token(user)
+        user_profile.reset_pw_token = None
+
+        user_profile.save()
 
         return user
     else:

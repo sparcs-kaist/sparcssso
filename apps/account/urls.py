@@ -24,8 +24,10 @@ urlpatterns = [
     url(r'^email-check/$', 'apps.account.views.email_check'),
 
     url(r'^email-auth/([\w \[\]\.]{40,})/$', 'apps.account.views.email_auth'),
-
     url(r'^email-reauth/$', 'apps.account.views.email_reauth_sent'),
+
+    url(r'^reset-pw/$', 'apps.account.views.reset_pw_check')
+    url(r'^reset-pw/([\w \[\]\.]{40,})/$', 'apps.account.views.reset_pw')
 
     url(r'^profile/$', 'apps.account.views.profile'),
 

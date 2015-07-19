@@ -1,20 +1,31 @@
 {% extends "account/base.html" %}
 
 {% load staticfiles %}
-{% block htitle %}SPARCS SSO Login{% endblock %}
+{% block htitle %}SPARCS SSO Password Reset{% endblock %}
 
 {% block header %}{% endblock %}
 
 {% block content %}
-<h1>SPARCS SSO Reset Password</h1>
+<h1>SPARCS SSO Password Reset</h1>
 <p>비밀번호를 재설정하려면 가입할 때 사용한 이메일을 입력해주세요.</p>
-<form class="form-horizontal" action="/account/reset-pw/reset.html" method="post">
+<form class="form-horizontal" action="/account/reset-pw/" method="post">
 	<fieldset>
 		{% csrf_token %}
-		<div class="row">
-			<div class="col-xs-9">
-                <input type="email" class="form-control" name="email" placeholder="Email" required="required">
-			</div>
+        <div class="row">
+            <div class="col-xs-offset-1">
+                {% if msg %}
+                <div class="form-group">
+                    <div class="col-xs-12">
+                        <div class="alert alert-danger">
+                            {{ msg }}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+			    <div class="col-xs-12">
+                    <input type="email" class="form-control" name="email" placeholder="Email" required="required" maxlength="30">
+			    </div>
+            </div>
 		</div>
         <div class="form-group">
             <div class="col-xs-12">

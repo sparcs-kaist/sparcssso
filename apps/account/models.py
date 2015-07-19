@@ -15,11 +15,13 @@ GENDER = (
 class EmailAuthToken(models.Model):
     token = models.CharField(max_length=48, primary_key=True)
     expire_time = models.DateTimeField()
+    already_used = models.BooleanField(default=False)
 
 
 class ResetPWToken(models.Model):
     token = models.CharField(max_length=48, primary_key=True)
     expire_time = models.DateTimeField()
+    already_used = models.BooleanField(default=False)
 
 
 class UserProfile(models.Model):

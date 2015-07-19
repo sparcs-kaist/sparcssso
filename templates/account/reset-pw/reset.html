@@ -1,13 +1,13 @@
 {% extends "account/base.html" %}
 
-{% block htitle %}SPARCS SSO Change Password{% endblock %}
+{% block htitle %}SPARCS SSO Password Reset{% endblock %}
 
 {% block header %}{% endblock %}
 
 {% block content %}
-<h1>SPARCS SSO ChangePW</h1>
-<p>비밀번호를 변경하면 다시 로그인해야 합니다.</p>
-<form id="changepw" class="form-horizontal" action="/account/reset-pw/{{" method="post">
+<h1>SPARCS SSO Password Reset</h1>
+<p>재설정할 비밀번호를 입력하세요.</p>
+<form id="changepw" class="form-horizontal" action="/account/reset-pw/{{ token }}" method="post">
 	<fieldset>
 		{% if msg %}
 		<div class="form-group">
@@ -20,12 +20,6 @@
 		{% endif %}
 		{% csrf_token %}
         <div class="form-group">
-			<label class="col-sm-3 control-label">Old Password <span class="required"></span></label>
-			<div class="form-group col-sm-9">
-				<input type="password" class="form-control" name="oldpassword" placeholder="Old password" required="required">
-			</div>
-		</div>
-		<div class="form-group">
 			<label class="col-sm-3 control-label">New Password <span class="required"></span></label>
 			<div class="form-group col-sm-9">
 				<input type="password" class="form-control" name="password" placeholder="pAss0wd!" id="password" required="required" maxlength="50" data-minlength="7">
@@ -41,8 +35,8 @@
 		</div>
 		<div class="form-group">
 			<div class="col-sm-12">
-				<button type="submit" class="btn btn-primary">Change PW</button>
-				<a class="btn btn-warning" href="javascript:window.history.go(-1)">Go Back</a>
+				<button type="submit" class="btn btn-primary">Login Page</button>
+				<a class="btn btn-warning" href="/account/login/">Go Back</a>
 			</div>
 		</div>
 	</fieldset>

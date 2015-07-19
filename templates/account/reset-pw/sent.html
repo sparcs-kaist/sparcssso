@@ -1,54 +1,12 @@
 {% extends "account/base.html" %}
 
 {% load staticfiles %}
-{% block htitle %}SPARCS SSO Login{% endblock %}
+{% block htitle %}SPARCS SSO Password Reset{% endblock %}
 
 {% block header %}{% endblock %}
 
 {% block content %}
-<h1>SPARCS SSO Login</h1>
-<p>이메일이 발송되었습니다.</p>
-<form class="form-horizontal" action="/account/login/" method="post">
-	<fieldset>
-        {% if msg %}
-        <div class="form-group">
-            <div class="col-xs-12">
-                <div class="alert alert-danger">
-                    {{ msg }}
-                </div>
-            </div>
-        </div>
-        {% endif %}
-		{% csrf_token %}
-		<input type="hidden" name="next" value="{{ next }}">
-		<div class="row">
-			<div class="col-xs-9">
-        		<div class="form-group">
-            		<div class="col-xs-offset-1 col-xs-10">
-                		<input type="email" class="form-control" name="email" placeholder="Email" required="required">
-            		</div>
-        		</div>
-        		<div class="form-group">
-            		<div class="col-xs-offset-1 col-xs-10">
-                		<input type="password" class="form-control" name="password" placeholder="Password" required="required">
-            		</div>
-				</div>
-			</div>
-			<div class="col-xs-3">
-				<p>
-					<a href="/account/login/fb/"><img src="{% static "img/fb.png" %}" alt="Facebook Login"></a>
-					<a href="/account/login/tw/"><img src="{% static "img/tw.png" %}" alt="Twitter Login"></a>
-					<a href="/account/login/kaist/"><img src="{% static "img/kaist.png" %}" alt="KAIST SSO Login"></a>
-				</p>
-			</div>
-		</div>
-        <div class="form-group">
-            <div class="col-xs-12">
-                <button type="submit" class="btn btn-primary">Login</button>
-                <a class="btn btn-warning" href="/account/signup/">Sign Up</a>
-            </div>
-        </div>
-    </fieldset>
-</form>
+<h1>SPARCS SSO Password Reset</h1>
+<p>비밀번호 재설정 메일이 발송되었습니다. 메일을 확인하시기 바랍니다.</p>
 {% endblock %}
 

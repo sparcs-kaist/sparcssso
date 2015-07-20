@@ -11,21 +11,20 @@
 <form class="form-horizontal" action="/account/reset-pw/" method="post">
 	<fieldset>
 		{% csrf_token %}
-        <div class="row">
-            <div class="col-xs-offset-1">
-                {% if msg %}
-                <div class="form-group">
-                    <div class="col-xs-12">
-                        <div class="alert alert-danger">
-                            {{ msg }}
-                        </div>
-                    </div>
+		{% if msg %}
+        <div class="form-group">
+        	<div class="col-xs-offset-2 col-xs-8">
+            	<div class="alert alert-danger">
+                	{{ msg }}
                 </div>
-                {% endif %}
-			    <div class="col-xs-12">
-                    <input type="email" class="form-control" name="email" placeholder="Email" required="required" maxlength="30">
-			    </div>
-            </div>
+           	</div>
+        </div>
+        {% endif %}
+
+		<div class="form-group">
+			<div class="col-xs-offset-2 col-xs-8">
+				<input type="email" class="form-control" name="email" placeholder="Email" required="required" maxlength="30">
+			</div>
 		</div>
         <div class="form-group">
             <div class="col-xs-12">

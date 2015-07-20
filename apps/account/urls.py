@@ -38,14 +38,12 @@ urlpatterns = [
 
     # email auth section
     url(r'^email-auth/([\w \[\]\.]{40,})$', 'apps.account.views.email_auth'),
-    url(r'^email-reauth/$', 'apps.account.views.email_reauth_sent'),
-
-    url(r'^reset-pw/$', 'apps.account.views.reset_pw_check'),
-    url(r'^reset-pw/([\w \[\]\.]{40,})$', 'apps.account.views.reset_pw'),
+    url(r'^email-reauth/$', 'apps.account.views.send_auth_email'),
 
     url(r'^profile/$', 'apps.account.views.profile'),
 
     # password section
     url(r'^password/change/$', 'apps.account.views.password_change'),
-    url(r'^password/reset/$', 'apps.account.views.password_reset'),
+    url(r'^password/reset/$', 'apps.account.views.send_reset_email'),
+    utl(r'^password/reset/(?P<token>\w+)$', 'apps.account.views.password_reset'),
 ]

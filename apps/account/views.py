@@ -161,64 +161,6 @@ def authenticate_tw(request):
     raise SuspiciousOperation('Multiple users')
 
 
-def email_auth(request, token):
-    for token_element in EmailAuthToken.objects.filter(token=token):
-        if token_element.expire_time.replace(tzinfo=None) >\
-           datetime.datetime.now().replace(tzinfo=None):
-            token_element.user_profile.email_authed = True
-            token_element.user_profile.save()
-            token_element.delete()
-            return render(request, 'account/email-auth/success.html')
-    return render(request, 'account/email-auth/fail.html')
-
-
-def reset_pw_check(request):
-    if request.method == 'POST':
-        email = request.POST.get('email', '')
-        if (email != ''):
-            if len(User.objects.filter(email=email)) != 0:
-                user = User.objects.get(email=email)
-                give_resetpw_token(user)
-                user.user_profile.save()
-                return render(request, 'account/reset-pw/sent.html')
-            else:
-                return render(request, 'account/reset-pw/check.html',
-                              {'msg': 'Cannot find user with such e-mail.'})
-    return render(request, 'account/reset-pw/check.html')
-
-
-def reset_pw(request, token):
-    for token_element in ResetPWToken.objects.filter(token=token):
-        if token_element.expire_time.replace(tzinfo=None) >\
-           datetime.datetime.now().replace(tzinfo=None):
-            if request.method == 'POST':
-                new_pw = request.POST.get('password', '')
-                if (new_pw != ''):
-                    user = token_element.user_profile.user
-                    user.set_password(new_pw)
-                    user.save()
-                    token_element.delete()
-                    return render(request, 'account/reset-pw/success.html')
-            else:
-                return render(request, 'account/reset-pw/reset.html',
-                              {'token': token})
-    return render(request, 'account/reset-pw/fail.html')
-
-
-def email_reauth_sent(request):
-    if request.method == 'POST':
-        nexturl = request.POST.get('next', '/')
-        username = request.POST.get('username', 'none')
-    else:
-        return render(request, 'account/login.html')
-    user = User.objects.get(username=username)
-    give_auth_token(user)
-    user.user_profile.save()
-    return render(request, 'account/login.html',
-                  {'next': nexturl, 'msg': 'Auth E-mail was sent. \
-                                            Please check your e-mail.'})
-
-
 def signup_backend(post):
     user_f = UserForm(post)
     user_profile_f = UserProfileForm(post)
@@ -484,6 +426,49 @@ def email_check(request):
     return HttpResponse(status=400)
 
 
+# Email auth
+def email_auth(request, token):
+    for token_element in EmailAuthToken.objects.filter(token=token):
+        if token_element.expire_time.replace(tzinfo=None) >\
+           datetime.datetime.now().replace(tzinfo=None):
+            token_element.user_profile.email_authed = True
+            token_element.user_profile.save()
+            token_element.delete()
+            return render(request, 'account/email-auth/success.html')
+    return render(request, 'account/email-auth/fail.html')
+
+
+# Send account auth email
+def send_auth_email(request):
+    if request.method == 'POST':
+        nexturl = request.POST.get('next', '/')
+        username = request.POST.get('username', 'none')
+    else:
+        return render(request, 'account/login.html')
+    user = User.objects.get(username=username)
+    give_auth_token(user)
+    user.user_profile.save()
+    return render(request, 'account/login.html',
+                  {'next': nexturl, 'msg': 'Auth E-mail was sent. \
+                                            Please check your e-mail.'})
+
+
+# Send password reset email
+def send_reset_email(request):
+    if request.method == 'POST':
+        email = request.POST.get('email', '')
+        if (email != ''):
+            if len(User.objects.filter(email=email)) != 0:
+                user = User.objects.get(email=email)
+                give_resetpw_token(user)
+                user.user_profile.save()
+                return render(request, 'account/reset-pw/sent.html')
+            else:
+                return render(request, 'account/reset-pw/check.html',
+                              {'msg': 'Cannot find user with such e-mail.'})
+    return render(request, 'account/reset-pw/check.html')
+
+
 # View profile
 @login_required
 def profile(request):
@@ -541,6 +526,19 @@ def password_change(request):
 
 
 # Password reset
-@login_required
-def password_reset(request):
-    pass
+def password_reset(request, token):
+    for token_element in ResetPWToken.objects.filter(token=token):
+        if token_element.expire_time.replace(tzinfo=None) >\
+           datetime.datetime.now().replace(tzinfo=None):
+            if request.method == 'POST':
+                new_pw = request.POST.get('password', '')
+                if (new_pw != ''):
+                    user = token_element.user_profile.user
+                    user.set_password(new_pw)
+                    user.save()
+                    token_element.delete()
+                    return render(request, 'account/reset-pw/success.html')
+            else:
+                return render(request, 'account/reset-pw/reset.html',
+                              {'token': token})
+    return render(request, 'account/reset-pw/fail.html')

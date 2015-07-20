@@ -45,5 +45,5 @@ urlpatterns = [
     # password section
     url(r'^password/change/$', 'apps.account.views.password_change'),
     url(r'^password/reset/$', 'apps.account.views.send_reset_email'),
-    utl(r'^password/reset/(?P<token>\w+)$', 'apps.account.views.password_reset'),
+    url(r'^password/reset/(?P<token>\w+)$', 'apps.account.views.password_reset'),
 ]

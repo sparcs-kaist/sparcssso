@@ -54,6 +54,9 @@ def give_auth_token(user):
     user_profile = user.user_profile
     tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)
 
+    for token_element in EmailAuthToken.objects.filter(user_profile=user_profile):
+        token_element.delete()
+
     token = make_auth_token()
     email_auth_token = EmailAuthToken(token=token,
                                       expire_time=tomorrow)
@@ -64,28 +67,25 @@ def give_auth_token(user):
               ':23232/account/email-auth/'+token+' until tomorrow this time.',
               'sparcssso@sparcs.org', [user.email])
 
-    email_auth_token.already_used = False
-
     email_auth_token.save()
 
 
-def give_resetpw_token(user, usage):
+def give_resetpw_token(user):
     user_profile = user.user_profile
     tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)
+
+    for token_element in ResetPWToken.objects.filter(user_profile=user_profile):
+        token_element.delete()
 
     token = make_resetpw_token()
     reset_pw_token = ResetPWToken(token=token,
                                   expire_time=tomorrow)
     reset_pw_token.user_profile = user_profile
 
-    if (usage):
-        send_mail('[SPARCS SSO] Reset Your Password',
-                  'To reset your password, please enter http://bit.sparcs.org'+
-                  ':23232/account/reset-pw/'+token+' until tomorrow this time.',
-                  'sparcsss@sparcs.org', [user.email])
-        reset_pw_token.already_used = False
-    else:
-        reset_pw_token.already_used = True
+    send_mail('[SPARCS SSO] Reset Your Password',
+              'To reset your password, please enter http://bit.sparcs.org'+
+              ':23232/account/reset-pw/'+token+' until tomorrow this time.',
+              'sparcsss@sparcs.org', [user.email])
 
     reset_pw_token.save()
 
@@ -163,11 +163,10 @@ def authenticate_tw(request):
 def email_auth(request, token):
     for token_element in EmailAuthToken.objects.filter(token=token):
         if token_element.expire_time.replace(tzinfo=None) >\
-           datetime.datetime.now().replace(tzinfo=None) and\
-           not token_element.already_used:
+           datetime.datetime.now().replace(tzinfo=None):
             token_element.user_profile.email_authed = True
             token_element.user_profile.save()
-            token_element.already_used = True
+            token_element.delete()
             return render(request, 'account/email-auth/success.html')
     return render(request, 'account/email-auth/fail.html')
 
@@ -178,7 +177,7 @@ def reset_pw_check(request):
         if (email != ''):
             if len(User.objects.filter(email=email)) != 0:
                 user = User.objects.get(email=email)
-                give_resetpw_token(user, True)
+                give_resetpw_token(user)
                 user.user_profile.save()
                 return render(request, 'account/reset-pw/sent.html')
             else:
@@ -190,16 +189,14 @@ def reset_pw_check(request):
 def reset_pw(request, token):
     for token_element in ResetPWToken.objects.filter(token=token):
         if token_element.expire_time.replace(tzinfo=None) >\
-           datetime.datetime.now().replace(tzinfo=None) and\
-           not token_element.already_used:
+           datetime.datetime.now().replace(tzinfo=None):
             if request.method == 'POST':
                 new_pw = request.POST.get('password', '')
                 if (new_pw != ''):
                     user = token_element.user_profile.user
                     user.set_password(new_pw)
-                    token_element.already_used = True
                     user.save()
-                    token_element.save()
+                    token_element.delete()
                     return render(request, 'account/reset-pw/success.html')
             else:
                 return render(request, 'account/reset-pw/reset.html',
@@ -242,11 +239,10 @@ def signup_backend(post):
 
         user_profile = user_profile_f.save(commit=False)
         user_profile.user = user
+        user_profile.save()
 
         give_auth_token(user)
-        give_resetpw_token(user, False)
-
-        user_profile.save()
+        give_resetpw_token(user)
 
         return user
     else:

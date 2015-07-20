@@ -23,11 +23,6 @@
 			</div>
 
 			<div class="collapse navbar-collapse" id="navbar">
-				<ul class="nav navbar-nav">
-					{% if user.is_authenticated %}
-                    <li><a href="/status/">Status</a></li>
-					{% endif %}
-				</ul>
 				<ul class="nav navbar-nav navbar-right">
 					{% if user.is_authenticated %}
 					<li class="dropdown">

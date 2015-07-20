@@ -8,6 +8,7 @@ from django.core.exceptions import SuspiciousOperation
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404
+from django.views.decorators.csrf import csrf_exempt
 from apps.account.models import UserProfile, SocialSignupInfo,\
                                 EmailAuthToken, ResetPWToken
 from apps.account.forms import UserForm, UserProfileForm

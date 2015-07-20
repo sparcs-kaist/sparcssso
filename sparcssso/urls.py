@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^$', 'apps.account.views.main'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^account/', include('apps.account.urls')),
+    url(r'^oauth/', include('apps.oauth.urls')),
 ]
 
 handler400 = lambda request: render(request, 'error/400.html')

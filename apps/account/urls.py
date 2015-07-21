@@ -24,15 +24,20 @@ urlpatterns = [
         'apps.account.views.signup_social', {'type': 'KAIST'}),
 
     # connect section
-    url(r'^connect/fb/$', 'apps.account.views.fb_auth_init', {'mode': 'connect'}),
+    url(r'^connect/fb/$',
+        'apps.account.views.fb_auth_init', {'mode': 'connect'}),
     url(r'^connect/fb/callback/$', 'apps.account.views.connect_fb_callback'),
-    url(r'^connect/tw/$', 'apps.account.views.tw_auth_init', {'mode': 'connect'}),
+    url(r'^connect/tw/$',
+        'apps.account.views.tw_auth_init', {'mode': 'connect'}),
     url(r'^connect/tw/callback/$', 'apps.account.views.connect_tw_callback'),
 
     # disconnect section
-    url(r'^disconnect/fb/$', 'apps.account.views.disconnect', {'type': 'FB'}),
-    url(r'^disconnect/tw/$', 'apps.account.views.disconnect', {'type': 'TW'}),
-    url(r'^disconnect/kaist/$', 'apps.account.views.disconnect', {'type': 'KAIST'}),
+    url(r'^disconnect/fb/$',
+        'apps.account.views.disconnect', {'type': 'FB'}),
+    url(r'^disconnect/tw/$',
+        'apps.account.views.disconnect', {'type': 'TW'}),
+    url(r'^disconnect/kaist/$',
+        'apps.account.views.disconnect', {'type': 'KAIST'}),
 
     url(r'^email-check/$', 'apps.account.views.email_check'),
 
@@ -45,5 +50,6 @@ urlpatterns = [
     # password section
     url(r'^password/change/$', 'apps.account.views.password_change'),
     url(r'^password/reset/$', 'apps.account.views.send_reset_email'),
-    url(r'^password/reset/(?P<token>\w+)$', 'apps.account.views.password_reset'),
+    url(r'^password/reset/(?P<token>\w+)$',
+        'apps.account.views.password_reset'),
 ]

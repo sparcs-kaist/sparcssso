@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth.models import User
@@ -8,15 +8,13 @@ from django.core.exceptions import SuspiciousOperation
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404
-from django.views.decorators.csrf import csrf_exempt
 from apps.account.models import UserProfile, SocialSignupInfo,\
-                                EmailAuthToken, ResetPWToken
+    EmailAuthToken, ResetPWToken
 from apps.account.forms import UserForm, UserProfileForm
 import cgi
 import json
 import os
 import oauth2 as oauth
-import time
 import re
 import urllib
 import datetime
@@ -45,17 +43,20 @@ def make_auth_token():
         if len(EmailAuthToken.objects.filter(token=token)) == 0:
             return token
 
+
 def make_resetpw_token():
     while True:
         token = os.urandom(24).encode('hex')
         if len(ResetPWToken.objects.filter(token=token)) == 0:
             return token
 
+
 def give_auth_token(user):
     user_profile = user.user_profile
     tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)
 
-    for token_element in EmailAuthToken.objects.filter(user_profile=user_profile):
+    for token_element in EmailAuthToken.objects\
+            .filter(user_profile=user_profile):
         token_element.delete()
 
     token = make_auth_token()
@@ -64,7 +65,7 @@ def give_auth_token(user):
     email_auth_token.user_profile = user_profile
 
     send_mail('[SPARCS SSO] E-mail Authorization',
-              'To get auth, please enter http://bit.sparcs.org'+
+              'To get auth, please enter http://bit.sparcs.org' +
               ':23232/account/email-auth/'+token+' until tomorrow this time.',
               'sparcssso@sparcs.org', [user.email])
 
@@ -75,7 +76,8 @@ def give_resetpw_token(user):
     user_profile = user.user_profile
     tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)
 
-    for token_element in ResetPWToken.objects.filter(user_profile=user_profile):
+    for token_element in ResetPWToken.objects\
+            .filter(user_profile=user_profile):
         token_element.delete()
 
     token = make_resetpw_token()
@@ -84,7 +86,7 @@ def give_resetpw_token(user):
     reset_pw_token.user_profile = user_profile
 
     send_mail('[SPARCS SSO] Reset Your Password',
-              'To reset your password, please enter http://bit.sparcs.org'+
+              'To reset your password, please enter http://bit.sparcs.org' +
               ':23232/account/reset-pw/'+token+' until tomorrow this time.',
               'sparcsss@sparcs.org', [user.email])
 
@@ -136,7 +138,8 @@ def authenticate_fb(request, mode, token):
 
 
 # Twitter OAuth
-tw_consumer = oauth.Consumer(settings.TWITTER_APP_ID, settings.TWITTER_APP_SECRET)
+tw_consumer = oauth.Consumer(settings.TWITTER_APP_ID,
+                             settings.TWITTER_APP_SECRET)
 tw_client = oauth.Client(tw_consumer)
 tw_request_url = 'https://twitter.com/oauth/request_token'
 tw_access_url = 'https://twitter.com/oauth/access_token'
@@ -152,7 +155,8 @@ def authenticate_tw(request):
     resp, content = client.request(tw_access_url, 'POST')
     tw_profile = dict(cgi.parse_qsl(content))
 
-    user_profiles = UserProfile.objects.filter(twitter_id=tw_profile['user_id'])
+    user_profiles = UserProfile.objects\
+        .filter(twitter_id=tw_profile['user_id'])
 
     if len(user_profiles) == 1:
         return {'user': user_profiles[0].user, 'tw_profile': tw_profile}
@@ -213,7 +217,8 @@ def login_email(request):
             return render(request, 'account/login.html',
                           {'next': nexturl, 'msg': 'Invalid Account Info'})
         elif not user.user_profile.email_authed:
-            return render(request, 'account/reauth.html', {'username': username})
+            return render(request, 'account/reauth.html',
+                          {'username': username})
         else:
             auth.login(request, user)
             return redirect(nexturl)
@@ -292,14 +297,13 @@ def tw_auth_init(request, mode):
        (mode == 'connect' and not is_authed):
         return redirect('/')
 
-    resp, content = tw_client.request(tw_request_url, 'POST',
-        body='oauth_callback=' + request.build_absolute_uri(
-            '/account/' + mode + '/tw/callback/')
-    )
+    uri = '/account/' + mode + '/tw/callback/'
+    body = 'oauth_callback=' + request.build_absolute_uri(uri)
+    resp, content = tw_client.request(tw_request_url, 'POST', body)
 
     request.session['request_token'] = dict(cgi.parse_qsl(content))
-    url = '%s?oauth_token=%s' % (tw_auth_url,
-        request.session['request_token']['oauth_token'])
+    url = '%s?oauth_token=%s' % (tw_auth_url, request.session
+                                 ['request_token']['oauth_token'])
 
     return redirect(url)
 
@@ -338,7 +342,8 @@ def connect_tw_callback(request):
     if profile.twitter_id != '':
         return redirect('/account/profile/?con=1')
 
-    users = UserProfile.objects.filter(twitter_id=data['tw_profile']['user_id'])
+    users = UserProfile.objects\
+        .filter(twitter_id=data['tw_profile']['user_id'])
     if len(users) > 0:
         return redirect('/account/profile/?con=2')
 
@@ -496,13 +501,15 @@ def profile(request):
         elif con == '5':
             conn_msg = '연동 해제되었습니다.'
         elif con == '1':
-            conn_msg = '이미 해당 Social 계정을 연동하셨습니다.'; conn_msg_mode = 'danger'
+            conn_msg = '이미 해당 Social 계정을 연동하셨습니다.'
+            conn_msg_mode = 'danger'
         elif con == '2':
-            conn_msg = '다른 사람이 연동한 계정입니다.'; conn_msg_mode = 'danger'
+            conn_msg = '다른 사람이 연동한 계정입니다.'
+            conn_msg_mode = 'danger'
 
     return render(request, 'account/profile.html',
-            {'user': user, 'userprofile': userprofile, 'msg': msg,
-             'conn_msg': conn_msg, 'conn_msg_mode': conn_msg_mode})
+                  {'user': user, 'userprofile': userprofile, 'msg': msg,
+                   'conn_msg': conn_msg, 'conn_msg_mode': conn_msg_mode})
 
 
 # Password change

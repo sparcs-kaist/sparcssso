@@ -221,7 +221,14 @@ def login_email(request):
                           {'username': username})
         else:
             auth.login(request, user)
+
+            if 'callback' in request.session:
+                nexturl = request.session.pop('callback')
             return redirect(nexturl)
+
+    if 'callback' in request.GET:
+        request.session['callback'] = request.GET['callback']
+
     return render(request, 'account/login.html',
                   {'next': request.GET.get('next', '/')})
 
@@ -268,7 +275,9 @@ def login_fb_callback(request):
     else:
         data['user'].backend = 'django.contrib.auth.backends.ModelBackend'
         auth.login(request, data['user'])
-        return redirect('/')
+
+        nexturl = request.session.pop('callback', '/')
+        return redirect(nexturl)
 
 
 # Facebook connect
@@ -285,8 +294,15 @@ def connect_fb_callback(request):
     if len(users) > 0:
         return redirect('/account/profile/?con=2')
 
-    profile.facebook_id = data['fb_profile']['id']
+    userid = data['fb_profile']['id']
+    profile.facebook_id = userid
     profile.save()
+
+    signup_info = SocialSignupInfo.objects.filter(userid=userid).\
+        filter(type='FB').first()
+    if signup_info is not None:
+        signup_info.delete()
+
     return redirect('/account/profile/?con=0')
 
 
@@ -297,8 +313,8 @@ def tw_auth_init(request, mode):
        (mode == 'connect' and not is_authed):
         return redirect('/')
 
-    uri = '/account/' + mode + '/tw/callback/'
-    body = 'oauth_callback=' + request.build_absolute_uri(uri)
+    body = 'oauth_callback=' + request.build_absolute_uri(
+            '/account/' + mode + '/tw/callback/')
     resp, content = tw_client.request(tw_request_url, 'POST', body)
 
     request.session['request_token'] = dict(cgi.parse_qsl(content))
@@ -330,7 +346,9 @@ def login_tw_callback(request):
     else:
         data['user'].backend = 'django.contrib.auth.backends.ModelBackend'
         auth.login(request, data['user'])
-        return redirect('/')
+
+        nexturl = request.session.pop('callback', '/')
+        return redirect(nexturl)
 
 
 # Twitter connect
@@ -347,8 +365,15 @@ def connect_tw_callback(request):
     if len(users) > 0:
         return redirect('/account/profile/?con=2')
 
-    profile.twitter_id = data['tw_profile']['user_id']
+    userid = data['tw_profile']['user_id']
+    profile.twitter_id = userid
     profile.save()
+
+    signup_info = SocialSignupInfo.objects.filter(userid=userid).\
+        filter(type='TW').first()
+    if signup_info is not None:
+        signup_info.delete()
+
     return redirect('/account/profile/?con=0')
 
 

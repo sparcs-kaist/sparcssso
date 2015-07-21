@@ -314,7 +314,7 @@ def tw_auth_init(request, mode):
         return redirect('/')
 
     body = 'oauth_callback=' + request.build_absolute_uri(
-            '/account/' + mode + '/tw/callback/')
+        '/account/' + mode + '/tw/callback/')
     resp, content = tw_client.request(tw_request_url, 'POST', body)
 
     request.session['request_token'] = dict(cgi.parse_qsl(content))

@@ -7,7 +7,7 @@
 {% block content %}
 <h1>SPARCS SSO Password Reset</h1>
 <p>재설정할 비밀번호를 입력하세요.</p>
-<form id="changepw" class="form-horizontal" action="/account/reset-pw/{{ token }}" method="post">
+<form id="changepw" class="form-horizontal" action="/account/password/reset/{{ token }}" method="post">
 	<fieldset>
 		{% if msg %}
 		<div class="form-group">

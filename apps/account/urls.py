@@ -42,7 +42,7 @@ urlpatterns = [
     url(r'^email-check/$', 'apps.account.views.email_check'),
 
     # email auth section
-    url(r'^email-auth/([\w \[\]\.]{40,})$', 'apps.account.views.email_auth'),
+    url(r'^email-auth/(?P<token>\w+)$', 'apps.account.views.email_auth'),
     url(r'^email-reauth/$', 'apps.account.views.send_auth_email'),
 
     url(r'^profile/$', 'apps.account.views.profile'),

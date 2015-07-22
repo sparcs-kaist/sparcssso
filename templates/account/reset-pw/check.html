@@ -8,7 +8,7 @@
 {% block content %}
 <h1>SPARCS SSO Password Reset</h1>
 <p>비밀번호를 재설정하려면 가입할 때 사용한 이메일을 입력해주세요.</p>
-<form class="form-horizontal" action="/account/reset-pw/" method="post">
+<form class="form-horizontal" action="/account/password/reset/" method="post">
 	<fieldset>
 		{% csrf_token %}
 		{% if msg %}

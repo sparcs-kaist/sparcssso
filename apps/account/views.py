@@ -87,8 +87,8 @@ def give_resetpw_token(user):
 
     send_mail('[SPARCS SSO] Reset Your Password',
               'To reset your password, please enter http://bit.sparcs.org' +
-              ':23232/account/reset-pw/'+token+' until tomorrow this time.',
-              'sparcsss@sparcs.org', [user.email])
+              ':23232/account/password/reset/'+token+' until tomorrow' +
+              'this time.', 'sparcsss@sparcs.org', [user.email])
 
     reset_pw_token.save()
 

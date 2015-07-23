@@ -34,8 +34,15 @@ def info(request):
         raise Http404()
 
     user = token.user
+    profile = user.user_profile
     token.delete()
 
     resp = {}
     resp['username'] = user.username
+    resp['email'] = user.email
+    resp['first_name'] = user.first_name
+    resp['last_name'] = user.last_name
+    resp['gender'] = profile.gender
+    resp['birthday'] = profile.birthday
+
     return HttpResponse(json.dumps(resp), content_type='application/json')

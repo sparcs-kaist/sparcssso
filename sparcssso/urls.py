@@ -17,7 +17,6 @@ from django.conf.urls import include, url, \
     handler400, handler403, handler404, handler500
 from django.contrib import admin
 from django.shortcuts import render
-from django.views.generic import RedirectView
 
 urlpatterns = [
     url(r'^$', 'apps.account.views.main'),

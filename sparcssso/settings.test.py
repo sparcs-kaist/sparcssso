@@ -15,17 +15,17 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-with open(os.path.join(BASE_DIR, 'keys/django_secret')) as f:
-    SECRET_KEY = f.read().strip()
+SECRET_KEY = 'vl2ck^y=8%m-_@aj9!(#32ki=2ska@%k)$2d@f7pu!+d6hc)uf'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['sso.sparcs.org']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -79,24 +79,20 @@ LOGIN_URL = '/account/login/'
 LOGOUT_URL = '/account/logout/'
 
 
-# Facebook, Twitter API Key
+# Facebook settings
 
-with open(os.path.join(BASE_DIR, 'keys/fb_app_id')) as f:
-    FACEBOOK_APP_ID = f.read().strip()
+FACEBOOK_APP_ID = "393161244216747"
 
-with open(os.path.join(BASE_DIR, 'keys/fb_app_secret')) as f:
-    FACEBOOK_APP_SECRET = f.read().strip()
+FACEBOOK_APP_SECRET = "f3139ff47ab5b1adc4036c995a75628e"
 
-with open(os.path.join(BASE_DIR, 'keys/tw_app_id')) as f:
-    TWITTER_APP_ID = f.read().strip()
+TWITTER_APP_ID = "EBtl0VrzFjwYjc6R83zw7I1d9"
 
-with open(os.path.join(BASE_DIR, 'keys/tw_app_secret')) as f:
-    TWITTER_APP_SECRET = f.read().strip()
+TWITTER_APP_SECRET = "0bkHJrTdAZvUPaaQ6KAmPm7KwGFgm4lz6hqi6PvDaVl9cLLP02"
 
 
 # E-mail settings
 EMAIL_HOST = 'localhost'
-
+EMAIL_PORT = 1025
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
@@ -104,16 +100,11 @@ EMAIL_HOST = 'localhost'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'sso',
-        'USER': 'sso',
-        'PASSWORD': 'DUMMY',
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'OPTIONS': {
+            'read_default_file': os.path.join(BASE_DIR, 'mysql.cnf'),
+        },
     }
 }
-
-with open(os.path.join(BASE_DIR, 'keys/db_pw')) as f:
-    DATABASES['default']['PASSWORD'] = f.read().strip()
 
 
 # Internationalization

@@ -62,3 +62,6 @@ db.*
 
 # VIM Swap Files
 *.sw[op]
+
+# PAsswords / Secret Keys
+keys/

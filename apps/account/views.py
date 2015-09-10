@@ -65,9 +65,9 @@ def give_auth_token(user):
     email_auth_token.user_profile = user_profile
 
     send_mail('[SPARCS SSO] E-mail Authorization',
-              'To get auth, please enter http://bit.sparcs.org' +
-              ':23232/account/email-auth/'+token+' until tomorrow this time.',
-              'sparcssso@sparcs.org', [user.email])
+              'To get auth, please enter http://sso.sparcs.org' +
+              '/account/email-auth/'+token+' until tomorrow this time.',
+              'noreply@sso.sparcs.org', [user.email])
 
     email_auth_token.save()
 
@@ -86,9 +86,9 @@ def give_resetpw_token(user):
     reset_pw_token.user_profile = user_profile
 
     send_mail('[SPARCS SSO] Reset Your Password',
-              'To reset your password, please enter http://bit.sparcs.org' +
-              ':23232/account/password/reset/'+token+' until tomorrow' +
-              'this time.', 'sparcsss@sparcs.org', [user.email])
+              'To reset your password, please enter http://sso.sparcs.org' +
+              '/account/password/reset/'+token+' until tomorrow' +
+              'this time.', 'noreply@sso.sparcs.org', [user.email])
 
     reset_pw_token.save()
 
@@ -189,7 +189,6 @@ def signup_backend(post):
         user_profile.save()
 
         give_auth_token(user)
-        give_resetpw_token(user)
 
         return user
     else:

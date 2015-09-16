@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% block gheader %}
+<link rel="stylesheet" type="text/css" href="{% static "css/account.css" %}">
+
+{% block header %}{% endblock %}
+{% endblock %}
+
+{% block content %}
+<h1 style="margin-top:0">Credit</h1>
+<div class="credit">
+    <div class="media">
+        <div class="media-left">
+            <img class="media-object" src="/static/img/samjo.png" alt="Sam Jo">
+        </div>
+        <div class="media-body">
+            <h4 class="media-heading">조성원 (samjo) <small>: 여름방학의 절반을 바쳐 작은 서비스 하나를 소환했다!!!</small></h4>
+            <ul>
+                <li>Facebook / Twitter 연동</li>
+                <li>SPARCS 서비스와 SSO 연동</li>
+                <li>서버 설치 및 많은 삽질</li>
+            </ul>
+        </div>
+    </div>
+    <div class="media">
+        <div class="media-left">
+            <img class="media-object" src="/static/img/zazang.png" alt="">
+        </div>
+        <div class="media-body">
+            <h4 class="media-heading">허원영 (zazang) <small>: ...</small></h4>
+            <ul>
+                <li>...</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

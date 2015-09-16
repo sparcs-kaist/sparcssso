@@ -47,6 +47,10 @@ form {
     color:black;
 }
 
+.media-heading {
+    margin-bottom:10px;
+}
+
 span.required {
     color: red;
     font-size:12px;
@@ -69,4 +73,23 @@ img.profile {
 .social-icon > img.disabled {
     filter:grayscale(100%);
     -webkit-filter:grayscale(100%);
+}
+
+.credit {
+    text-align:left;
+}
+
+footer {
+    margin-top:10px;
+    padding-top:10px;
+    border-top:1px solid #e5e5e5;
+}
+
+footer .info a {
+    color:#000;
+}
+
+footer p {
+    font-size:14px;
+    margin-bottom:3px;
 }

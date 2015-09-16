@@ -1,5 +1,5 @@
 from django.contrib import admin
-from apps.oauth.models import AccessToken
+from apps.oauth.models import AccessToken, Service
 
 
 class UserFilter(admin.SimpleListFilter):
@@ -7,8 +7,9 @@ class UserFilter(admin.SimpleListFilter):
     parameter_name = 'user'
 
     def lookups(self, request, model_admin):
-        return [(u.user.id, u.user.last_name + ' ' + u.user.first_name)
-                for u in model_admin.model.objects.all()]
+        users = [u.user for u in model_admin.model.objects.all()]
+        users = list(set(users))
+        return [(u.id, u.last_name + ' ' + u.first_name) for u in users]
 
     def queryset(self, request, qs):
         if self.value():
@@ -22,4 +23,9 @@ class AccessTokenAdmin(admin.ModelAdmin):
     list_filter = (UserFilter, )
 
 
+class ServiceAdmin(admin.ModelAdmin):
+    list_display = ('name', 'url')
+
+
+admin.site.register(Service, ServiceAdmin)
 admin.site.register(AccessToken, AccessTokenAdmin)

@@ -195,9 +195,14 @@ def signup_backend(post):
         return None
 
 
-# Main screen
+# Main Page
 def main(request):
     return render(request, 'main.html')
+
+
+# Credit Page
+def credit(request):
+    return render(request, 'credit.html')
 
 
 # Email Login
@@ -232,7 +237,7 @@ def login_email(request):
                   {'next': request.GET.get('next', '/')})
 
 
-# Facebook login & connect init
+# Facebook Login & Connect Init
 def fb_auth_init(request, mode):
     is_authed = request.user.is_authenticated()
     if (mode == 'login' and is_authed) or \
@@ -249,7 +254,7 @@ def fb_auth_init(request, mode):
                     urllib.urlencode(args))
 
 
-# Facebook login callback
+# Facebook Login Callback
 def login_fb_callback(request):
     if request.user.is_authenticated():
         return redirect('/')
@@ -279,7 +284,7 @@ def login_fb_callback(request):
         return redirect(nexturl)
 
 
-# Facebook connect
+# Facebook Connect
 @login_required
 def connect_fb_callback(request):
     code = request.GET.get('code')
@@ -305,7 +310,7 @@ def connect_fb_callback(request):
     return redirect('/account/profile/?con=0')
 
 
-# Twitter login
+# Twitter Login & Connect Init
 def tw_auth_init(request, mode):
     is_authed = request.user.is_authenticated()
     if (mode == 'login' and is_authed) or \
@@ -323,7 +328,7 @@ def tw_auth_init(request, mode):
     return redirect(url)
 
 
-# Twitter login callback
+# Twitter Login Callback
 def login_tw_callback(request):
     if request.user.is_authenticated():
         return redirect('/')
@@ -350,7 +355,7 @@ def login_tw_callback(request):
         return redirect(nexturl)
 
 
-# Twitter connect
+# Twitter Connect
 @login_required
 def connect_tw_callback(request):
     data = authenticate_tw(request)
@@ -385,7 +390,7 @@ def logout(request):
     return render(request, 'account/logout.html')
 
 
-# Signup with email
+# Signup with Email
 def signup(request):
     if request.user.is_authenticated():
         return redirect('/')
@@ -400,7 +405,7 @@ def signup(request):
     return render(request, 'account/signup.html')
 
 
-# Signup with social account
+# Signup with Social Account
 def signup_social(request, userid, type):
     if request.user.is_authenticated():
         return redirect('/')
@@ -431,6 +436,7 @@ def signup_social(request, userid, type):
     return render(request, 'account/signup_social.html', {'info': signup_info})
 
 
+# Disconnect Social Account
 @login_required
 def disconnect(request, type):
     if request.method != 'POST':
@@ -448,14 +454,14 @@ def disconnect(request, type):
     return redirect('/account/profile/?con=5')
 
 
-# Email duplication check
+# Email Duplication Check
 def email_check(request):
     if validate_email(request.GET.get('email', '')):
         return HttpResponse(status=200)
     return HttpResponse(status=400)
 
 
-# Email auth
+# Email Auth
 def email_auth(request, token):
     for token_element in EmailAuthToken.objects.filter(token=token):
         if token_element.expire_time.replace(tzinfo=None) >\
@@ -467,7 +473,7 @@ def email_auth(request, token):
     return render(request, 'account/email-auth/fail.html')
 
 
-# Send account auth email
+# Send Account Auth Email
 def send_auth_email(request):
     if request.method == 'POST':
         nexturl = request.POST.get('next', '/')
@@ -482,7 +488,7 @@ def send_auth_email(request):
                                             Please check your e-mail.'})
 
 
-# Send password reset email
+# Send Password Reset Email
 def send_reset_email(request):
     if request.method == 'POST':
         email = request.POST.get('email', '')
@@ -498,7 +504,7 @@ def send_reset_email(request):
     return render(request, 'account/reset-pw/check.html')
 
 
-# View profile
+# View Profile
 @login_required
 def profile(request):
     user = request.user
@@ -536,7 +542,7 @@ def profile(request):
                    'conn_msg': conn_msg, 'conn_msg_mode': conn_msg_mode})
 
 
-# Password change
+# Password Change
 @login_required
 def password_change(request):
     user = request.user
@@ -556,7 +562,7 @@ def password_change(request):
     return render(request, 'account/changepw.html', {'user': user, 'msg': msg})
 
 
-# Password reset
+# Password Reset
 def password_reset(request, token):
     for token_element in ResetPWToken.objects.filter(token=token):
         if token_element.expire_time.replace(tzinfo=None) >\

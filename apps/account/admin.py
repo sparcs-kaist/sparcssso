@@ -21,12 +21,10 @@ class UserAdmin(admin.ModelAdmin):
 
     def get_gender(self, obj):
         return get_profile(obj).get_gender_display()
-    get_gender.admin_order_field = 'userprofile__gender'
     get_gender.short_description = 'Gender'
 
     def get_email_authed(self, obj):
         return get_profile(obj).email_authed
-    get_email_authed.admin_order_field = 'userprofile__email_authed'
     get_email_authed.short_description = 'Email Authed'
     get_email_authed.boolean = True
 

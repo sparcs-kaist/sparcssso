@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.http import HttpResponse, Http404
-from apps.oauth.models import AccessToken
+from apps.oauth.models import AccessToken, Service
 import json
 import os
 import urllib
@@ -19,12 +19,21 @@ def generate_token(user):
 
 @login_required
 def require(request):
-    uid = generate_token(request.user)
-    callback = request.GET.get('callback', '')
+    name = request.GET.get('app', '')
+    app = Service.objects.filter(name=name)
+    if not app:
+        raise Http404()
+
+    token = AccessToken.objects.filter(user=request.user)
+    if len(token) > 0:
+        uid = token[0].uid
+    else:
+        uid = generate_token(request.user)
+
     args = {
         'uid': uid,
     }
-    return redirect(callback + '?' + urllib.urlencode(args))
+    return redirect(app[0].url + '?' + urllib.urlencode(args))
 
 
 def info(request):

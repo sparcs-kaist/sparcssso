@@ -18,5 +18,4 @@ class UserProfileForm(ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = ('gender', 'birthday', 'email_authed',
-                  'facebook_id', 'twitter_id', 'kaist_id')
+        fields = ('gender', 'birthday')

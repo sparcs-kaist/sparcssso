@@ -28,8 +28,13 @@ class UserAdmin(admin.ModelAdmin):
     get_email_authed.short_description = 'Email Authed'
     get_email_authed.boolean = True
 
+    def get_is_for_test(self, obj):
+        return get_profile(obj).is_for_test
+    get_is_for_test.short_description = 'Test Account'
+    get_is_for_test.boolean = True
+
     list_display = ('email', 'username', 'get_name', 'get_gender',
-                    'get_email_authed')
+                    'get_email_authed', 'get_is_for_test')
     inlines = (UserProfileInline, )
     list_filter = ('is_staff', )
 

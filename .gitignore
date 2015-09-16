@@ -60,6 +60,14 @@ target/
 # SQLite Database File
 db.*
 
+# Test Script File
+cleardb
+envtoreal
+envtotest
+
+# Test Media File
+media/
+
 # VIM Swap Files
 *.sw[op]
 

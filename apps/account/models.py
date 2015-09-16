@@ -29,6 +29,7 @@ class UserProfile(models.Model):
     gender = models.CharField(max_length=1, choices=GENDER, default=ETC)
     birthday = models.DateTimeField(blank=True, null=True)
     email_authed = models.BooleanField(default=False)
+    is_for_test = models.BooleanField(default=False)
     facebook_id = models.CharField(max_length=50, blank=True, null=True)
     twitter_id = models.CharField(max_length=50, blank=True, null=True)
     kaist_id = models.CharField(max_length=50, blank=True, null=True)

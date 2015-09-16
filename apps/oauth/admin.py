@@ -24,7 +24,7 @@ class AccessTokenAdmin(admin.ModelAdmin):
 
 
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'url')
+    list_display = ('name', 'alias', 'url', 'callback_url')
 
 
 admin.site.register(Service, ServiceAdmin)

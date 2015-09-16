@@ -17,12 +17,21 @@ def generate_token(user):
             return uid
 
 
+def get_callback(user, app_name, url):
+    is_test = user.user_profile.is_for_test
+    app = Service.objects.filter(name=app_name)
+    if not is_test and not app:
+        raise Http404()
+    elif app:
+        return app[0].callback_url
+    return url
+
+
 @login_required
 def require(request):
-    name = request.GET.get('app', '')
-    app = Service.objects.filter(name=name)
-    if not app:
-        raise Http404()
+    app_name = request.GET.get('app', '')
+    url = request.GET.get('url', '')
+    dest = get_callback(request.user, app_name, url)
 
     token = AccessToken.objects.filter(user=request.user)
     if len(token) > 0:
@@ -30,10 +39,8 @@ def require(request):
     else:
         uid = generate_token(request.user)
 
-    args = {
-        'uid': uid,
-    }
-    return redirect(app[0].url + '?' + urllib.urlencode(args))
+    args = {'uid': uid}
+    return redirect(dest + '?' + urllib.urlencode(args))
 
 
 def info(request):
@@ -52,6 +59,6 @@ def info(request):
     resp['first_name'] = user.first_name
     resp['last_name'] = user.last_name
     resp['gender'] = profile.gender
-    resp['birthday'] = profile.birthday
+    resp['birthday'] = profile.birthday.isoformat()
 
     return HttpResponse(json.dumps(resp), content_type='application/json')

@@ -59,6 +59,9 @@ def info(request):
     resp['first_name'] = user.first_name
     resp['last_name'] = user.last_name
     resp['gender'] = profile.gender
-    resp['birthday'] = profile.birthday.isoformat()
+    if profile.birthday:
+        resp['birthday'] = profile.birthday.isoformat()
+    else:
+        resp['birthday'] = ''
 
     return HttpResponse(json.dumps(resp), content_type='application/json')

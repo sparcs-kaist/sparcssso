@@ -11,6 +11,8 @@ from django.http import HttpResponse, Http404
 from apps.account.models import UserProfile, SocialSignupInfo,\
     EmailAuthToken, ResetPWToken
 from apps.account.forms import UserForm, UserProfileForm
+from apps.oauth.models import Service
+from urlparse import urlparse, parse_qs
 import cgi
 import json
 import os
@@ -226,12 +228,14 @@ def login_email(request):
         else:
             auth.login(request, user)
 
-            if 'callback' in request.session:
-                nexturl = request.session.pop('callback')
+            if 'next' in request.session:
+                nexturl = request.session.pop('next')
             return redirect(nexturl)
 
-    if 'callback' in request.GET:
-        request.session['callback'] = request.GET['callback']
+    if 'next' in request.GET:
+        url = request.GET['next']
+        if url.startswith('/oauth/require/'):
+            request.session['next'] = url
 
     return render(request, 'account/login.html',
                   {'next': request.GET.get('next', '/')})
@@ -280,7 +284,7 @@ def login_fb_callback(request):
         data['user'].backend = 'django.contrib.auth.backends.ModelBackend'
         auth.login(request, data['user'])
 
-        nexturl = request.session.pop('callback', '/')
+        nexturl = request.session.pop('next', '/')
         return redirect(nexturl)
 
 
@@ -351,7 +355,7 @@ def login_tw_callback(request):
         data['user'].backend = 'django.contrib.auth.backends.ModelBackend'
         auth.login(request, data['user'])
 
-        nexturl = request.session.pop('callback', '/')
+        nexturl = request.session.pop('next', '/')
         return redirect(nexturl)
 
 

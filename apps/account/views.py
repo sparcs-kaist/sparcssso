@@ -12,7 +12,6 @@ from apps.account.models import UserProfile, SocialSignupInfo,\
     EmailAuthToken, ResetPWToken
 from apps.account.forms import UserForm, UserProfileForm
 from apps.oauth.models import Service
-from urlparse import urlparse, parse_qs
 import cgi
 import json
 import os
@@ -199,7 +198,8 @@ def signup_backend(post):
 
 # Main Page
 def main(request):
-    return render(request, 'main.html')
+    services = Service.objects.filter(is_public=True)
+    return render(request, 'main.html', {'services': services})
 
 
 # Credit Page

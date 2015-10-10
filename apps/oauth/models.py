@@ -9,6 +9,7 @@ class AccessToken(models.Model):
 
 class Service(models.Model):
     name = models.CharField(max_length=20, primary_key=True)
+    is_public = models.BooleanField(default=True)
     alias = models.CharField(max_length=30)
     url = models.CharField(max_length=200)
     callback_url = models.CharField(max_length=200)

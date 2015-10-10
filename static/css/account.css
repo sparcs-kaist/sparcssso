@@ -79,6 +79,35 @@ img.profile {
     text-align:left;
 }
 
+.jumbotron {
+    padding-top:10px;
+    padding-bottom:10px;
+}
+
+.jumbotron > p {
+    margin-bottom:5px;
+}
+
+.service-row {
+    margin-top:20px;
+}
+
+.service {
+    width:120px;
+    display:inline-block;
+}
+
+.service img {
+    width:100px;
+    height:100px;
+    margin-bottom:10px;
+}
+
+.service p {
+    font-weight:700;
+    font-size:20px;
+}
+
 footer {
     margin-top:10px;
     padding-top:10px;

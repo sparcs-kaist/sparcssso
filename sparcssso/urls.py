@@ -13,8 +13,10 @@ Including another URLconf
     1. Add an import:  from blog import urls as blog_urls
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
+from django.conf import settings
 from django.conf.urls import include, url, \
     handler400, handler403, handler404, handler500
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.shortcuts import render
 
@@ -26,6 +28,9 @@ urlpatterns = [
     url(r'^account/', include('apps.account.urls')),
     url(r'^oauth/', include('apps.oauth.urls')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 handler400 = lambda request: render(request, 'error/400.html')
 handler403 = lambda request: render(request, 'error/403.html')

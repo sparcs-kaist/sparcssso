@@ -8,8 +8,9 @@ from django.core.exceptions import SuspiciousOperation
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404
+from django.utils import timezone
 from apps.account.models import UserProfile, SocialSignupInfo,\
-    EmailAuthToken, ResetPWToken
+    EmailAuthToken, ResetPWToken, Notice
 from apps.account.forms import UserForm, UserProfileForm
 from apps.oauth.models import Service
 import cgi
@@ -198,8 +199,14 @@ def signup_backend(post):
 
 # Main Page
 def main(request):
+    current_time = timezone.now()
     services = Service.objects.filter(is_public=True)
-    return render(request, 'main.html', {'services': services})
+    notice = Notice.objects.filter(valid_from__lte=current_time)\
+            .filter(valid_to__gt=current_time)
+    if notice:
+        notice = notice[0]
+
+    return render(request, 'main.html', {'services': services, 'notice': notice})
 
 
 # Credit Page

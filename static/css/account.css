@@ -12,6 +12,11 @@ body {
     padding:7px 5px;
 }
 
+.alert-main {
+    margin-bottom:20px;
+    padding:15px;
+}
+
 p {
     font-size:16px;
     margin-bottom:5px;
@@ -20,7 +25,6 @@ p {
 form {
     margin-top:20px;
 }
-
 
 .form-horizontal .control-label {
     padding-top:7px;
@@ -77,6 +81,11 @@ img.profile {
 
 .credit {
     text-align:left;
+}
+
+.credit img {
+    width:100px;
+    height:100px;
 }
 
 .jumbotron {

@@ -51,3 +51,10 @@ class SocialSignupInfo(models.Model):
     first_name = models.CharField(max_length=32)
     last_name = models.CharField(max_length=64)
     gender = models.CharField(max_length=1, choices=GENDER, default=ETC)
+
+
+class Notice(models.Model):
+    valid_from = models.DateTimeField()
+    valid_to = models.DateTimeField()
+    title = models.CharField(max_length=100)
+    text = models.TextField()

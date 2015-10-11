@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
-from apps.account.models import UserProfile, SocialSignupInfo
+from apps.account.models import UserProfile, SocialSignupInfo,\
+        EmailAuthToken, ResetPWToken, Notice
 
 
 def get_profile(obj):
@@ -45,6 +46,10 @@ class SocialSignupInfoAdmin(admin.ModelAdmin):
     list_filter = ('type', )
 
 
+class NoticeAdmin(admin.ModelAdmin):
+    list_display = ('title', 'valid_from', 'valid_to', 'text')
+
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 admin.site.register(SocialSignupInfo, SocialSignupInfoAdmin)
+admin.site.register(Notice, NoticeAdmin)

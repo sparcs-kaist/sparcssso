@@ -8,6 +8,12 @@
 {% endblock %}
 
 {% block content %}
+{% if notice %}
+<div class="alert alert-main alert-warning">
+    <strong>{{ notice.title }}</strong> {% autoescape off %}{{ notice.text }}{% endautoescape %}
+</div>
+{% endif %}
+
 <div class="jumbotron">
 	<h1>SPARCS SSO</h1>
 	<p>SPARCS 서비스 통합인증에 오신 것을 환영합니다! </p>

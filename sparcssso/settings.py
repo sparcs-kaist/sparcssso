@@ -151,7 +151,7 @@ LOGGING = {
         'file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': '/data/log/dev/info.log',
+            'filename': '/data/log/sso/info.log',
         },
         'mail': {
             'level': 'ERROR',

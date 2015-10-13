@@ -25,7 +25,7 @@ with open(os.path.join(BASE_DIR, 'keys/django_secret')) as f:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['sso.sparcs.org']
+ALLOWED_HOSTS = ['sso.sparcs.org', '143'248.234.129']
 
 
 # Application definition

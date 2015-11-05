@@ -33,11 +33,11 @@ def auth_init(request, mode, type):
         args = {
             'client_id': settings.FACEBOOK_APP_ID,
             'scope': 'email',
-            'redirect_uri': request.build_absolute_uri('/account/callback/fb/'),
+            'redirect_uri': request.build_absolute_uri('/account/callback/'),
         }
         url = 'https://www.facebook.com/dialog/oauth?' + urllib.urlencode(args)
     elif type == 'TW':
-        body = 'oauth_callback=' + request.build_absolute_uri('/account/callback/tw/')
+        body = 'oauth_callback=' + request.build_absolute_uri('/account/callback/')
         resp, content = tw_client.request(tw_request_url, 'POST', body)
 
         request.session['request_token'] = dict(cgi.parse_qsl(content))
@@ -80,8 +80,8 @@ def login(request):
         if user is None or not user.is_active:
             return render(request, 'account/login.html', {'fail': True})
         elif not user.profile.email_authed:
-            request.session['info_user'] = user
-            return redirect('/auth/email/resend/')
+            request.session['info_user'] = user.id
+            return redirect('/account/auth/email/')
         else:
             request.session.pop('info_user', None)
             request.session.pop('info_signup', None)
@@ -105,11 +105,15 @@ def auth_email_resend(request):
     if request.method != 'POST':
         return render(request, 'account/reauth.html')
 
-    user = request.session.pop('info_user', None)
-    if user is None or user.profile.email_authed:
+    userid = request.session.pop('info_user', None)
+    if not userid:
         return redirect('/')
 
-    give_email_auth_token(user[0])
+    user = User.objects.get(id=userid)
+    if user.profile.email_authed:
+        return redirect('/')
+
+    give_email_auth_token(user)
     return redirect('/account/login/')
 
 
@@ -234,7 +238,7 @@ def password_reset(request, tokenid):
 
 
 # /signup/, /signup/social/
-def signup(request, is_social):
+def signup(request, is_social=False):
     if request.user.is_authenticated():
         return redirect('/')
 
@@ -252,19 +256,19 @@ def signup(request, is_social):
             raise SuspiciousOperation()
 
         if type == 'FB':
-            user.profile.facebook_id = info.userid
+            user.profile.facebook_id = info['userid']
         elif type == 'TW':
-            user.profile.twitter_id = info.userid
+            user.profile.twitter_id = info['userid']
         elif type == 'KAIST':
-            user.profile.kaist_id = info.userid
-            user.profile.kaist_info = info.kaist_info
+            user.profile.kaist_id = info['userid']
+            user.profile.kaist_info = info['kaist_info']
 
         user.profile.save()
         request.session.pop('info_signup', None)
 
         return redirect('/')
 
-    return render(request, 'account/signup.html', {'type': type, 'profile': profile})
+    return render(request, 'account/signup.html', {'type': type, 'info': info})
 
 
 # /callback/
@@ -289,14 +293,14 @@ def auth_callback(request):
     if mode == 'LOGIN':
         request.session.pop('info_user', None)
         request.session.pop('info_signup', None)
-        login_callback(request, user, profile)
+        return login_callback(request, type, user, profile)
     elif mode == 'CONN':
-        connection_callback(request, type, user, profile)
+        return connection_callback(request, type, user, profile)
     raise SuspiciousOperation()
 
 
 # from /callback/
-def login_callback(request, user, profile):
+def login_callback(request, type, user, profile):
     if user:
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         auth.login(request, user)
@@ -311,12 +315,12 @@ def login_callback(request, user, profile):
 
 # from /callback/
 def connection_callback(request, type, user, ext_profile):
-    if request.user != user:
+    if user:
         request.session['result_con'] = 2
         return redirect('/account/profile/')
 
     result_con = 1
-    profile = user.profile
+    profile = request.user.profile
     if type == 'FB' and not profile.facebook_id:
         profile.facebook_id = ext_profile['userid']
         profile.save()

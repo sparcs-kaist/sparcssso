@@ -15,6 +15,8 @@ class UserForm(ModelForm):
 class UserProfileForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(UserProfileForm, self).__init__(*args, **kwargs)
+        self.fields['gender'].required = False
+        self.fields['birthday'].required = False
 
     class Meta:
         model = UserProfile

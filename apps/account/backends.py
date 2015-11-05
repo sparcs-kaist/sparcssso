@@ -136,7 +136,7 @@ def authenticate_fb(request, code):
     args = {
         'client_id': settings.FACEBOOK_APP_ID,
         'client_secret': settings.FACEBOOK_APP_SECRET,
-        'redirect_uri': request.build_absolute_uri('/account/callback'),
+        'redirect_uri': request.build_absolute_uri('/account/callback/'),
         'code': code,
     }
 
@@ -145,15 +145,16 @@ def authenticate_fb(request, code):
     response = cgi.parse_qs(target)
     access_token = response['access_token'][-1]
 
-    fb_info = urllib.urlopen('https://graph.facebook.com/me?access_token=%s'
+    fb_info = urllib.urlopen('https://graph.facebook.com/v2.5/me?fields=email,first_name,last_name,gender,birthday&access_token=%s'
                                 % access_token)
     fb_info = json.load(fb_info)
 
     profile = {'userid': fb_info['id'],
-               'email': fb_info['email'],
-               'first_name': fb_info['first_name'],
-               'last_name': fb_info['last_name'],
-               'gender': parse_gender(fb_info['gender'])}
+               'email': fb_info.get('email'),
+               'first_name': fb_info.get('first_name'),
+               'last_name': fb_info.get('last_name'),
+               'gender': parse_gender(fb_info.get('gender')),
+               'birthday': fb_info.get('birthday')}
 
     profiles = UserProfile.objects.filter(facebook_id=profile['userid'])
     if len(profiles) == 1:

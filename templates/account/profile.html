@@ -59,9 +59,9 @@
 </form>
 
 <h3>Social Accounts</h3>
-{% if not userprofile.kaist_id %}
+{% if not profile.kaist_id %}
 <p class="text-info">KAIST 재학생 인증을 받으려면 KAIST SSO을 연동하시기 바랍니다.</p>
-{% elif userprofile.kaist_id %}
+{% elif profile.kaist_id %}
 <p class="text-danger">KAIST SSO연동을 해제할 경우 재학생 인증이 필요한 서비스에 접근할 수 없게 됩니다.</p>
 {% endif %}
 {% if conn_msg %}
@@ -71,12 +71,13 @@
 	</div>
 </div>
 {% endif %}
+{{result_con}}
 <div class="row">
 	<div class="col-xs-offset-2 col-xs-3 social-panel">
 		<div class="social-icon">
-			<img class="{% if not userprofile.facebook_id %}disabled{% endif %}" src="{% static "img/fb.png" %}" alt="Facebook">
+			<img class="{% if not profile.facebook_id %}disabled{% endif %}" src="{% static "img/fb.png" %}" alt="Facebook">
 		</div>
-		{% if not userprofile.facebook_id %}
+		{% if not profile.facebook_id %}
 		<form class="social-form" action="/account/connect/fb/" method="post">
 			{% csrf_token %}
 			<button type="submit" class="btn btn-primary">Connect</button>
@@ -90,9 +91,9 @@
 	</div>
 	<div class="col-xs-2 social-panel">
 		<div class="social-icon">
-			<img class="{% if not userprofile.twitter_id %}disabled{% endif %}" src="{% static "img/tw.png" %}" alt="Twitter">
+			<img class="{% if not profile.twitter_id %}disabled{% endif %}" src="{% static "img/tw.png" %}" alt="Twitter">
 		</div>
-		{% if not userprofile.twitter_id %}
+		{% if not profile.twitter_id %}
 		<form class="social-form" action="/account/connect/tw/" method="post">
 			{% csrf_token %}
 			<button type="submit" class="btn btn-primary">Connect</button>
@@ -106,9 +107,9 @@
 	</div>
 	<div class="col-xs-3 social-panel">
 		<div class="social-icon">
-			<img class="{% if not userprofile.kaist_id %}disabled{% endif %}" src="{% static "img/kaist.png" %}" alt="KAIST">
+			<img class="{% if not profile.kaist_id %}disabled{% endif %}" src="{% static "img/kaist.png" %}" alt="KAIST">
 		</div>
-		{% if not userprofile.kaist_id %}
+		{% if not profile.kaist_id %}
 		<form class="social-form" action="/account/connect/kaist/" method="post">
 			{% csrf_token %}
 			<button type="submit" class="btn btn-primary">Connect</button>
@@ -124,7 +125,7 @@
 
 <script type="text/javascript">
 $(function() {
-	$("select[name=gender]").val('{{userprofile.gender}}');
+	$("select[name=gender]").val('{{profile.gender}}');
 	var option = {
 		disable: true,
 		custom: {

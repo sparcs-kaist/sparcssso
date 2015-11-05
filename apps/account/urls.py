@@ -24,7 +24,7 @@ urlpatterns = [
 
     # signup section
     url(r'^signup/$', 'apps.account.views.signup'),
-    url(r'^signup/social/$', 'apps.account.views.signup_social'),
+    url(r'^signup/social/$', 'apps.account.views.signup', {'is_social': True}),
 
     # connect section
     url(r'^connect/fb/$', 'apps.account.views.auth_init', {'mode': 'CONN', 'type': 'FB'}),

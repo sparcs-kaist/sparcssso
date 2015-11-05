@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
-from apps.account.models import UserProfile, SocialSignupInfo,\
-        EmailAuthToken, ResetPWToken, Notice
+from apps.account.models import UserProfile, EmailAuthToken, ResetPWToken, Notice
 
 
 def get_profile(obj):
@@ -40,16 +39,20 @@ class UserAdmin(admin.ModelAdmin):
     list_filter = ('is_staff', )
 
 
-class SocialSignupInfoAdmin(admin.ModelAdmin):
-    list_display = ('userid', 'get_type_display', 'email', 'first_name',
-                    'last_name', 'get_gender_display')
-    list_filter = ('type', )
-
-
 class NoticeAdmin(admin.ModelAdmin):
     list_display = ('title', 'valid_from', 'valid_to', 'text')
 
+
+class EmailAuthTokenAdmin(admin.ModelAdmin):
+    list_display = ('tokenid', 'expire_time', 'user')
+
+
+class ResetPWTokenAdmin(admin.ModelAdmin):
+    list_display = ('tokenid', 'expire_time', 'user')
+
+
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
-admin.site.register(SocialSignupInfo, SocialSignupInfoAdmin)
 admin.site.register(Notice, NoticeAdmin)
+admin.site.register(EmailAuthToken, EmailAuthTokenAdmin)
+admin.site.register(ResetPWToken, ResetPWTokenAdmin)

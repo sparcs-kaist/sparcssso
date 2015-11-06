@@ -164,7 +164,7 @@ def profile(request):
 @login_required
 def disconnect(request, type):
     if request.method != 'POST':
-        return SuspiciousOperation()
+        raise SuspiciousOperation()
 
     profile = request.user.profile
     if type == 'FB':

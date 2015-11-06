@@ -132,6 +132,7 @@ def signup_backend(post):
         return None
 
 
+# Facebook auth
 def authenticate_fb(request, code):
     args = {
         'client_id': settings.FACEBOOK_APP_ID,
@@ -164,15 +165,15 @@ def authenticate_fb(request, code):
     return None, None
 
 
-# Twitter OAuth
-tw_consumer = oauth.Consumer(settings.TWITTER_APP_ID,
-                             settings.TWITTER_APP_SECRET)
+# Twitter OAuth Params
+tw_consumer = oauth.Consumer(settings.TWITTER_APP_ID, settings.TWITTER_APP_SECRET)
 tw_client = oauth.Client(tw_consumer)
 tw_request_url = 'https://twitter.com/oauth/request_token'
 tw_access_url = 'https://twitter.com/oauth/access_token'
 tw_auth_url = 'https://twitter.com/oauth/authenticate'
 
 
+# Twitter auth
 def authenticate_tw(request):
     token = oauth.Token(request.session['request_token']['oauth_token'],
                         request.session['request_token']['oauth_token_secret'])
@@ -183,9 +184,8 @@ def authenticate_tw(request):
     tw_info = dict(cgi.parse_qsl(content))
 
     profile = {'userid': tw_info['user_id'],
-               'email': '',
                'first_name': tw_info['screen_name'],
-               'last_name': '', 'gender': 'E'}
+               'gender': 'E'}
 
     profiles = UserProfile.objects.filter(twitter_id=profile['userid'])
     if len(profiles) == 1:
@@ -194,6 +194,8 @@ def authenticate_tw(request):
         return None, profile
     return None, None
 
+
+# KAIST auth
 def authenticate_kaist(request):
     # TODO
     return None, None

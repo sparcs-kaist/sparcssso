@@ -1,0 +1,22 @@
+{% extends "account/base.html" %}
+
+{% block htitle %}SPARCS SSO Email Authorization Require{% endblock %}
+
+{% block header %}{%endblock %}
+
+{% block content %}
+<h1>Email Authorization Required</h1>
+<p>You need to authorize your email to login. Please check mail account: {{email}}.</p>
+<p>If you want to resend auth mail, click the button below. We will expire previous link and send new mail.</p>
+<form class="form-horizontal" action="/account/auth/email/" method="post">
+    <fieldset>
+        {% csrf_token %}
+        <div class="form-group">
+            <div class="col-xs-12">
+                <button type="submit" class="btn btn-warning">Resend Email</button>
+                <a class="btn btn-default" href="/account/login/">Login Page</a>
+            </div>
+        </div>
+    </fieldset>
+</form>
+{% endblock %}

@@ -25,6 +25,9 @@ def auth_init(request, mode, type):
        (mode == 'CONN' and not is_authed):
         return redirect('/')
 
+    if mode == 'CONN' and request.method != 'POST':
+        raise SuspiciousOperation()
+
     request.session['info_auth'] = {'mode': mode, 'type': type}
 
     url = ''
@@ -101,36 +104,37 @@ def logout(request):
 
 # /auth/email/
 def auth_email_resend(request):
-    if request.method != 'POST':
-        return render(request, 'account/reauth.html')
-
-    userid = request.session.pop('info_user', None)
+    userid = request.session.get('info_user', None)
     if not userid:
         return redirect('/')
 
     user = User.objects.get(id=userid)
-    if user.profile.email_authed:
-        return redirect('/')
 
-    give_email_auth_token(user)
-    return redirect('/account/login/')
+    if request.method == 'POST':
+        if user.profile.email_authed:
+            return redirect('/')
 
+        give_email_auth_token(user)
+        request.session.pop('info_user', None)
+        return render(request, 'account/auth-email/sent.html', {'email': user.email})
+
+    return render(request, 'account/auth-email/send.html', {'email': user.email})
 
 # /auth/email/<tokenid>
 def auth_email(request, tokenid):
     tokens = EmailAuthToken.objects.filter(tokenid=tokenid)
     if len(tokens) == 0:
-        return render(request, 'account/email-auth/fail.html')
+        return render(request, 'account/auth-email/fail.html')
 
     token = tokens[0]
     if token.expire_time < timezone.now():
         token.delete()
-        return render(request, 'account/email-auth/fail.html')
+        return render(request, 'account/auth-email/fail.html')
 
     token.user.profile.email_authed = True
     token.user.profile.save()
     token.delete()
-    return render(request, 'account/email-auth/success.html')
+    return render(request, 'account/auth-email/success.html')
 
 
 # /profile/
@@ -140,7 +144,7 @@ def profile(request):
     profile = user.profile
 
     success = False
-    result_con = request.session.pop('result_con', 0)
+    result_con = request.session.pop('result_con', -1)
     if request.method == 'POST':
         user_f = UserForm(request.POST)
         profile_f = UserProfileForm(request.POST, instance=profile)
@@ -195,7 +199,7 @@ def password_change(request):
         else:
             fail = True
 
-    return render(request, 'account/changepw.html', {'user': user, 'fail': fail})
+    return render(request, 'account/pw-change.html', {'user': user, 'fail': fail})
 
 
 # /password/reset/
@@ -242,7 +246,7 @@ def signup(request, is_social=False):
     if is_social and 'info_signup' not in request.session:
         return redirect('/')
 
-    signup = request.session.get('info_signup', {'type': 'email', 'profile': {}})
+    signup = request.session.get('info_signup', {'type': 'EMAIL', 'profile': {'gender': 'E'}})
     type = signup['type']
     info = signup['profile']
 
@@ -263,9 +267,9 @@ def signup(request, is_social=False):
         user.profile.save()
         request.session.pop('info_signup', None)
 
-        return redirect('/')
+        return render(request, 'account/signup/complete.html', {'type': type})
 
-    return render(request, 'account/signup.html', {'type': type, 'info': info})
+    return render(request, 'account/signup/main.html', {'type': type, 'info': info})
 
 
 # /callback/
@@ -313,7 +317,7 @@ def login_callback(request, type, user, profile):
 # from /callback/
 def connection_callback(request, type, user, ext_profile):
     if user:
-        request.session['result_con'] = 2
+        request.session['result_con'] = 1
         return redirect('/account/profile/')
 
     result_con = 1

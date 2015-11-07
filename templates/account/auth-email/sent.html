@@ -1,0 +1,15 @@
+{% extends "account/base.html" %}
+
+{% block htitle %}SPARCS SSO Email Auth{% endblock %}
+
+{% block header %}{%endblock %}
+
+{% block content %}
+<h1>Email Authorization Sent</h1>
+<p>Your authorization email is sent to {{email}}. Redirecting to login page...</p>
+<script type="text/javascript">
+    setTimeout(function() {
+        window.location.href="/account/login/";
+    }, 3000);
+</script>
+{% endblock %}

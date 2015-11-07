@@ -6,9 +6,24 @@
 {% endblock %}
 
 {% block content %}
-<h1>SPARCS SSO Signup <small>with Social Account</small></h1>
-<p>회원 가입을 완료하기 위해, 아래 내용을 작성해 주세요.</p>
-<p>Email 인증을 받지 않으시면 Social 계정으로만 로그인할 수 있습니다.</p>
+<h1>Signup <small>with 
+    {% if type == 'FB' %}
+        Facebook Account
+    {% elif type == 'TW' %}
+        Twitter Account
+    {% elif type == 'KAIST' %}
+        KAIST SSO
+    {% elif type == 'EMAIL' %}
+        Email
+    {% endif %}
+</small></h1>
+{% if type == 'EMAIL' %}
+<p>Please fill up the following contents.</p>
+<p>You NEED to authenticate your email to login.</p>
+{% else %}
+<p>Please fill up the rest contents.</p>
+<p>You can OLNY sign with your social account if you DO NOT authenticate your email.</p>
+{% endif %}
 <form id="signup" class="form-horizontal" action="/account/signup/" method="post" enctype="multipart/form-data">
 	<fieldset>
         {% csrf_token %}
@@ -53,8 +68,8 @@
 		</div>
         <div class="form-group">
             <div class="col-xs-12">
-                <button type="submit" class="btn btn-primary">Submit</button>
-                <a class="btn btn-warning" href="/account/login/">Login</a>
+                <button type="submit" class="btn btn-warning">Signup!</button>
+                <a class="btn btn-default" href="/account/login/">Login</a>
             </div>
         </div>
     </fieldset>

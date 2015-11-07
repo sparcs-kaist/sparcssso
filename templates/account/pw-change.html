@@ -5,15 +5,15 @@
 {% block header %}{% endblock %}
 
 {% block content %}
-<h1>SPARCS SSO ChangePW</h1>
-<p>비밀번호를 변경하면 로그아웃되며, 다시 로그인해야 합니다.</p>
+<h1>Change Password</h1>
+<p>You need to login again if you changed your password.</p>
 <form id="changepw" class="form-horizontal" action="/account/password/change/" method="post">
 	<fieldset>
-		{% if msg %}
+		{% if fail %}
 		<div class="form-group">
 			<div class="col-xs-offset-2 col-xs-8">
 				<div class="alert alert-danger">
-				{{ msg }}
+				    <b>WRONG current password!</b>
 				</div>
 			</div>
 		</div>
@@ -41,8 +41,8 @@
 		</div>
 		<div class="form-group">
 			<div class="col-xs-12">
-				<button type="submit" class="btn btn-primary">Change PW</button>
-				<a class="btn btn-warning" href="javascript:window.history.go(-1)">Go Back</a>
+				<button type="submit" class="btn btn-warning">Change!</button>
+				<a class="btn btn-default" href="javascript:window.history.go(-1)">Go Back</a>
 			</div>
 		</div>
 	</fieldset>

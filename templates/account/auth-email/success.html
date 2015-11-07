@@ -1,13 +1,13 @@
 {% extends "account/base.html" %}
 
 {% load staticfiles %}
-{% block htitle %}SPARCS SSO E-mail Auth{% endblock %}
+{% block htitle %}SPARCS SSO Email Authenticate{% endblock %}
 
 {% block header %}{% endblock %}
 
 {% block content %}
-<h1>SPARCS SSO E-mail Auth</h1>
-<p>이메일 인증에 성공하였습니다. 잠시 후 로그인 페이지로 이동합니다.</p>
+<h1>Email Authenticate Success</h1>
+<p>Success to authenticate your email! Redirecting to login page...</p>
 <script type="text/javascript">
     setTimeout(function() {
         window.location.href="/account/login/";

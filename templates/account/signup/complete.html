@@ -1,0 +1,18 @@
+{% extends "account/base.html" %}
+
+{% block htitle %} SPARCS SSO Signup Complete{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block content %}
+<h1>Signup Complete!</h1>
+<p>Welcome to join SPARCS SSO!</p>
+{% if type == 'EMAIL' %}
+<p>Verification Email is sent. Please verify your email first, and then login.</p>
+{% else %}
+<p>You can login using your social account. If you verify your email, you can also login using email</p>
+{% endif %}
+<a class="btn btn-primary" href="/account/login/">Login Page</a>
+<a class="btn btn-default" href="/">Main Page</a>
+{% endblock %}

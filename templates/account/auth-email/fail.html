@@ -1,0 +1,13 @@
+{% extends "account/base.html" %}
+
+{% load staticfiles %}
+{% block htitle %}SPARCS SSO Email Authenticate{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+<h1>Email Authenticate Fail</h1>
+<p class="text-danger">Fail to authenticate your email, because you entered wrong or expired token id.</p>
+<a class="btn btn-primary" href="/account/login/">Login Page</a>
+<a class="btn btn-default" href="/">Main Page</a>
+{% endblock %}

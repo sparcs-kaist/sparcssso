@@ -61,8 +61,7 @@
 <h3>Social Accounts</h3>
 {% if not profile.kaist_id %}
 <p class="text-info">You should connect to KAIST SSO if you want to authorize as KAIST members.</p>
-{% elif profile.kaist_id %}
-<p class="text-danger">You will LOSE ACCESS to services that needs KAIST memeber authorization.</p>
+<p class="text-danger">You CANNOT DISCONNECT KAIST SSO after connect.</p>
 {% endif %}
 {% if result_con != -1 %}
 <div class="col-xs-offset-3 col-xs-6" style="padding-bottom:15px">
@@ -125,9 +124,8 @@
 			<button type="submit" class="btn btn-primary">Connect</button>
 		</form>
 		{% else %}
-		<form class="social-form" action="/account/disconnect/kaist/" method="post">
-			{% csrf_token %}
-			<button type="submit" class="btn btn-danger">Disconnect</button>
+		<form class="social-form" action="" method="post">
+			<button type="submit" class="btn btn-danger" disabled>Disconnect</button>
 		</form>
 		{% endif %}
 	</div>

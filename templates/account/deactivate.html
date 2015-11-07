@@ -1,0 +1,42 @@
+{% extends "account/base.html" %}
+{% load staticfiles %}
+{% block htitle %}SPARCS SSO Deactivate{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+<h1>Deactivate</h1>
+{% if ok %}
+<p>If you deactivate accout, your account will removed after 60 days.</p>
+<p class="text-danger">Login MAKES your account ACTIVE.</p>
+<p>If you understand above description, enter your password.</p>
+<form class="form" action="/account/deactivate/" method="post">
+	<fieldset>
+		{% if fail %}
+		<div class="form-group">
+			<div class="col-xs-offset-3 col-xs-6">
+				<div class="alert alert-danger">
+				    <b>WRONG current password!</b>
+				</div>
+			</div>
+		</div>
+		{% endif %}
+        {% csrf_token %}
+        <div class="form-group col-sm-offset-3 col-sm-6">
+			<input type="password" class="form-control" name="password" placeholder="Password" required="required">
+        </div>
+		<div class="form-group">
+			<div class="col-xs-12">
+				<button type="submit" class="btn btn-danger">DEACTIVATE</button>
+				<a class="btn btn-default" href="javascript:window.history.go(-1)">Go Back</a>
+			</div>
+		</div>
+	</fieldset>
+</form>
+
+{% else %}
+<p class="text-danger">You CANNOT deactivate account since you are using other SPARCS services.</p>
+<p>Go to <a href="/oauth/service/">Manage Service</a> page first, and unregister all services.</p> 
+{% endif %}
+{% endblock %}
+

@@ -46,7 +46,7 @@ def register_service(user, service):
 def unregister_service(user, service):
     m = ServiceMap.objects.filter(user=user, service=service).first()
     if not m or m.unregister_time:
-        return False
+        return 1
 
     '''data = urllib.urlencoode({'sid': m.sid, 'key': service.secret_key})
     result = urllib.urlopen(service.unregister_url, data)
@@ -59,7 +59,7 @@ def unregister_service(user, service):
 
     m.unregister_time = timezone.now()
     m.save()
-    return True
+    return 0
 
 
 # get call back url
@@ -91,15 +91,15 @@ def require(request):
     return redirect(dest + '?' + urllib.urlencode(args))
 
 
-# /profile/
+# /service/
 @login_required
-def profile(request):
+def service(request):
     user = request.user
-    m = ServiceMap.objects.filter(user=user)
+    maps = ServiceMap.objects.filter(user=user, unregister_time=None)
 
-    success = False
-    return render(request, 'oauth/profile.html',
-                  {'user': user, 'map': m})
+    result_unreg = request.session.pop('result_unreg', -1)
+    return render(request, 'oauth/service.html',
+                  {'user': user, 'maps': maps, 'result_unreg': result_unreg})
 
 
 # /unregister/
@@ -114,8 +114,8 @@ def unregister(request):
         raise Http404()
 
     result = unregister_service(request.user, service)
-    request.session['info_unregister'] = result
-    return redirect('/oauth/profile/')
+    request.session['result_unreg'] = result
+    return redirect('/oauth/service/')
 
 
 def info(request):

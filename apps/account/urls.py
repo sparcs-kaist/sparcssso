@@ -34,7 +34,9 @@ urlpatterns = [
     # disconnect section
     url(r'^disconnect/fb/$', 'apps.account.views.disconnect', {'type': 'FB'}),
     url(r'^disconnect/tw/$', 'apps.account.views.disconnect', {'type': 'TW'}),
-    url(r'^disconnect/kaist/$', 'apps.account.views.disconnect', {'type': 'KAIST'}),
+
+    # unregister section
+    url(r'^deactivate/$', 'apps.account.views.deactivate'),
 
     # callback section
     url(r'^callback/$', 'apps.account.views.auth_callback'),

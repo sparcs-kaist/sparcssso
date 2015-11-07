@@ -1,0 +1,85 @@
+{% extends "oauth/base.html" %}
+{% load staticfiles %}
+{% block htitle %}SPARCS SSO Manage Service{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+<h1>Manage Service</h1>
+<p>You can see and unregister services that you use.</p>
+<div class="row">
+    <div class="col-xs-offset-3 col-xs-6">
+        {% if result_unreg == 1 %}
+        <div class="alert alert-danger">
+            <b>Fail to unregister service. Try again</b>
+        </div>
+        {% elif result_unreg == 0 %}
+        <div class="alert alert-success">
+            <b>Success to unregister service.</b>
+        </div>
+        {% endif %}
+    </div>
+</div>
+<div class="service-row">
+    {% for m in maps %}
+    <div class="service">
+        <a href="{{m.service.url}}"><img src="{{m.service.icon.url}}" alt="{{m.service.name}}"></a>
+        <p>{{m.service.alias}}</p>
+        <p class="date">from {{m.register_time|date:'Y-m-d'}}</p>
+        <button class="btn btn-xs btn-danger unreg" data-app="{{m.service.name}}" data-alias="{{m.service.alias}}" data-cooltime="{{m.service.cooltime}}">Unregister</button>
+    </div>
+    {% empty %}
+    <p class="text-info">There are no services to show.</p>
+    {% endfor %}
+</div>
+
+<div class="modal fade" id="unregister">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"><span>&times;</span></button>
+                <h4 class="modal-title">Unregister <span class="app-alias"></span></h4>
+            </div>
+            <div class="modal-body">
+                <p><b>Warning!</b> You are trying to unregister service <span class="app-alias"></span>. You will permantly lose rights to control your previous data, and you cannot use this service again in <span class="app-cooltime"></span> days</p>
+                <p class="text-danger">If you understand all information above, copy the word: <span class="random"></span></p>
+                <input type="text" class="form-control check"></input>
+            </div>
+            <div class="modal-footer">
+                <form action="/oauth/unregister/" method="post" style="margin-top:0"> 
+                    {% csrf_token %}
+                    <input type="hidden" name="app" value=""/>
+                    <input type="submit" class="btn btn-danger" value="UNREGISTER" disabled>
+                    <button type="button" class="btn btn-default">Close</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function randomstr() {
+        var text = "";
+        var pool = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+        for(var i=0; i < 6; i++ )
+            text += pool.charAt(Math.floor(Math.random() * pool.length));
+        return text;
+    }
+    
+    var checkstr = "";
+    $(".unreg").click(function() {
+        checkstr = randomstr();
+        $("#unregister").find(".app-alias").text($(this).data("alias"));
+        $("#unregister").find(".app-cooltime").text($(this).data("cooltime"));
+        $("#unregister .random").text(checkstr);
+        $("#unregister input[name=app]").val($(this).data("app"));
+        $("#unregister").modal("show");
+    });
+
+    $(".check").keyup(function() {
+        $("#unregister input[type=submit]").prop("disabled", checkstr != $(this).val());
+    });
+</script>
+{% endblock %}
+

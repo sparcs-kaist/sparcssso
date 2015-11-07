@@ -109,12 +109,18 @@ img.profile {
 .service img {
     width:100px;
     height:100px;
-    margin-bottom:10px;
+    margin-bottom:5px;
 }
 
 .service p {
     font-weight:700;
     font-size:20px;
+}
+
+.service p.date {
+    margin-top:0;
+    font-size:12px;
+    color:gray;
 }
 
 footer {

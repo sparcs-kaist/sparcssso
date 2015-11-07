@@ -13,6 +13,9 @@ class Service(models.Model):
     cooltime = models.IntegerField()
     icon = models.ImageField()
 
+    def __unicode__(self):
+        return self.name
+
 
 class ServiceMap(models.Model):
     sid = models.CharField(max_length=20, primary_key=True)

@@ -13,7 +13,7 @@ from apps.account.backends import give_email_auth_token, give_reset_pw_token, \
         authenticate_tw, authenticate_kaist, tw_client, tw_request_url, tw_auth_url
 from apps.account.models import EmailAuthToken, ResetPWToken, Notice
 from apps.account.forms import UserForm, UserProfileForm
-from apps.oauth.models import Service
+from apps.oauth.models import Service, ServiceMap
 import cgi
 import urllib
 
@@ -162,7 +162,7 @@ def profile(request):
                    'success': success, 'result_con': result_con})
 
 
-# /disconnect/{fb,tw,kaist}/
+# /disconnect/{fb,tw}/
 @login_required
 def disconnect(request, type):
     if request.method != 'POST':
@@ -173,13 +173,28 @@ def disconnect(request, type):
         profile.facebook_id = ''
     elif type == 'TW':
         profile.twitter_id = ''
-    elif type == 'KAIST':
-        profile.kaist_id = ''
-        profile.kaist_info = ''
     profile.save()
 
     request.session['result_con'] = 5
     return redirect('/account/profile/')
+
+
+# /unregister/
+@login_required
+def deactivate(request):
+    maps = ServiceMap.objects.filter(user=request.user, unregister_time=None)
+    ok = len(maps) == 0
+    fail = False
+
+    if request.method == 'POST' and ok:
+        pw = request.POST.get('password', '')
+        if check_password(pw, request.user.password):
+            # TODO deactivate
+            return redirect('/')
+
+        fail = True
+
+    return render(request, 'account/deactivate.html', {'ok': ok, 'fail': fail})
 
 
 # /password/change/
@@ -214,6 +229,7 @@ def password_reset_email(request):
         return render(request, 'account/pw-reset/sent.html')
 
     return render(request, 'account/pw-reset/send.html')
+
 
 # /password/reset/<tokenid>
 def password_reset(request, tokenid):

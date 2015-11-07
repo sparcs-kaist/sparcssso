@@ -7,9 +7,9 @@
 {% block content %}
 <h1>Deactivate</h1>
 {% if ok %}
-<p>If you deactivate accout, your account will removed after 60 days.</p>
-<p class="text-danger">Login MAKES your account ACTIVE.</p>
-<p>If you understand above description, enter your password.</p>
+<p>Your account will be removed permanently 60 days after the deactivation</p>
+<p class="text-danger">If you login within the 60 days, your account will become ACTIVE again.</p>
+<p>If you still would like to proceed, enter your password.</p>
 <form class="form" action="/account/deactivate/" method="post">
 	<fieldset>
 		{% if fail %}
@@ -35,7 +35,7 @@
 </form>
 
 {% else %}
-<p class="text-danger">You CANNOT deactivate account since you are using other SPARCS services.</p>
+<p class="text-danger">You CANNOT deactivate your account since you are registered to at least one SPARCS service yet.</p>
 <p>Go to <a href="/oauth/service/">Manage Service</a> page first, and unregister all services.</p> 
 {% endif %}
 {% endblock %}

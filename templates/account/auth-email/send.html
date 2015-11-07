@@ -6,8 +6,9 @@
 
 {% block content %}
 <h1>Email Authorization Required</h1>
-<p>You need to authorize your email to login. Please check mail account: {{email}}.</p>
-<p>If you want to resend auth mail, click the button below. We will expire previous link and send new mail.</p>
+<p>You need to authorize your email to login. Please check your email account: {{email}}.</p>
+<p>If you want to resend the authorization email, click the button below.</p>
+<p>We will expire the previous link and send a new email.</p>
 <form class="form-horizontal" action="/account/auth/email/" method="post">
     <fieldset>
         {% csrf_token %}

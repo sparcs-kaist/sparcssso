@@ -5,7 +5,7 @@
 {% block header %}{% endblock %}
 
 {% block content %}
-<h1>Profile &amp; Social Accounts</h1>
+<h1>Profile &amp; Social Network Accounts</h1>
 <p>You can change your information or connect/disconnect social accounts.</p>
 <p>Changed information may not be applied in other SPARCS services.</p>
 <form id="profile" class="form-horizontal" action="/account/profile/" method="post" enctype="multipart/form-data">
@@ -14,7 +14,7 @@
 		<div class="form-group">
 			<div class="col-xs-12">
                <div class="alert alert-success">
-				    <b>Your infrmation has been updated.</b>
+				    <b>Your information has been updated.</b>
                 </div>
 			</div>
         </div>
@@ -60,22 +60,22 @@
 
 <h3>Social Accounts</h3>
 {% if not profile.kaist_id %}
-<p class="text-info">You should connect to KAIST SSO if you want to authorize as KAIST members.</p>
-<p class="text-danger">You CANNOT DISCONNECT KAIST SSO after connect.</p>
+<p class="text-info">You should connect to KAIST SSO if you want to verify your identity as a KAIST member.</p>
+<p class="text-danger">You CANNOT DISCONNECT KAIST SSO from SPARCS SSO once you connect.</p>
 {% endif %}
 {% if result_con != -1 %}
 <div class="col-xs-offset-3 col-xs-6" style="padding-bottom:15px">
     {% if result_con == 0 %}
     <div class="alert alert-success">
-        <b>Your social account has been connected.</b>
+        <b>Your social network account has been connected.</b>
     </div>
     {% elif result_con == 1 %}
     <div class="alert alert-danger">
-        <b>This social account is already connected by other person.</b>
+        <b>This social network account is already connected by other person.</b>
     </div>
     {% elif result_con == 5 %}
     <div class="alert alert-success">
-        <b>Your social account has been disconnected.</b>
+        <b>Your social network account has been disconnected.</b>
     </div>
     {% endif %}
 </div>

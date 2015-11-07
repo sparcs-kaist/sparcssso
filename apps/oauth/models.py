@@ -10,6 +10,7 @@ class Service(models.Model):
     callback_url = models.CharField(max_length=200)
     unregister_url = models.CharField(max_length=200)
     secret_key = models.CharField(max_length=100)
+    cooltime = models.IntegerField()
     icon = models.ImageField()
 
 
@@ -17,6 +18,8 @@ class ServiceMap(models.Model):
     sid = models.CharField(max_length=20, primary_key=True)
     user = models.ForeignKey(User)
     service = models.ForeignKey(Service)
+    register_time = models.DateTimeField()
+    unregister_time = models.DateTimeField(null=True, blank=True)
 
 
 class AccessToken(models.Model):

@@ -27,7 +27,7 @@ class ResetPWToken(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, related_name='profile')
     gender = models.CharField(max_length=1, choices=GENDER, default=ETC)
-    birthday = models.DateTimeField(blank=True, null=True)
+    birthday = models.DateField(blank=True, null=True)
     email_authed = models.BooleanField(default=False)
     is_for_test = models.BooleanField(default=False)
     facebook_id = models.CharField(max_length=50, blank=True, null=True)

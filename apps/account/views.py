@@ -16,7 +16,6 @@ from apps.account.forms import UserForm, UserProfileForm
 from apps.oauth.models import Service
 import cgi
 import urllib
-import datetime
 
 
 # /login/{fb,tw,kaist}/, /connect/{fb,tw,kaist}/
@@ -124,8 +123,7 @@ def auth_email(request, tokenid):
         return render(request, 'account/email-auth/fail.html')
 
     token = tokens[0]
-    if token.expire_time.replace(tzinfo=None) < \
-        datetime.datetime.now().replace(tzinfo=None):
+    if token.expire_time < timezone.now():
         token.delete()
         return render(request, 'account/email-auth/fail.html')
 
@@ -221,8 +219,7 @@ def password_reset(request, tokenid):
         return render(request, 'account/reset-pw/fail.html')
 
     token = tokens[0]
-    if token.expire_time.replace(tzinfo=None) < \
-        datetime.datetime.now().replace(tzinfo=None):
+    if token.expire_time < timezone.now():
         token.delete()
         return render(request, 'account/reset-pw/fail.html')
 

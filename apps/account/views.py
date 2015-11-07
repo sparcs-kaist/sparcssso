@@ -15,6 +15,7 @@ from apps.account.models import EmailAuthToken, ResetPWToken, Notice
 from apps.account.forms import UserForm, UserProfileForm
 from apps.oauth.models import Service, ServiceMap
 import cgi
+import datetime
 import urllib
 
 
@@ -56,14 +57,12 @@ def main(request):
     current_time = timezone.now()
     services = Service.objects.filter(is_public=True)
     notice = Notice.objects.filter(valid_from__lte=current_time)\
-            .filter(valid_to__gt=current_time)
-    if notice:
-        notice = notice[0]
+            .filter(valid_to__gt=current_time).first()
 
     return render(request, 'main.html', {'services': services, 'notice': notice})
 
 
-# /credit
+# /credit/
 def credit(request):
     return render(request, 'credit.html')
 
@@ -72,6 +71,10 @@ def credit(request):
 def login(request):
     if request.user.is_authenticated():
         return redirect('/')
+
+    if 'next' in request.GET:
+        request.session['next'] = request.GET['next']
+
 
     if request.method == 'POST':
         email = request.POST.get('email', 'none')
@@ -89,7 +92,13 @@ def login(request):
             request.session.pop('info_signup', None)
             auth.login(request, user)
 
-    # TODO: redirection
+            if user.profile.expire_time:
+                user.profile.expire_time = None
+                user.profile.save()
+
+            nexturl = request.session.pop('next', '/')
+            return redirect(nexturl)
+
     return render(request, 'account/login.html')
 
 
@@ -119,6 +128,7 @@ def auth_email_resend(request):
         return render(request, 'account/auth-email/sent.html', {'email': user.email})
 
     return render(request, 'account/auth-email/send.html', {'email': user.email})
+
 
 # /auth/email/<tokenid>
 def auth_email(request, tokenid):
@@ -189,8 +199,11 @@ def deactivate(request):
     if request.method == 'POST' and ok:
         pw = request.POST.get('password', '')
         if check_password(pw, request.user.password):
-            # TODO deactivate
-            return redirect('/')
+            profile = request.user.profile
+            profile.expire_time = timezone.now() + datetime.timedelta(days=60)
+            profile.save()
+
+            return redirect('/account/logout/')
 
         fail = True
 
@@ -306,8 +319,6 @@ def auth_callback(request):
         raise SuspiciousOperation()
 
     if mode == 'LOGIN':
-        request.session.pop('info_user', None)
-        request.session.pop('info_signup', None)
         return login_callback(request, type, user, profile)
     elif mode == 'CONN':
         return connection_callback(request, type, user, profile)
@@ -317,10 +328,16 @@ def auth_callback(request):
 # from /callback/
 def login_callback(request, type, user, profile):
     if user:
+        request.session.pop('info_user', None)
+        request.session.pop('info_signup', None)
+
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         auth.login(request, user)
 
-        # TODO: redirection
+        if user.profile.expire_time:
+            user.profile.expire_time = None
+            user.profile.save()
+
         nexturl = request.session.pop('next', '/')
         return redirect(nexturl)
 
@@ -355,7 +372,7 @@ def connection_callback(request, type, user, ext_profile):
     return redirect('/account/profile/')
 
 
-# /util/email/check
+# /util/email/check/
 def email_check(request):
     if validate_email(request.GET.get('email', '')):
         return HttpResponse(status=200)

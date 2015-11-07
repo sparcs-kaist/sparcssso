@@ -6,21 +6,21 @@
 {% block header %}{% endblock %}
 
 {% block content %}
-<h1>SPARCS SSO Password Reset</h1>
-<p>비밀번호를 재설정하려면 가입할 때 사용한 이메일을 입력해주세요.</p>
+<h1>Password Reset</h1>
+<p>Please input your email address to reset password.</p>
 <form class="form-horizontal" action="/account/password/reset/" method="post">
 	<fieldset>
-		{% csrf_token %}
-		{% if msg %}
+		{% if fail %}
         <div class="form-group">
         	<div class="col-xs-offset-2 col-xs-8">
             	<div class="alert alert-danger">
-                	{{ msg }}
+                    There are no account using {{email}}
                 </div>
            	</div>
         </div>
         {% endif %}
 
+		{% csrf_token %}
 		<div class="form-group">
 			<div class="col-xs-offset-2 col-xs-8">
 				<input type="email" class="form-control" name="email" placeholder="Email" required="required" maxlength="30">
@@ -28,8 +28,8 @@
 		</div>
         <div class="form-group">
             <div class="col-xs-12">
-                <button type="submit" class="btn btn-primary">Send E-mail</button>
-                <a class="btn btn-warning" href="/account/login/">Login Page</a>
+                <button type="submit" class="btn btn-warning">Send Email</button>
+                <a class="btn btn-default" href="/account/login/">Login Page</a>
             </div>
         </div>
     </fieldset>

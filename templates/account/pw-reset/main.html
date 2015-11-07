@@ -5,19 +5,10 @@
 {% block header %}{% endblock %}
 
 {% block content %}
-<h1>SPARCS SSO Password Reset</h1>
-<p>재설정할 비밀번호를 입력하세요.</p>
-<form id="changepw" class="form-horizontal" action="/account/password/reset/{{ tokenid }}" method="post">
+<h1>Password Reset</h1>
+<p>Please enter a new password.</p>
+<form id="resetpw" class="form-horizontal" action="/account/password/reset/{{ tokenid }}" method="post">
 	<fieldset>
-		{% if msg %}
-		<div class="form-group">
-			<div class="col-xs-offset-2 col-xs-8">
-				<div class="alert alert-danger">
-				{{ msg }}
-				</div>
-			</div>
-		</div>
-		{% endif %}
 		{% csrf_token %}
         <div class="form-group">
 			<label class="col-xs-2 control-label">New Password <span class="required"></span></label>
@@ -35,8 +26,8 @@
 		</div>
 		<div class="form-group">
 			<div class="col-xs-12">
-				<button type="submit" class="btn btn-primary">Reset PW</button>
-				<a class="btn btn-warning" href="/account/login/">Go Back</a>
+				<button type="submit" class="btn btn-warning">Reset!</button>
+				<a class="btn btn-default" href="/account/login/">Login Page</a>
 			</div>
 		</div>
 	</fieldset>
@@ -44,7 +35,7 @@
 <script type="text/javascript">
 $(function() {
 	var option = { disable: true };
-	$('#changepw').validator(option);
+	$('#resetpw').validator(option);
 });
 </script>
 {% endblock %}

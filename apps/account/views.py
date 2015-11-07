@@ -204,28 +204,26 @@ def password_change(request):
 
 # /password/reset/
 def password_reset_email(request):
-    if request.method != 'POST':
-        return render(request, 'account/reset-pw/check.html')
+    if request.method == 'POST':
+        email = request.POST.get('email', '')
+        user = User.objects.filter(email=email).first()
+        if not user:
+            return render(request, 'account/pw-reset/send.html', {'fail': True, 'email': email})
 
-    email = request.POST.get('email', '')
-    users = User.objects.filter(email=email)
-    if len(users) == 0:
-        return render(request, 'account/reset-pw/check.html', {'fail': True})
+        give_reset_pw_token(user)
+        return render(request, 'account/pw-reset/sent.html')
 
-    give_reset_pw_token(users[0])
-    return render(request, 'account/reset-pw/sent.html')
-
+    return render(request, 'account/pw-reset/send.html')
 
 # /password/reset/<tokenid>
 def password_reset(request, tokenid):
-    tokens = ResetPWToken.objects.filter(tokenid=tokenid)
-    if len(tokens) == 0:
-        return render(request, 'account/reset-pw/fail.html')
+    token = ResetPWToken.objects.filter(tokenid=tokenid).first()
+    if not token:
+        return render(request, 'account/pw-reset/fail.html')
 
-    token = tokens[0]
     if token.expire_time < timezone.now():
         token.delete()
-        return render(request, 'account/reset-pw/fail.html')
+        return render(request, 'account/pw-reset/fail.html')
 
     if request.method == 'POST':
         new_pw = request.POST.get('password', 'P@55w0rd!#$')
@@ -233,9 +231,9 @@ def password_reset(request, tokenid):
         user.set_password(new_pw)
         user.save()
         token.delete()
-        return render(request, 'account/reset-pw/success.html')
+        return render(request, 'account/pw-reset/success.html')
 
-    return render(request, 'account/reset-pw/reset.html', {'tokenid': tokenid})
+    return render(request, 'account/pw-reset/main.html', {'tokenid': tokenid})
 
 
 # /signup/, /signup/social/

@@ -2,15 +2,21 @@
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
+from django.utils import timezone
 from apps.account.forms import UserForm, UserProfileForm
 from apps.account.models import UserProfile, EmailAuthToken, ResetPWToken
 import cgi
 import datetime
 import json
+import logging
 import oauth2 as oauth
 import os
 import re
 import urllib
+
+
+logger = logging.getLogger('sso.account.backend')
+
 
 # {male, female, etc} -> {M, F, E}
 def parse_gender(gender):
@@ -47,7 +53,7 @@ def make_reset_pw_tokenid():
 
 # give email auth token to user
 def give_email_auth_token(user):
-    tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)
+    tomorrow = timezone.now() + datetime.timedelta(days=1)
 
     for old_token in EmailAuthToken.objects.filter(user=user):
         old_token.delete()
@@ -66,7 +72,7 @@ def give_email_auth_token(user):
 
 # give reset pw token to user
 def give_reset_pw_token(user):
-    tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)
+    tomorrow = timezone.now() + datetime.timedelta(days=1)
 
     for old_token in ResetPWToken.objects.filter(user=user):
         old_token.delete()
@@ -157,6 +163,7 @@ def authenticate_fb(request, code):
                'gender': parse_gender(fb_info.get('gender')),
                'birthday': fb_info.get('birthday')}
 
+    logger.info('auth.fb: id=%s' % profile['userid'], request)
     profiles = UserProfile.objects.filter(facebook_id=profile['userid'])
     if len(profiles) == 1:
         return profiles[0].user, None
@@ -187,6 +194,7 @@ def authenticate_tw(request):
                'first_name': tw_info['screen_name'],
                'gender': 'E'}
 
+    logger.info('auth.tw: id=%s' % profile['userid'], request)
     profiles = UserProfile.objects.filter(twitter_id=profile['userid'])
     if len(profiles) == 1:
         return profiles[0].user, None

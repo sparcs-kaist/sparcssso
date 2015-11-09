@@ -1,0 +1,12 @@
+{% extends "oauth/base.html" %}
+{% block htitle %}SPARCS SSO In Cooltime{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+<h1>In COOLTIME!</h1>
+<p class="text-danger">Your account is in a cooltime for the service {{service.alias}}</p>
+<p>You can use {{service.alias}} again after {{left}} days.</p>
+
+<p><a class="btn btn-primary" href="{{service.url}}">Back to {{service.alias}}</a></p>
+{% endblock %}

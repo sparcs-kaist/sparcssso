@@ -147,11 +147,19 @@ ADMINS = (('SSO SYSOP', 'sso@sparcs.org'),)
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'std': {
+            'format': '%(levelno)s/%(asctime)s (%(ip)s, %(username)s) %(name)s - %(message)s'
+        },
+    },
     'handlers': {
         'file': {
             'level': 'INFO',
-            'class': 'logging.FileHandler',
+            'class': 'apps.logger.FileHandler',
             'filename': '/data/log/sso/info.log',
+            'maxBytes': 30 * 1024 * 1024,
+            'backupCount': 5,
+            'formatter': 'std',
         },
         'mail': {
             'level': 'ERROR',
@@ -164,8 +172,8 @@ LOGGING = {
             'handlers': ['mail'],
             'level': 'ERROR',
         },
-        'sso.auth': {
-            'handlers': ['file', 'mail'],
+        'sso': {
+            'handlers': ['file'],
             'level': 'INFO',
         },
     },

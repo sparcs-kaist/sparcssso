@@ -16,7 +16,11 @@ from apps.account.forms import UserForm, UserProfileForm
 from apps.oauth.models import Service, ServiceMap
 import cgi
 import datetime
+import logging
 import urllib
+
+
+logger = logging.getLogger('sso.account')
 
 
 # /login/{fb,tw,kaist}/, /connect/{fb,tw,kaist}/
@@ -81,20 +85,25 @@ def login(request):
         password = request.POST.get('password', 'asdf')
 
         username = get_username(email)
+
         user = auth.authenticate(username=username, password=password)
         if user is None or not user.is_active:
+            logger.info('login.fail: authentication error', request)
             return render(request, 'account/login.html', {'fail': True})
         elif not user.profile.email_authed:
             request.session['info_user'] = user.id
+            logger.info('login.fail: email is not authenticated, email=%s' % user.email, request)
             return redirect('/account/auth/email/')
         else:
             request.session.pop('info_user', None)
             request.session.pop('info_signup', None)
             auth.login(request, user)
+            logger.info('login.success', request)
 
             if user.profile.expire_time:
                 user.profile.expire_time = None
                 user.profile.save()
+                logger.warning('activate', request)
 
             nexturl = request.session.pop('next', '/')
             return redirect(nexturl)
@@ -107,6 +116,7 @@ def logout(request):
     if not request.user.is_authenticated():
         return redirect('/')
 
+    logger.info('logout', request)
     auth.logout(request)
     return render(request, 'account/logout.html')
 
@@ -125,6 +135,7 @@ def auth_email_resend(request):
 
         give_email_auth_token(user)
         request.session.pop('info_user', None)
+        logger.info('auth.email.resend: email=%s' % user.email, request)
         return render(request, 'account/auth-email/sent.html', {'email': user.email})
 
     return render(request, 'account/auth-email/send.html', {'email': user.email})
@@ -132,18 +143,20 @@ def auth_email_resend(request):
 
 # /auth/email/<tokenid>
 def auth_email(request, tokenid):
-    tokens = EmailAuthToken.objects.filter(tokenid=tokenid)
-    if len(tokens) == 0:
+    token = EmailAuthToken.objects.filter(tokenid=tokenid).first()
+    if not token:
         return render(request, 'account/auth-email/fail.html')
+    user = token.user
 
-    token = tokens[0]
     if token.expire_time < timezone.now():
         token.delete()
+        logger.warning('auth.email.fail: expired token, email=%s' % token.user.email, request)
         return render(request, 'account/auth-email/fail.html')
 
-    token.user.profile.email_authed = True
-    token.user.profile.save()
+    user.profile.email_authed = True
+    user.profile.save()
     token.delete()
+    logger.info('auth.email.success: username=%s, email=%s' % (user.username, user.email), request)
     return render(request, 'account/auth-email/success.html')
 
 
@@ -166,6 +179,9 @@ def profile(request):
 
             profile = profile_f.save()
             success = True
+            logger.info('profile.modify.success', request)
+        else:
+            logger.warning('profile.modify.fail', request)
 
     return render(request, 'account/profile.html',
                   {'user': user, 'profile': profile,
@@ -186,6 +202,7 @@ def disconnect(request, type):
     profile.save()
 
     request.session['result_con'] = 5
+    logger.info('profile.disconnect: type=%s' % type, request)
     return redirect('/account/profile/')
 
 
@@ -203,9 +220,11 @@ def deactivate(request):
             profile.expire_time = timezone.now() + datetime.timedelta(days=60)
             profile.save()
 
+            logger.warning('deactivate.success', request)
             return redirect('/account/logout/')
 
         fail = True
+        logger.warning('deactivate.fail', request)
 
     return render(request, 'account/deactivate.html', {'ok': ok, 'fail': fail})
 
@@ -223,9 +242,11 @@ def password_change(request):
         if check_password(oldpw, user.password):
             user.password = make_password(newpw)
             user.save()
+            logger.warning('pw.change.success', request)
             return redirect('/account/login')
-        else:
-            fail = True
+
+        fail = True
+        logger.warning('pw.change.fail', request)
 
     return render(request, 'account/pw-change.html', {'user': user, 'fail': fail})
 
@@ -239,6 +260,7 @@ def password_reset_email(request):
             return render(request, 'account/pw-reset/send.html', {'fail': True, 'email': email})
 
         give_reset_pw_token(user)
+        logger.warning('pw.reset.send: email=%s' % email, request)
         return render(request, 'account/pw-reset/sent.html')
 
     return render(request, 'account/pw-reset/send.html')
@@ -252,14 +274,17 @@ def password_reset(request, tokenid):
 
     if token.expire_time < timezone.now():
         token.delete()
+        logger.warning('pw.reset.fail: expired token, username=%s' % token.user.username, request)
         return render(request, 'account/pw-reset/fail.html')
 
     if request.method == 'POST':
-        new_pw = request.POST.get('password', 'P@55w0rd!#$')
         user = token.user
+        new_pw = request.POST.get('password', 'P@55w0rd!#$')
         user.set_password(new_pw)
         user.save()
         token.delete()
+
+        logger.warning('pw.reset.success: username=%s' % user.username, request)
         return render(request, 'account/pw-reset/success.html')
 
     return render(request, 'account/pw-reset/main.html', {'tokenid': tokenid})
@@ -281,6 +306,7 @@ def signup(request, is_social=False):
         user = signup_backend(request.POST)
 
         if user is None:
+            logger.warning('signup.fail')
             raise SuspiciousOperation()
 
         if type == 'FB':
@@ -293,7 +319,7 @@ def signup(request, is_social=False):
 
         user.profile.save()
         request.session.pop('info_signup', None)
-
+        logger.warning('signup.success: username=%s, type=%s' % (user.username, type), request)
         return render(request, 'account/signup/complete.html', {'type': type})
 
     return render(request, 'account/signup/main.html', {'type': type, 'info': info})
@@ -333,10 +359,12 @@ def login_callback(request, type, user, profile):
 
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         auth.login(request, user)
+        logger.info('login.success', request)
 
         if user.profile.expire_time:
             user.profile.expire_time = None
             user.profile.save()
+            logger.warning('activate', request)
 
         nexturl = request.session.pop('next', '/')
         return redirect(nexturl)
@@ -349,26 +377,24 @@ def login_callback(request, type, user, profile):
 def connection_callback(request, type, user, ext_profile):
     if user:
         request.session['result_con'] = 1
+        logger.warning('profile.connect.fail: type=%s' % type, request)
         return redirect('/account/profile/')
 
-    result_con = 1
     profile = request.user.profile
     if type == 'FB' and not profile.facebook_id:
         profile.facebook_id = ext_profile['userid']
         profile.save()
-        result_con = 0
     elif type == 'TW' and not profile.twitter_id:
         profile.twitter_id = ext_profile['userid']
         profile.save()
-        result_con = 0
     elif type == 'KAIST' and not profile.kaist_id:
         profile.kaist_id = ext_profile['userid']
         profile.kaist_info = ext_profile['kaist_info']
-        result_con = 0
     else:
         raise SuspiciousOperation()
 
-    request.session['result_con'] = result_con
+    logger.warning('profile.connect.success: type=%s' % type, request)
+    request.session['result_con'] = 0
     return redirect('/account/profile/')
 
 

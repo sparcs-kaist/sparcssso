@@ -71,14 +71,32 @@ def credit(request):
     return render(request, 'credit.html')
 
 
+# /doc/test/
+def doc_test(request):
+    if not request.user.is_authenticated() or \
+        (not request.user.profile.is_for_test and not request.user.is_staff):
+        return redirect('/')
+    return render(request, 'doc.test.html')
+
+
+# /doc/admin/
+def doc_admin(request):
+    if not request.user.is_authenticated() or not request.user.is_staff:
+        return redirect('/')
+    return render(request, 'doc.admin.html')
+
+
 # /login/
 def login(request):
     if request.user.is_authenticated():
         return redirect('/')
 
+    current_time = timezone.now()
+    notice = Notice.objects.filter(valid_from__lte=current_time)\
+            .filter(valid_to__gt=current_time).first()
+
     if 'next' in request.GET:
         request.session['next'] = request.GET['next']
-
 
     if request.method == 'POST':
         email = request.POST.get('email', 'none')
@@ -89,7 +107,7 @@ def login(request):
         user = auth.authenticate(username=username, password=password)
         if user is None or not user.is_active:
             logger.info('login.fail: authentication error', request)
-            return render(request, 'account/login.html', {'fail': True})
+            return render(request, 'account/login.html', {'fail': True, 'notice': notice})
         elif not user.profile.email_authed:
             request.session['info_user'] = user.id
             logger.info('login.fail: email is not authenticated, email=%s' % user.email, request)
@@ -108,7 +126,7 @@ def login(request):
             nexturl = request.session.pop('next', '/')
             return redirect(nexturl)
 
-    return render(request, 'account/login.html')
+    return render(request, 'account/login.html', {'notice': notice})
 
 
 # /logout/

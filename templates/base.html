@@ -22,7 +22,15 @@
 				<a class="navbar-brand" href="/">SPARCS SSO</a>
 			</div>
 
-			<div class="collapse navbar-collapse" id="navbar">
+            <div class="collapse navbar-collapse" id="navbar">
+                <ul class="nav navbar-nav">
+                    {% if user.profile.is_for_test or user.is_staff %}
+                    <li><a href="/doc/test/">Test Doc</a></li>
+                    {% endif %}
+                    {% if user.is_staff %}
+                    <li><a href="/doc/admin/">Admin Doc</a></li>
+                    {% endif %}
+                </ul>
 				<ul class="nav navbar-nav navbar-right">
 					{% if user.is_authenticated %}
 					<li class="dropdown">

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% block gheader %}
+<link rel="stylesheet" type="text/css" href="{% static "css/account.css" %}">
+{% block header %}{% endblock %}
+{% endblock %}
+
+{% block content %}
+<div style="text-align:left">
+    <h1 style="margin-top:0">Doc for Admin</h1>
+    <p>이 문서는 SPARCS SSO PM이 알아야 할 사항에 대해 다룬다. SPARCS SSO PM은 본 문서를 숙지하고 있어야 한다.</p>
+    <p>작성자: 14 samjo (PM, 2015 ~ )</p>
+
+    <p>*인수인계 전에 작성됩니다*</p>
+</div>
+{% endblock %}

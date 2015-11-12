@@ -60,8 +60,8 @@ def auth_init(request, mode, type):
 def main(request):
     current_time = timezone.now()
     services = Service.objects.filter(is_public=True)
-    notice = Notice.objects.filter(valid_from__lte=current_time)\
-            .filter(valid_to__gt=current_time).first()
+    notice = Notice.objects.filter(valid_from__lte=current_time,\
+        valid_to__gt=current_time).first()
 
     return render(request, 'main.html', {'services': services, 'notice': notice})
 
@@ -92,8 +92,8 @@ def login(request):
         return redirect('/')
 
     current_time = timezone.now()
-    notice = Notice.objects.filter(valid_from__lte=current_time)\
-            .filter(valid_to__gt=current_time).first()
+    notice = Notice.objects.filter(valid_from__lte=current_time,\
+        valid_to__gt=current_time).first()
 
     if 'next' in request.GET:
         request.session['next'] = request.GET['next']
@@ -224,7 +224,7 @@ def disconnect(request, type):
     return redirect('/account/profile/')
 
 
-# /unregister/
+# /deactivate/
 @login_required
 def deactivate(request):
     maps = ServiceMap.objects.filter(user=request.user, unregister_time=None)

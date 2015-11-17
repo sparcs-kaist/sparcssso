@@ -79,7 +79,7 @@ LOGIN_URL = '/account/login/'
 LOGOUT_URL = '/account/logout/'
 
 
-# Facebook, Twitter API Key
+# Facebook, Twitter, KAIST API Key
 
 with open(os.path.join(BASE_DIR, 'keys/fb_app_id')) as f:
     FACEBOOK_APP_ID = f.read().strip()
@@ -92,6 +92,15 @@ with open(os.path.join(BASE_DIR, 'keys/tw_app_id')) as f:
 
 with open(os.path.join(BASE_DIR, 'keys/tw_app_secret')) as f:
     TWITTER_APP_SECRET = f.read().strip()
+
+with open(os.path.join(BASE_DIR, 'keys/kaist_app_secret')) as f:
+    KAIST_APP_SECRET = f.read().strip()
+
+with open(os.path.join(BASE_DIR, 'keys/kaist_app_admin_id')) as f:
+    KAIST_APP_ADMIN_ID = f.read().strip()
+
+with open(os.path.join(BASE_DIR, 'keys/kaist_app_admin_pw')) as f:
+    KAIST_APP_ADMIN_PW = f.read().strip()
 
 
 # E-mail settings

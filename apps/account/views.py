@@ -51,7 +51,7 @@ def auth_init(request, mode, type):
         url = '%s?oauth_token=%s' % (tw_auth_url, request.session
                                      ['request_token']['oauth_token'])
     elif type == 'KAIST':
-        pass # TODO
+        url = 'https://ksso.kaist.ac.kr/iamps/requestLogin.do'
 
     return redirect(url)
 
@@ -358,7 +358,8 @@ def auth_callback(request):
     elif type == 'TW':
         user, profile = authenticate_tw(request)
     elif type == 'KAIST':
-        user, profile = authenticate_kaist(request)
+        token = request.COOKIES.get('SATHTOKEN')
+        user, profile = authenticate_kaist(request, token)
     else:
         raise SuspiciousOperation()
 

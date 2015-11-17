@@ -5,8 +5,10 @@ from django.core.mail import send_mail
 from django.utils import timezone
 from apps.account.forms import UserForm, UserProfileForm
 from apps.account.models import UserProfile, EmailAuthToken, ResetPWToken
+from xml.etree.ElementTree import fromstring
 import cgi
 import datetime
+import httplib
 import json
 import logging
 import oauth2 as oauth
@@ -204,7 +206,30 @@ def authenticate_tw(request):
 
 
 # KAIST auth
-def authenticate_kaist(request):
+def authenticate_kaist(request, token):
+    data = """<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://server.com">
+    <soapenv:Header/>
+    <soapenv:Body>
+        <ser:verification>
+            <cookieValue>%s</cookieValue>
+            <publicKeyStr>%s</publicKeyStr>
+            <adminVO>
+                <adminId>%s</adminId>
+                <password>%s</password>
+            </adminVO>
+        </ser:verification>
+    </soapenv:Body>
+</soapenv:Envelope>""" % (token, settings.KAIST_APP_SECRET, settings.KAIST_APP_ADMIN_ID, settings.KAIST_APP_ADMIN_PW)
+    encdata = data.encode('utf-8')
+
+    conn = httplib.HTTPSConnection('iam.kaist.ac.kr')
+    headers = {'Content-Type': 'text/xml', 'Content-Length': str(len(encdata))}
+
+    conn.request('POST', '/iamps/services/singlauth/', '', headers)
+    conn.send(encdata)
+
+    k_info = fromstring(conn.getresponse().read())[0][0][0]
+    print k_info
     # TODO
     return None, None
 

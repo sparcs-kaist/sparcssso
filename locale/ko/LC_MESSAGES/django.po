@@ -1,0 +1,22 @@
+# SPARCS SSO Korean Translations.
+# Copyright (C) 2015 SPARCS SSO Team
+# This file is distributed under the same license as the SPARCS SSO package.
+# Sam Jo <samjo@sparcs.org>, 2015.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: V0.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-11-22 04:00+0900\n"
+"PO-Revision-Date: 2015-11-22 04:00+0900\n"
+"Last-Translator: Sam Jo <samjo@sparcs.org>\n"
+"Language-Team: SPARCS SSO Team <sso@sparcs.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: templates/main.html:20
+msgid "Welcome to SPARCS Single Sign On!"
+msgstr "SPARCS 통합 인증에 오신 것을 환영합니다!"

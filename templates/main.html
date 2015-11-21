@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% load staticfiles %}
 {% block gheader %}
@@ -16,7 +17,7 @@
 
 <div class="jumbotron">
 	<h1>SPARCS SSO</h1>
-    <p>Welcome to SPARCS Single Sign On!</p>
+    <p>{% trans "Welcome to SPARCS Single Sign On!" %}</p>
     <p>You can use the following services using SPARCS SSO</p>
     <div class="service-row">
     {% for service in services %}

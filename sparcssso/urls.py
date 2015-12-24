@@ -22,6 +22,7 @@ from django.shortcuts import render
 
 urlpatterns = [
     url(r'^$', 'apps.account.views.main'),
+    url(r'^lang/(?P<code>\w+)', 'apps.account.views.lang'),
     url(r'^credit/', 'apps.account.views.credit'),
     url(r'^terms/', 'apps.account.views.terms'),
     url(r'^privacy/', 'apps.account.views.privacy'),

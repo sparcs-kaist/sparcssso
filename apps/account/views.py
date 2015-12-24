@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import SuspiciousOperation
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from django.utils import timezone
+from django.utils import timezone, translation
 from apps.account.backends import give_email_auth_token, give_reset_pw_token, \
         get_username, validate_email, signup_backend, authenticate_fb, \
         authenticate_tw, authenticate_kaist, tw_client, tw_request_url, tw_auth_url
@@ -64,6 +64,16 @@ def main(request):
         valid_to__gt=current_time).first()
 
     return render(request, 'main.html', {'services': services, 'notice': notice})
+
+
+# /lang/
+def lang(request, code):
+    if code not in ['en', 'ko']:
+        return redirect('/')
+
+    translation.activate(code)
+    request.session[translation.LANGUAGE_SESSION_KEY] = code
+    return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
 # /credit/

@@ -67,7 +67,7 @@ def give_email_auth_token(user):
     send_mail('[SPARCS SSO] E-mail Authorization',
               'To get auth, please enter http://sso.sparcs.org' +
               '/account/auth/email/'+tokenid+' until tomorrow this time.',
-              'noreply@sso.sparcs.org', [user.email])
+              'sso.noreply@sparcs.org', [user.email])
 
     token.save()
 
@@ -86,7 +86,7 @@ def give_reset_pw_token(user):
     send_mail('[SPARCS SSO] Reset Your Password',
               'To reset your password, please enter http://sso.sparcs.org' +
               '/account/password/reset/'+tokenid+' until tomorrow' +
-              'this time.', 'noreply@sso.sparcs.org', [user.email])
+              'this time.', 'sso.noreply@sparcs.org', [user.email])
 
     token.save()
 
@@ -228,8 +228,24 @@ def authenticate_kaist(request, token):
     conn.request('POST', '/iamps/services/singlauth/', '', headers)
     conn.send(encdata)
 
-    k_info = fromstring(conn.getresponse().read())[0][0][0]
-    print k_info
-    # TODO
+    raw_info = fromstring(conn.getresponse().read())[0][0][0]
+    k_info = {}
+    for node in raw_info:
+        k_info[node.tag] = node.txt
+
+    profile = {'userid': k_info['kaist_uid'],
+               'email': k_info.get('mail'),
+               'first_name': k_info.get('givenname'),
+               'last_name': k_info.get('sn'),
+               'gender': parse_gender(k_info.get('ku_sex')),
+               'birthday': k_info.get('ku_born_date'),
+               'kaist_info': k_info}
+
+    logger.info('auth.kaist: id=%s' % profile['userid'], request)
+    profiles = UserProfile.objects.filter(kaist_id=profile['userid'])
+    if len(profiles) == 1:
+        return profiles[0].user, None
+    elif len(profiles) == 0:
+        return None, profile
     return None, None
 

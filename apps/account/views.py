@@ -71,6 +71,16 @@ def credit(request):
     return render(request, 'credit.html')
 
 
+# /terms/
+def terms(request):
+    return render(request, 'terms.html')
+
+
+# /privacy/
+def privacy(request):
+    return render(request, 'privacy.html')
+
+
 # /doc/test/
 def doc_test(request):
     if not request.user.is_authenticated() or \

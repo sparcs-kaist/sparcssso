@@ -145,7 +145,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # Admins & Logging
-ADMINS = (('SSO SYSOP', 'sso@sparcs.org'),)
+ADMINS = (('SSO SYSOP', 'sso.sysop@sparcs.org'),)
 
 LOGGING = {
     'version': 1,

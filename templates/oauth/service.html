@@ -37,7 +37,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close"><span>&times;</span></button>
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
                 <h4 class="modal-title">Unregister <span class="app-alias"></span></h4>
             </div>
             <div class="modal-body">
@@ -50,7 +50,7 @@
                     {% csrf_token %}
                     <input type="hidden" name="app" value=""/>
                     <input type="submit" class="btn btn-danger" value="UNREGISTER" disabled>
-                    <button type="button" class="btn btn-default">Close</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </form>
             </div>
         </div>

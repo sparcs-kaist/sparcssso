@@ -231,14 +231,14 @@ def authenticate_kaist(request, token):
     raw_info = fromstring(conn.getresponse().read())[0][0][0]
     k_info = {}
     for node in raw_info:
-        k_info[node.tag] = node.txt
+        k_info[node.tag] = node.text
 
     profile = {'userid': k_info['kaist_uid'],
                'email': k_info.get('mail'),
                'first_name': k_info.get('givenname'),
                'last_name': k_info.get('sn'),
-               'gender': parse_gender(k_info.get('ku_sex')),
-               'birthday': k_info.get('ku_born_date'),
+               'gender': k_info.get('ku_sex'),
+               'birthday': k_info.get('ku_born_date').replace('/', '-'),
                'kaist_info': k_info}
 
     logger.info('auth.kaist: id=%s' % profile['userid'], request)

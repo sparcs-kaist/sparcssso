@@ -409,8 +409,10 @@ def login_callback(request, type, user, profile):
         return redirect(nexturl)
 
     request.session['info_signup'] = {'type': type, 'profile': profile}
-    return redirect('/account/signup/')
 
+    response = redirect('/account/signup/')
+    response.delete_cookie('SATHTOKEN')
+    return response
 
 # from /callback/
 def connection_callback(request, type, user, ext_profile):
@@ -422,19 +424,23 @@ def connection_callback(request, type, user, ext_profile):
     profile = request.user.profile
     if type == 'FB' and not profile.facebook_id:
         profile.facebook_id = ext_profile['userid']
-        profile.save()
     elif type == 'TW' and not profile.twitter_id:
         profile.twitter_id = ext_profile['userid']
-        profile.save()
     elif type == 'KAIST' and not profile.kaist_id:
         profile.kaist_id = ext_profile['userid']
         profile.kaist_info = ext_profile['kaist_info']
     else:
         raise SuspiciousOperation()
 
+    profile.save()
+
     logger.warning('profile.connect.success: type=%s' % type, request)
     request.session['result_con'] = 0
-    return redirect('/account/profile/')
+
+    response = redirect('/account/profile/')
+    response.delete_cookie('SATHTOKEN')
+    return response
+
 
 
 # /util/email/check/

@@ -1,10 +1,11 @@
 {% extends "error/base.html" %}
+{% load i18n %}
 
-{% block title %}Bad Request{% endblock %}
+{% block title %}{% trans "Bad Request" %}{% endblock %}
 
 {% block code %}400{% endblock %}
 
 {% block try %}
-<li>Our server cannot understand your request.</li>
-<li>OR, you have sent data that violates forms.</li>
+<li>{% trans "Our server cannot understand your request." %}</li>
+<li>{% trans "OR, you have sent data that violates forms." %}</li>
 {% endblock %}

@@ -1,34 +1,35 @@
 {% extends "account/base.html" %}
 {% load staticfiles %}
-{% block htitle %}SPARCS SSO Profile{% endblock %}
+{% load i18n %}
+{% block htitle %}{% trans "SPARCS SSO Profile" %}{% endblock %}
 
 {% block header %}{% endblock %}
 
 {% block content %}
-<h1>Profile &amp; Social Network Accounts</h1>
-<p>You can change your information or connect/disconnect social accounts.</p>
-<p>Changed information may not be applied in other SPARCS services.</p>
+<h1>{% trans "Profile &amp; Social Network Accounts" %}</h1>
+<p>{% trans "You can change your information or connect/disconnect social accounts." %}</p>
+<p>{% trans "Changed information may not be applied in other SPARCS services." %}</p>
 <form id="profile" class="form-horizontal" action="/account/profile/" method="post" enctype="multipart/form-data">
     <fieldset>
         {% if success %}
 		<div class="form-group">
 			<div class="col-xs-12">
                <div class="alert alert-success">
-				    <b>Your information has been updated.</b>
+                   <b>{% trans "Your information has been updated." %}</b>
                 </div>
 			</div>
         </div>
         {% endif %}
         {% csrf_token %}
         <div class="form-group">
-			<label class="col-xs-2 control-label">Email <span class="required"></span></label>
+            <label class="col-xs-2 control-label">{% trans "Email" %} <span class="required"></span></label>
 			<div class="col-xs-8">
 				<input type="email" class="form-control" name="email" value="{{user.email}}" disabled>
             </div>
         </div>
 		<input type="hidden" name="password" value="qwerty1234">
 		<div class="form-group">
-			<label class="col-xs-2 control-label">Name <span class="required"></span></label>
+            <label class="col-xs-2 control-label">{% trans "Name" %} <span class="required"></span></label>
 			<div class="form-group col-xs-5">
 				<input type="text" class="form-control" name="first_name" placeholder="First Name" required="required" maxlength="30" value="{{user.first_name}}">
 			</div>
@@ -37,12 +38,12 @@
 			</div>
 		</div>
 		<div class="form-group">
-			<label class="col-xs-2 control-label">Gender, Birthday</label>
+            <label class="col-xs-2 control-label">{% trans "Gender, Birthday" %}</label>
 			<div class="form-group col-xs-3">
 				<select class="form-control" name="gender">
-					<option value="E">etc</option>
-					<option value="M">Male</option>
-					<option value="F">Female</option>
+                    <option value="E">{% trans "etc" %}</option>
+                    <option value="M">{% trans "Male" %}</option>
+                    <option value="F">{% trans "Female" %}</option>
 				</select>
 			</div>
 			<div class="form-group col-xs-5">
@@ -51,31 +52,31 @@
 		</div>
         <div class="form-group">
             <div class="col-xs-12">
-                <button type="submit" class="btn btn-primary">Modify</button>
-				<a class="btn btn-default" href="javascript:window.history.go(-1)">Go Back</a>
+                <button type="submit" class="btn btn-primary">{% trans "Modify" %}</button>
+                <a class="btn btn-default" href="javascript:window.history.go(-1)">{% trans "Go Back" %}</a>
             </div>
 		</div>
     </fieldset>
 </form>
 
-<h3>Social Accounts</h3>
+<h3>{% trans "Social Accounts" %}</h3>
 {% if not profile.kaist_id %}
-<p class="text-info">You should connect to KAIST SSO if you want to verify your identity as a KAIST member.</p>
-<p class="text-danger">You CANNOT DISCONNECT KAIST SSO from SPARCS SSO once you connect.</p>
+<p class="text-info">{% trans "You should connect to KAIST SSO if you want to verify your identity as a KAIST member." %}</p>
+<p class="text-danger">{% trans "You CANNOT DISCONNECT KAIST SSO from SPARCS SSO once you connect." %}</p>
 {% endif %}
 {% if result_con != -1 %}
 <div class="col-xs-offset-3 col-xs-6" style="padding-bottom:15px">
     {% if result_con == 0 %}
     <div class="alert alert-success">
-        <b>Your social network account has been connected.</b>
+        <b>{% trans "Your social network account has been connected." %}</b>
     </div>
     {% elif result_con == 1 %}
     <div class="alert alert-danger">
-        <b>This social network account is already connected by other person.</b>
+        <b>{% trans "This social network account is already connected by other person." %}</b>
     </div>
     {% elif result_con == 5 %}
     <div class="alert alert-success">
-        <b>Your social network account has been disconnected.</b>
+        <b>{% trans "Your social network account has been disconnected." %}</b>
     </div>
     {% endif %}
 </div>
@@ -89,12 +90,12 @@
 		{% if not profile.facebook_id %}
 		<form class="social-form" action="/account/connect/fb/" method="post">
 			{% csrf_token %}
-			<button type="submit" class="btn btn-primary">Connect</button>
+            <button type="submit" class="btn btn-primary">{% trans "Connect" %}</button>
 		</form>
 		{% else %}
 		<form class="social-form" action="/account/disconnect/fb/" method="post">
 			{% csrf_token %}
-			<button type="submit" class="btn btn-danger">Disconnect</button>
+            <button type="submit" class="btn btn-danger">{% trans "Disconnect" %}</button>
 		</form>
 		{% endif %}
 	</div>
@@ -105,12 +106,12 @@
 		{% if not profile.twitter_id %}
 		<form class="social-form" action="/account/connect/tw/" method="post">
 			{% csrf_token %}
-			<button type="submit" class="btn btn-primary">Connect</button>
+            <button type="submit" class="btn btn-primary">{% trans "Connect" %}</button>
 		</form>
 		{% else %}
 		<form class="social-form" action="/account/disconnect/tw/" method="post">
 			{% csrf_token %}
-			<button type="submit" class="btn btn-danger">Disconnect</button>
+            <button type="submit" class="btn btn-danger">{% trans "Disconnect" %}</button>
 		</form>
 		{% endif %}
 	</div>
@@ -121,11 +122,11 @@
 		{% if not profile.kaist_id %}
 		<form class="social-form" action="/account/connect/kaist/" method="post">
 			{% csrf_token %}
-			<button type="submit" class="btn btn-primary">Connect</button>
+            <button type="submit" class="btn btn-primary">{% trans "Connect" %}</button>
 		</form>
 		{% else %}
 		<form class="social-form" action="" method="post">
-			<button type="submit" class="btn btn-danger" disabled>Disconnect</button>
+            <button type="submit" class="btn btn-danger" disabled>{% trans "Disconnect" %}</button>
 		</form>
 		{% endif %}
 	</div>

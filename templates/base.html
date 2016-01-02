@@ -1,3 +1,4 @@
+{% load i18n %}
 <!doctype html>
 <html lang="ko">
 <head>
@@ -25,10 +26,10 @@
             <div class="collapse navbar-collapse" id="navbar">
                 <ul class="nav navbar-nav">
                     {% if user.profile.is_for_test or user.is_staff %}
-                    <li><a href="/doc/test/">Test Doc</a></li>
+                    <li><a href="/doc/test/">{% trans "Test Doc" %}</a></li>
                     {% endif %}
                     {% if user.is_staff %}
-                    <li><a href="/doc/admin/">Admin Doc</a></li>
+                    <li><a href="/doc/admin/">{% trans "Admin Doc" %}</a></li>
                     {% endif %}
                 </ul>
 				<ul class="nav navbar-nav navbar-right">
@@ -36,17 +37,17 @@
 					<li class="dropdown">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ user.first_name }} <span class="caret"></span></a>
 						<ul class="dropdown-menu" role="menu">
-                            <li><a href="/oauth/service/">Manage Service</a></li>
-                            <li><a href="/account/profile/">Profile / Connections</a></li>
-                            <li><a href="/account/password/change/">Change Password</a></li>
-                            <li><a href="/account/deactivate/">Deactivate</a></li>
+                            <li><a href="/oauth/service/">{% trans "Manage Service" %}</a></li>
+                            <li><a href="/account/profile/">{% trans "Profile / Connections" %}</a></li>
+                            <li><a href="/account/password/change/">{% trans "Change Password" %}</a></li>
+                            <li><a href="/account/deactivate/">{% trans "Deactivate" %}</a></li>
 						</ul>
 					</li>
-					<li><a href="/account/logout/">Logout</a></li>
+					<li><a href="/account/logout/">{% trans "Logout" %}</a></li>
 					{% else %}
-					<li><a href="/account/signup/">Sign Up</a></li>
-                    <li><a href="/account/login/">Login</a></li>
-                    <li><a href="/account/password/reset/">Reset Password</a></li>
+					<li><a href="/account/signup/">{% trans "Sign Up" %}</a></li>
+                    <li><a href="/account/login/">{% trans "Login" %}</a></li>
+                    <li><a href="/account/password/reset/">{% trans "Reset Password" %}</a></li>
 					{% endif %}
 				</ul>
 			</div>
@@ -58,8 +59,8 @@
     </section>
     <footer class="container">
         <p class="info">
-            <a href="/credit/">Credit</a> |
-            <a href="mailto:sso@sparcs.org">Feedback (sso@sparcs.org)</a>
+            <a href="/credit/">{% trans "Credit" %}</a> |
+            <a href="mailto:sso@sparcs.org">{% trans "Feedback (sso@sparcs.org)" %}</a>
 
             <a href="/lang/ko/">한국어</a> |
             <a href="/lang/en/">English</a>

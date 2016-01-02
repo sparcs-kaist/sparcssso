@@ -1,13 +1,14 @@
 {% extends "account/base.html" %}
+{% load i18n %}
 
 {% load staticfiles %}
-{% block htitle %}SPARCS SSO Email Authenticate{% endblock %}
+{% block htitle %}{% trans "SPARCS SSO Email Authenticate" %}{% endblock %}
 
 {% block header %}{% endblock %}
 
 {% block content %}
-<h1>Email Authenticate Success</h1>
-<p>Successfully authenticated your email! Redirecting to login page...</p>
+<h1>{% trans "Email Authenticate Success" %}</h1>
+<p>{% trans "Successfully authenticated your email! Redirecting to login page..." %}</p>
 <script type="text/javascript">
     setTimeout(function() {
         window.location.href="/account/login/";

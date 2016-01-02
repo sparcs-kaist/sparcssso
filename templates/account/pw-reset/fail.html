@@ -1,14 +1,15 @@
 {% extends "account/base.html" %}
 
 {% load staticfiles %}
-{% block htitle %}SPARCS SSO Password Reset{% endblock %}
+{% load i18n %}
+{% block htitle %}{% trans "SPARCS SSO Password Reset" %}{% endblock %}
 
 {% block header %}{% endblock %}
 
 {% block content %}
-<h1>Password Reset Fail</h1>
-<p class="text-danger">Failed to reset your password, because you entered wrong or expired token id.</p>
-<a class="btn btn-primary" href="/account/login/">Login Page</a>
-<a class="btn btn-default" href="/">Main Page</a>
+<h1>{% trans "Password Reset Fail" %}</h1>
+<p class="text-danger">{% trans "Failed to reset your password, because you entered wrong or expired token id." %}</p>
+<a class="btn btn-primary" href="/account/login/">{% trans "Login Page" %}</a>
+<a class="btn btn-default" href="/">{% trans "Main Page" %}</a>
 {% endblock %}
 

@@ -1,20 +1,21 @@
 {% extends "account/base.html" %}
 
 {% load staticfiles %}
-{% block htitle %}SPARCS SSO Password Reset{% endblock %}
+{% load i18n %}
+{% block htitle %}{% trans "SPARCS SSO Password Reset" %}{% endblock %}
 
 {% block header %}{% endblock %}
 
 {% block content %}
-<h1>Password Reset</h1>
-<p>Please input your email address to reset password.</p>
+<h1>{% trans "Password Reset" %}</h1>
+<p>{% trans "Please input your email address to reset password." %}</p>
 <form class="form-horizontal" action="/account/password/reset/" method="post">
 	<fieldset>
 		{% if fail %}
         <div class="form-group">
         	<div class="col-xs-offset-2 col-xs-8">
             	<div class="alert alert-danger">
-                    There are no account using {{email}}
+                    {% blocktrans %}There are no account using {{email}}{% endblocktrans %}
                 </div>
            	</div>
         </div>
@@ -29,7 +30,7 @@
         <div class="form-group">
             <div class="col-xs-12">
                 <button type="submit" class="btn btn-warning">Send Email</button>
-                <a class="btn btn-default" href="/account/login/">Login Page</a>
+                <a class="btn btn-default" href="/account/login/">{% trans "Login Page" %}</a>
             </div>
         </div>
     </fieldset>

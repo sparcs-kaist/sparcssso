@@ -1,10 +1,11 @@
 {% extends "error/base.html" %}
+{% load i18n %}
 
-{% block title %}Not Found{% endblock %}
+{% block title %}{% trans "Not Found" %}{% endblock %}
 
 {% block code %}404{% endblock %}
 
 {% block try %}
-<li>Server cannot find your requested resources.</li>
-<li>Please check the URL that you sent.</li>
+<li>{% trans "Server cannot find your requested resources." %}</li>
+<li>{% trans "Please check the URL that you sent." %}</li>
 {% endblock %}

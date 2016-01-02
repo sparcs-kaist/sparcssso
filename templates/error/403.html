@@ -1,10 +1,11 @@
 {% extends "error/base.html" %}
+{% load i18n %}
 
-{% block title %}Forbidden{% endblock %}
+{% block title %}{% trans "Forbidden" %}{% endblock %}
 
 {% block code %}403{% endblock %}
 
 {% block try %}
-<li>Your request has been rejected.</li>
-<li>You do not have permission to access the page.</li>
+<li>{% trans "Your request has been rejected." %}</li>
+<li>{% trans "You do not have permission to access the page." %}</li>
 {% endblock %}

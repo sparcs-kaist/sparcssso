@@ -1,39 +1,40 @@
 {% extends "account/base.html" %}
+{% load i18n %}
 
-{% block htitle %}SPARCS SSO Change Password{% endblock %}
+{% block htitle %}{% trans "SPARCS SSO Change Password" %}{% endblock %}
 
 {% block header %}{% endblock %}
 
 {% block content %}
-<h1>Change Password</h1>
-<p>You need to login again if you changed your password.</p>
+<h1>{% trans "Change Password" %}</h1>
+<p>{% trans "You need to login again if you changed your password." %}</p>
 <form id="changepw" class="form-horizontal" action="/account/password/change/" method="post">
 	<fieldset>
 		{% if fail %}
 		<div class="form-group">
 			<div class="col-xs-offset-2 col-xs-8">
 				<div class="alert alert-danger">
-				    <b>WRONG current password!</b>
+                    <b>{% trans "WRONG current password!" %}</b>
 				</div>
 			</div>
 		</div>
 		{% endif %}
 		{% csrf_token %}
         <div class="form-group">
-			<label class="col-xs-2 control-label">Old Password <span class="required"></span></label>
+            <label class="col-xs-2 control-label">{% trans "Old Password" %} <span class="required"></span></label>
 			<div class="form-group col-sm-8">
 				<input type="password" class="form-control" name="oldpassword" placeholder="Old password" required="required">
 			</div>
 		</div>
 		<div class="form-group">
-			<label class="col-xs-2 control-label">New Password <span class="required"></span></label>
+            <label class="col-xs-2 control-label">{% trans "New Password" %} <span class="required"></span></label>
 			<div class="form-group col-sm-8">
 				<input type="password" class="form-control" name="password" placeholder="pAss0wd!" id="password" required="required" maxlength="50" data-minlength="7">
-				<span class="help-block">Password must be at least 7 characters</span>
+                <span class="help-block">{% trans "Password must be at least 7 characters" %}</span>
 			</div>
 		</div>
 		<div class="form-group">
-			<label class="col-xs-2 control-label">Type Again <span class="required"></span></label>
+            <label class="col-xs-2 control-label">{% trans "Type Again" %} <span class="required"></span></label>
 			<div class="form-group col-xs-8">
 				<input type="password" class="form-control" name="password2" placeholder="Re-type password" data-match="#password" data-match-error="Not match!" required="required" maxlength="50">
 				<div class="help-block with-errors"></div>
@@ -41,8 +42,8 @@
 		</div>
 		<div class="form-group">
 			<div class="col-xs-12">
-				<button type="submit" class="btn btn-warning">Change!</button>
-				<a class="btn btn-default" href="javascript:window.history.go(-1)">Go Back</a>
+                <button type="submit" class="btn btn-warning">{% trans "Change!" %}</button>
+                <a class="btn btn-default" href="javascript:window.history.go(-1)">{% trans "Go Back" %}</a>
 			</div>
 		</div>
 	</fieldset>

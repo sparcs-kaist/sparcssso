@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% load staticfiles %}
 {% block gheader %}
@@ -12,7 +13,7 @@
     {% block try %}{% endblock %}
 </ul>
 <p>
-    <a href="javascript:window.history.go(-1)" class="btn btn-warning">Go Back</a> &nbsp;
-    <a href="/" class="btn btn-default">Main</a>
+<a href="javascript:window.history.go(-1)" class="btn btn-warning">{% trans "Go Back" %}</a> &nbsp;
+    <a href="/" class="btn btn-default">{% trans "Main" %}</a>
 </p>
 {% endblock %}

@@ -1,13 +1,14 @@
 {% extends "account/base.html" %}
 
+{% load i18n %}
 {% load staticfiles %}
-{% block htitle %}SPARCS SSO Password Reset{% endblock %}
+{% block htitle %}{% trans "SPARCS SSO Password Reset" %}{% endblock %}
 
 {% block header %}{% endblock %}
 
 {% block content %}
 <h1>Password Reset Mail Sent</h1>
-<p>Password reset email has been sent. Please check your email account. Redirecting to login page...</p>
+<p>{% trans "Password reset email has been sent. Please check your email account. Redirecting to login page..." %}</p>
 <script type="text/javascript">
     setTimeout(function() {
         window.location.href="/account/login/";

@@ -1,12 +1,13 @@
 {% extends "account/base.html" %}
+{% load i18n %}
 
-{% block htitle %}SPARCS SSO Logout{% endblock %}
+{% block htitle %}{% trans "SPARCS SSO Logout" %}{% endblock %}
 
 {% block header %}{% endblock %}
 
 {% block content %}
-<h1>Logout</h1>
-<p>Successfully logged out. Redirecting to main page...</p>
+<h1>{% trans "Logout" %}</h1>
+<p>{% trans "Successfully logged out. Redirecting to main page..." %}</p>
 <script type="text/javascript">
 	setTimeout("location.href='/'", 2000);
 </script>

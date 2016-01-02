@@ -1,22 +1,23 @@
 {% extends "account/base.html" %}
+{% load i18n %}
 {% load staticfiles %}
-{% block htitle %}SPARCS SSO Deactivate{% endblock %}
+{% block htitle %}{% trans "SPARCS SSO Deactivate" %}{% endblock %}
 
 {% block header %}{% endblock %}
 
 {% block content %}
-<h1>Deactivate</h1>
+<h1>{% trans "Deactivate" %}</h1>
 {% if ok %}
-<p>Your account will be removed permanently 60 days after the deactivation</p>
-<p class="text-danger">If you login within the 60 days, your account will become ACTIVE again.</p>
-<p>If you still would like to proceed, enter your password.</p>
+<p>{% trans "Your account will be removed permanently 60 days after the deactivation" %}</p>
+<p class="text-danger">{% trans "If you login within the 60 days, your account will become ACTIVE again." %}</p>
+<p>{% trans "If you still would like to proceed, enter your password." %}</p>
 <form class="form" action="/account/deactivate/" method="post">
 	<fieldset>
 		{% if fail %}
 		<div class="form-group">
 			<div class="col-xs-offset-3 col-xs-6">
 				<div class="alert alert-danger">
-				    <b>WRONG current password!</b>
+				    <b>{% trans "WRONG current password!" %}</b>
 				</div>
 			</div>
 		</div>
@@ -27,16 +28,16 @@
         </div>
 		<div class="form-group">
 			<div class="col-xs-12">
-				<button type="submit" class="btn btn-danger">DEACTIVATE</button>
-				<a class="btn btn-default" href="javascript:window.history.go(-1)">Go Back</a>
+				<button type="submit" class="btn btn-danger">{% trans "DEACTIVATE" %}</button>
+				<a class="btn btn-default" href="javascript:window.history.go(-1)">{% trans "Go Back" %}</a>
 			</div>
 		</div>
 	</fieldset>
 </form>
 
 {% else %}
-<p class="text-danger">You CANNOT deactivate your account since you are registered to at least one SPARCS service yet.</p>
-<p>Go to <a href="/oauth/service/">Manage Service</a> page first, and unregister all services.</p> 
+<p class="text-danger">{% trans "You CANNOT deactivate your account since you are registered to at least one SPARCS service yet." %}</p>
+<p>{% trans "Go to" %} <a href="/oauth/service/">{% trans "Manage Service" %}</a> {% trans "page first, and unregister all services." %}</p> 
 {% endif %}
 {% endblock %}
 

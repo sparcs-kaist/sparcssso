@@ -1,12 +1,13 @@
 {% extends "oauth/base.html" %}
-{% block htitle %}SPARCS SSO In Cooltime{% endblock %}
+{% load i18n %}
+{% block htitle %}{% trans "SPARCS SSO In Cooltime" %}{% endblock %}
 
 {% block header %}{% endblock %}
 
 {% block content %}
-<h1>In COOLTIME!</h1>
-<p class="text-danger">Your account is in a cooltime for the service {{service.alias}}</p>
-<p>You can use {{service.alias}} again after {{left}} days.</p>
+<h1>{% trans "In COOLTIME!" %}</h1>
+<p class="text-danger">{% blocktrans %}Your account is in a cooltime for the service {{service.alias}}{% endblocktrans %}</p>
+<p>{% blocktrans %}You can use {{service.alias}} again after {{left}} days.{% endblocktrans %}</p>
 
-<p><a class="btn btn-primary" href="{{service.url}}">Back to {{service.alias}}</a></p>
+<p><a class="btn btn-primary" href="{{service.url}}">{% blocktrans %}Back to {{service.alias}}{% endblocktrans %}</a></p>
 {% endblock %}

@@ -1,3 +1,4 @@
+#-*- encoding: utf-8 -*-
 """
 Django settings for sparcssso project.
 
@@ -25,7 +26,7 @@ with open(os.path.join(BASE_DIR, 'keys/django_secret')) as f:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['sso.sparcs.org', '143.248.234.129']
+ALLOWED_HOSTS = ['sparcssso.kaist.ac.kr', 'sso.sparcs.org', '143.248.234.129']
 
 
 # Application definition
@@ -43,6 +44,7 @@ INSTALLED_APPS = (
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -138,6 +140,14 @@ USE_L10N = True
 
 USE_TZ = True
 
+LANGUAGES = (
+    ('en', 'English'),
+    ('ko', '한국어'),
+)
+
+LOCALE_PATHS = (
+    os.path.join(BASE_DIR, 'locale'),
+)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
@@ -151,7 +161,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Admins & Logging
-ADMINS = (('SSO SYSOP', 'sso@sparcs.org'),)
+ADMINS = (('SSO SYSOP', 'sso.sysop@sparcs.org'),)
 
 LOGGING = {
     'version': 1,

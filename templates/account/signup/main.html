@@ -54,7 +54,7 @@
 				<input type="text" class="form-control" name="last_name" placeholder="Last Name" required="required" maxlength="30" value="{{info.last_name}}">
 			</div>
 		</div>
-		<div class="form-group">
+		<div class="form-group" style="margin-bottom:0">
             <label class="col-xs-2 control-label">{% trans "Gender, Birthday" %}</label>
 			<div class="form-group col-xs-3">
 				<select name="gender" class="form-control">
@@ -64,9 +64,12 @@
 				</select>
 			</div>
 			<div class="form-group col-xs-5">
-				<input type="text" class="form-control" name="birthday" placeholder="Birthday (YYYY-MM-DD)" data-vbirth=="vbirth">
+                <input type="text" class="form-control" name="birthday" placeholder="Birthday (YYYY-MM-DD)" data-vbirth="vbirth" value="{{info.birthday}}">
 			</div>
-		</div>
+        </div>
+        <div class="form-group">
+            By clicking on Signup!, you agree to <a href="/terms/" target="_blank">SPARCS SSO's terms &amp; conditions</a> and <a href="/privacy/" target="_blank">privacy policy</a>
+        </div>
         <div class="form-group">
             <div class="col-xs-12">
                 <button type="submit" class="btn btn-warning">{% trans "Signup!" %}</button>

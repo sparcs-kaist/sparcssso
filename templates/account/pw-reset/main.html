@@ -1,7 +1,7 @@
 {% extends "account/base.html" %}
 {% load i18n %}
 
-{% block htitle %}{% trans "SPARCS SSO Password Reset" %}{% endblock %}
+{% block htitle %}SPARCS SSO {% trans "Password Reset" %}{% endblock %}
 
 {% block header %}{% endblock %}
 
@@ -21,13 +21,13 @@
 		<div class="form-group">
             <label class="col-xs-2 control-label">{% trans "Type Again" %} <span class="required"></span></label>
 			<div class="form-group col-xs-8">
-				<input type="password" class="form-control" name="password2" placeholder="Re-type password" data-match="#password" data-match-error="Not match!" required="required" maxlength="50">
+				<input type="password" class="form-control" name="password2" placeholder="pAss0wd!" data-match="#password" data-match-error="Not match!" required="required" maxlength="50">
 				<div class="help-block with-errors"></div>
 			</div>
 		</div>
 		<div class="form-group">
 			<div class="col-xs-12">
-                <button type="submit" class="btn btn-warning">{% trans "Reset!" %}</button>
+                <button type="submit" class="btn btn-warning">{% trans "Reset Password" %}</button>
                 <a class="btn btn-default" href="/account/login/">{% trans "Login Page" %}</a>
 			</div>
 		</div>

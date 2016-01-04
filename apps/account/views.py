@@ -76,9 +76,9 @@ def lang(request, code):
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
-# /credit/
-def credit(request):
-    return render(request, 'credit.html')
+# /credits/
+def credits(request):
+    return render(request, 'credits.html')
 
 
 # /terms/
@@ -99,11 +99,11 @@ def doc_test(request):
     return render(request, 'doc.test.html')
 
 
-# /doc/admin/
-def doc_admin(request):
+# /doc/sysop/
+def doc_sysop(request):
     if not request.user.is_authenticated() or not request.user.is_staff:
         return redirect('/')
-    return render(request, 'doc.admin.html')
+    return render(request, 'doc.sysop.html')
 
 
 # /login/

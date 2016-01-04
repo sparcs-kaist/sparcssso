@@ -1,15 +1,13 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% load staticfiles %}
-{% block gheader %}
-<link rel="stylesheet" type="text/css" href="{% static "css/account.css" %}">
-
-{% block header %}{% endblock %}
+{% block app-header %}
+<link rel="stylesheet" type="text/css" href="/static/css/main.css">
 {% endblock %}
 
 {% block content %}
-<h1 style="margin-top:0;margin-bottom:20px;">SPARCS SSO 개인정보취급방침 v1.0 <small>(REV2015-11-29T01:17+0900)</small></h1>
-<div class="terms">
+<h1 class="doc-header">SPARCS SSO 개인정보취급방침 v1.0 <small>(REV2015-11-29T01:17+0900)</small></h1>
+<div class="doc">
 	<h3>[1. 개인정보취급방침의 의의 및 적용 범위]</h3>
 	<ol>
 		<li>본 개인정보취급방침(이하 "본 방침")은 KAIST 학부 동아리 SPARCS(이하 "SPARCS")가 서비스하는 SPARCS SSO(이하 "본 서비스")에서 수집하는 개인정보에 대해 안내함을 목적으로 합니다.</li>

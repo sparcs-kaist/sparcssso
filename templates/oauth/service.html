@@ -26,7 +26,7 @@
     <div class="service">
         <a href="{{m.service.url}}"><img src="{{m.service.icon.url}}" alt="{{m.service.name}}"></a>
         <p>{{m.service.alias}}</p>
-        <p class="date">{% blocktrans %}from {{m.register_time|date:'Y-m-d'}}{% endblocktrans %}</p>
+        <p class="date">{% blocktrans with time=m.register_time|date:'Y-m-d' %}from {{time}}{% endblocktrans %}</p>
         <button class="btn btn-xs btn-danger unreg" data-app="{{m.service.name}}" data-alias="{{m.service.alias}}" data-cooltime="{{m.service.cooltime}}">{% trans "Unregister" %}</button>
     </div>
     {% empty %}
@@ -39,10 +39,10 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                <h4 class="modal-title">{% trans "Unregister" %} <span class="app-alias"></span></h4>
+                <h4 class="modal-title"><span class="app-alias"></span> {% trans "Unregister" %}</h4>
             </div>
             <div class="modal-body">
-                <p><b>{% trans "Warning!" %}</b> {% trans "You are trying to unregister the service" %} <span class="app-alias"></span>. {% trans "You will permantly lose access to your previous data, and you CANNOT use this service again for" %} <span class="app-cooltime"></span> {% trans "days" %}{</p>
+                <p><b>{% trans "Warning!" %}</b> {% trans "You are trying to unregister the following service" %}: <span class="app-alias"></span>; {% trans "You will permantly lose access to your previous data, and you CANNOT use this service again for" %} <span class="app-cooltime"></span> {% trans "days." %}</p>
                 <p class="text-danger">{% trans "If you understand all information above, copy the word:" %} <span class="random"></span></p>
                 <input type="text" class="form-control check"></input>
             </div>
@@ -50,7 +50,7 @@
                 <form action="/oauth/unregister/" method="post" style="margin-top:0"> 
                     {% csrf_token %}
                     <input type="hidden" name="app" value=""/>
-                    <input type="submit" class="btn btn-danger" value="UNREGISTER" disabled>
+                    <input type="submit" class="btn btn-danger" value="{% trans "Unregister" %}" disabled>
                     <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
                 </form>
             </div>

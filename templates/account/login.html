@@ -1,13 +1,12 @@
 {% extends "account/base.html" %}
-
-{% load staticfiles %}
 {% load i18n %}
-{% block htitle %}{% trans "SPARCS SSO Login" %}{% endblock %}
+
+{% block htitle %}SPARCS SSO {% trans "Login" %}{% endblock %}
 
 {% block header %}{% endblock %}
 
 {% block content %}
-<h1>{% trans "SPARCS SSO Login" %}</h1>
+<h1>SPARCS SSO {% trans "Login" %}</h1>
 <p>{% trans "Welcome to SPARCS SSO!" %}</p>
 
 <form class="form-horizontal" action="/account/login/" method="post">
@@ -22,12 +21,12 @@
         </div>    
         <div class="row">
 			<div class="col-xs-offset-1 col-xs-5">
-                <h4>{% trans "Login/Signup with Email" %}</h4>
+                <h4>{% trans "Login / Signup with Email" %}</h4>
 				{% if fail %}
         		<div class="form-group">
             		<div class="col-xs-12">
                 		<div class="alert alert-danger">
-                            <b>{% trans "Invalid login info" %}</b>
+                            <b>{% trans "Invalid email / password" %}</b>
                 		</div>
             		</div>
         		</div>
@@ -44,17 +43,17 @@
 				</div>
 				<div class="form-group">
 					<div class="col-xs-12">
-						<button type="submit" class="btn btn-primary">Login</button>
+                        <button type="submit" class="btn btn-primary">{% trans "Login" %}</button>
                         <a class="btn btn-warning" href="/account/signup/">{% trans "Sign Up" %}</a>
 					</div>
 				</div>
 			</div>
 			<div class="col-xs-5">
-                <h4>{% trans "Login/Signup with Social Accounts" %}</h4>
+                <h4>{% trans "Login / Signup with Social Accounts" %}</h4>
 				<p>
-				<a class="social-icon" href="/account/login/fb/"><img src="{% static "img/fb.png" %}" alt="Facebook Login"></a> &nbsp; &nbsp; &nbsp;
-					<a class="social-icon" href="/account/login/tw/"><img src="{% static "img/tw.png" %}" alt="Twitter Login"></a> &nbsp; &nbsp; &nbsp;
-					<a class="social-icon" href="/account/login/kaist/"><img src="{% static "img/kaist.png" %}" alt="KAIST SSO Login"></a>
+				<a class="social-icon" href="/account/login/fb/"><img src="/static/img/fb.png" alt="Facebook Login"></a> &nbsp; &nbsp; &nbsp;
+					<a class="social-icon" href="/account/login/tw/"><img src="/static/img/tw.png" alt="Twitter Login"></a> &nbsp; &nbsp; &nbsp;
+					<a class="social-icon" href="/account/login/kaist/"><img src="/static/img/kaist.png" alt="KAIST SSO Login"></a>
 				</p>
 			</div>
 		</div>

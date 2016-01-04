@@ -9,7 +9,7 @@
 
     <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-	{% block gheader %} {% endblock %}
+	{% block app-header %} {% endblock %}
 </head>
 <body>
 	<nav class="navbar navbar-default">
@@ -26,16 +26,16 @@
             <div class="collapse navbar-collapse" id="navbar">
                 <ul class="nav navbar-nav">
                     {% if user.profile.is_for_test or user.is_staff %}
-                    <li><a href="/doc/test/">{% trans "Test Doc" %}</a></li>
+                    <li><a href="/doc/test/">Tester Doc</a></li>
                     {% endif %}
                     {% if user.is_staff %}
-                    <li><a href="/doc/admin/">{% trans "Admin Doc" %}</a></li>
+                    <li><a href="/doc/sysop/">Sysop Doc</a></li>
                     {% endif %}
                 </ul>
 				<ul class="nav navbar-nav navbar-right">
 					{% if user.is_authenticated %}
 					<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ user.first_name }} <span class="caret"></span></a>
+					    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ user.first_name }} <span class="caret"></span></a>
 						<ul class="dropdown-menu" role="menu">
                             <li><a href="/oauth/service/">{% trans "Manage Service" %}</a></li>
                             <li><a href="/account/profile/">{% trans "Profile / Connections" %}</a></li>
@@ -48,7 +48,14 @@
 					<li><a href="/account/signup/">{% trans "Sign Up" %}</a></li>
                     <li><a href="/account/login/">{% trans "Login" %}</a></li>
                     <li><a href="/account/password/reset/">{% trans "Reset Password" %}</a></li>
-					{% endif %}
+                    {% endif %}
+                    <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{request.LANGUAGE_CODE|language_name_local}} <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="/lang/ko/">한국어</a></li>
+                            <li><a href="/lang/en/">English</a></li>
+                        </ul>
+                    </li>
 				</ul>
 			</div>
 		</div>
@@ -59,20 +66,16 @@
     </section>
     <footer class="container">
         <p class="info">
-            <a href="/credit/">{% trans "Credit" %}</a> |
-            <a href="/terms/">이용약관</a> |
-            <a href="/privacy/">개인정보취급방침</a>
+            <a href="/credits/">{% trans "Credits" %}</a> |
+            <a href="/terms/">{% trans "Terms of Use" %}</a> |
+            <a href="/privacy/">{% trans "Privacy Policy" %}</a>
         </p>
         <p class="info">
             <a href="#">SSO Team (sso@sparcs.org)</a> |
             <a href="#">SYSOP (sso.sysop@sparcs.org)</a>
         </p>
-        <p class="info">
-            <a href="/lang/ko/">한국어</a> |
-            <a href="/lang/en/">English</a>
-        </p>
         <p class="copyright">
-            Copyright © 2015,
+            Copyright © 2016,
             <a href="http://sparcs.kaist.ac.kr">
                 <span style="color:#FF3399">S</span><span style="color:#33CC66">P</span><span style="color:#00CCFF">A</span><span style="color:#FF9900">R</span><span style="color:#33CCCC">C</span><span style="color:#9966FF">S</span>
             </a>

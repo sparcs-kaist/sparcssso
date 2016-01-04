@@ -88,17 +88,24 @@ img.profile {
     height:100px;
 }
 
-.terms {
+
+.doc {
     text-align:left;
 }
 
-.terms li {
+.doc li {
     font-size:16px;
 }
 
-.terms li ul li {
+.doc li ul li {
     font-size:14px;
 }
+
+.doc-header {
+    margin-top:5px;
+    margin-bottom:20px;
+}
+
 
 .jumbotron {
     padding-top:10px;

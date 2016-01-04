@@ -1,15 +1,13 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% load staticfiles %}
-{% block gheader %}
-<link rel="stylesheet" type="text/css" href="{% static "css/account.css" %}">
-
-{% block header %}{% endblock %}
+{% block app-header %}
+<link rel="stylesheet" type="text/css" href="/static/css/main.css">
 {% endblock %}
 
 {% block content %}
-<h1 style="margin-top:0;margin-bottom:10px;">SPARCS SSO 이용약관 v1.0 <small>(REV2015-11-29T02:17+0900)</small></h1>
-<div class="terms">
+<h1 class="doc-header">SPARCS SSO 이용약관 v1.0 <small>(REV2015-11-29T02:17+0900)</small></h1>
+<div class="doc">
     <h3>제1조. SPARCS SSO의 목적</h3>
     <ol>
         <li>SPARCS SSO (이하 "본 서비스")는 KAIST 학부 동아리 SPARCS (이하 "SPARCS")가 제공하는 서비스 (이하 "SPARCS 서비스")의 계정을 통합하여 한 번의 로그인으로 SPARCS 서비스들을 사용할 수 있게 함을 목적으로 합니다.</li>

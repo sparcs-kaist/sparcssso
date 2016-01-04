@@ -1,21 +1,22 @@
 {% extends "account/base.html" %}
 {% load i18n %}
 
-{% block htitle %}{% trans "SPARCS SSO Signup" %}{% endblock %}
+{% block htitle %}SPARCS SSO {% trans "Signup" %}{% endblock %}
 
 {% block header %}
 {% endblock %}
 
 {% block content %}
-<h1>{% trans "Signup" %} <small>{% trans "with" %} 
+<h1>{% trans "Signup" %}
+<small> 
     {% if type == 'FB' %}
-        {% trans "Facebook Account" %}
+        {% trans "with Facebook Account" %}
     {% elif type == 'TW' %}
-        {% trans "Twitter Account" %}
+        {% trans "with Twitter Account" %}
     {% elif type == 'KAIST' %}
-        {% trans "KAIST SSO" %}
+        {% trans "with KAIST SSO" %}
     {% elif type == 'EMAIL' %}
-        {% trans "Email" %}
+        {% trans "with Email" %}
     {% endif %}
 </small></h1>
 {% if type == 'EMAIL' %}
@@ -68,12 +69,12 @@
 			</div>
         </div>
         <div class="form-group">
-            By clicking on Signup!, you agree to <a href="/terms/" target="_blank">SPARCS SSO's terms &amp; conditions</a> and <a href="/privacy/" target="_blank">privacy policy</a>
+            By clicking on the signup button, you agree to <a href="/terms/" target="_blank">SPARCS SSO's terms of use</a> and <a href="/privacy/" target="_blank">privacy policy</a>
         </div>
         <div class="form-group">
             <div class="col-xs-12">
-                <button type="submit" class="btn btn-warning">{% trans "Signup!" %}</button>
-                <a class="btn btn-default" href="/account/login/">{% trans "Login" %}</a>
+                <button type="submit" class="btn btn-warning">{% trans "Signup" %}</button>
+                <a class="btn btn-default" href="/account/login/">{% trans "Login Page" %}</a>
             </div>
         </div>
     </fieldset>

@@ -1,10 +1,9 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% load staticfiles %}
-{% block gheader %}
-<meta name="robots" content="noindex, nofollow">
-<link rel="stylesheet" type="text/css" href="{% static "css/account.css" %}">
+{% block app-header %}
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<link rel="stylesheet" type="text/css" href="/static/css/main.css">
 {% endblock %}
 
 {% block content %}

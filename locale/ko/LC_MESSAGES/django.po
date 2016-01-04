@@ -10,7 +10,7 @@ msgstr ""
 "POT-Creation-Date: 2016-01-01 17:12+0900\n"
 "PO-Revision-Date: 2016-01-01 19:21+0900\n"
 "Last-Translator: Jae-Sung Kim <wotjd1102@kaist.ac.kr>\n"
-"Language-Team: SPARCS SSO Team<sso@sparcs.org>\n"
+"Language-Team: SPARCS SSO Team <sso@sparcs.org>\n"
 "Language: Korean\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -147,29 +147,25 @@ msgstr "서비스 관리"
 msgid "page first, and unregister all services."
 msgstr "로 가셔서 모든 서비스의 등록을 해제해주세요."
 
-#: templates/account/login.html:5 templates/account/login.html.py:10
-msgid "SPARCS SSO Login"
-msgstr "SPARCS SSO 로그인"
-
 #: templates/account/login.html:11
 msgid "Welcome to SPARCS SSO!"
 msgstr "SPARCS SSO에 오신 것을 환영합니다!"
 
 #: templates/account/login.html:25
-msgid "Login/Signup with Email"
-msgstr "이메일을 통해 로그인/회원가입"
+msgid "Login / Signup with Email"
+msgstr "이메일로 로그인 / 회원가입"
 
 #: templates/account/login.html:30
-msgid "Invalid login info"
-msgstr "잘못된 회원 정보"
+msgid "Invalid email / password"
+msgstr "잘못된 이메일 / 비빌번호"
 
 #: templates/account/login.html:48 templates/base.html:48
 msgid "Sign Up"
 msgstr "회원가입"
 
 #: templates/account/login.html:53
-msgid "Login/Signup with Social Accounts"
-msgstr "소셜 계정을 통해 로그인/회원가입"
+msgid "Login / Signup with Social Accounts"
+msgstr "소셜 계정으로 로그인 / 회원가입"
 
 #: templates/account/logout.html:4
 msgid "SPARCS SSO Logout"
@@ -189,7 +185,7 @@ msgstr "SPARCS SSO 프로필"
 
 #: templates/account/profile.html:9
 msgid "Profile &amp; Social Network Accounts"
-msgstr "프로필 &amp; 소셜 네트워크 계정"
+msgstr "프로필 및 SNS 계정"
 
 #: templates/account/profile.html:10
 msgid "You can change your information or connect/disconnect social accounts."
@@ -203,7 +199,7 @@ msgstr "수정된 정보는 다른 SPARCS 서비스에 적용되지 않을 수 �
 msgid "Your information has been updated."
 msgstr "프로필 정보가 업데이트 되었습니다."
 
-#: templates/account/profile.html:25 templates/account/signup/main.html:18
+#: templates/account/profile.html:25
 #: templates/account/signup/main.html:32
 msgid "Email"
 msgstr "이메일"
@@ -222,11 +218,11 @@ msgstr "기타"
 
 #: templates/account/profile.html:45 templates/account/signup/main.html:62
 msgid "Male"
-msgstr "남"
+msgstr "남자"
 
 #: templates/account/profile.html:46 templates/account/signup/main.html:63
 msgid "Female"
-msgstr "여"
+msgstr "여자"
 
 #: templates/account/profile.html:55
 msgid "Modify"
@@ -240,11 +236,11 @@ msgstr "SNS 계정"
 msgid ""
 "You should connect to KAIST SSO if you want to verify your identity as a "
 "KAIST member."
-msgstr "KAIST 구성원 인증을 하려면 KAIST SSO에 연결해야 합니다."
+msgstr "KAIST 구성원 인증을 하려면 KAIST SSO와 연결해야 합니다."
 
 #: templates/account/profile.html:65
 msgid "You CANNOT DISCONNECT KAIST SSO from SPARCS SSO once you connect."
-msgstr "한번 KAIST SSO에 연결하면, 해제가 불가능합니다."
+msgstr "한번 KAIST SSO에 연결하면, 해제 할 수 없습니다."
 
 #: templates/account/profile.html:71
 msgid "Your social network account has been connected."
@@ -278,15 +274,15 @@ msgstr "비밀번호 변경"
 
 #: templates/account/pw-change.html:10
 msgid "You need to login again if you changed your password."
-msgstr "비밀번호 변경 후 다시 로그인해야 합니다."
+msgstr "비밀번호를 변경하면 다시 로그인해야 합니다."
 
 #: templates/account/pw-change.html:24
-msgid "Old Password"
-msgstr "변경 전 비밀번호"
+msgid "Current Password"
+msgstr "현재 비밀번호"
 
 #: templates/account/pw-change.html:30 templates/account/pw-reset/main.html:15
 msgid "New Password"
-msgstr "변경 후 비밀번호"
+msgstr "새 비밀번호"
 
 #: templates/account/pw-change.html:33 templates/account/pw-reset/main.html:18
 #: templates/account/signup/main.html:41
@@ -295,19 +291,7 @@ msgstr "비밀번호는 최소 7자리 이상이어야 합니다."
 
 #: templates/account/pw-change.html:37 templates/account/pw-reset/main.html:22
 msgid "Type Again"
-msgstr "다시 입력해주세요"
-
-#: templates/account/pw-change.html:45
-msgid "Change!"
-msgstr "변경!"
-
-#: templates/account/pw-reset/fail.html:5
-#: templates/account/pw-reset/main.html:4
-#: templates/account/pw-reset/send.html:5
-#: templates/account/pw-reset/sent.html:5
-#: templates/account/pw-reset/success.html:5
-msgid "SPARCS SSO Password Reset"
-msgstr "SPARCS SSO 비밀번호 재설정"
+msgstr "비밀번호 확인"
 
 #: templates/account/pw-reset/fail.html:10
 msgid "Password Reset Fail"
@@ -316,7 +300,7 @@ msgstr "비밀번호 재설정 실패"
 #: templates/account/pw-reset/fail.html:11
 msgid ""
 "Failed to reset your password, because you entered wrong or expired token id."
-msgstr "토큰이 잘못되었거나 토큰의 유효기간이 만료되어 비밀번호 재설정에 실패했습니다."
+msgstr "잘못된 토큰이거나 유효기간이 만료되어 비밀번호 재설정에 실패했습니다."
 
 #: templates/account/pw-reset/main.html:9
 #: templates/account/pw-reset/send.html:10
@@ -327,24 +311,30 @@ msgstr "비밀번호 재설정"
 msgid "Please enter a new password."
 msgstr "새 비밀번호를 입력해주세요."
 
-#: templates/account/pw-reset/main.html:30
-msgid "Reset!"
-msgstr "재설정!"
-
 #: templates/account/pw-reset/send.html:11
 msgid "Please input your email address to reset password."
-msgstr "비밀번호 재설정을 위한 이메일 주소를 입력해주세요."
+msgstr "비밀번호를 재설정 할 계정의 이메일 주소를 입력해주세요."
 
 #: templates/account/pw-reset/send.html:18
 #, python-format
 msgid "There are no account using %(email)s"
-msgstr "%(email)s 를 주소로 사용하는 계정이 없습니다."
+msgstr "입력하신 이메일 %(email)s와 일치하는 계정이 없습니다."
+
+#: templates/account/pw-reset/send.html:31
+msgid "Send Email"
+msgstr "이메일 전송"
+
+#: templates/account/pw-reset/sent.html:10
+msgid "Password Reset Email Sent"
+msgstr "비밀번호 재설정 이메일 발송됨"
 
 #: templates/account/pw-reset/sent.html:11
-msgid ""
-"Password reset email has been sent. Please check your email account. "
-"Redirecting to login page..."
-msgstr "비밀번호 재설정 이메일이 전송되었습니다. 메일함을 확인해주세요. 로그인 페이지로 되돌아갑니다..."
+msgid "Password reset email has been sent. Please check your email account."
+msgstr "비밀번호 재설정 이메일을 발송하였습니다. 메일함을 확인해주세요."
+
+#: templates/account/pw-reset/sent.html:12
+msgid "Redirecting to login page..."
+msgstr "로그인 페이지로 되돌아갑니다..."
 
 #: templates/account/pw-reset/success.html:10
 msgid "Password Reset Success"
@@ -354,13 +344,9 @@ msgstr "비밀번호 재설정 성공"
 msgid "Successfully reset your password! Redirecting to login page..."
 msgstr "비밀번호 재설정에 성공했습니다! 로그인 페이지로 되돌아갑니다..."
 
-#: templates/account/signup/complete.html:4
-msgid "SPARCS SSO Signup Complete"
-msgstr "SPARCS SSO 회원가입 완료"
-
 #: templates/account/signup/complete.html:10
-msgid "Signup Complete!"
-msgstr "회원가입 완료!"
+msgid "Signup Complete"
+msgstr "회원가입 완료"
 
 #: templates/account/signup/complete.html:11
 msgid "Welcome to join SPARCS SSO!"
@@ -369,7 +355,7 @@ msgstr "SPARCS SSO에 가입하신 것을 환영합니다!"
 #: templates/account/signup/complete.html:13
 msgid ""
 "Verification Email is sent. Please verify your email first, and then login."
-msgstr "확인 이메일이 전송되었습니다. 메일함을 확인하신 후 로그인해주세요."
+msgstr "확인 이메일이 전송되었습니다. 먼저 이메일을 인증한 뒤 로그인해주세요."
 
 #: templates/account/signup/complete.html:15
 msgid ""
@@ -377,29 +363,25 @@ msgid ""
 "also login using email"
 msgstr "SNS 계정을 통해서 로그인하실 수 있습니다. 이메일을 인증하시면, 이메일로도 로그인이 가능합니다."
 
-#: templates/account/signup/main.html:4
-msgid "SPARCS SSO Signup"
-msgstr "SPARCS SSO 회원가입"
-
-#: templates/account/signup/main.html:10
+#: templates/account/signup/main.html:10 templates/account/signup/main.html:72
 msgid "Signup"
-msgstr "다음을 통해"
-
-#: templates/account/signup/main.html:10
-msgid "with"
-msgstr "회원가입: "
+msgstr "회원가입"
 
 #: templates/account/signup/main.html:12
-msgid "Facebook Account"
-msgstr "페이스북 계정"
+msgid "with Facebook Account"
+msgstr "(페이스북)"
 
 #: templates/account/signup/main.html:14
-msgid "Twitter Account"
-msgstr "트위터 계정"
+msgid "with Twitter Account"
+msgstr "(트위터)"
 
 #: templates/account/signup/main.html:16
-msgid "KAIST SSO"
-msgstr "KAIST SSO(Portal 계정)"
+msgid "with KAIST SSO"
+msgstr "(KAIST Portal)"
+
+#: templates/account/signup/main.html:18
+msgid "with Email"
+msgstr "(이메일)"
 
 #: templates/account/signup/main.html:22
 msgid "Please fill up the following contents."
@@ -423,21 +405,9 @@ msgstr "이메일을 인증하지 않으면 SNS 계정을 통해서만 로그인
 msgid "Password"
 msgstr "비밀번호"
 
-#: templates/account/signup/main.html:72
-msgid "Signup!"
-msgstr "회원가입!"
-
 #: templates/account/signup/main.html:73 templates/base.html:49
 msgid "Login"
 msgstr "로그인"
-
-#: templates/base.html:29
-msgid "Test Doc"
-msgstr "테스트 문서"
-
-#: templates/base.html:32
-msgid "Admin Doc"
-msgstr "관리자 문서"
 
 #: templates/base.html:41
 msgid "Profile / Connections"
@@ -448,12 +418,16 @@ msgid "Reset Password"
 msgstr "비밀번호 재설정"
 
 #: templates/base.html:62
-msgid "Credit"
+msgid "Credits"
 msgstr "만든 사람들"
 
 #: templates/base.html:63
-msgid "Feedback (sso@sparcs.org)"
-msgstr "피드백 (sso@sparcs.org)"
+msgid "Terms of Use"
+msgstr "이용 약관"
+
+#: templates/base.html:64
+msgid "Privacy Policy"
+msgstr "개인정보취급방침"
 
 #: templates/error/400.html:4
 msgid "Bad Request"
@@ -513,7 +487,7 @@ msgstr "SPARCS 통합 인증에 오신 것을 환영합니다!"
 
 #: templates/main.html:21
 msgid "You can use the following services using SPARCS SSO"
-msgstr "SPARCS SSO를 사용하면 이용하실 수 있는 서비스들은 다음과 같습니다."
+msgstr "현재 SPARCS SSO를 통해 다음 서비스를 사용할 수 있습니다."
 
 #: templates/oauth/cooltime.html:3
 msgid "SPARCS SSO In Cooltime"
@@ -544,7 +518,7 @@ msgstr "SPARCS SSO 서비스 관리"
 
 #: templates/oauth/service.html:10
 msgid "You can see and unregister services that you use."
-msgstr "여기서 등록된 서비스들을 확인하고 해지할 수 있습니다."
+msgstr "등록된 서비스들을 확인하고 해지할 수 있습니다."
 
 #: templates/oauth/service.html:15
 msgid "Fail to unregister service. Try again."
@@ -556,12 +530,14 @@ msgstr "서비스 해지에 성공했습니다."
 
 #: templates/oauth/service.html:29
 #, python-format
-msgid "from %(m.register_time|date:'Y-m-d')s"
-msgstr "등록일시: %(m.register_time|date:'Y-m-d')s"
+msgid "from %(time)s"
+msgstr "등록일시: %(time)s"
 
-#: templates/oauth/service.html:30 templates/oauth/service.html.py:42
+#: templates/oauth/service.html:30
+#: templates/oauth/service.html:42
+#: templates/oauth/service.html:53
 msgid "Unregister"
-msgstr "해지"
+msgstr "서비스 해지"
 
 #: templates/oauth/service.html:33
 msgid "There are no services to show."
@@ -572,22 +548,22 @@ msgid "Warning!"
 msgstr "경고!"
 
 #: templates/oauth/service.html:45
-msgid "You are trying to unregister the service"
-msgstr "당신은 서비스를 해지하려 하고 있습니다"
+msgid "You are trying to unregister the following service"
+msgstr "다음 서비스가 해지됩니다"
 
 #: templates/oauth/service.html:45
 msgid ""
 "You will permantly lose access to your previous data, and you CANNOT use "
 "this service again for"
-msgstr "더 이상 이전의 데이터에 영구히 접근할 수 없으며, 이 서비스를 "
+msgstr "서비스 해지 시 데이터에 대한 접근 권한을 잃게 되며, 이 서비스를 "
 
 #: templates/oauth/service.html:45
-msgid "days"
-msgstr "일간 사용하실 수 없습니다"
+msgid "days."
+msgstr "일 안에 다시 사용하실 수 없습니다."
 
 #: templates/oauth/service.html:46
 msgid "If you understand all information above, copy the word:"
-msgstr "위의 사항들을 숙지하셨다면, 다음 문자를 입력해주세요."
+msgstr "위 사항을 숙지하셨다면, 다음 문자를 입력해주세요."
 
 #: templates/oauth/service.html:54
 msgid "Close"

@@ -22,14 +22,17 @@ from django.shortcuts import render
 
 urlpatterns = [
     url(r'^$', 'apps.account.views.main'),
+
     url(r'^lang/(?P<code>\w+)', 'apps.account.views.lang'),
-    url(r'^credit/', 'apps.account.views.credit'),
+
+    url(r'^credits/', 'apps.account.views.credits'),
     url(r'^terms/', 'apps.account.views.terms'),
     url(r'^privacy/', 'apps.account.views.privacy'),
-    url(r'^doc/test/', 'apps.account.views.doc_test'),
-    url(r'^doc/admin/', 'apps.account.views.doc_admin'),
 
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^doc/test/', 'apps.account.views.doc_test'),
+    url(r'^doc/sysop/', 'apps.account.views.doc_sysop'),
+
+    url(r'^manage/', include(admin.site.urls)),
     url(r'^account/', include('apps.account.urls')),
     url(r'^oauth/', include('apps.oauth.urls')),
 ]

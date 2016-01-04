@@ -1,13 +1,12 @@
 {% extends "account/base.html" %}
 {% load i18n %}
 
-{% block htitle %} {% trans "SPARCS SSO Signup Complete" %}{% endblock %}
+{% block htitle %}SPARCS SSO {% trans "Signup Complete" %}{% endblock %}
 
-{% block header %}
-{% endblock %}
+{% block header %}{% endblock %}
 
 {% block content %}
-<h1>{% trans "Signup Complete!" %}</h1>
+<h1>{% trans "Signup Complete" %}</h1>
 <p>{% trans "Welcome to join SPARCS SSO!" %}</p>
 {% if type == 'EMAIL' %}
 <p>{% trans "Verification Email is sent. Please verify your email first, and then login." %}</p>

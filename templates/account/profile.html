@@ -1,13 +1,13 @@
 {% extends "account/base.html" %}
-{% load staticfiles %}
 {% load i18n %}
-{% block htitle %}{% trans "SPARCS SSO Profile" %}{% endblock %}
+
+{% block htitle %}SPARCS SSO {% trans "Profile" %}{% endblock %}
 
 {% block header %}{% endblock %}
 
 {% block content %}
 <h1>{% trans "Profile &amp; Social Network Accounts" %}</h1>
-<p>{% trans "You can change your information or connect/disconnect social accounts." %}</p>
+<p>{% trans "You can change your information or connect / disconnect social accounts." %}</p>
 <p>{% trans "Changed information may not be applied in other SPARCS services." %}</p>
 <form id="profile" class="form-horizontal" action="/account/profile/" method="post" enctype="multipart/form-data">
     <fieldset>
@@ -53,7 +53,7 @@
         <div class="form-group">
             <div class="col-xs-12">
                 <button type="submit" class="btn btn-primary">{% trans "Modify" %}</button>
-                <a class="btn btn-default" href="javascript:window.history.go(-1)">{% trans "Go Back" %}</a>
+                <a class="btn btn-default" href="/account/profile/">{% trans "Reset" %}</a>
             </div>
 		</div>
     </fieldset>
@@ -85,7 +85,7 @@
 <div class="row">
 	<div class="col-xs-offset-2 col-xs-3 social-panel">
 		<div class="social-icon">
-			<img class="{% if not profile.facebook_id %}disabled{% endif %}" src="{% static "img/fb.png" %}" alt="Facebook">
+			<img class="{% if not profile.facebook_id %}disabled{% endif %}" src="/static/img/fb.png" alt="Facebook">
 		</div>
 		{% if not profile.facebook_id %}
 		<form class="social-form" action="/account/connect/fb/" method="post">
@@ -101,7 +101,7 @@
 	</div>
 	<div class="col-xs-2 social-panel">
 		<div class="social-icon">
-			<img class="{% if not profile.twitter_id %}disabled{% endif %}" src="{% static "img/tw.png" %}" alt="Twitter">
+			<img class="{% if not profile.twitter_id %}disabled{% endif %}" src="/static/img/tw.png" alt="Twitter">
 		</div>
 		{% if not profile.twitter_id %}
 		<form class="social-form" action="/account/connect/tw/" method="post">
@@ -117,7 +117,7 @@
 	</div>
 	<div class="col-xs-3 social-panel">
 		<div class="social-icon">
-			<img class="{% if not profile.kaist_id %}disabled{% endif %}" src="{% static "img/kaist.png" %}" alt="KAIST">
+			<img class="{% if not profile.kaist_id %}disabled{% endif %}" src="/static/img/kaist.png" alt="KAIST">
 		</div>
 		{% if not profile.kaist_id %}
 		<form class="social-form" action="/account/connect/kaist/" method="post">

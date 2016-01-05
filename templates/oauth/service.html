@@ -1,7 +1,7 @@
 {% extends "oauth/base.html" %}
-{% load staticfiles %}
 {% load i18n %}
-{% block htitle %}{% trans "SPARCS SSO Manage Service" %}{% endblock %}
+
+{% block htitle %}SPARCS SSO {% trans "Manage Service" %}{% endblock %}
 
 {% block header %}{% endblock %}
 
@@ -42,7 +42,8 @@
                 <h4 class="modal-title"><span class="app-alias"></span> {% trans "Unregister" %}</h4>
             </div>
             <div class="modal-body">
-                <p><b>{% trans "Warning!" %}</b> {% trans "You are trying to unregister the following service" %}: <span class="app-alias"></span>; {% trans "You will permantly lose access to your previous data, and you CANNOT use this service again for" %} <span class="app-cooltime"></span> {% trans "days." %}</p>
+                <p><b>{% trans "Warning!" %}</b> {% trans "You are trying to unregister the following service" %}: <span class="app-alias"></span></p>
+                <p>{% trans "You will permantly lose access to your previous data, and you CANNOT use this service again for" %} <span class="app-cooltime"></span>{% trans "days." %}</p>
                 <p class="text-danger">{% trans "If you understand all information above, copy the word:" %} <span class="random"></span></p>
                 <input type="text" class="form-control check"></input>
             </div>

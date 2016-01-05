@@ -1,7 +1,7 @@
 {% extends "account/base.html" %}
 {% load i18n %}
-{% load staticfiles %}
-{% block htitle %}{% trans "SPARCS SSO Deactivate" %}{% endblock %}
+
+{% block htitle %}SPARCS SSO {% trans "Deactivate" %}{% endblock %}
 
 {% block header %}{% endblock %}
 
@@ -24,20 +24,18 @@
 		{% endif %}
         {% csrf_token %}
         <div class="form-group col-sm-offset-3 col-sm-6">
-			<input type="password" class="form-control" name="password" placeholder="Password" required="required">
+			<input type="password" class="form-control" name="password" placeholder="pAssw0rd!" required="required">
         </div>
 		<div class="form-group">
 			<div class="col-xs-12">
 				<button type="submit" class="btn btn-danger">{% trans "DEACTIVATE" %}</button>
-				<a class="btn btn-default" href="javascript:window.history.go(-1)">{% trans "Go Back" %}</a>
 			</div>
 		</div>
 	</fieldset>
 </form>
-
 {% else %}
 <p class="text-danger">{% trans "You CANNOT deactivate your account since you are registered to at least one SPARCS service yet." %}</p>
-<p>{% trans "Go to" %} <a href="/oauth/service/">{% trans "Manage Service" %}</a> {% trans "page first, and unregister all services." %}</p> 
+<p>{% trans "Go to" %} <a href="/oauth/service/">{% trans "Manage Service" %}</a>{% trans "page first, and unregister all services." %}</p> 
 {% endif %}
 {% endblock %}
 

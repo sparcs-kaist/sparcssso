@@ -26,7 +26,7 @@
             <div class="collapse navbar-collapse" id="navbar">
                 <ul class="nav navbar-nav">
                     {% if user.profile.is_for_test or user.is_staff %}
-                    <li><a href="/doc/test/">Tester Doc</a></li>
+                    <li><a href="/doc/dev/">Dev Doc</a></li>
                     {% endif %}
                     {% if user.is_staff %}
                     <li><a href="/doc/sysop/">Sysop Doc</a></li>
@@ -71,8 +71,8 @@
             <a href="/privacy/">{% trans "Privacy Policy" %}</a>
         </p>
         <p class="info">
-            <a href="#">SSO Team (sso@sparcs.org)</a> |
-            <a href="#">SYSOP (sso.sysop@sparcs.org)</a>
+            <a href="#">{% trans "Dev Team" %} (sso@sparcs.org)</a> |
+            <a href="#">{% trans "SYSOP" %} (sso.sysop@sparcs.org)</a>
         </p>
         <p class="copyright">
             Copyright © 2016,

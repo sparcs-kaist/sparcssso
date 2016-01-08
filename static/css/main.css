@@ -106,6 +106,43 @@ img.profile {
     font-size:14px;
 }
 
+.doc h2 {
+    border-bottom:1px solid #eee;
+    padding-bottom:5px;
+    margin-top:40px;
+}
+
+.doc .box {
+    padding:20px;
+    margin:20px 0;
+    border:1px solid #eee;
+    border-left-width: 5px;
+}
+
+.doc .box h4 {
+    margin-top:0;
+}
+
+.doc .box p:last-child {
+    margin-bottom:0;
+}
+
+.doc .box-warning {
+    border-left-color:#aa6708;
+}
+
+.doc .box-warning h4 {
+    color:#aa6708;
+}
+
+.doc .box-danger {
+    border-left-color:#ce4844;
+}
+
+.doc .box-danger h4 {
+    color:#ce4844;
+}
+
 .doc-header {
     margin-top:5px;
     margin-bottom:20px;

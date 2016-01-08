@@ -91,12 +91,12 @@ def privacy(request):
     return render(request, 'privacy.html')
 
 
-# /doc/test/
-def doc_test(request):
+# /doc/dev/
+def doc_dev(request):
     if not request.user.is_authenticated() or \
         (not request.user.profile.is_for_test and not request.user.is_staff):
         return redirect('/')
-    return render(request, 'doc.test.html')
+    return render(request, 'doc.dev.html')
 
 
 # /doc/sysop/

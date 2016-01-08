@@ -29,7 +29,7 @@ urlpatterns = [
     url(r'^terms/', 'apps.account.views.terms'),
     url(r'^privacy/', 'apps.account.views.privacy'),
 
-    url(r'^doc/test/', 'apps.account.views.doc_test'),
+    url(r'^doc/dev/', 'apps.account.views.doc_dev'),
     url(r'^doc/sysop/', 'apps.account.views.doc_sysop'),
 
     url(r'^manage/', include(admin.site.urls)),

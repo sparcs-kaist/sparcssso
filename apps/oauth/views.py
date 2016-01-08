@@ -57,14 +57,17 @@ def unregister_service(request, user, service):
         logger.warning('service.unregister.fail: target not exists, name=%s' % service.name, request)
         return 1
 
-    '''data = urllib.urlencoode({'sid': m.sid, 'key': service.secret_key})
+    data = urllib.urlencoode({'sid': m.sid, 'key': service.secret_key})
     result = urllib.urlopen(service.unregister_url, data)
-    result = json.load(result)
 
-    status = result.get('status', '-1')
-    if status != '0':
-        return False
-    '''
+    """try:
+        result = json.load(result)
+
+        status = result.get('status', '-1')
+        if status != '0':
+            return False
+    except:
+        return False"""
 
     m.unregister_time = timezone.now()
     m.save()

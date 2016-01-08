@@ -71,5 +71,8 @@ media/
 # VIM Swap Files
 *.sw[op]
 
-# PAsswords / Secret Keys
+# Passwords / Secret Keys
 keys/
+
+# sysop doc
+doc.sysop.html

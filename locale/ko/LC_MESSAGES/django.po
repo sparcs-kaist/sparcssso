@@ -17,6 +17,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
+msgid "Dev Team"
+msgstr "개발팀"
+
+msgid "SYSOP"
+msgstr "관리자"
+
 #: templates/account/auth-email/fail.html:5
 #: templates/account/auth-email/success.html:5
 msgid "Email Authenticate"

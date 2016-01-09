@@ -175,6 +175,7 @@ def info(request):
     resp['twitter_id'] = profile.twitter_id
     resp['kaist_id'] = profile.kaist_id
     resp['kaist_info'] = profile.kaist_info
+    resp['sparcs_id'] = profile.sparcs_id
 
     return HttpResponse(json.dumps(resp), content_type='application/json')
 

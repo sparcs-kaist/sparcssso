@@ -37,7 +37,7 @@
         </div>
 		<div class="form-group">
             <label class="col-xs-2 control-label">{% trans "Password" %} <span class="required"></span></label>
-			<div class="form-group col-xs-4">
+			<div class="col-xs-4">
 				<input type="password" class="form-control" name="password" placeholder="pAss0wd!" id="password" required="required" maxlength="50" data-minlength="7">
                 <span class="help-block">{% trans "Password must be at least 7 characters" %}</span>
 			</div>
@@ -48,23 +48,23 @@
 		</div>
 		<div class="form-group">
             <label class="col-xs-2 control-label">{% trans "Name" %} <span class="required"></span></label>
-			<div class="form-group col-xs-5">
+			<div class="col-xs-5">
 				<input type="text" class="form-control" name="first_name" placeholder="First Name" required="required" maxlength="30" value="{{info.first_name}}">
 			</div>
-			<div class="form-group col-xs-3">
+			<div class="col-xs-3">
 				<input type="text" class="form-control" name="last_name" placeholder="Last Name" required="required" maxlength="30" value="{{info.last_name}}">
 			</div>
 		</div>
 		<div class="form-group" style="margin-bottom:0">
             <label class="col-xs-2 control-label">{% trans "Gender, Birthday" %}</label>
-			<div class="form-group col-xs-3">
+			<div class="col-xs-3">
 				<select name="gender" class="form-control">
                     <option value="E" selected>{% trans "etc" %}</option>
                     <option value="M">{% trans "Male" %}</option>
                     <option value="F">{% trans "Female" %}</option>
 				</select>
 			</div>
-			<div class="form-group col-xs-5">
+			<div class="col-xs-5">
                 <input type="text" class="form-control" name="birthday" placeholder="Birthday (YYYY-MM-DD)" data-vbirth="vbirth" value="{{info.birthday}}">
 			</div>
         </div>

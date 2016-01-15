@@ -24,7 +24,7 @@
     <br>
     <p>위 조건을 모두 만족할 때, 지원 서비스의 PM은 SSO의 SYSOP에게 다음을 제출해야 합니다.</p>
     <ol>
-        <li>지원 서비스의  고유 아이디 (영어 소문자 한정)</li>
+        <li>지원 서비스의 고유 아이디 (영어 소문자로 한정되며 <b>sparcs로 시작해서는 안됨</b>)</li>
         <li>지원 서비스의 이름</li>
         <li>지원 서비스의 대표 url</li>
         <li>지원 서비스의 callback url</li>
@@ -86,13 +86,15 @@
         <li>first_name: 사용자의 이름입니다.</li>
         <li>last_name: 사용자의 성입니다.</li>
         <li>gender: M, F, E 셋 중 하나의 값을 가집니다. 차례대로 남성, 여성, 기타입니다.</li>
-        <li>bi rthday: 사용자의 생일이며, YYYY-MM-DD 또는 빈 문자열 값입니다.</li>
+        <li>birthday: 사용자의 생일이며, YYYY-MM-DD 또는 빈 문자열 값입니다.</li>
         <li>is_for_test: 사용자가 테스트 계정인지 여부입니다. True 또는 False 입니다.</li>
         <li>facebook_id: 사용자의 페이스북 고유 ID입니다. 연동하지 않았을 경우 빈 문자열 값입니다.</li>
         <li>twitter_id: 사용자의 트위터 고유 ID입니다. 연동하지 않았을 경우 빈 문자열 값입니다.</li>
         <li>kaist_id: 사용자의 KAIST PORTAL 고유 ID입니다. 연동하지 않았을 경우 빈 문자열 값입니다.</li>
         <li>kaist_info: 사용자의 KAIST PORTAL 관련 정보입니다. 연동하지 않았을 경우 빈 문자열 값입니다.</li>
+        <li>sparcs_id: 사용자의 SPARCS ID입니다. SPARCS 회원이 아닌 경우 빈 문자열 값입니다.</li>
     </ol>
+    <p>uid와 sid는 %x 포맷의 16진수 20자리입니다.</p>
     <div class="box box-warning">
         <h4>데이터 신뢰 금지</h4>
         <p>위 정보에서 4, 5, 6, 7이 실제 사용자의 정보와 일치하는지는 보장하지 않습니다.</p>

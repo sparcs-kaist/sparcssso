@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import SuspiciousOperation
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.utils import timezone
 from apps.oauth.models import Service, ServiceMap, AccessToken
 import json
@@ -94,6 +94,9 @@ def require(request):
 
     url = request.GET.get('url', '')
     dest = get_callback(request.user, service, url)
+
+    if name.startswith('sparcs') and not request.user.profile.sparcs_id:
+        return HttpResponseForbidden()
 
     token = AccessToken.objects.filter(user=request.user, service=service).first()
     if token:

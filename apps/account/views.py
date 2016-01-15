@@ -93,8 +93,9 @@ def privacy(request):
 
 # /doc/dev/
 def doc_dev(request):
-    if not request.user.is_authenticated() or \
-        (not request.user.profile.is_for_test and not request.user.is_staff):
+    u = request.user
+    if not u.is_authenticated() or \
+        (not u.is_staff and not u.profile.is_for_test and not u.profile.sparcs_id):
         return redirect('/')
     return render(request, 'doc.dev.html')
 

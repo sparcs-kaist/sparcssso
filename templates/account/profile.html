@@ -13,7 +13,7 @@
     <fieldset>
         {% if success %}
 		<div class="form-group">
-			<div class="col-xs-12">
+			<div class="col-xs-offset-2 col-xs-8">
                <div class="alert alert-success">
                    <b>{% trans "Your information has been updated." %}</b>
                 </div>
@@ -30,26 +30,35 @@
 		<input type="hidden" name="password" value="qwerty1234">
 		<div class="form-group">
             <label class="col-xs-2 control-label">{% trans "Name" %} <span class="required"></span></label>
-			<div class="form-group col-xs-5">
+			<div class="col-xs-5">
 				<input type="text" class="form-control" name="first_name" placeholder="First Name" required="required" maxlength="30" value="{{user.first_name}}">
 			</div>
-			<div class="form-group col-xs-3">
+			<div class="col-xs-3">
 				<input type="text" class="form-control" name="last_name" placeholder="Last Name" required="required" maxlength="30" value="{{user.last_name}}">
 			</div>
 		</div>
 		<div class="form-group">
             <label class="col-xs-2 control-label">{% trans "Gender, Birthday" %}</label>
-			<div class="form-group col-xs-3">
+			<div class="col-xs-3">
 				<select class="form-control" name="gender">
                     <option value="E">{% trans "etc" %}</option>
                     <option value="M">{% trans "Male" %}</option>
                     <option value="F">{% trans "Female" %}</option>
 				</select>
 			</div>
-			<div class="form-group col-xs-5">
+			<div class="col-xs-5">
 				<input type="text" class="form-control" name="birthday" placeholder="Birthday (YYYY-MM-DD)" data-vbirth="vbirth" value="{{profile.birthday|date:'Y-m-d'}}">
-			</div>
-		</div>
+            </div>
+        </div>
+        {% if profile.sparcs_id %}
+        <div class="form-group">
+            <label class="col-xs-2 control-label">SPARCS ID</label>
+			<div class="col-xs-8">
+				<input type="text" class="form-control" value="{{profile.sparcs_id}}" disabled>
+            </div>
+        </div>
+        {% endif %}
+
         <div class="form-group">
             <div class="col-xs-12">
                 <button type="submit" class="btn btn-primary">{% trans "Modify" %}</button>

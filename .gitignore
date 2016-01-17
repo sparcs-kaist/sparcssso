@@ -58,12 +58,10 @@ docs/_build/
 target/
 
 # SQLite Database File
-db.*
+db.sqlite3
 
 # Test Script File
 cleardb
-envtoreal
-envtotest
 
 # Test Media File
 media/

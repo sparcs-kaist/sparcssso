@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ -f sparcssso/settings.real.py ]; then
+    mv sparcssso/settings.py sparcssso/settings.test.py
+    mv sparcssso/settings.real.py sparcssso/settings.py
+    echo 'Changed to DEPLOY mode!'
+else
+    mv sparcssso/settings.py sparcssso/settings.real.py
+    mv sparcssso/settings.test.py sparcssso/settings.py
+    echo 'Changed to DEVELOP mode!'
+fi

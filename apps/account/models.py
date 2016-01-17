@@ -34,6 +34,7 @@ class UserProfile(models.Model):
     twitter_id = models.CharField(max_length=50, blank=True, null=True)
     kaist_id = models.CharField(max_length=50, blank=True, null=True)
     kaist_info = models.TextField(blank=True, null=True)
+    kaist_info_time = models.DateField(blank=True, null=True)
     sparcs_id = models.CharField(max_length=50, blank=True, null=True)
     expire_time = models.DateTimeField(blank=True, null=True)
 

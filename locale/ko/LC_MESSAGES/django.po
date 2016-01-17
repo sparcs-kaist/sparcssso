@@ -241,12 +241,20 @@ msgid "You CANNOT DISCONNECT KAIST SSO from SPARCS SSO once you connect."
 msgstr "한번 KAIST SSO에 연결하면, 해제 할 수 없습니다."
 
 #: templates/account/profile.html:71
-msgid "Your social network account has been connected."
-msgstr "SNS 계정이 연결되었습니다."
+msgid "Your social network account has been connected / renewed."
+msgstr "SNS 계정이 연결 / 갱신되었습니다."
+
+#: templates/account/profile.html:73
+msgid "You can renew your KAIST SSO information."
+msgstr "KAIST PORTAL 계정 정보를 갱신할 수 있습니다."
 
 #: templates/account/profile.html:75
 msgid "This social network account is already connected by other person."
 msgstr "이 SNS 계정은 이미 다른 사람이 사용중입니다."
+
+#: templates/account/profile.html:76
+msgid "You cannot renew your information with the other KAIST portal account."
+msgstr "다른 사람의 KAIST PORTAL 계정으로 정보를 갱신할 수 없습니다."
 
 #: templates/account/profile.html:79
 msgid "Your social network account has been disconnected."
@@ -261,6 +269,14 @@ msgstr "연결"
 #: templates/account/profile.html:129
 msgid "Disconnect"
 msgstr "연결 해제"
+
+#: templates/account/profile.html:130
+msgid "Renew"
+msgstr "갱신"
+
+#: templates/account/profile.html:131
+msgid "Renewed at"
+msgstr "갱신 날짜: "
 
 #: templates/account/pw-change.html:4
 msgid "SPARCS SSO Change Password"

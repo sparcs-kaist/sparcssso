@@ -24,9 +24,9 @@ with open(os.path.join(BASE_DIR, 'keys/django_secret')) as f:
     SECRET_KEY = f.read().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['sparcssso.kaist.ac.kr', 'sso.sparcs.org', '143.248.234.129']
 
 
 # Application definition
@@ -114,10 +114,17 @@ EMAIL_HOST = 'localhost'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'sso',
+        'USER': 'sso',
+        'PASSWORD': 'DUMMY',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
+
+with open(os.path.join(BASE_DIR, 'keys/db_pw')) as f:
+    DATABASES['default']['PASSWORD'] = f.read().strip()
 
 
 # Internationalization
@@ -153,7 +160,6 @@ STATICFILES_DIRS = (
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-
 # Admins & Logging
 ADMINS = (('SSO SYSOP', 'sso.sysop@sparcs.org'),)
 
@@ -169,7 +175,7 @@ LOGGING = {
         'file': {
             'level': 'INFO',
             'class': 'apps.logger.FileHandler',
-            'filename': '/data/log/dev/info.log',
+            'filename': '/data/log/sso/info.log',
             'maxBytes': 30 * 1024 * 1024,
             'backupCount': 5,
             'formatter': 'std',
@@ -181,6 +187,10 @@ LOGGING = {
         },
     },
     'loggers': {
+        'django.request': {
+            'handlers': ['mail'],
+            'level': 'ERROR',
+        },
         'sso': {
             'handlers': ['file'],
             'level': 'INFO',

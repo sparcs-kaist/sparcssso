@@ -178,6 +178,10 @@ def info(request):
     resp['twitter_id'] = profile.twitter_id
     resp['kaist_id'] = profile.kaist_id
     resp['kaist_info'] = profile.kaist_info
+    if profile.kaist_info_time:
+        resp['kaist_info_time'] = profile.kaist_info_time.isoformat()
+    else:
+        resp['kaist_info_time'] = ''
     resp['sparcs_id'] = profile.sparcs_id
 
     return HttpResponse(json.dumps(resp), content_type='application/json')

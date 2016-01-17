@@ -355,6 +355,7 @@ def signup(request, is_social=False):
         elif type == 'KAIST':
             user.profile.kaist_id = info['userid']
             user.profile.kaist_info = info['kaist_info']
+            user.profile.kaist_info_time = timezone.now()
 
         user.profile.save()
         request.session.pop('info_signup', None)
@@ -392,10 +393,15 @@ def auth_callback(request):
 
 
 # from /callback/
-def login_callback(request, type, user, profile):
+def login_callback(request, type, user, ext_profile):
     if user:
         request.session.pop('info_user', None)
         request.session.pop('info_signup', None)
+
+        if type == 'KAIST':
+            user.profile.kaist_info = ext_profile['kaist_info']
+            user.profile.kaist_info_time = timezone.now()
+            user.profile.save()
 
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         auth.login(request, user)
@@ -409,39 +415,44 @@ def login_callback(request, type, user, profile):
         nexturl = request.session.pop('next', '/')
         return redirect(nexturl)
 
-    request.session['info_signup'] = {'type': type, 'profile': profile}
+    request.session['info_signup'] = {'type': type, 'profile': ext_profile}
 
     response = redirect('/account/signup/')
     response.delete_cookie('SATHTOKEN')
     return response
 
+
 # from /callback/
 def connection_callback(request, type, user, ext_profile):
-    if user:
-        request.session['result_con'] = 1
-        logger.warning('profile.connect.fail: type=%s' % type, request)
-        return redirect('/account/profile/')
-
+    result_con = 0
     profile = request.user.profile
-    if type == 'FB' and not profile.facebook_id:
+    if user:
+        result_con = 1
+    elif type == 'FB' and not profile.facebook_id:
         profile.facebook_id = ext_profile['userid']
     elif type == 'TW' and not profile.twitter_id:
         profile.twitter_id = ext_profile['userid']
-    elif type == 'KAIST' and not profile.kaist_id:
-        profile.kaist_id = ext_profile['userid']
-        profile.kaist_info = ext_profile['kaist_info']
+    elif type == 'KAIST':
+        userid = ext_profile['userid']
+        if profile.kaist_id and profile.kaist_id != userid:
+            result_con = 2
+        else:
+            profile.kaist_id = userid
+            profile.kaist_info = ext_profile['kaist_info']
+            profile.kaist_info_time = timezone.now()
     else:
-        raise SuspiciousOperation()
+        result_con = 1
 
     profile.save()
-
-    logger.warning('profile.connect.success: type=%s' % type, request)
-    request.session['result_con'] = 0
+    request.session['result_con'] = result_con
+    if result_con == 0:
+        logger.warning('profile.connect.success: type=%s' % type, request)
+    else:
+        logger.warning('profile.connect.fail: type=%s' % type, request)
 
     response = redirect('/account/profile/')
     response.delete_cookie('SATHTOKEN')
     return response
-
 
 
 # /util/email/check/

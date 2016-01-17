@@ -426,7 +426,7 @@ def login_callback(request, type, user, ext_profile):
 def connection_callback(request, type, user, ext_profile):
     result_con = 0
     profile = request.user.profile
-    if user:
+    if user and type != 'KAIST':
         result_con = 1
     elif type == 'FB' and not profile.facebook_id:
         profile.facebook_id = ext_profile['userid']

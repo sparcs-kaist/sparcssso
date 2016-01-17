@@ -244,7 +244,7 @@ def authenticate_kaist(request, token):
     logger.info('auth.kaist: id=%s' % profile['userid'], request)
     profiles = UserProfile.objects.filter(kaist_id=profile['userid'])
     if len(profiles) == 1:
-        return profiles[0].user, None
+        return profiles[0].user, profile
     elif len(profiles) == 0:
         return None, profile
     return None, None

@@ -47,8 +47,9 @@ class UserAdmin(uadmin.UserAdmin):
 
     list_display = ('email', 'username', 'get_name', 'get_gender', 'get_point',
                     'get_email_authed', 'get_is_for_test')
-    inlines = (UserProfileInline, )
     list_filter = ('is_staff', )
+    inlines = (UserProfileInline, )
+    ordering = ()
 
 
 class PointLogAdmin(admin.ModelAdmin):

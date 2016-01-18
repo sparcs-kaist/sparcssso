@@ -50,7 +50,7 @@ class UserProfile(models.Model):
     expire_time = models.DateTimeField(blank=True, null=True)
 
     def __unicode__(self):
-        return '%s''s profile' % self.user
+        return u'%s''s profile' % self.user
 
 
 class PointLog(models.Model):

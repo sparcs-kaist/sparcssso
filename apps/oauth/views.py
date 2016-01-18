@@ -3,6 +3,8 @@ from django.core.exceptions import SuspiciousOperation
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+from apps.account.models import PointLog
 from apps.oauth.models import Service, ServiceMap, AccessToken
 import json
 import logging
@@ -146,6 +148,7 @@ def unregister(request):
     return redirect('/oauth/service/')
 
 
+# /info/
 def info(request):
     tokenid = request.GET.get('tokenid', '')
     token = AccessToken.objects.filter(tokenid=tokenid).first()
@@ -185,4 +188,43 @@ def info(request):
     resp['sparcs_id'] = profile.sparcs_id
 
     return HttpResponse(json.dumps(resp), content_type='application/json')
+
+
+# /point/
+@csrf_exempt
+def point(request):
+    if request.method != 'POST':
+        raise SuspiciousOperation()
+
+    name = request.POST.get('app', '')
+    service = Service.objects.filter(name=name).first()
+    if not service:
+        raise Http404()
+
+    key = request.POST.get('key', '')
+    if service.secret_key != key:
+        raise SuspiciousOperation()
+
+    sid = request.POST.get('sid', '')
+    m = ServiceMap.objects.filter(sid=sid, service=service).first()
+    if not m:
+        raise Http404()
+
+    delta = int(request.POST.get('delta', '0'))
+    action = request.POST.get('action', '')
+
+    profile = m.user.profile
+    point = profile.point
+    if delta:
+        point += delta
+        manager = m.user.point_logs
+        if manager.count() >= 20:
+            manager.order_by('time')[0].delete()
+        PointLog(user=m.user, service=service, delta=delta, point=point, \
+                 action=action).save()
+
+        profile.point = point
+        profile.save()
+
+    return HttpResponse(json.dumps({'point':point}), content_type='application/json')
 

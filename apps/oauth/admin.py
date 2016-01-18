@@ -29,7 +29,8 @@ class ServiceAdmin(admin.ModelAdmin):
 
 
 class ServiceMapAdmin(admin.ModelAdmin):
-    list_display = ('sid', 'user', 'service', 'register_time', 'unregister_time')
+    list_display = ('sid', 'user', 'service', \
+        'register_time', 'unregister_time')
 
 
 admin.site.register(Service, ServiceAdmin)

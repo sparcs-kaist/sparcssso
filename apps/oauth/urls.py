@@ -5,6 +5,9 @@ urlpatterns = [
     url(r'^require', 'apps.oauth.views.require'),
     url(r'^info', 'apps.oauth.views.info'),
 
+    # point section
+    url(r'^point', 'apps.oauth.views.point'),
+
     # profile section
     url(r'^service', 'apps.oauth.views.service'),
 

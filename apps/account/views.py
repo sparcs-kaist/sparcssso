@@ -11,7 +11,7 @@ from django.utils import timezone, translation
 from apps.account.backends import give_email_auth_token, give_reset_pw_token, \
         get_username, validate_email, signup_backend, authenticate_fb, \
         authenticate_tw, authenticate_kaist, tw_client, tw_request_url, tw_auth_url
-from apps.account.models import EmailAuthToken, ResetPWToken, Notice
+from apps.account.models import EmailAuthToken, ResetPWToken, PointLog, Notice
 from apps.account.forms import UserForm, UserProfileForm
 from apps.oauth.models import Service, ServiceMap
 import cgi
@@ -225,6 +225,14 @@ def profile(request):
     return render(request, 'account/profile.html',
                   {'user': user, 'profile': profile,
                    'success': success, 'result_con': result_con})
+
+
+# /points/
+@login_required
+def points(request):
+    user = request.user
+    logs = PointLog.objects.filter(user=user).order_by('-time')
+    return render(request, 'account/points.html', {'user': user, 'logs': logs })
 
 
 # /disconnect/{fb,tw}/

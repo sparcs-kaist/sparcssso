@@ -60,10 +60,10 @@ target/
 # SQLite Database File
 db.sqlite3
 
-# Test Script File
-cleardb
+# Test Scripts
+resetdb
 
-# Test Media File
+# Media Files
 media/
 
 # VIM Swap Files

@@ -14,7 +14,7 @@ class Service(models.Model):
     icon = models.ImageField()
 
     def __unicode__(self):
-        return self.name
+        return self.alias
 
 
 class ServiceMap(models.Model):
@@ -24,8 +24,14 @@ class ServiceMap(models.Model):
     register_time = models.DateTimeField()
     unregister_time = models.DateTimeField(null=True, blank=True)
 
+    def __unicode__(self):
+        return u'%s - %s' % (self.service, self.user)
+
 
 class AccessToken(models.Model):
     tokenid = models.CharField(max_length=20, primary_key=True)
     user = models.ForeignKey(User)
     service = models.ForeignKey(Service, null=True, blank=True)
+
+    def __unicode__(self):
+        return u'%s - %s' % (self.service, self.user)

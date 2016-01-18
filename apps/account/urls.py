@@ -16,6 +16,7 @@ urlpatterns = [
 
     # profile section
     url(r'^profile/$', 'apps.account.views.profile'),
+    url(r'^points/$', 'apps.account.views.points'),
 
     # password section
     url(r'^password/change/$', 'apps.account.views.password_change'),

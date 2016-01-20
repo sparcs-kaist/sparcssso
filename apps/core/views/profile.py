@@ -69,9 +69,9 @@ def unregister(request):
         result = unreg_service(request.user, service)
         code = 0
         if result:
-            code = 1
             logger.info('unregister.success: name=%s' % service.name, {'r': request})
         else:
+            code = 1
             logger.warning('unregister.fail: name=%s' % service.name, {'r': request})
         request.session['result_unreg'] = code
 

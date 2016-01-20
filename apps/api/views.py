@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import SuspiciousOperation
+from django.core.validators import URLValidator
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.utils import timezone
@@ -13,6 +14,7 @@ import urllib
 
 
 logger = logging.getLogger('sso.api')
+profile_logger = logging.getLogger('sso.core.profile')
 
 
 # get call back url
@@ -22,6 +24,12 @@ def get_callback(user, service, url):
         raise Http404()
     elif service:
         return service.callback_url
+
+    validate = URLValidator()
+    try:
+        validate(url)
+    except:
+        raise Http404()
     return url
 
 
@@ -39,18 +47,19 @@ def token_require(request):
 
     token = AccessToken.objects.filter(user=request.user, service=service).first()
     if token:
-        logger.info('token.delete', request, hide=True)
+        logger.info('token.delete', {'r': request, 'hide': True})
         token.delete()
 
     m = ServiceMap.objects.filter(user=request.user, service=service).first()
 
-    fail = False
     if (not m or m.unregister_time) and service:
-        fail = not reg_service(request, request.user, service)
-
-    if fail:
-        d = service.cooltime - (timezone.now() - m.unregister_time).days
-        return render(request, 'oauth/cooltime.html', {'service': service, 'left': d})
+        result = reg_service(request.user, service)
+        if result:
+            profile_logger.info('register.success: app=%s' % service.name, {'r': request})
+        else:
+            d = service.cooltime - (timezone.now() - m.unregister_time).days
+            profile_logger.warning('register.fail: app=%s' % service.name, {'r': request})
+            return render(request, 'api/cooltime.html', {'service': service, 'left': d})
 
     while True:
         tokenid = os.urandom(10).encode('hex')
@@ -59,7 +68,7 @@ def token_require(request):
 
     token = AccessToken(tokenid=tokenid, user=request.user, service=service)
     token.save()
-    logger.info('token.create: app=%s, url=%s' % (name, url), request)
+    logger.info('token.create: app=%s,url=%s' % (name, url), {'r': request})
     args = {'tokenid': token.tokenid}
     return redirect(dest + '?' + urllib.urlencode(args))
 
@@ -74,7 +83,7 @@ def token_info(request):
     user = token.user
     profile = user.profile
     service = token.service
-    logger.info('token.delete', request, hide=True)
+    logger.info('token.delete', {'r': request, 'hide': True})
     token.delete()
 
     m = ServiceMap.objects.filter(user=user, service=service).first()
@@ -140,6 +149,8 @@ def point(request):
         PointLog(user=m.user, service=service, delta=delta, point=point, \
                  action=action).save()
 
+        logger.info('point: app=%s,delta=%d' % (service.name, delta),
+                    {'r': request, 'uid': m.user.username, 'hide': True})
         profile.point = point
         profile.save()
 

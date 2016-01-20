@@ -120,14 +120,12 @@ def signup_core(post):
 
 
 # Register Service
-def reg_service(request, user, service):
+def reg_service(user, service):
     m = ServiceMap.objects.filter(user=user, service=service).first()
     if m and not m.unregister_time:
-        logger.warning('register.fail: already registered, name=%s' % service.name, request)
         return False
     elif m and m.unregister_time and \
             (timezone.now() - m.unregister_time).days < service.cooltime:
-        logger.warning('register.fail: in cooltime, name=%s' % service.name, request)
         return False
 
     if m:
@@ -136,14 +134,15 @@ def reg_service(request, user, service):
 
     while True:
         sid = os.urandom(10).encode('hex')
-        if len(ServiceMap.objects.filter(sid=sid)) == 0:
-            m.sid = sid
-            m.register_time = timezone.now()
-            m.unregister_time = None
-            m.save()
+        if not ServiceMap.objects.filter(sid=sid).count():
+            break
 
-            logger.info('register.success: name=%s' % service.name, request)
-            return True
+    m.sid = sid
+    m.register_time = timezone.now()
+    m.unregister_time = None
+    m.save()
+
+    return True
 
 
 # Unregister Service
@@ -152,7 +151,7 @@ def unreg_service(user, service):
     if not m or m.unregister_time:
         return False
 
-    data = urllib.urlencoode({'sid': m.sid, 'key': service.secret_key})
+    data = urllib.urlencode({'sid': m.sid, 'key': service.secret_key})
     result = urllib.urlopen(service.unregister_url, data)
 
     try:

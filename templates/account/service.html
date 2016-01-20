@@ -48,7 +48,7 @@
                 <input type="text" class="form-control check"></input>
             </div>
             <div class="modal-footer">
-                <form action="/oauth/unregister/" method="post" style="margin-top:0"> 
+                <form action="/account/unregister/" method="post" style="margin-top:0"> 
                     {% csrf_token %}
                     <input type="hidden" name="app" value=""/>
                     <input type="submit" class="btn btn-danger" value="{% trans "Unregister" %}" disabled>

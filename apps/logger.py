@@ -1,6 +1,5 @@
-from django.contrib.auth.models import User
 from django.core.validators import ip_address_validators
-from apps.core.models import UserLog
+from django.apps import apps
 from logging.handlers import RotatingFileHandler
 
 
@@ -25,12 +24,15 @@ class FileHandler(RotatingFileHandler, object):
             record.username = record.args['uid']
 
         hide = record.args.has_key('hide')
-        user = User.objects.filter(username=record.username).first()
-        if user and not hide:
-            manager = user.user_logs
+
+        UserProfile = apps.get_model('core', 'UserProfile')
+        profile = UserProfile.objects.filter(user__username=record.username).first()
+        if profile and not hide:
+            manager = profile.user.user_logs
             if manager.count() >= 30:
                 manager.order_by('time')[0].delete()
-            UserLog(user=user, level=record.levelno, ip=record.ip,
+            UserLog = apps.get_model('core', 'UserLog')
+            UserLog(user=profile.user, level=record.levelno, ip=record.ip,
                     text='%s.%s' % (record.name, record.getMessage())).save()
 
         super(FileHandler, self).emit(record)

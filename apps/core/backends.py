@@ -1,10 +1,13 @@
 # -* coding: utf-8 -*-
 from django.conf import settings
 from django.contrib.auth.models import User
-from apps.account.forms import UserForm, UserProfileForm
-from apps.account.models import UserProfile
+from django.core.mail import send_mail
+from django.utils import timezone
+from apps.core.models import ServiceMap, UserProfile, EmailAuthToken, ResetPWToken
+from apps.core.forms import UserForm, UserProfileForm
 from xml.etree.ElementTree import fromstring
 import cgi
+import datetime
 import httplib
 import json
 import logging
@@ -26,20 +29,9 @@ def parse_gender(gender):
     return 'E'
 
 
-# make username without duplication
-def make_username():
-    while True:
-        username = os.urandom(10).encode('hex')
-        if len(User.objects.filter(username=username)) == 0:
-            return username
-
-
 # get username using email
 def get_username(email):
-    user = User.objects.filter(email=email)
-    if len(user) > 0:
-        return user[0].username
-    return None
+    return User.objects.filter(email=email).first()
 
 
 # check given email is available or not
@@ -47,14 +39,50 @@ def validate_email(email):
     if not re.match(r'[^@]+@[^@]+\.[^@]+', email):
         return False
 
-    users = User.objects.filter(email=email)
-    if len(users) > 0:
-        return False
-    return True
+    return User.objects.filter(email=email).count() == 0
 
 
-# signup backend
-def signup_backend(post):
+# give reset pw token to user
+def give_reset_pw_token(user):
+    title = '[SPARCS SSO] Reset Password'
+    message = 'To reset your password, please click <a href="https://sparcssso.kaist.ac.kr/account/password/reset/%s">this link</a> in 24 hours.'
+
+    tomorrow = timezone.now() + datetime.timedelta(days=1)
+
+    for token in ResetPWToken.objects.filter(user=user):
+        token.delete()
+
+    while True:
+        tokenid = os.urandom(24).encode('hex')
+        if not ResetPWToken.objects.filter(tokenid=tokenid).count():
+            break
+
+    token = ResetPWToken(tokenid=tokenid, expire_time=tomorrow, user=user).save()
+    send_mail(title, message % tokenid, 'noreply@sso.sparcs.org', [user.email])
+
+
+
+# give email auth token to user
+def give_email_auth_token(user):
+    title = '[SPARCS SSO] Email Authentication'
+    message = 'To authenticate your email, <a href="https://sparcssso.kaist.ac.kr/account/auth/email/%s">this link</a> in 24 hours.'
+
+    tomorrow = timezone.now() + datetime.timedelta(days=1)
+
+    for token in EmailAuthToken.objects.filter(user=user):
+        token.delete()
+
+    while True:
+        tokenid = os.urandom(24).encode('hex')
+        if not EmailAuthToken.objects.filter(tokenid=tokenid).count():
+            break
+
+    token = EmailAuthToken(tokenid=tokenid, expire_time=tomorrow, user=user).save()
+    send_mail(title, message % tokenid, 'noreply@sso.sparcs.org', [user.email])
+
+
+# signup core
+def signup_core(post):
     user_f = UserForm(post)
     profile_f = UserProfileForm(post)
     raw_email = post.get('email', '')
@@ -64,7 +92,10 @@ def signup_backend(post):
         password = user_f.cleaned_data['password']
         first_name = user_f.cleaned_data['first_name']
         last_name = user_f.cleaned_data['last_name']
-        username = make_username()
+        while True:
+            username = os.urandom(10).encode('hex')
+            if not User.objects.filter(username=username).count():
+                break
 
         user = User.objects.create_user(username=username,
                                         first_name=first_name,
@@ -83,7 +114,56 @@ def signup_backend(post):
         return None
 
 
-# Facebook
+# Register Service
+def reg_service(request, user, service):
+    m = ServiceMap.objects.filter(user=user, service=service).first()
+    if m and not m.unregister_time:
+        logger.warning('service.register.fail: already registered, name=%s' % service.name, request)
+        return False
+    elif m and m.unregister_time and \
+            (timezone.now() - m.unregister_time).days < service.cooltime:
+        logger.warning('service.register.fail: in cooltime, name=%s' % service.name, request)
+        return False
+
+    if m:
+        m.delete()
+    m = ServiceMap(user=user, service=service)
+
+    while True:
+        sid = os.urandom(10).encode('hex')
+        if len(ServiceMap.objects.filter(sid=sid)) == 0:
+            m.sid = sid
+            m.register_time = timezone.now()
+            m.unregister_time = None
+            m.save()
+
+            logger.info('service.register.success: name=%s' % service.name, request)
+            return True
+
+
+# Unregister Service
+def unreg_service(user, service):
+    m = ServiceMap.objects.filter(user=user, service=service).first()
+    if not m or m.unregister_time:
+        return False
+
+    data = urllib.urlencoode({'sid': m.sid, 'key': service.secret_key})
+    result = urllib.urlopen(service.unregister_url, data)
+
+    try:
+        result = json.load(result)
+        status = result.get('status', '-1')
+        if status != '0':
+            return False
+    except:
+        return False
+
+    m.unregister_time = timezone.now()
+    m.save()
+    return True
+
+
+# Facebook Init & Auth
 def init_fb(callback_url):
     args = {
         'client_id': settings.FACEBOOK_APP_ID,
@@ -122,7 +202,7 @@ def auth_fb(code, callback_url):
     return UserProfile.objects.filter(facebook_id=info['userid']).first(), info
 
 
-# Twitter
+# Twitter Init & Auth
 tw_consumer = oauth.Consumer(settings.TWITTER_APP_ID, settings.TWITTER_APP_SECRET)
 tw_client = oauth.Client(tw_consumer)
 
@@ -151,7 +231,7 @@ def auth_tw(tokens, verifier):
     return UserProfile.objects.filter(twitter_id=info['userid']).first(), info
 
 
-# KAIST
+# KAIST Auth
 def auth_kaist(token):
     data = """<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://server.com">
     <soapenv:Header/>

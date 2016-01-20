@@ -4,78 +4,15 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
-from apps.account.models import PointLog
-from apps.oauth.models import Service, ServiceMap, AccessToken
+from apps.core.models import Service, ServiceMap, AccessToken, PointLog
+from apps.core.backends import reg_service
 import json
 import logging
 import os
 import urllib
 
 
-logger = logging.getLogger('sso.oauth')
-
-
-# make access token
-def make_access_token(user, service):
-    while True:
-        tokenid = os.urandom(10).encode('hex')
-        if len(AccessToken.objects.filter(tokenid=tokenid, service=service)) == 0:
-            token = AccessToken(tokenid=tokenid, user=user, service=service)
-            token.save()
-            return token
-
-
-# register service
-def register_service(request, user, service):
-    m = ServiceMap.objects.filter(user=user, service=service).first()
-    if m and not m.unregister_time:
-        logger.warning('service.register.fail: already registered, name=%s' % service.name, request)
-        return False
-    elif m and m.unregister_time and \
-            (timezone.now() - m.unregister_time).days < service.cooltime:
-        logger.warning('service.register.fail: in cooltime, name=%s' % service.name, request)
-        return False
-
-    if m:
-        m.delete()
-    m = ServiceMap(user=user, service=service)
-
-    while True:
-        sid = os.urandom(10).encode('hex')
-        if len(ServiceMap.objects.filter(sid=sid)) == 0:
-            m.sid = sid
-            m.register_time = timezone.now()
-            m.unregister_time = None
-            m.save()
-
-            logger.info('service.register.success: name=%s' % service.name, request)
-            return True
-
-
-# unregister service
-def unregister_service(request, user, service):
-    m = ServiceMap.objects.filter(user=user, service=service).first()
-    if not m or m.unregister_time:
-        logger.warning('service.unregister.fail: target not exists, name=%s' % service.name, request)
-        return 1
-
-    data = urllib.urlencoode({'sid': m.sid, 'key': service.secret_key})
-    result = urllib.urlopen(service.unregister_url, data)
-
-    """try:
-        result = json.load(result)
-
-        status = result.get('status', '-1')
-        if status != '0':
-            return False
-    except:
-        return False"""
-
-    m.unregister_time = timezone.now()
-    m.save()
-
-    logger.info('service.unregister.success: name=%s' % service.name, request)
-    return 0
+logger = logging.getLogger('sso.api')
 
 
 # get call back url
@@ -102,50 +39,29 @@ def require(request):
 
     token = AccessToken.objects.filter(user=request.user, service=service).first()
     if token:
-        logger.info('accesstoken.revoke', request)
+        logger.info('token.delete', request, hide=True)
         token.delete()
 
     m = ServiceMap.objects.filter(user=request.user, service=service).first()
 
     fail = False
     if (not m or m.unregister_time) and service:
-        fail = not register_service(request, request.user, service)
+        fail = not reg_service(request, request.user, service)
 
     if fail:
         d = service.cooltime - (timezone.now() - m.unregister_time).days
         return render(request, 'oauth/cooltime.html', {'service': service, 'left': d})
 
-    token = make_access_token(request.user, service)
-    logger.info('accesstoken.make: app=%s, url=%s' % (name, url), request)
+    while True:
+        tokenid = os.urandom(10).encode('hex')
+        if not AccessToken.objects.filter(tokenid=tokenid, service=service).count():
+            break
+
+    token = AccessToken(tokenid=tokenid, user=request.user, service=service)
+    token.save()
+    logger.info('token.create: app=%s, url=%s' % (name, url), request)
     args = {'tokenid': token.tokenid}
     return redirect(dest + '?' + urllib.urlencode(args))
-
-
-# /service/
-@login_required
-def service(request):
-    user = request.user
-    maps = ServiceMap.objects.filter(user=user, unregister_time=None)
-
-    result_unreg = request.session.pop('result_unreg', -1)
-    return render(request, 'oauth/service.html',
-                  {'user': user, 'maps': maps, 'result_unreg': result_unreg})
-
-
-# /unregister/
-@login_required
-def unregister(request):
-    if request.method != 'POST':
-        raise SuspiciousOperation()
-
-    name = request.POST.get('app', '')
-    service = Service.objects.filter(name=name).first()
-    if not service:
-        raise Http404()
-
-    result = unregister_service(request, request.user, service)
-    request.session['result_unreg'] = result
-    return redirect('/oauth/service/')
 
 
 # /info/
@@ -158,6 +74,7 @@ def info(request):
     user = token.user
     profile = user.profile
     service = token.service
+    logger.info('token.delete', request, hide=True)
     token.delete()
 
     m = ServiceMap.objects.filter(user=user, service=service).first()

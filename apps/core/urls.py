@@ -28,20 +28,18 @@ urlpatterns = [
     url(r'^signup/$', 'apps.core.views.account.signup'),
     url(r'^signup/social/$', 'apps.core.views.account.signup', {'is_social': True}),
 
-    url(r'^disconnect/fb/$', 'apps.core.views.account.disconnect', {'type': 'FB'}),
-    url(r'^disconnect/tw/$', 'apps.core.views.account.disconnect', {'type': 'TW'}),
-
     url(r'^deactivate/$', 'apps.core.views.account.deactivate'),
 
 
     # package: profile
     url(r'^profile/$', 'apps.core.views.profile.main'),
+    url(r'^disconnect/fb/$', 'apps.core.views.profile.disconnect', {'type': 'FB'}),
+    url(r'^disconnect/tw/$', 'apps.core.views.profile.disconnect', {'type': 'TW'}),
 
     url(r'^service/$', 'apps.core.views.profile.service'),
+    url(r'^unregister/$', 'apps.core.views.account.unregister'),
 
     url(r'^point/$', 'apps.core.views.profile.point'),
-
-    url(r'^unregister/$', 'apps.core.views.profile.unregister'),
 
 
     # package: password

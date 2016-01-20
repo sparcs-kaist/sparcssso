@@ -1,40 +1,16 @@
 # -*- coding: utf-8 -*-
 from django.contrib import auth
 from django.contrib.auth.models import User
-from django.core.exceptions import SuspiciousOperation
-from django.core.mail import send_mail
 from django.shortcuts import render, redirect
 from django.utils import timezone
-from apps.core.backends import get_username, init_fb, init_tw, auth_fb, auth_tw, auth_kaist
+from apps.core.backends import give_email_auth_token, get_username, init_fb, init_tw, auth_fb, auth_tw, auth_kaist
 from apps.core.models import Notice, EmailAuthToken
-import os
-import datetime
 import logging
 
 
 logger = logging.getLogger('sso.core.auth')
 account_logger = logging.getLogger('sso.core.account')
 profile_logger = logging.getLogger('sso.core.profile')
-
-
-title = '[SPARCS SSO] Email Authentication'
-message = 'To authenticate your email, <a href="https://sparcssso.kaist.ac.kr/account/auth/email/%s">this link</a> in 24 hours.'
-
-
-# give email auth token to user
-def give_email_auth_token(user):
-    tomorrow = timezone.now() + datetime.timedelta(days=1)
-
-    for token in EmailAuthToken.objects.filter(user=user):
-        token.delete()
-
-    while True:
-        tokenid = os.urandom(24).encode('hex')
-        if not EmailAuthToken.objects.filter(tokenid=tokenid).count():
-            break
-
-    token = EmailAuthToken(tokenid=tokenid, expire_time=tomorrow, user=user).save()
-    send_mail(title, message % tokenid, 'noreply@sso.sparcs.org', [user.email])
 
 
 # /login/

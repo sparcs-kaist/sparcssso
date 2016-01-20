@@ -2,36 +2,14 @@
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth.decorators import login_required
-from django.core.mail import send_mail
 from django.shortcuts import render, redirect
 from django.utils import timezone
+from apps.core.backends import give_reset_pw_token
 from apps.core.models import ResetPWToken
-import os
-import datetime
 import logging
 
 
 logger = logging.getLogger('sso.core.password')
-
-
-title = '[SPARCS SSO] Reset Password'
-message = 'To reset your password, please click <a href="https://sparcssso.kaist.ac.kr/account/password/reset/%s">this link</a> in 24 hours.'
-
-
-# give reset pw token to user
-def give_reset_pw_token(user):
-    tomorrow = timezone.now() + datetime.timedelta(days=1)
-
-    for token in ResetPWToken.objects.filter(user=user):
-        token.delete()
-
-    while True:
-        tokenid = os.urandom(24).encode('hex')
-        if not ResetPWToken.objects.filter(tokenid=tokenid).count():
-            break
-
-    token = ResetPWToken(tokenid=tokenid, expire_time=tomorrow, user=user).save()
-    send_mail(title, message % tokenid, 'noreply@sso.sparcs.org', [user.email])
 
 
 # /password/change/

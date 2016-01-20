@@ -125,12 +125,3 @@ class PointLog(models.Model):
     def __unicode__(self):
         return u'%s - %d by %s' % (self.user, self.delta, self.service)
 
-
-
-
-
-
-
-
-
-

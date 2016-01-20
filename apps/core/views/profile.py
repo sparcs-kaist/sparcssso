@@ -2,7 +2,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from apps.core.backends import unreg_service
-from apps.core.models import Service, ServiceMap, PointLog
+from apps.core.models import Service, ServiceMap, PointLog, UserLog
 from apps.core.forms import UserForm, UserProfileForm
 import logging
 
@@ -95,3 +95,10 @@ def point(request):
     user = request.user
     logs = PointLog.objects.filter(user=user).order_by('-time')
     return render(request, 'account/point.html', {'user': user, 'logs': logs })
+
+
+# /log/
+@login_required
+def log(request):
+    logs = UserLog.objects.filter(user=request.user).order_by('-time')
+    return render(request, 'account/log.html', {'logs': logs })

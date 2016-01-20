@@ -125,3 +125,10 @@ class PointLog(models.Model):
     def __unicode__(self):
         return u'%s - %d by %s' % (self.user, self.delta, self.service)
 
+
+class UserLog(models.Model):
+    user = models.ForeignKey(User, related_name='user_logs')
+    level = models.IntegerField()
+    time = models.DateTimeField(auto_now=True)
+    ip = models.GenericIPAddressField()
+    text = models.CharField(max_length=500)

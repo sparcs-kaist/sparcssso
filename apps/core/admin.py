@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth import admin as uadmin
 from django.contrib.auth.models import User
 from apps.core.models import Notice, Service, ServiceMap, AccessToken, \
-         UserProfile, EmailAuthToken, ResetPWToken, PointLog
+         UserProfile, EmailAuthToken, ResetPWToken, PointLog, UserLog
 
 
 """ Filters """
@@ -95,6 +95,9 @@ class PointLogAdmin(admin.ModelAdmin):
     list_display = ('user', 'service', 'time', 'delta', 'action')
 
 
+class UserLogAdmin(admin.ModelAdmin):
+    list_display = ('user', 'level', 'time', 'ip', 'text')
+
 
 admin.site.unregister(User)
 admin.site.register(Notice, NoticeAdmin)
@@ -105,3 +108,4 @@ admin.site.register(User, UserAdmin)
 admin.site.register(EmailAuthToken, EmailAuthTokenAdmin)
 admin.site.register(ResetPWToken, ResetPWTokenAdmin)
 admin.site.register(PointLog, PointLogAdmin)
+admin.site.register(UserLog, UserLogAdmin)

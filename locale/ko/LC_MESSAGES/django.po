@@ -575,14 +575,22 @@ msgstr "위 사항을 숙지하셨다면, 다음 문자를 입력해주세요."
 msgid "Close"
 msgstr "닫기"
 
-#: templates/account/points.html:4
+#: templates/account/point.html:4
 msgid "Points"
 msgstr "포인트"
 
-#: templates/account/points.html:10
+#: templates/account/point.html:10
 msgid "You can see your current SPARCS points, and the points log up to recent 20."
 msgstr "현재 SPARCS 포인트와 최근 20개의 로그가 나타납니다."
 
-#: templates/account/points.html:10
+#: templates/account/point.html:10
 msgid "Current Point"
 msgstr "현재 포인트"
+
+#: templates/account/log.html:4
+msgid "Logs"
+msgstr "활동 로그"
+
+#: templates/account/log.html:10
+msgid "You can see your action log up to recent 30."
+msgstr "최근 30개의 활동 로그가 나타납니다."

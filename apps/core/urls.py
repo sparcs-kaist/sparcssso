@@ -40,6 +40,7 @@ urlpatterns = [
     url(r'^unregister/$', 'apps.core.views.profile.unregister'),
 
     url(r'^point/$', 'apps.core.views.profile.point'),
+    url(r'^log/$', 'apps.core.views.profile.log'),
 
 
     # package: password
@@ -47,4 +48,4 @@ urlpatterns = [
 
     url(r'^password/reset/$', 'apps.core.views.password.reset_email'),
     url(r'^password/reset/(?P<tokenid>\w+)$', 'apps.core.views.password.reset'),
-    ]
+]

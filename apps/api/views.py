@@ -138,23 +138,28 @@ def point(request):
 
     delta = int(request.POST.get('delta', '0'))
     action = request.POST.get('action', '')
+    lock = request.POST.get('lock', '')
+    lower_bound = int(request.POST.get('lower_bound', '-100000000'))
 
     profile = m.user.profile
     point = profile.point
-    if delta:
+    changed = False
+    if delta and (lock == '' or point >= lower_bound):
         point += delta
         manager = m.user.point_logs
         if manager.count() >= 20:
             manager.order_by('time')[0].delete()
-        PointLog(user=m.user, service=service, delta=delta, point=point, \
+        PointLog(user=m.user, service=service, delta=delta, point=point,
                  action=action).save()
 
         logger.info('point: app=%s,delta=%d' % (service.name, delta),
                     {'r': request, 'uid': m.user.username, 'hide': True})
         profile.point = point
         profile.save()
+        changed = True
 
-    return HttpResponse(json.dumps({'point':point}), content_type='application/json')
+    return HttpResponse(json.dumps({'point': point, 'changed': changed}),
+                        content_type='application/json')
 
 
 # /email/

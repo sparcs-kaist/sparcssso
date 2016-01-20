@@ -162,7 +162,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'std': {
-            'format': '%(levelno)s/%(asctime)s (%(ip)s, %(username)s) %(name)s - %(message)s'
+            'format': '%(levelno)s/%(asctime)s (%(ip)s, %(username)s) %(name)s.%(message)s'
         },
     },
     'handlers': {

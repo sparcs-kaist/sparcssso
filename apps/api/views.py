@@ -4,8 +4,8 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
+from apps.core.backends import reg_service, validate_email
 from apps.core.models import Service, ServiceMap, AccessToken, PointLog
-from apps.core.backends import reg_service
 import json
 import logging
 import os
@@ -27,7 +27,7 @@ def get_callback(user, service, url):
 
 # /require/
 @login_required
-def require(request):
+def token_require(request):
     name = request.GET.get('app', '')
     service = Service.objects.filter(name=name).first()
 
@@ -65,7 +65,7 @@ def require(request):
 
 
 # /info/
-def info(request):
+def token_info(request):
     tokenid = request.GET.get('tokenid', '')
     token = AccessToken.objects.filter(tokenid=tokenid).first()
     if not token:
@@ -145,3 +145,9 @@ def point(request):
 
     return HttpResponse(json.dumps({'point':point}), content_type='application/json')
 
+
+# /email/
+def email(request):
+    if validate_email(request.GET.get('email', '')):
+        return HttpResponse(status=200)
+    return HttpResponse(status=400)

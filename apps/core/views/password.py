@@ -26,11 +26,11 @@ def change(request):
             user.password = make_password(newpw)
             user.save()
 
-            logger.warning('change.success', request)
+            logger.warning('change.success', {'r': request})
             return redirect('/account/login/')
 
         fail = True
-        logger.warning('change.fail', request)
+        logger.warning('change.fail', {'r': request})
 
     return render(request, 'account/pw-change.html', {'user': user, 'fail': fail})
 
@@ -44,7 +44,7 @@ def reset_email(request):
             return render(request, 'account/pw-reset/send.html', {'fail': True, 'email': email})
 
         give_reset_pw_token(user)
-        logger.warning('reset.try', request)
+        logger.warning('reset.try', {'r': request, 'uid': user.username})
         return render(request, 'account/pw-reset/sent.html')
 
     return render(request, 'account/pw-reset/send.html')
@@ -67,7 +67,7 @@ def reset(request, tokenid):
         user.save()
         token.delete()
 
-        logger.warning('reset.done', request, uid=user.username)
+        logger.warning('reset.done', {'r': request, 'uid': user.username})
         return render(request, 'account/pw-reset/done.html')
 
     return render(request, 'account/pw-reset/main.html', {'tokenid': tokenid})

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth import admin as uadmin
 from django.contrib.auth.models import User
-from core.account.models import Notice, Service, ServiceMap, AccessToken, \
+from apps.core.models import Notice, Service, ServiceMap, AccessToken, \
          UserProfile, EmailAuthToken, ResetPWToken, PointLog
 
 

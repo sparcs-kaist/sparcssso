@@ -37,7 +37,7 @@ urlpatterns = [
     url(r'^disconnect/tw/$', 'apps.core.views.profile.disconnect', {'type': 'TW'}),
 
     url(r'^service/$', 'apps.core.views.profile.service'),
-    url(r'^unregister/$', 'apps.core.views.account.unregister'),
+    url(r'^unregister/$', 'apps.core.views.profile.unregister'),
 
     url(r'^point/$', 'apps.core.views.profile.point'),
 

@@ -31,7 +31,10 @@ def parse_gender(gender):
 
 # get username using email
 def get_username(email):
-    return User.objects.filter(email=email).first()
+    user = User.objects.filter(email=email).first()
+    if user:
+        return user.username
+    return 'unknown'
 
 
 # check given email is available or not
@@ -58,7 +61,8 @@ def give_reset_pw_token(user):
             break
 
     token = ResetPWToken(tokenid=tokenid, expire_time=tomorrow, user=user).save()
-    send_mail(title, message % tokenid, 'noreply@sso.sparcs.org', [user.email])
+    send_mail(title, '', 'noreply@sso.sparcs.org', [user.email],
+              html_message=message % tokenid)
 
 
 
@@ -78,7 +82,8 @@ def give_email_auth_token(user):
             break
 
     token = EmailAuthToken(tokenid=tokenid, expire_time=tomorrow, user=user).save()
-    send_mail(title, message % tokenid, 'noreply@sso.sparcs.org', [user.email])
+    send_mail(title, '', 'noreply@sso.sparcs.org', [user.email],
+              html_message=message % tokenid)
 
 
 # signup core
@@ -118,11 +123,11 @@ def signup_core(post):
 def reg_service(request, user, service):
     m = ServiceMap.objects.filter(user=user, service=service).first()
     if m and not m.unregister_time:
-        logger.warning('service.register.fail: already registered, name=%s' % service.name, request)
+        logger.warning('register.fail: already registered, name=%s' % service.name, request)
         return False
     elif m and m.unregister_time and \
             (timezone.now() - m.unregister_time).days < service.cooltime:
-        logger.warning('service.register.fail: in cooltime, name=%s' % service.name, request)
+        logger.warning('register.fail: in cooltime, name=%s' % service.name, request)
         return False
 
     if m:
@@ -137,7 +142,7 @@ def reg_service(request, user, service):
             m.unregister_time = None
             m.save()
 
-            logger.info('service.register.success: name=%s' % service.name, request)
+            logger.info('register.success: name=%s' % service.name, request)
             return True
 
 

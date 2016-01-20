@@ -30,23 +30,23 @@ def login(request):
         password = request.POST.get('password', 'asdf')
 
         username = get_username(email)
-
+        print username
         user = auth.authenticate(username=username, password=password)
         if not user:
-            logger.info('login.fail', request, uid=username)
+            logger.info('login.fail', {'r': request, 'uid': username})
             return render(request, 'account/login.html', {'fail': True, 'notice': notice})
-        elif not user.is_active() or not user.profile.email_authed:
+        elif not user.is_active or not user.profile.email_authed:
             request.session['info_user'] = user.id
-            logger.info('login.reject', request, uid=username)
+            logger.info('login.reject', {'r': request, 'uid': username})
             return redirect('/account/auth/email/')
         else:
             request.session.pop('info_user', None)
             request.session.pop('info_signup', None)
             auth.login(request, user)
-            logger.info('login.success', request)
+            logger.info('login.success', {'r': request})
 
             if user.profile.activate():
-                account_logger.warning('activate', request)
+                account_logger.warning('activate', {'r': request})
 
             nexturl = request.session.pop('next', '/')
             return redirect(nexturl)
@@ -59,7 +59,7 @@ def logout(request):
     if not request.user.is_authenticated():
         return redirect('/')
 
-    logger.info('logout', request)
+    logger.info('logout', {'r': request})
     auth.logout(request)
     return render(request, 'account/logout.html')
 
@@ -74,7 +74,7 @@ def email_resend(request):
     if request.method == 'POST':
         give_email_auth_token(user)
         request.session.pop('info_user')
-        logger.info('email.try', request, uid=user.username)
+        logger.info('email.try', {'r': request, 'uid': user.username})
         return render(request, 'account/auth-email/sent.html', {'email': user.email})
 
     return render(request, 'account/auth-email/send.html', {'email': user.email})
@@ -95,8 +95,8 @@ def email(request, tokenid):
     user.profile.save()
     token.delete()
 
-    logger.info('email.done', request, uid=user.username)
-    return render(request, 'account/auth-email/success.html')
+    logger.info('email.done', {'r': request, 'uid': user.username})
+    return render(request, 'account/auth-email/done.html')
 
 
 # /login/{fb,tw,kaist}/, /connect/{fb,tw,kaist}/, /renew/kaist/
@@ -145,7 +145,7 @@ def callback(request):
         token = request.COOKIES.get('SATHTOKEN')
         profile, info = auth_kaist(token)
 
-    logger.info('%s: id=%s' % (type.tolower(), profile['userid']), request, hide=True)
+    logger.info('%s: id=%s' % (type.lower(), info['userid']), {'r': request, 'hide': True})
 
     user = None
     if profile:
@@ -178,10 +178,10 @@ def callback_login(request, type, user, info):
 
     user.backend = 'django.contrib.auth.backends.ModelBackend'
     auth.login(request, user)
-    logger.info('login.success', request)
+    logger.info('login.success', {'r': request})
 
     if user.profile.activate():
-        account_logger.warning('activate', request)
+        account_logger.warning('activate', {'r': request})
 
     nexturl = request.session.pop('next', '/')
     return redirect(nexturl)
@@ -205,11 +205,11 @@ def callback_conn(request, type, user, info):
     profile.save()
     request.session['result_con'] = result_con
     if result_con == 0:
-        profile_logger.warning('connect.success: type=%s,uid=%s'
-                % (type, info['userid']), request)
+        profile_logger.warning('connect.success: type=%s,id=%s'
+                % (type.lower(), info['userid']), {'r': request})
     else:
-        profile_logger.warning('connect.fail: type=%s,uid=%s'
-                % (type, info['userid']), request)
+        profile_logger.warning('connect.fail: type=%s,id=%s'
+                % (type.lower(), info['userid']), {'r': request})
 
     return redirect('/account/profile/')
 
@@ -228,10 +228,10 @@ def callback_renew(request, type, user, info):
 
     request.session['result_con'] = result_con
     if result_con == 0:
-        profile_logger.warning('renew.success: type=%s,uid=%s'
-                % (type, info['userid']), request)
+        profile_logger.warning('renew.success: type=%s,id=%s'
+                % (type.lower(), info['userid']), {'r': request})
     else:
-        profile_logger.warning('renew.fail: type=%s,uid=%s'
-                % (type, info['userid']), request)
+        profile_logger.warning('renew.fail: type=%s,id=%s'
+                % (type.lower(), info['userid']), {'r': request})
 
     return redirect('/account/profile/')

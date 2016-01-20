@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import SuspiciousOperation
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from apps.core.backends import signup_core
@@ -30,8 +29,7 @@ def signup(request, is_social=False):
         user = signup_core(request.POST)
 
         if user is None:
-            logger.warning('signup.fail')
-            raise SuspiciousOperation()
+            return redirect('/')
 
         if type == 'FB':
             user.profile.facebook_id = info['userid']
@@ -42,7 +40,7 @@ def signup(request, is_social=False):
 
         user.profile.save()
         request.session.pop('info_signup', None)
-        logger.warning('create', request, uid=user.username)
+        logger.warning('create', {'r': request, 'uid': user.username})
         return render(request, 'account/signup/done.html', {'type': type})
 
     return render(request, 'account/signup/main.html', {'type': type, 'info': info})
@@ -62,11 +60,11 @@ def deactivate(request):
             profile.expire_time = timezone.now() + datetime.timedelta(days=60)
             profile.save()
 
-            logger.warning('deactivate.success', request)
+            logger.warning('deactivate.success', {'r': request})
             return redirect('/account/logout/')
 
         fail = True
-        logger.warning('deactivate.fail', request)
+        logger.warning('deactivate.fail', {'r': request})
 
     return render(request, 'account/deactivate.html', {'ok': ok, 'fail': fail})
 

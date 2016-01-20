@@ -17,9 +17,9 @@ urlpatterns = [
     url(r'^doc/dev/', 'apps.core.views.general.doc_dev'),
     url(r'^doc/sysop/', 'apps.core.views.general.doc_sysop'),
 
-    url(r'^manage/', include(admin.site.urls)),
     url(r'^account/', include('apps.core.urls')),
     url(r'^api/', include('apps.api.urls')),
+    url(r'^manage/', include(admin.site.urls)),
 ]
 
 if settings.DEBUG:

@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from apps.account.models import UserProfile
+from apps.core.models import UserProfile
 import logging
 
 
@@ -18,5 +18,5 @@ class Command(BaseCommand):
             username = profile.user.username
             profile.user.delete()
 
-            logger.info('delete', None, uid=username)
+            logger.info('delete', {'uid': username})
 

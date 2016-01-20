@@ -12,7 +12,7 @@ logger = logging.getLogger('sso.core.profile')
 
 # /profile/
 @login_required
-def profile(request):
+def main(request):
     user = request.user
     profile = user.profile
 
@@ -29,7 +29,7 @@ def profile(request):
 
             profile = profile_f.save()
             success = True
-            logger.info('modify', request)
+            logger.info('modify', {'r': request})
 
     return render(request, 'account/profile.html',
                   {'user': user, 'profile': profile,
@@ -42,15 +42,18 @@ def disconnect(request, type):
     if request.method != 'POST':
         return redirect('/account/profile/')
 
+    uid = ''
     profile = request.user.profile
     if type == 'FB':
+        uid = profile.facebook_id
         profile.facebook_id = ''
     elif type == 'TW':
+        uid = profile.twitter_id
         profile.twitter_id = ''
     profile.save()
 
     request.session['result_con'] = 5
-    logger.info('disconnect: type=%s' % type, request)
+    logger.info('disconnect: type=%s,id=%s' % (type.lower(), uid), {'r': request})
     return redirect('/account/profile/')
 
 
@@ -67,9 +70,9 @@ def unregister(request):
         code = 0
         if result:
             code = 1
-            logger.info('unregister.success: name=%s' % service.name, request)
+            logger.info('unregister.success: name=%s' % service.name, {'r': request})
         else:
-            logger.warning('unregister.fail: name=%s' % service.name, request)
+            logger.warning('unregister.fail: name=%s' % service.name, {'r': request})
         request.session['result_unreg'] = code
 
     return redirect('/account/service/')
@@ -91,4 +94,4 @@ def service(request):
 def point(request):
     user = request.user
     logs = PointLog.objects.filter(user=user).order_by('-time')
-    return render(request, 'account/points.html', {'user': user, 'logs': logs })
+    return render(request, 'account/point.html', {'user': user, 'logs': logs })

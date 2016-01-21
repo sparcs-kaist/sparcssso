@@ -34,3 +34,8 @@ handler400 = lambda request: render(request, 'error/400.html')
 handler403 = lambda request: render(request, 'error/403.html')
 handler404 = lambda request: render(request, 'error/404.html')
 handler500 = lambda request: render(request, 'error/500.html')
+
+admin.site.site_header = 'SPARCS SSO Administration'
+admin.site.site_title = 'SPARCS SSO Admin'
+admin.site.index_title = ''
+admin.site.login_template = 'account/login.dummy.html'

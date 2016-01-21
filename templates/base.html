@@ -30,6 +30,7 @@
                     {% endif %}
                     {% if user.is_staff %}
                     <li><a href="/doc/sysop/">Sysop Doc</a></li>
+                    <li><a href="/manage/">Manage</a></li>
                     {% endif %}
                 </ul>
 				<ul class="nav navbar-nav navbar-right">
@@ -44,7 +45,7 @@
                             <li><a href="/account/password/change/">{% trans "Change Password" %}</a></li>
                             <li><a href="/account/deactivate/">{% trans "Deactivate" %}</a></li>
 						</ul>
-					</li>
+                    </li>
 					<li><a href="/account/logout/">{% trans "Logout" %}</a></li>
 					{% else %}
 					<li><a href="/account/signup/">{% trans "Sign Up" %}</a></li>

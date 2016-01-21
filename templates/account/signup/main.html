@@ -32,7 +32,7 @@
         <div class="form-group">
             <label class="col-xs-2 control-label">{% trans "Email" %} <span class="required"></span></label>
 			<div class="col-xs-8">
-                <input type="email" class="form-control" name="email" placeholder="asdf@example.com" required="required" maxlength="50" data-remote="/api/email/" data-error="{% trans "Duplicated Email" %}" value="{{info.email}}">
+                <input type="email" class="form-control" name="email" placeholder="asdf@example.com" required="required" maxlength="50" data-remote="/api/email/" data-error="{% trans "Not Valid or Duplicated Email" %}" value="{{info.email}}">
                 <div class="help-block with-errors"></div>
             </div>
         </div>
@@ -95,7 +95,9 @@ $(function() {
 	};
 	$('#signup').validator(option);
     
+    {% if type != 'EMAIL' %}
     $('input[name=email]').trigger("change");
+    {% endif %}
 	$('input[name=birthday]').datepicker({
 		dateFormat: 'yy-mm-dd'
 	});

@@ -20,6 +20,11 @@ urlpatterns = [
     url(r'^account/', include('apps.core.urls')),
     url(r'^api/', include('apps.api.urls')),
     url(r'^manage/', include(admin.site.urls)),
+
+    # provide backward compatibility
+    url(r'^oauth/require/$', 'apps.api.views.token_require'),
+    url(r'^oauth/info/$', 'apps.api.views.token_info'),
+    url(r'^oauth/point/$', 'apps.api.views.point'),
 ]
 
 if settings.DEBUG:

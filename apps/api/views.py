@@ -44,6 +44,8 @@ def token_require(request):
 
     if name.startswith('sparcs') and not request.user.profile.sparcs_id:
         return HttpResponseForbidden()
+    elif request.user.is_superuser:
+        return HttpResponseForbidden()
 
     token = AccessToken.objects.filter(user=request.user, service=service).first()
     if token:

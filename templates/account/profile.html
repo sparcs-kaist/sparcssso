@@ -134,15 +134,18 @@
         <div class="social-icon">
             <img class="{% if not profile.kaist_id %}disabled{% endif %}" src="/static/img/kaist.png" alt="KAIST">
         </div>
+        {% if not profile.kaist_id %}
         <form class="social-form" action="/account/connect/kaist/" method="post">
             {% csrf_token %}
-            {% if not profile.kaist_id %}
             <button type="submit" class="btn btn-primary">{% trans "Connect" %}</button>
-            {% else %}
+        </form>
+        {% else %}
+        <form class="social-form" action="/account/renew/kaist/" method="post">
+            {% csrf_token %}
             <button type="submit" class="btn btn-warning">{% trans "Renew" %}</button>
             <p class="text-info">{% trans "Renewed at" %} {{profile.kaist_info_time|date:'Y-m-d'}}</p>
-            {% endif %}
         </form>
+        {% endif %}
     </div>
 </div>
 

@@ -71,4 +71,3 @@ def reset(request, tokenid):
         return render(request, 'account/pw-reset/done.html')
 
     return render(request, 'account/pw-reset/main.html', {'tokenid': tokenid})
-

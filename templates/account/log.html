@@ -1,0 +1,30 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+
+{% block htitle %}SPARCS SSO {% trans "Logs" %}{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+<h1>{% trans "Logs" %}</h1>
+<p>{% trans "You can see your action log up to recent 30." %}</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th class="text-center">Time</th>
+            <th class="text-center">IP</th>
+            <th>Text</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for log in logs %}
+        <tr class="{% if log.level > 20 %}warning{% endif %}">
+            <td>{{log.time|date:'Y-m-d H:i:s'}}</td>
+            <td>{{log.ip}}</td>
+            <td class="text-left">{{log.text}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+

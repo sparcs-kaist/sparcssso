@@ -12,26 +12,26 @@
 <p class="text-danger">{% trans "If you login within the 60 days, your account will become ACTIVE again." %}</p>
 <p>{% trans "If you still would like to proceed, enter your password." %}</p>
 <form class="form" action="/account/deactivate/" method="post">
-	<fieldset>
-		{% if fail %}
-		<div class="form-group">
-			<div class="col-xs-offset-3 col-xs-6">
-				<div class="alert alert-danger">
-				    <b>{% trans "WRONG current password!" %}</b>
-				</div>
-			</div>
-		</div>
-		{% endif %}
+    <fieldset>
+        {% if fail %}
+        <div class="form-group">
+            <div class="col-xs-offset-3 col-xs-6">
+                <div class="alert alert-danger">
+                    <b>{% trans "WRONG current password!" %}</b>
+                </div>
+            </div>
+        </div>
+        {% endif %}
         {% csrf_token %}
         <div class="form-group col-sm-offset-3 col-sm-6">
-			<input type="password" class="form-control" name="password" placeholder="pAssw0rd!" required="required">
+            <input type="password" class="form-control" name="password" placeholder="pAssw0rd!" required="required">
         </div>
-		<div class="form-group">
-			<div class="col-xs-12">
-				<button type="submit" class="btn btn-danger">{% trans "DEACTIVATE" %}</button>
-			</div>
-		</div>
-	</fieldset>
+        <div class="form-group">
+            <div class="col-xs-12">
+                <button type="submit" class="btn btn-danger">{% trans "DEACTIVATE" %}</button>
+            </div>
+        </div>
+    </fieldset>
 </form>
 {% else %}
 <p class="text-danger">{% trans "You CANNOT deactivate your account since you are registered to at least one SPARCS service yet." %}</p>

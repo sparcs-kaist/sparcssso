@@ -8,9 +8,9 @@
 {% block content %}
 <h1>{% trans "Email Authorization Sent" %}</h1>
 <p>{% blocktrans %}Your authorization email has been sent to {{email}}. Redirecting to login page...{% endblocktrans %}</p>
-<script type="text/javascript">
-    setTimeout(function() {
-        window.location.href="/account/login/";
-    }, 3000);
+<script>
+setTimeout(function() {
+    window.location.href="/account/login/";
+}, 3000);
 </script>
 {% endblock %}

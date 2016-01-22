@@ -9,19 +9,19 @@
 
     <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-	{% block app-header %} {% endblock %}
+    {% block app-header %} {% endblock %}
 </head>
 <body>
-	<nav class="navbar navbar-default">
-		<div class="container-fluid container">
-			<div class="navbar-header">
-				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				</button>
-				<a class="navbar-brand" href="/">SPARCS SSO</a>
-			</div>
+    <nav class="navbar navbar-default">
+        <div class="container-fluid container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">SPARCS SSO</a>
+            </div>
 
             <div class="collapse navbar-collapse" id="navbar">
                 <ul class="nav navbar-nav">
@@ -30,23 +30,25 @@
                     {% endif %}
                     {% if user.is_staff %}
                     <li><a href="/doc/sysop/">Sysop Doc</a></li>
+                    <li><a href="/manage/">Manage</a></li>
                     {% endif %}
                 </ul>
-				<ul class="nav navbar-nav navbar-right">
-					{% if user.is_authenticated %}
-					<li class="dropdown">
-					    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ user.first_name }} <span class="caret"></span></a>
-						<ul class="dropdown-menu" role="menu">
-                            <li><a href="/oauth/service/">{% trans "Manage Service" %}</a></li>
+                <ul class="nav navbar-nav navbar-right">
+                    {% if user.is_authenticated %}
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ user.first_name }} <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
                             <li><a href="/account/profile/">{% trans "Profile / Connections" %}</a></li>
-                            <li><a href="/account/points/">{% trans "Points" %}</a></li>
+                            <li><a href="/account/service/">{% trans "Manage Service" %}</a></li>
+                            <li><a href="/account/log/">{% trans "Logs" %}</a></li>
+                            <li><a href="/account/point/">{% trans "Points" %}</a></li>
                             <li><a href="/account/password/change/">{% trans "Change Password" %}</a></li>
                             <li><a href="/account/deactivate/">{% trans "Deactivate" %}</a></li>
-						</ul>
-					</li>
-					<li><a href="/account/logout/">{% trans "Logout" %}</a></li>
-					{% else %}
-					<li><a href="/account/signup/">{% trans "Sign Up" %}</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="/account/logout/">{% trans "Logout" %}</a></li>
+                    {% else %}
+                    <li><a href="/account/signup/">{% trans "Sign Up" %}</a></li>
                     <li><a href="/account/login/">{% trans "Login" %}</a></li>
                     <li><a href="/account/password/reset/">{% trans "Reset Password" %}</a></li>
                     {% endif %}
@@ -57,10 +59,10 @@
                             <li><a href="/lang/en/">English</a></li>
                         </ul>
                     </li>
-				</ul>
-			</div>
-		</div>
-	</nav>
+                </ul>
+            </div>
+        </div>
+    </nav>
     <section class="container">
         {% block content %}
         {% endblock %}

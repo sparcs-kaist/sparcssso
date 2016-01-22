@@ -38,8 +38,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apps.account',
-    'apps.oauth',
+    'apps.core',
+    'apps.api',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -162,7 +162,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'std': {
-            'format': '%(levelno)s/%(asctime)s (%(ip)s, %(username)s) %(name)s - %(message)s'
+            'format': '%(levelno)s/%(asctime)s (%(ip)s, %(username)s) %(name)s.%(message)s'
         },
     },
     'handlers': {

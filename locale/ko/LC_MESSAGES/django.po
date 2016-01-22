@@ -415,6 +415,10 @@ msgid ""
 "authenticate your email."
 msgstr "이메일을 인증하지 않으면 SNS 계정을 통해서만 로그인이 가능합니다."
 
+#: templates/account/signup/main.html:30
+msgid "Not Valid or Duplicated Email"
+msgstr "잘못되었거나 이미 가입된 이메일입니다."
+
 #: templates/account/signup/main.html:38
 msgid "Password"
 msgstr "비밀번호"
@@ -509,18 +513,18 @@ msgstr "서비스 이용 불가능 기간"
 
 #: templates/oauth/cooltime.html:9
 #, python-format
-msgid "Your account is in a cooltime for the service %(service.alias)s"
-msgstr "당신의 계정은 %(service.alias)s 서비스에 대해 일시 정지 상태입니다."
+msgid "Your account is in a cooltime for the service %(alias)s"
+msgstr "당신의 계정은 %(alias)s 서비스에 대해 일시 정지 상태입니다."
 
 #: templates/oauth/cooltime.html:10
 #, python-format
-msgid "You can use %(service.alias)s again after %(left)s days."
-msgstr "%(left)s 일이 지난 후 %(service.alias)s 서비스를 다시 이용하실 수 있습니다."
+msgid "You can use %(alias)s again after %(left)s days."
+msgstr "%(left)s 일이 지난 후 %(alias)s 서비스를 다시 이용하실 수 있습니다."
 
 #: templates/oauth/cooltime.html:12
 #, python-format
-msgid "Back to %(service.alias)s"
-msgstr "%(service.alias)s 로 돌아가기"
+msgid "Back to %(alias)s"
+msgstr "%(alias)s로 돌아가기"
 
 #: templates/oauth/service.html:10
 msgid "You can see and unregister services that you use."
@@ -575,14 +579,22 @@ msgstr "위 사항을 숙지하셨다면, 다음 문자를 입력해주세요."
 msgid "Close"
 msgstr "닫기"
 
-#: templates/account/points.html:4
+#: templates/account/point.html:4
 msgid "Points"
 msgstr "포인트"
 
-#: templates/account/points.html:10
+#: templates/account/point.html:10
 msgid "You can see your current SPARCS points, and the points log up to recent 20."
 msgstr "현재 SPARCS 포인트와 최근 20개의 로그가 나타납니다."
 
-#: templates/account/points.html:10
+#: templates/account/point.html:10
 msgid "Current Point"
 msgstr "현재 포인트"
+
+#: templates/account/log.html:4
+msgid "Logs"
+msgstr "활동 로그"
+
+#: templates/account/log.html:10
+msgid "You can see your action log up to recent 30."
+msgstr "최근 30개의 활동 로그가 나타납니다."

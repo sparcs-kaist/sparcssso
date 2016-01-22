@@ -1,18 +1,3 @@
-"""sparcssso URL Configuration
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/1.8/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  url(r'^$', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  url(r'^$', Home.as_view(), name='home')
-Including another URLconf
-    1. Add an import:  from blog import urls as blog_urls
-    2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
-"""
 from django.conf import settings
 from django.conf.urls import include, url, \
     handler400, handler403, handler404, handler500
@@ -21,20 +6,25 @@ from django.contrib import admin
 from django.shortcuts import render
 
 urlpatterns = [
-    url(r'^$', 'apps.account.views.main'),
+    url(r'^$', 'apps.core.views.general.main'),
 
-    url(r'^lang/(?P<code>\w+)', 'apps.account.views.lang'),
+    url(r'^lang/(?P<code>\w+)', 'apps.core.views.general.lang'),
 
-    url(r'^credits/', 'apps.account.views.credits'),
-    url(r'^terms/', 'apps.account.views.terms'),
-    url(r'^privacy/', 'apps.account.views.privacy'),
+    url(r'^credits/', 'apps.core.views.general.credits'),
+    url(r'^terms/', 'apps.core.views.general.terms'),
+    url(r'^privacy/', 'apps.core.views.general.privacy'),
 
-    url(r'^doc/dev/', 'apps.account.views.doc_dev'),
-    url(r'^doc/sysop/', 'apps.account.views.doc_sysop'),
+    url(r'^doc/dev/', 'apps.core.views.general.doc_dev'),
+    url(r'^doc/sysop/', 'apps.core.views.general.doc_sysop'),
 
+    url(r'^account/', include('apps.core.urls')),
+    url(r'^api/', include('apps.api.urls')),
     url(r'^manage/', include(admin.site.urls)),
-    url(r'^account/', include('apps.account.urls')),
-    url(r'^oauth/', include('apps.oauth.urls')),
+
+    # provide backward compatibility
+    url(r'^oauth/require/$', 'apps.api.views.token_require'),
+    url(r'^oauth/info/$', 'apps.api.views.token_info'),
+    url(r'^oauth/point/$', 'apps.api.views.point'),
 ]
 
 if settings.DEBUG:
@@ -44,3 +34,8 @@ handler400 = lambda request: render(request, 'error/400.html')
 handler403 = lambda request: render(request, 'error/403.html')
 handler404 = lambda request: render(request, 'error/404.html')
 handler500 = lambda request: render(request, 'error/500.html')
+
+admin.site.site_header = 'SPARCS SSO Administration'
+admin.site.site_title = 'SPARCS SSO Admin'
+admin.site.index_title = ''
+admin.site.login_template = 'account/login.dummy.html'

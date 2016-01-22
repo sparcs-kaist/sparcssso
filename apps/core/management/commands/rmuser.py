@@ -1,9 +1,10 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from apps.account.models import UserProfile
+from apps.core.models import UserProfile
 import logging
 
-logger = logging.getLogger('sso.account')
+
+logger = logging.getLogger('sso.core.account')
 
 
 class Command(BaseCommand):
@@ -17,5 +18,5 @@ class Command(BaseCommand):
             username = profile.user.username
             profile.user.delete()
 
-            logger.info('remove: username=%s' % username)
+            logger.info('delete', {'uid': username})
 

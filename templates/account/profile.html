@@ -12,49 +12,49 @@
 <form id="profile" class="form-horizontal" action="/account/profile/" method="post" enctype="multipart/form-data">
     <fieldset>
         {% if success %}
-		<div class="form-group">
-			<div class="col-xs-offset-2 col-xs-8">
+        <div class="form-group">
+            <div class="col-xs-offset-2 col-xs-8">
                <div class="alert alert-success">
                    <b>{% trans "Your information has been updated." %}</b>
                 </div>
-			</div>
+            </div>
         </div>
         {% endif %}
         {% csrf_token %}
         <div class="form-group">
             <label class="col-xs-2 control-label">{% trans "Email" %} <span class="required"></span></label>
-			<div class="col-xs-8">
-				<input type="email" class="form-control" name="email" value="{{user.email}}" disabled>
+            <div class="col-xs-8">
+                <input type="email" class="form-control" name="email" value="{{user.email}}" disabled>
             </div>
         </div>
-		<input type="hidden" name="password" value="qwerty1234">
-		<div class="form-group">
+        <input type="hidden" name="password" value="qwerty1234">
+        <div class="form-group">
             <label class="col-xs-2 control-label">{% trans "Name" %} <span class="required"></span></label>
-			<div class="col-xs-5">
-				<input type="text" class="form-control" name="first_name" placeholder="First Name" required="required" maxlength="30" value="{{user.first_name}}">
-			</div>
-			<div class="col-xs-3">
-				<input type="text" class="form-control" name="last_name" placeholder="Last Name" required="required" maxlength="30" value="{{user.last_name}}">
-			</div>
-		</div>
-		<div class="form-group">
+            <div class="col-xs-5">
+                <input type="text" class="form-control" name="first_name" placeholder="First Name" required="required" maxlength="30" value="{{user.first_name}}">
+            </div>
+            <div class="col-xs-3">
+                <input type="text" class="form-control" name="last_name" placeholder="Last Name" required="required" maxlength="30" value="{{user.last_name}}">
+            </div>
+        </div>
+        <div class="form-group">
             <label class="col-xs-2 control-label">{% trans "Gender, Birthday" %}</label>
-			<div class="col-xs-3">
-				<select class="form-control" name="gender">
+            <div class="col-xs-3">
+                <select class="form-control" name="gender">
                     <option value="E">{% trans "etc" %}</option>
                     <option value="M">{% trans "Male" %}</option>
                     <option value="F">{% trans "Female" %}</option>
-				</select>
-			</div>
-			<div class="col-xs-5">
-				<input type="text" class="form-control" name="birthday" placeholder="Birthday (YYYY-MM-DD)" data-vbirth="vbirth" value="{{profile.birthday|date:'Y-m-d'}}">
+                </select>
+            </div>
+            <div class="col-xs-5">
+                <input type="text" class="form-control" name="birthday" placeholder="Birthday (YYYY-MM-DD)" data-vbirth="vbirth" value="{{profile.birthday|date:'Y-m-d'}}">
             </div>
         </div>
         {% if profile.sparcs_id %}
         <div class="form-group">
             <label class="col-xs-2 control-label">SPARCS ID</label>
-			<div class="col-xs-8">
-				<input type="text" class="form-control" value="{{profile.sparcs_id}}" disabled>
+            <div class="col-xs-8">
+                <input type="text" class="form-control" value="{{profile.sparcs_id}}" disabled>
             </div>
         </div>
         {% endif %}
@@ -64,7 +64,7 @@
                 <button type="submit" class="btn btn-primary">{% trans "Modify" %}</button>
                 <a class="btn btn-default" href="/account/profile/">{% trans "Reset" %}</a>
             </div>
-		</div>
+        </div>
     </fieldset>
 </form>
 
@@ -98,71 +98,71 @@
 {% endif %}
 
 <div class="row">
-	<div class="col-xs-offset-2 col-xs-3 social-panel">
-		<div class="social-icon">
-			<img class="{% if not profile.facebook_id %}disabled{% endif %}" src="/static/img/fb.png" alt="Facebook">
-		</div>
-		{% if not profile.facebook_id %}
-		<form class="social-form" action="/account/connect/fb/" method="post">
-			{% csrf_token %}
+    <div class="col-xs-offset-2 col-xs-3 social-panel">
+        <div class="social-icon">
+            <img class="{% if not profile.facebook_id %}disabled{% endif %}" src="/static/img/fb.png" alt="Facebook">
+        </div>
+        {% if not profile.facebook_id %}
+        <form class="social-form" action="/account/connect/fb/" method="post">
+            {% csrf_token %}
             <button type="submit" class="btn btn-primary">{% trans "Connect" %}</button>
-		</form>
-		{% else %}
-		<form class="social-form" action="/account/disconnect/fb/" method="post">
-			{% csrf_token %}
+        </form>
+        {% else %}
+        <form class="social-form" action="/account/disconnect/fb/" method="post">
+            {% csrf_token %}
             <button type="submit" class="btn btn-danger">{% trans "Disconnect" %}</button>
-		</form>
-		{% endif %}
-	</div>
-	<div class="col-xs-2 social-panel">
-		<div class="social-icon">
-			<img class="{% if not profile.twitter_id %}disabled{% endif %}" src="/static/img/tw.png" alt="Twitter">
-		</div>
-		{% if not profile.twitter_id %}
-		<form class="social-form" action="/account/connect/tw/" method="post">
-			{% csrf_token %}
+        </form>
+        {% endif %}
+    </div>
+    <div class="col-xs-2 social-panel">
+        <div class="social-icon">
+            <img class="{% if not profile.twitter_id %}disabled{% endif %}" src="/static/img/tw.png" alt="Twitter">
+        </div>
+        {% if not profile.twitter_id %}
+        <form class="social-form" action="/account/connect/tw/" method="post">
+            {% csrf_token %}
             <button type="submit" class="btn btn-primary">{% trans "Connect" %}</button>
-		</form>
-		{% else %}
-		<form class="social-form" action="/account/disconnect/tw/" method="post">
-			{% csrf_token %}
+        </form>
+        {% else %}
+        <form class="social-form" action="/account/disconnect/tw/" method="post">
+            {% csrf_token %}
             <button type="submit" class="btn btn-danger">{% trans "Disconnect" %}</button>
-		</form>
-		{% endif %}
-	</div>
-	<div class="col-xs-3 social-panel">
-		<div class="social-icon">
-			<img class="{% if not profile.kaist_id %}disabled{% endif %}" src="/static/img/kaist.png" alt="KAIST">
-		</div>
-		<form class="social-form" action="/account/connect/kaist/" method="post">
-			{% csrf_token %}
+        </form>
+        {% endif %}
+    </div>
+    <div class="col-xs-3 social-panel">
+        <div class="social-icon">
+            <img class="{% if not profile.kaist_id %}disabled{% endif %}" src="/static/img/kaist.png" alt="KAIST">
+        </div>
+        <form class="social-form" action="/account/connect/kaist/" method="post">
+            {% csrf_token %}
             {% if not profile.kaist_id %}
             <button type="submit" class="btn btn-primary">{% trans "Connect" %}</button>
             {% else %}
             <button type="submit" class="btn btn-warning">{% trans "Renew" %}</button>
             <p class="text-info">{% trans "Renewed at" %} {{profile.kaist_info_time|date:'Y-m-d'}}</p>
             {% endif %}
-		</form>
-	</div>
+        </form>
+    </div>
 </div>
 
 <script type="text/javascript">
 $(function() {
-	$("select[name=gender]").val('{{profile.gender}}');
-	var option = {
-		disable: true,
-		custom: {
-			vbirth: function(el) { var re = /^\d{4}-\d{2}-\d{2}$/; return el.val().trim() == '' || re.test(el.val()); }
-		},
-		errors: {
-			vbirth: "Format should be YYYY-MM-DD"
-		}
-	};
-	$('#profile').validator(option);
-	
-	$("input[name=birthday]").datepicker({
-		dateFormat: "yy-mm-dd"	
-	});
+    $("select[name=gender]").val('{{profile.gender}}');
+    var option = {
+        disable: true,
+        custom: {
+            vbirth: function(el) { var re = /^\d{4}-\d{2}-\d{2}$/; return el.val().trim() == '' || re.test(el.val()); }
+        },
+        errors: {
+            vbirth: "Format should be YYYY-MM-DD"
+        }
+    };
+    $('#profile').validator(option);
+    
+    $("input[name=birthday]").datepicker({
+        dateFormat: "yy-mm-dd"  
+    });
 });
 </script>
 {% endblock %}

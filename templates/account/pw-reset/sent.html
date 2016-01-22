@@ -9,10 +9,10 @@
 <h1>{% trans "Password Reset Email Sent" %}</h1>
 <p>{% trans "Password reset email has been sent. Please check your email account." %}</p>
 <p>{% trans "Redirecting to login page..." %}</p>
-<script type="text/javascript">
-    setTimeout(function() {
-        window.location.href="/account/login/";
-    }, 3000);
+<script>
+setTimeout(function() {
+    window.location.href="/account/login/";
+}, 3000);
 </script>
 {% endblock %}
 

@@ -8,9 +8,9 @@
 {% block content %}
 <h1>{% trans "Email Authenticate Success" %}</h1>
 <p>{% trans "Successfully authenticated your email! Redirecting to login page..." %}</p>
-<script type="text/javascript">
-    setTimeout(function() {
-        window.location.href="/account/login/";
-    }, 3000);
+<script>
+setTimeout(function() {
+    window.location.href="/account/login/";
+}, 3000);
 </script>
 {% endblock %}

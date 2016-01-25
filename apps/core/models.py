@@ -88,7 +88,7 @@ class UserProfile(models.Model):
 
     def set_kaist_info(self, info):
         self.kaist_id = info['userid']
-        self.kaist_info = info
+        self.kaist_info = info['kaist_info']
         self.kaist_info_time = timezone.now()
         self.save()
 

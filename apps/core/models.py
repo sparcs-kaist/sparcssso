@@ -16,7 +16,7 @@ User.__unicode__ = lambda self: u'%s %s <%s>' % \
         (self.first_name, self.last_name, self.username)
 
 
-""" General Objects """
+# General Objects
 class Notice(models.Model):
     valid_from = models.DateTimeField()
     valid_to = models.DateTimeField()
@@ -27,7 +27,7 @@ class Notice(models.Model):
         return self.title
 
 
-""" Service Related Objects """
+# Service Related Objects
 class Service(models.Model):
     name = models.CharField(max_length=20, primary_key=True)
     is_public = models.BooleanField(default=True)
@@ -63,7 +63,7 @@ class AccessToken(models.Model):
         return u'%s - %s' % (self.service, self.user)
 
 
-""" User Related Objects """
+# User Related Objects
 class UserProfile(models.Model):
     user = models.OneToOneField(User, related_name='profile')
     gender = models.CharField(max_length=1, choices=GENDER, default=ETC)
@@ -88,7 +88,7 @@ class UserProfile(models.Model):
 
     def set_kaist_info(self, info):
         self.kaist_id = info['userid']
-        self.kaist_info = info
+        self.kaist_info = info['kaist_info']
         self.kaist_info_time = timezone.now()
         self.save()
 

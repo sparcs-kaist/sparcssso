@@ -20,10 +20,10 @@ class FileHandler(RotatingFileHandler, object):
             if request.user.is_authenticated():
                 record.username = request.user.username
 
-        if record.args.has_key('uid'):
+        if 'uid' in record.args:
             record.username = record.args['uid']
 
-        hide = record.args.has_key('hide')
+        hide = record.args.get('hide', False)
 
         UserProfile = apps.get_model('core', 'UserProfile')
         profile = UserProfile.objects.filter(user__username=record.username).first()

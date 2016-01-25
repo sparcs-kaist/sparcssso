@@ -94,11 +94,11 @@ def service(request):
 def point(request):
     user = request.user
     logs = PointLog.objects.filter(user=user).order_by('-time')
-    return render(request, 'account/point.html', {'user': user, 'logs': logs })
+    return render(request, 'account/point.html', {'user': user, 'logs': logs})
 
 
 # /log/
 @login_required
 def log(request):
     logs = UserLog.objects.filter(user=request.user).order_by('-time')
-    return render(request, 'account/log.html', {'logs': logs })
+    return render(request, 'account/log.html', {'logs': logs})

@@ -21,7 +21,7 @@ def signup(request, is_social=False):
         return redirect('/')
 
     signup = request.session.get('info_signup',
-            {'type': 'EMAIL', 'profile': {'gender': 'E'}})
+                                 {'type': 'EMAIL', 'profile': {'gender': 'E'}})
     type = signup['type']
     info = signup['profile']
 
@@ -67,4 +67,3 @@ def deactivate(request):
         logger.warning('deactivate.fail', {'r': request})
 
     return render(request, 'account/deactivate.html', {'ok': ok, 'fail': fail})
-

@@ -65,7 +65,6 @@ def give_reset_pw_token(user):
               html_message=message % tokenid)
 
 
-
 # give email auth token to user
 def give_email_auth_token(user):
     title = '[SPARCS SSO] Email Authentication'
@@ -202,7 +201,6 @@ def auth_fb(code, callback_url):
             'gender': parse_gender(fb_info.get('gender')),
             'birthday': fb_info.get('birthday')}
 
-
     return UserProfile.objects.filter(facebook_id=info['userid']).first(), info
 
 
@@ -272,4 +270,3 @@ def auth_kaist(token):
             'kaist_info': k_info}
 
     return UserProfile.objects.filter(kaist_id=info['userid']).first(), info
-

@@ -5,7 +5,7 @@ from apps.core.models import Notice, Service, ServiceMap, AccessToken, \
          UserProfile, EmailAuthToken, ResetPWToken, PointLog, UserLog
 
 
-""" Filters """
+# Filters
 class UserFilter(admin.SimpleListFilter):
     title = 'user'
     parameter_name = 'user'
@@ -22,20 +22,20 @@ class UserFilter(admin.SimpleListFilter):
             return qs
 
 
-""" Admin for General Objeccts """
+# Admin for General Objects
 class NoticeAdmin(admin.ModelAdmin):
     list_display = ('title', 'valid_from', 'valid_to', 'text')
 
 
-""" Admin for Service Related Objects """
+# Admin for Service Related Objects
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'is_public', 'alias', \
-            'url', 'callback_url', 'unregister_url', 'cooltime')
+    list_display = ('name', 'is_public', 'alias',
+                    'url', 'callback_url', 'unregister_url', 'cooltime')
 
 
 class ServiceMapAdmin(admin.ModelAdmin):
-    list_display = ('sid', 'user', 'service', \
-            'register_time', 'unregister_time')
+    list_display = ('sid', 'user', 'service',
+                    'register_time', 'unregister_time')
 
 
 class AccessTokenAdmin(admin.ModelAdmin):
@@ -43,12 +43,11 @@ class AccessTokenAdmin(admin.ModelAdmin):
     list_filter = (UserFilter, )
 
 
-""" Admin for User Related Objects """
+# Admin for User Related Objects
 class UserAdmin(uadmin.UserAdmin):
     class UserProfileInline(admin.StackedInline):
         model = UserProfile
         can_delete = False
-
 
     def get_profile(self, obj):
         return UserProfile.objects.get(user=obj)

@@ -3,7 +3,8 @@ from django.contrib import auth
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.utils import timezone
-from apps.core.backends import give_email_auth_token, get_username, init_fb, init_tw, auth_fb, auth_tw, auth_kaist
+from apps.core.backends import give_email_auth_token, get_username, \
+                               init_fb, init_tw, auth_fb, auth_tw, auth_kaist
 from apps.core.models import Notice, EmailAuthToken
 import logging
 
@@ -19,8 +20,8 @@ def login(request):
         return redirect('/')
 
     current_time = timezone.now()
-    notice = Notice.objects.filter(valid_from__lte=current_time,\
-        valid_to__gt=current_time).first()
+    notice = Notice.objects.filter(valid_from__lte=current_time,
+                                   valid_to__gt=current_time).first()
 
     if 'next' in request.GET:
         request.session['next'] = request.GET['next']
@@ -206,10 +207,10 @@ def callback_conn(request, type, user, info):
     request.session['result_con'] = result_con
     if result_con == 0:
         profile_logger.warning('connect.success: type=%s,id=%s'
-                % (type.lower(), info['userid']), {'r': request})
+                               % (type.lower(), info['userid']), {'r': request})
     else:
         profile_logger.warning('connect.fail: type=%s,id=%s'
-                % (type.lower(), info['userid']), {'r': request})
+                               % (type.lower(), info['userid']), {'r': request})
 
     return redirect('/account/profile/')
 
@@ -229,9 +230,9 @@ def callback_renew(request, type, user, info):
     request.session['result_con'] = result_con
     if result_con == 0:
         profile_logger.warning('renew.success: type=%s,id=%s'
-                % (type.lower(), info['userid']), {'r': request})
+                               % (type.lower(), info['userid']), {'r': request})
     else:
         profile_logger.warning('renew.fail: type=%s,id=%s'
-                % (type.lower(), info['userid']), {'r': request})
+                               % (type.lower(), info['userid']), {'r': request})
 
     return redirect('/account/profile/')

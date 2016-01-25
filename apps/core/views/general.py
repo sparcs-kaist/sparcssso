@@ -12,8 +12,8 @@ logger = logging.getLogger('sso')
 def main(request):
     current_time = timezone.now()
     services = Service.objects.filter(is_public=True)
-    notice = Notice.objects.filter(valid_from__lte=current_time,\
-        valid_to__gt=current_time).first()
+    notice = Notice.objects.filter(valid_from__lte=current_time,
+                                   valid_to__gt=current_time).first()
 
     return render(request, 'main.html', {'services': services, 'notice': notice})
 
@@ -59,4 +59,3 @@ def doc_sysop(request):
     if not request.user.is_staff:
         return redirect('/')
     return render(request, 'doc.sysop.html')
-

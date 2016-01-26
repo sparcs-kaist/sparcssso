@@ -39,7 +39,7 @@ class ServiceMapAdmin(admin.ModelAdmin):
 
 
 class AccessTokenAdmin(admin.ModelAdmin):
-    list_display = ('tokenid', 'user', 'service')
+    list_display = ('tokenid', 'user', 'service', 'expire_time')
     list_filter = (UserFilter, )
 
 

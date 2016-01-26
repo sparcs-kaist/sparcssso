@@ -58,6 +58,7 @@ class AccessToken(models.Model):
     tokenid = models.CharField(max_length=20, primary_key=True)
     user = models.ForeignKey(User)
     service = models.ForeignKey(Service, null=True, blank=True)
+    expire_time = models.DateTimeField()
 
     def __unicode__(self):
         return u'%s - %s' % (self.service, self.user)

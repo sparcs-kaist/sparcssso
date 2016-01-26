@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from apps.core.backends import reg_service, validate_email
 from apps.core.models import Service, ServiceMap, AccessToken, PointLog
+from datetime import timedelta
 import json
 import logging
 import os
@@ -68,7 +69,8 @@ def token_require(request):
         if not AccessToken.objects.filter(tokenid=tokenid, service=service).count():
             break
 
-    token = AccessToken(tokenid=tokenid, user=request.user, service=service)
+    token = AccessToken(tokenid=tokenid, user=request.user, service=service,
+                        expire_time=timezone.now() + timedelta(seconds=5))
     token.save()
     logger.info('token.create: app=%s,url=%s' % (name, url), {'r': request})
     args = {'tokenid': token.tokenid}
@@ -87,6 +89,9 @@ def token_info(request):
     service = token.service
     logger.info('token.delete', {'r': request, 'hide': True})
     token.delete()
+
+    if token.expire_time < timezone.now():
+        raise Http404()
 
     m = ServiceMap.objects.filter(user=user, service=service).first()
     sid = user.username

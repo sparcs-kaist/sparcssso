@@ -78,15 +78,8 @@ def token_require(request):
 
 
 # /info/
-@csrf_exempt
 def token_info(request):
-    tokenid = request.POST.get('tokenid', '')
-
-    # FOR LEGACY ONLY - REMOVED IN NEAR FEATURE
-    tokenid_get = request.GET.get('tokenid', '')
-    if tokenid_get:
-        tokenid = tokenid_get
-    # END OF LEGACY CODE
+    tokenid = request.GET.get('tokenid', '')
 
     token = AccessToken.objects.filter(tokenid=tokenid).first()
     if not token:
@@ -100,16 +93,6 @@ def token_info(request):
 
     if token.expire_time < timezone.now():
         raise Http404()
-
-    key = request.POST.get('key', '')
-
-    # FOR LEGACY ONLY - REMOVED IN NEAR FEATURE
-    if (tokenid == tokenid_get) and token.service:
-        key = token.service.secret_key
-    # END OF LEGACY CODE
-
-    if token.service and token.service.secret_key != key:
-        raise PermissionDenied()
 
     m = ServiceMap.objects.filter(user=user, service=service).first()
     sid = user.username

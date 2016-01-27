@@ -1,15 +1,17 @@
 import json
 import requests
+import urllib
 
-# SPARCS SSO Client Version 0.8.1 (BETA)
-# VALID ONLY AFTER 2016-01-27T15:51+0900
+# SPARCS SSO Client Version 0.9.0 (BETA)
+# VALID ONLY AFTER 2016-01-28T12:59+09:00
 # Made by SPARCS SSO Team
 
 class Client:
-    API_BASE_URL = 'https://sparcssso.kaist.ac.kr/api/'
+    API_BASE_URL = 'https://sparcssso.kaist.ac.kr/api/v1/'
     REQUIRE_BASE_URL = '%stoken/require/' % API_BASE_URL
     INFO_BASE_URL = '%stoken/info/' % API_BASE_URL
     POINT_BASE_URL = '%spoint/' % API_BASE_URL
+    NOTICE_BASE_URL = '%snotice/' % API_BASE_URL
 
     def __init__(self, is_test=False, app_name='', secret_key=''):
         if not is_test and (not app_name or not secret_key):
@@ -75,4 +77,7 @@ class Client:
                                      'lower_bound': lower_bound
                                  })
         return result['changed'], result['point']
+
+    def get_notice(self):
+        return json.load(urllib.urlopen(self.NOTICE_BASE_URL))
 

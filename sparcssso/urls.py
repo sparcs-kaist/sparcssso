@@ -4,27 +4,29 @@ from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.shortcuts import render
+from apps.core.views import general
+from apps.api import views
 
 urlpatterns = [
-    url(r'^$', 'apps.core.views.general.main'),
+    url(r'^$', general.main),
 
-    url(r'^lang/(?P<code>\w+)', 'apps.core.views.general.lang'),
+    url(r'^lang/(?P<code>\w+)', general.lang),
 
-    url(r'^credits/', 'apps.core.views.general.credits'),
-    url(r'^terms/', 'apps.core.views.general.terms'),
-    url(r'^privacy/', 'apps.core.views.general.privacy'),
+    url(r'^credits/', general.credits),
+    url(r'^terms/', general.terms),
+    url(r'^privacy/', general.privacy),
 
-    url(r'^doc/dev/', 'apps.core.views.general.doc_dev'),
-    url(r'^doc/sysop/', 'apps.core.views.general.doc_sysop'),
+    url(r'^doc/dev/', general.doc_dev),
+    url(r'^doc/sysop/', general.doc_sysop),
 
     url(r'^account/', include('apps.core.urls')),
     url(r'^api/', include('apps.api.urls')),
     url(r'^manage/', include(admin.site.urls)),
 
     # provide backward compatibility
-    url(r'^oauth/require/$', 'apps.api.views.token_require'),
-    url(r'^oauth/info/$', 'apps.api.views.token_info'),
-    url(r'^oauth/point/$', 'apps.api.views.point'),
+    url(r'^oauth/require/$', views.token_require),
+    url(r'^oauth/info/$', views.token_info),
+    url(r'^oauth/point/$', views.point),
 ]
 
 if settings.DEBUG:

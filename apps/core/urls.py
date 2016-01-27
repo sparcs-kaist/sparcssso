@@ -1,51 +1,52 @@
 from django.conf.urls import url
 from django.shortcuts import redirect
+from apps.core.views import auth, account, profile, password
 
 urlpatterns = [
     url(r'^$', lambda x: redirect('/account/profile/')),
 
     # package: auth
-    url(r'^login/$', 'apps.core.views.auth.login'),
-    url(r'^logout/$', 'apps.core.views.auth.logout'),
+    url(r'^login/$', auth.login),
+    url(r'^logout/$', auth.logout),
 
-    url(r'^auth/email/$', 'apps.core.views.auth.email_resend'),
-    url(r'^auth/email/(?P<tokenid>\w+)$', 'apps.core.views.auth.email'),
+    url(r'^auth/email/$', auth.email_resend),
+    url(r'^auth/email/(?P<tokenid>\w+)$', auth.email),
 
-    url(r'^login/fb/$', 'apps.core.views.auth.init', {'mode': 'LOGIN', 'type': 'FB'}),
-    url(r'^login/tw/$', 'apps.core.views.auth.init', {'mode': 'LOGIN', 'type': 'TW'}),
-    url(r'^login/kaist/$', 'apps.core.views.auth.init', {'mode': 'LOGIN', 'type': 'KAIST'}),
+    url(r'^login/fb/$', auth.init, {'mode': 'LOGIN', 'type': 'FB'}),
+    url(r'^login/tw/$', auth.init, {'mode': 'LOGIN', 'type': 'TW'}),
+    url(r'^login/kaist/$', auth.init, {'mode': 'LOGIN', 'type': 'KAIST'}),
 
-    url(r'^connect/fb/$', 'apps.core.views.auth.init', {'mode': 'CONN', 'type': 'FB'}),
-    url(r'^connect/tw/$', 'apps.core.views.auth.init', {'mode': 'CONN', 'type': 'TW'}),
-    url(r'^connect/kaist/$', 'apps.core.views.auth.init', {'mode': 'CONN', 'type': 'KAIST'}),
+    url(r'^connect/fb/$', auth.init, {'mode': 'CONN', 'type': 'FB'}),
+    url(r'^connect/tw/$', auth.init, {'mode': 'CONN', 'type': 'TW'}),
+    url(r'^connect/kaist/$', auth.init, {'mode': 'CONN', 'type': 'KAIST'}),
 
-    url(r'^renew/kaist/$', 'apps.core.views.auth.init', {'mode': 'RENEW', 'type': 'KAIST'}),
+    url(r'^renew/kaist/$', auth.init, {'mode': 'RENEW', 'type': 'KAIST'}),
 
-    url(r'^callback/$', 'apps.core.views.auth.callback'),
+    url(r'^callback/$', auth.callback),
 
 
     # package: account
-    url(r'^signup/$', 'apps.core.views.account.signup'),
-    url(r'^signup/social/$', 'apps.core.views.account.signup', {'is_social': True}),
+    url(r'^signup/$', account.signup),
+    url(r'^signup/social/$', account.signup, {'is_social': True}),
 
-    url(r'^deactivate/$', 'apps.core.views.account.deactivate'),
+    url(r'^deactivate/$', account.deactivate),
 
 
     # package: profile
-    url(r'^profile/$', 'apps.core.views.profile.main'),
-    url(r'^disconnect/fb/$', 'apps.core.views.profile.disconnect', {'type': 'FB'}),
-    url(r'^disconnect/tw/$', 'apps.core.views.profile.disconnect', {'type': 'TW'}),
+    url(r'^profile/$', profile.main),
+    url(r'^disconnect/fb/$', profile.disconnect, {'type': 'FB'}),
+    url(r'^disconnect/tw/$', profile.disconnect, {'type': 'TW'}),
 
-    url(r'^service/$', 'apps.core.views.profile.service'),
-    url(r'^unregister/$', 'apps.core.views.profile.unregister'),
+    url(r'^service/$', profile.service),
+    url(r'^unregister/$', profile.unregister),
 
-    url(r'^point/$', 'apps.core.views.profile.point'),
-    url(r'^log/$', 'apps.core.views.profile.log'),
+    url(r'^point/$', profile.point),
+    url(r'^log/$', profile.log),
 
 
     # package: password
-    url(r'^password/change/$', 'apps.core.views.password.change'),
+    url(r'^password/change/$', password.change),
 
-    url(r'^password/reset/$', 'apps.core.views.password.reset_email'),
-    url(r'^password/reset/(?P<tokenid>\w+)$', 'apps.core.views.password.reset'),
+    url(r'^password/reset/$', password.reset_email),
+    url(r'^password/reset/(?P<tokenid>\w+)$', password.reset),
 ]

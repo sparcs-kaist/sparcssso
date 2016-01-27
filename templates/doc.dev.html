@@ -59,10 +59,10 @@
         <li>(1). 사용자가 i) 지원 서비스를 해지하였고 cooltime이 지났거나 ii) 지원 서비스를 첫번째로 사용한 경우 SSO는 해당 지원 서비스 내에서 고유하게 사용자를 식별할 수 있는 정보(sid)를 새로 생성합니다.<br>
         (2). 사용자가 지원 서비스를 해지하였지만 cooltime이 지나지 않은 경우 SSO는 사용자에게 경고 창을 띄우고 <b>어떠한 정보도 지원 서비스로 보내지 않습니다</b>. 이 프로세스는 즉시 종료됩니다.</li>
         <li>SSO의 지원 서비스의 callback url을 tokenid와 함께 호출합니다. 방법은 GET이며, 필드 이름은 tokenid입니다.</li>
-        <li>지원 서비스는 https://sparcssso.kaist.ac.kr/api/token/info/?tokenid=[tokenid]에서 해당 회원의 정보를 읽습니다.</li>
+        <li>지원 서비스는 정보 URL을 통해 해당 회원의 정보를 읽습니다.</li>
         <li>지원 서비스는 읽은 정보를 확인하여 적절한 절차를 수행합니다.</li>
     </ol>
-    
+
     <h3>로그인 URL</h3>
     <p>지원 서비스는 SSO의 특정 url로 사용자를 redirect 시켜야 합니다. 그 특정 url은 다음과 같습니다.
     <p>실제 운영: https://sparcssso.kaist.ac.kr/api/token/require/?app=[[app-id]]</p>
@@ -81,8 +81,17 @@
         <li>사용자의 "서비스 관리" 페이지에 등록되지 않으며, 서비스 해지 요청을 하지 않습니다.</li>
     </ul>
     
-    <h3>정보</h3>
-    <p>지원 서비스가 /api/token/info/를 사용하여 SSO에서 다음과 같은 내용이 json으로 encoding 된 사용자 정보를 얻을 수 있습니다.</p>
+    <h3>정보 URL</h3>
+    <p>로그인한 사용자의 정보를 가져오거나 변경하기 위해서는 <code>/api/token/info/</code>에 다음과 같은 파라미터로 POST 요청을 보내야 합니다.</p>
+    <ul>
+        <li>tokenid: 받은 tokenid 입니다.</li>
+        <li>key: 지원 서비스의 secret key 입니다. 개발 및 테스트인 경우 필요하지 않습니다.</li>
+    </ul>
+    <div class="box box-warning">
+        <h4>token 만료</h4>
+        <p>access token의 만료 시간은 token이 발급된 시간으로부터 5초가 지난 뒤입니다. token이 만료되면 정보를 가져올 수 없으며, 오류를 반환합니다.</p>
+    </div>
+    <p>tokenid가 올바르지 않거나 만료된 경우 404 상태 코드를 반환하며, key가 잘못된 경우 403 상태 코드를 반환합니다. 정상적인 경우라면 다음과 같은 내용이 json으로 encoding되어 반환됩니다.</p>
     <ol>
         <li>uid: 사용자가 SSO에서 고유하게 부여받은 ID입니다.</li>
         <li>sid: 사용자가 지원 서비스에 대해 고유하게 부여받은 ID입니다. 지원 서비스 <b>해지 후 재가입시 변경</b>됩니다.</li>
@@ -104,9 +113,8 @@
         <h4>데이터 신뢰 금지</h4>
         <p>위 정보에서 4, 5, 6, 7이 실제 사용자의 정보와 일치하는지는 보장하지 않습니다.</p>
     </div>
-    <br>
     <p>kaist_info는 json 포맷으로 다음과 같은 정보를 포함합니다. 각 정보가 무엇을 뜻하는지는 KAIST PORTAL의 "단일 인증 서버스 V3.0 적용 가이드 V1.0"을 참고하세요.</p>
-    <p><code>kaist_uid, ku_psft_user_status_kor, employeeTy  pe, ku_person_type, ku_psft_user_status, ku_acad_prog_code, ku_born_date, ku_person_type_kor, sn, mail, displayname, givenname, ku_sex, ku_kname</code></p>
+    <p><code>ku_std_no, kaist_uid, ku_psft_user_status_kor, employeeType, ku_person_type, ku_kaist_org_id, ku_psft_user_status, ku_acad_prog_code, ku_born_date, ku_person_type_kor, sn, mail, displayname, givenname, ku_sex, ku_kname</code></p>
     
     <h2>서비스</h2>
     <h3>개요</h3>

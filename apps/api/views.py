@@ -1,8 +1,8 @@
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import SuspiciousOperation
+from django.core.exceptions import PermissionDenied
 from django.core.validators import URLValidator
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseForbidden, Http404
+from django.http import HttpResponse, Http404
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from apps.core.backends import reg_service, validate_email
@@ -44,9 +44,9 @@ def token_require(request):
     dest = get_callback(request.user, service, url)
 
     if name.startswith('sparcs') and not request.user.profile.sparcs_id:
-        return HttpResponseForbidden()
+        raise PermissionDenied()
     elif request.user.is_superuser:
-        return HttpResponseForbidden()
+        raise PermissionDenied()
 
     token = AccessToken.objects.filter(user=request.user, service=service).first()
     if token:
@@ -78,8 +78,16 @@ def token_require(request):
 
 
 # /info/
+@csrf_exempt
 def token_info(request):
-    tokenid = request.GET.get('tokenid', '')
+    tokenid = request.POST.get('tokenid', '')
+
+    # FOR LEGACY ONLY - REMOVED IN NEAR FEATURE
+    tokenid_get = request.GET.get('tokenid', '')
+    if tokenid_get:
+        tokenid = tokenid_get
+    # END OF LEGACY CODE
+
     token = AccessToken.objects.filter(tokenid=tokenid).first()
     if not token:
         raise Http404()
@@ -92,6 +100,16 @@ def token_info(request):
 
     if token.expire_time < timezone.now():
         raise Http404()
+
+    key = request.POST.get('key', '')
+
+    # FOR LEGACY ONLY - REMOVED IN NEAR FEATURE
+    if (tokenid == tokenid_get) and token.service:
+        key = token.service.secret_key
+    # END OF LEGACY CODE
+
+    if token.service and token.service.secret_key != key:
+        raise PermissionDenied()
 
     m = ServiceMap.objects.filter(user=user, service=service).first()
     sid = user.username
@@ -127,7 +145,7 @@ def token_info(request):
 @csrf_exempt
 def point(request):
     if request.method != 'POST':
-        raise SuspiciousOperation()
+        raise PermissionDenied()
 
     name = request.POST.get('app', '')
     service = Service.objects.filter(name=name).first()
@@ -136,7 +154,7 @@ def point(request):
 
     key = request.POST.get('key', '')
     if service.secret_key != key:
-        raise SuspiciousOperation()
+        raise PermissionDenied()
 
     sid = request.POST.get('sid', '')
     m = ServiceMap.objects.filter(sid=sid, service=service).first()

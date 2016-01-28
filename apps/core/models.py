@@ -23,6 +23,14 @@ class Notice(models.Model):
     title = models.CharField(max_length=100)
     text = models.TextField()
 
+    def to_dict(self):
+        return {
+            'valid_from': self.valid_from.isoformat(),
+            'valid_to': self.valid_to.isoformat(),
+            'title': self.title,
+            'text': self.text,
+        }
+
     def __unicode__(self):
         return self.title
 

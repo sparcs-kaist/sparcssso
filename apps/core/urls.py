@@ -22,8 +22,8 @@ urlpatterns = [
 
     url(r'^renew/kaist/$', auth.init, {'mode': 'RENEW', 'type': 'KAIST'}),
 
+    url(r'^callback$', auth.callback),
     url(r'^callback/$', auth.callback),
-
 
     # package: account
     url(r'^signup/$', account.signup),

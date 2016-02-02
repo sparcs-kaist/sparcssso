@@ -68,6 +68,28 @@
     </fieldset>
 </form>
 
+{% if profile.sparcs_id or profile.is_for_test %}
+<h3>테스트 기능</h3>
+<p class="text-info">테스트 기능을 활성화하면 정식 등록되지 않은 서비스에서도 로그인 할 수 있습니다.</p>
+<p class="text-info">이는 개발의 편의를 위해 SPARCS 회원에게만 제공되는 것입니다.</b>
+<p class="text-info">현재 테스트 기능이 {% if not profile.is_for_test %}비{% endif %}활성화되어 있습니다.</p>
+
+{% if profile.sparcs_id %}
+<form class="social-form" action="/account/test/toggle/" method="post">
+    {% csrf_token %}
+    {% if profile.is_for_test %}
+    <button type="submit" class="btn btn-success">비활성화</button>
+    {% else %}
+    <button type="submit" class="btn btn-danger">활성화</button>
+    <p class="text-danger"><b>경고!</b> 악의적인 링크를 클릭했을 때 SPARCS SSO에 등록된 모든 정보가 유출될 수 있습니다.</p>
+    {% endif %}
+</form>
+{% else %}
+<p class="text-info">테스트 전용 계정에서는 테스트 기능을 비활성화 할 수 없습니다.</p>
+{% endif %}
+
+{% endif %}
+
 <h3>{% trans "Social Accounts" %}</h3>
 {% if profile.kaist_id %}
 <p class="text-info">{% trans "You can renew your KAIST SSO information." %}</p>

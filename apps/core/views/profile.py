@@ -57,6 +57,16 @@ def disconnect(request, type):
     return redirect('/account/profile/')
 
 
+# /test/toggle/
+@login_required
+def toggle_test(request):
+    profile = request.user.profile
+    if request.method == 'POST' and profile.sparcs_id:
+        profile.is_for_test = not profile.is_for_test
+        profile.save()
+    return redirect('/account/profile/')
+
+
 # /unregister/
 @login_required
 def unregister(request):

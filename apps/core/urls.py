@@ -22,6 +22,7 @@ urlpatterns = [
 
     url(r'^renew/kaist/$', auth.init, {'mode': 'RENEW', 'type': 'KAIST'}),
 
+    url(r'^callback$', auth.callback),
     url(r'^callback/$', auth.callback),
 
 
@@ -36,6 +37,8 @@ urlpatterns = [
     url(r'^profile/$', profile.main),
     url(r'^disconnect/fb/$', profile.disconnect, {'type': 'FB'}),
     url(r'^disconnect/tw/$', profile.disconnect, {'type': 'TW'}),
+
+    url(r'^test/toggle/', profile.toggle_test),
 
     url(r'^service/$', profile.service),
     url(r'^unregister/$', profile.unregister),

@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^callback$', auth.callback),
     url(r'^callback/$', auth.callback),
 
+
     # package: account
     url(r'^signup/$', account.signup),
     url(r'^signup/social/$', account.signup, {'is_social': True}),
@@ -36,6 +37,8 @@ urlpatterns = [
     url(r'^profile/$', profile.main),
     url(r'^disconnect/fb/$', profile.disconnect, {'type': 'FB'}),
     url(r'^disconnect/tw/$', profile.disconnect, {'type': 'TW'}),
+
+    url(r'^test/toggle/', profile.toggle_test),
 
     url(r'^service/$', profile.service),
     url(r'^unregister/$', profile.unregister),

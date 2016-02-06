@@ -32,10 +32,10 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-urls.handler400 = lambda request: render(request, 'error/400.html')
-urls.handler403 = lambda request: render(request, 'error/403.html')
-urls.handler404 = lambda request: render(request, 'error/404.html')
-urls.handler500 = lambda request: render(request, 'error/500.html')
+urls.handler400 = lambda r: render(r, 'error/400.html', status=400)
+urls.handler403 = lambda r: render(r, 'error/403.html', status=403)
+urls.handler404 = lambda r: render(r, 'error/404.html', status=404)
+urls.handler500 = lambda r: render(r, 'error/500.html', status=500)
 
 admin.site.site_header = 'SPARCS SSO Administration'
 admin.site.site_title = 'SPARCS SSO Admin'

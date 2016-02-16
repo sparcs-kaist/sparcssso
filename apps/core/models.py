@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+import json
 
 
 MALE = 'M'
@@ -97,7 +98,7 @@ class UserProfile(models.Model):
 
     def set_kaist_info(self, info):
         self.kaist_id = info['userid']
-        self.kaist_info = info['kaist_info']
+        self.kaist_info = json.dumps(info['kaist_info'])
         self.kaist_info_time = timezone.now()
         self.save()
 

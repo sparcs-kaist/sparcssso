@@ -531,8 +531,8 @@ msgid "You can see and unregister services that you use."
 msgstr "등록된 서비스들을 확인하고 해지할 수 있습니다."
 
 #: templates/oauth/service.html:15
-msgid "Fail to unregister service. Try again."
-msgstr "서비스 해지에 실패하였습니다. 다시 시도해 주세요."
+msgid "Fail to unregister service. Message: "
+msgstr "서비스 해지에 실패하였습니다. 이유: "
 
 #: templates/oauth/service.html:19
 msgid "Successfully unregistered the service."

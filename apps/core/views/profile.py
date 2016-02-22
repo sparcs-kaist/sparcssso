@@ -77,13 +77,11 @@ def unregister(request):
     service = Service.objects.filter(name=name).first()
     if service:
         result = unreg_service(request.user, service)
-        code = 0
-        if result:
+        if result['status'] == '0':
             logger.info('unregister.success: name=%s' % service.name, {'r': request})
         else:
-            code = 1
             logger.warning('unregister.fail: name=%s' % service.name, {'r': request})
-        request.session['result_unreg'] = code
+        request.session['result_unreg'] = result
 
     return redirect('/account/service/')
 

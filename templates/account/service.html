@@ -10,11 +10,11 @@
 <p>{% trans "You can see and unregister services that you use." %}</p>
 <div class="row">
     <div class="col-xs-offset-3 col-xs-6">
-        {% if result_unreg == 1 %}
+        {% if result_unreg.status == '1' %}
         <div class="alert alert-danger">
-            <b>{% trans "Fail to unregister service. Try again." %}</b>
+            <b>{% trans "Fail to unregister service. Message: " %}{{result_unreg.msg}}</b>
         </div>
-        {% elif result_unreg == 0 %}
+        {% elif result_unreg.status == '0' %}
         <div class="alert alert-success">
             <b>{% trans "Successfully unregistered the service." %}</b>
         </div>

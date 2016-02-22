@@ -38,9 +38,19 @@ def terms(request):
     return render(request, 'terms.html')
 
 
+# /terms.now/
+def terms_now(request):
+    return render(request, 'terms.now.html')
+
+
 # /privacy/
 def privacy(request):
     return render(request, 'privacy.html')
+
+
+# /privacy.now/
+def privacy_now(request):
+    return render(request, 'privacy.now.html')
 
 
 # /doc/dev/

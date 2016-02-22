@@ -146,7 +146,7 @@ def reg_service(user, service):
 
 # Unregister Service
 def unreg_service(user, service):
-    default_result = {'status': '-1', 'msg': 'Unknown Error'}
+    default_result = {'status': '1', 'msg': 'Unknown Error'}
     m = ServiceMap.objects.filter(user=user, service=service).first()
     if not m or m.unregister_time:
         return default_result
@@ -156,7 +156,7 @@ def unreg_service(user, service):
 
     try:
         result = json.load(result)
-        status = result.get('status', '-1')
+        status = result.get('status', '1')
         if status != '0':
             return result
     except:

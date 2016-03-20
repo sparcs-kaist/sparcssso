@@ -8,13 +8,13 @@ from apps.core.forms import UserForm, UserProfileForm
 from xml.etree.ElementTree import fromstring
 import cgi
 import datetime
-import httplib
-import json
+import requests
 import logging
 import oauth2 as oauth
 import os
 import re
 import urllib
+import urlparse
 
 
 logger = logging.getLogger('sso.account.backend')
@@ -151,11 +151,10 @@ def unreg_service(user, service):
     if not m or m.unregister_time:
         return default_result
 
-    data = urllib.urlencode({'sid': m.sid, 'key': service.secret_key})
-    result = urllib.urlopen(service.unregister_url, data)
-
+    r = requests.post(service.unregister_url, verify=True,
+                      data={'sid': m.sid, 'key': service.secret_key})
     try:
-        result = json.load(result)
+        result = r.json()
         status = result.get('status', '1')
         if status != '0':
             return result
@@ -185,15 +184,18 @@ def auth_fb(code, callback_url):
         'code': code,
     }
 
-    target = urllib.urlopen('https://graph.facebook.com/oauth/access_token?' +
-                            urllib.urlencode(args)).read()
-    response = cgi.parse_qs(target)
+    r = requests.get('https://graph.facebook.com/oauth/access_token?',
+                     params=args, verify=True)
+    response = urlparse.parse_qs(r.text)
     access_token = response['access_token'][-1]
 
-    fb_info = urllib.urlopen('https://graph.facebook.com/v2.5/me?fields=' +
-                             'email,first_name,last_name,gender,birthday&' +
-                             'access_token=%s' % access_token)
-    fb_info = json.load(fb_info)
+    args = {
+        'fields': 'email,first_name,last_name,gender,birthday',
+        'access_token': access_token
+    }
+    r = requests.get('https://graph.facebook.com/v2.5/me',
+                     params=args, verify=True)
+    fb_info = r.json()
 
     info = {'userid': fb_info['id'],
             'email': fb_info.get('email'),
@@ -249,15 +251,10 @@ def auth_kaist(token):
         </ser:verification>
     </soapenv:Body>
 </soapenv:Envelope>""" % (token, settings.KAIST_APP_SECRET, settings.KAIST_APP_ADMIN_ID, settings.KAIST_APP_ADMIN_PW)
-    encdata = data.encode('utf-8')
 
-    conn = httplib.HTTPSConnection('iam.kaist.ac.kr')
-    headers = {'Content-Type': 'text/xml', 'Content-Length': str(len(encdata))}
-
-    conn.request('POST', '/iamps/services/singlauth/', '', headers)
-    conn.send(encdata)
-
-    raw_info = fromstring(conn.getresponse().read())[0][0][0]
+    r = requests.post('https://iam.kaist.ac.kr/iamps/services/singlauth/',
+                      data=data, verify=True)
+    raw_info = fromstring(r.text)[0][0][0]
     k_info = {}
     for node in raw_info:
         k_info[node.tag] = node.text

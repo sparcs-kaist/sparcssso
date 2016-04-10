@@ -54,7 +54,7 @@ class Service(models.Model):
 
 class ServiceMap(models.Model):
     sid = models.CharField(max_length=20, primary_key=True)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, related_name='services')
     service = models.ForeignKey(Service)
     register_time = models.DateTimeField()
     unregister_time = models.DateTimeField(null=True, blank=True)

@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.validators import URLValidator
+from django.db import transaction
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404
 from django.utils import timezone
@@ -141,6 +142,7 @@ def token_info(request):
 
 # /point/
 @csrf_exempt
+@transaction.atomic
 def point(request):
     if request.method != 'POST':
         raise PermissionDenied()

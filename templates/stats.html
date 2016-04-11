@@ -3,9 +3,148 @@
 
 {% block app-header %}
 <link rel="stylesheet" type="text/css" href="/static/css/main.css">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.1.1/Chart.min.js"></script>
 {% endblock %}
 
 {% block content %}
-<h1 class="doc-header">SPARCS SSO Statistics <small>(2016-02-22T13:08+0900)</small></h1>
-<p>PERMISSON: </p>
+<h1 class="doc-header">SPARCS SSO Statistics <small>({{ time|date:"Y-m-d\TH:i:sT"}})</small></h1>
+<p>Permission: 
+{% if level == 0 %}
+PUBLIC
+{% elif level == 1 %}
+<b>SPARCS</b>
+{% elif level == 2 %}
+<span style="color:red;font-weight:bold">SYSOP</span>
+{% endif %}
+</p>
+
+<div id="stat">
+    <ul class="nav nav-tabs" role="tablist">
+        {% for s in stat %}
+        <li><a href="#{{ s.name }}" role="tab" data-toggle="tab" id="{{ s.name }}-link">{{ s.alias }}</a></li>
+        {% endfor %}
+    </ul>
+    <div class="tab-content">
+        {% for s in stat %}
+        <div role="tabpanel" class="tab-pane" id="{{ s.name }}">
+            <p>Total Users: {{ s.account.all }}</p>
+            {% if level >= 1 %}
+            <p>Email Authed: {{ s.account.email }}</p>
+            <p>Facebook Connected: {{ s.account.fb }}</p>
+            <p>Twitter Connected: {{ s.account.tw }}</p>
+            <p>KAIST Connected: {{ s.account.kaist }}</p>
+            <p>KAIST - Employee: {{ s.kaist.employee }}</p>
+            <p>KAIST - Professor: {{ s.kaist.professor }}</p>
+            <p>Gender{% if level >= 2 %} / Real Gender{% endif %}</p>
+            <canvas id="{{ s.name }}-gender" width="400" height="400"></canvas>
+
+            <p>Birth Year</p>
+            <canvas id="{{ s.name }}-birth-year" width="400" height="400"></canvas>
+            {% endif %}
+            {% if level >= 2 %}
+            <p>Real Birth Year</p>
+            <canvas id="{{ s.name }}-birth-year-real" width="400" height="400"></canvas>
+
+            <p>Start Year</p>
+            <canvas id="{{ s.name }}-start-year" width="400" height="400"></canvas>
+            
+            <p>Department</p>
+            <canvas id="{{ s.name }}-department" width="400" height="400"></canvas>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    $('#stat a:first').tab('show');
+
+    var extractLineData = function(dataset) {
+        var keys = Object.keys(dataset); keys.sort();
+        var min = parseInt(keys[0]);
+        var max = parseInt(keys[keys.length-1]);
+
+        labels = []; data = [];
+        for (var i = min; i <= max; i += 1) {
+            labels.push(i);
+            var v = dataset[i];
+            v = (v === undefined) ? 0 : v;
+            data.push(v);
+        }
+        return [labels, data];
+    };
+
+    {% for s in stat %}
+    $('#{{ s.name }}-link').on('shown.bs.tab', function() {
+        {% if level >= 1 %}
+        var ctx_gender = $("#{{ s.name }}-gender").get(0).getContext("2d");
+        var data_gender = {
+            labels: ["Male", "Female", "etc"],
+            datasets: [
+                {
+                    label: "Gender",
+                    data: [{{ s.gender.male }}, {{ s.gender.female }}, {{ s.gender.etc }}]
+                },
+                {% if level >= 2 %}
+                {
+                    label: "Real Gender",
+                    data: [{{ s.kaist.gender.male }}, {{ s.kaist.gender.female }}, 0]
+                }
+                {% endif %}
+            ]
+        };
+        new Chart(ctx_gender).Bar(data_gender);
+
+        var ctx_birth_year = $("#{{ s.name }}-birth-year").get(0).getContext("2d");
+        var raw_birth_year = {
+            {% for key, value in s.birth_year.items %}
+            {{ key }}: {{ value }},
+            {% endfor %}
+        };
+        [label_birth_year, data_birth_year] = extractLineData(raw_birth_year);
+        var data_birth_year = {
+            labels: label_birth_year,
+            datasets: [{data: data_birth_year}]
+        };
+        new Chart(ctx_birth_year).Line(data_birth_year);
+        {% endif %}
+
+        {% if level >= 2 %}
+        var ctx_birth_year_real = $("#{{ s.name }}-birth-year-real").get(0).getContext("2d");
+        var raw_birth_year_real = {
+            {% for key, value in s.kaist.birth_year.items %}
+            {{ key }}: {{ value }},
+            {% endfor %}
+        };
+        [label_birth_year_real, data_birth_year_real] = extractLineData(raw_birth_year_real);
+        var data_birth_year_real = {
+            labels: label_birth_year_real,
+            datasets: [{data: data_birth_year_real}]
+        };
+        new Chart(ctx_birth_year_real).Line(data_birth_year_real);
+
+        var ctx_start_year = $("#{{ s.name }}-start-year").get(0).getContext("2d");
+        var raw_start_year = {
+            {% for key, value in s.kaist.start_year.items %}
+            {{ key }}: {{ value }},
+            {% endfor %}
+        };
+        [label_start_year, data_start_year] = extractLineData(raw_start_year);
+        var data_start_year = {
+            labels: label_start_year,
+            datasets: [{data: data_start_year}]
+        };
+        new Chart(ctx_start_year).Line(data_start_year);
+
+        var ctx_department = $("#{{ s.name }}-department").get(0).getContext("2d");
+        var data_department = [
+            {% for key, value in s.kaist.department.items %}
+            { value: {{ value }}, label: "{{ key }}" },
+            {% endfor %}
+        ];
+        new Chart(ctx_department).Doughnut(data_department);
+        {% endif %}
+    });
+    {% endfor %}
+</script>
 {% endblock %}

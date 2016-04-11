@@ -43,6 +43,11 @@ def privacy(request):
     return render(request, 'privacy.html')
 
 
+# /stats/
+def stats(request):
+    return render(request, 'stats.html')
+
+
 # /doc/dev/
 @login_required
 def doc_dev(request):

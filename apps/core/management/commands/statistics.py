@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
-from apps.core.models import Service
+from django.utils import timezone
+from apps.core.models import Statistic, Service
 import json
 
 
@@ -81,22 +82,22 @@ class Command(BaseCommand):
                 if not user.profile.kaist_info:
                     continue
 
-                kaist_info = json.load(user.profile.kaist_info)
+                kaist_info = json.loads(user.profile.kaist_info)
                 kaist = stat['kaist']
 
                 if 'ku_std_no' in kaist_info:
                     start_year = kaist_info['ku_std_no'][:4]
                     if start_year in kaist['start_year']:
-                        kaist['start_year'] += 1
+                        kaist['start_year'][start_year] += 1
                     else:
-                        kaist['start_year'] = 1
+                        kaist['start_year'][start_year] = 1
 
                 if 'ku_born_date' in kaist_info:
                     birth_year = kaist_info['ku_born_date'][:4]
                     if birth_year in kaist['birth_year']:
-                        kaist['birth_year'] += 1
+                        kaist['birth_year'][birth_year] += 1
                     else:
-                        kaist['birth_year'] = 1
+                        kaist['birth_year'][birth_year] = 1
 
                 if 'ku_sex' in kaist_info:
                     gender = 'male' if kaist_info['ku_sex'] == 'M' else 'F'
@@ -105,17 +106,16 @@ class Command(BaseCommand):
                 if 'ku_kaist_org_id' in kaist_info:
                     department = kaist_info['ku_kaist_org_id']
                     if department in kaist['department']:
-                        kaist['department'] += 1
+                        kaist['department'][department] += 1
                     else:
-                        kaist['department'] = 1
+                        kaist['department'][department] = 1
 
                 if 'employeeType' in kaist_info:
                     p_type = kaist_info['employeeType']
-                    if p_type == 'S':
+                    if 'E' in p_type:
                         kaist['employee'] += 1
-                    elif p_type == 'P':
+                    elif 'P' in p_type:
                         kaist['professor'] += 1
 
-        print stats
-
+        Statistic(time=timezone.now(), data=json.dumps(stats)).save()
 

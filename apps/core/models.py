@@ -36,6 +36,14 @@ class Notice(models.Model):
         return self.title
 
 
+class Statistic(models.Model):
+    time = models.DateTimeField()
+    data = models.TextField()
+
+    def __unicode__(self):
+        return u'Statistic at %s' % self.time
+
+
 # Service Related Objects
 class Service(models.Model):
     name = models.CharField(max_length=20, primary_key=True)

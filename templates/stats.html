@@ -33,17 +33,15 @@ PUBLIC
             <p>Facebook Connected: {{ s.account.fb }}</p>
             <p>Twitter Connected: {{ s.account.tw }}</p>
             <p>KAIST Connected: {{ s.account.kaist }}</p>
-            <p>KAIST - Employee: {{ s.kaist.employee }}</p>
-            <p>KAIST - Professor: {{ s.kaist.professor }}</p>
             <p>Gender{% if level >= 2 %} / Real Gender{% endif %}</p>
             <canvas id="{{ s.name }}-gender" width="400" height="400"></canvas>
 
-            <p>Birth Year</p>
+            <p>Birth Year{% if level >= 2 %} / Real Birth Year{% endif %}</p>
             <canvas id="{{ s.name }}-birth-year" width="400" height="400"></canvas>
             {% endif %}
             {% if level >= 2 %}
-            <p>Real Birth Year</p>
-            <canvas id="{{ s.name }}-birth-year-real" width="400" height="400"></canvas>
+            <p>KAIST - Employee: {{ s.kaist.employee }}</p>
+            <p>KAIST - Professor: {{ s.kaist.professor }}</p>
 
             <p>Start Year</p>
             <canvas id="{{ s.name }}-start-year" width="400" height="400"></canvas>
@@ -74,6 +72,21 @@ PUBLIC
         return [labels, data];
     };
 
+    var mergeLineData = function(label1, data1, label2, data2) {
+        var min = Math.min(label1[0], label2[0]);
+        var max = Math.max(label1[label1.length-1], label2[label2.length-1]);
+        
+        labels = []; d1 = []; d2 = [];
+        for (var i = min; i <= max; i += 1) {
+            labels.push(i);
+            var v1 = data1[i];
+            d1.push(((v1 === undefined) ? 0 : v1));
+            var v2 = data2[i];
+            d2.push(((v2 === undefined) ? 0 : v2));
+        }
+        return [labels, d1, d2];
+    };
+
     {% for s in stat %}
     $('#{{ s.name }}-link').on('shown.bs.tab', function() {
         {% if level >= 1 %}
@@ -83,11 +96,19 @@ PUBLIC
             datasets: [
                 {
                     label: "Gender",
+                    fillColor: "rgba(220,220,220,0.5)",
+                    strokeColor: "rgba(220,220,220,0.8)",
+                    highlightFill: "rgba(220,220,220,0.75)",
+                    highlightStroke: "rgba(220,220,220,1)",
                     data: [{{ s.gender.male }}, {{ s.gender.female }}, {{ s.gender.etc }}]
                 },
                 {% if level >= 2 %}
                 {
                     label: "Real Gender",
+                    fillColor: "rgba(151,187,205,0.5)",
+                    strokeColor: "rgba(151,187,205,0.8)",
+                    highlightFill: "rgba(151,187,205,0.75)",
+                    highlightStroke: "rgba(151,187,205,1)",
                     data: [{{ s.kaist.gender.male }}, {{ s.kaist.gender.female }}, 0]
                 }
                 {% endif %}
@@ -102,27 +123,46 @@ PUBLIC
             {% endfor %}
         };
         [label_birth_year, data_birth_year] = extractLineData(raw_birth_year);
+        {% if level >= 2 %}
+         var raw_birth_year_real = {
+            {% for key, value in s.kaist.birth_year.items %}
+            {{ key }}: {{ value }},
+            {% endfor %}
+        };
+        [label_birth_year_real, g] = extractLineData(raw_birth_year_real);
+        [label_birth_year, data_birth_year, data_birth_year_real] = mergeLineData(label_birth_year, raw_birth_year, label_birth_year_real, raw_birth_year_real);
+        {% endif %}
         var data_birth_year = {
             labels: label_birth_year,
-            datasets: [{data: data_birth_year}]
+            datasets: [
+                {
+                    label: "Birth Year",
+                    fillColor: "rgba(220,220,220,0.2)",
+                    strokeColor: "rgba(220,220,220,1)",
+                    pointColor: "rgba(220,220,220,1)",
+                    pointStrokeColor: "#fff",
+                    pointHighlightFill: "#fff",
+                    pointHighlightStroke: "rgba(220,220,220,1)",
+                    data: data_birth_year
+                },
+                {% if level >= 2 %}
+                {
+                    label: "Real Birth Year",
+                    fillColor: "rgba(151,187,205,0.2)",
+                    strokeColor: "rgba(151,187,205,1)",
+                    pointColor: "rgba(151,187,205,1)",
+                    pointStrokeColor: "#fff",
+                    pointHighlightFill: "#fff",
+                    pointHighlightStroke: "rgba(151,187,205,1)",
+                    data: data_birth_year_real
+                }
+                {% endif %}
+            ]
         };
         new Chart(ctx_birth_year).Line(data_birth_year);
         {% endif %}
 
         {% if level >= 2 %}
-        var ctx_birth_year_real = $("#{{ s.name }}-birth-year-real").get(0).getContext("2d");
-        var raw_birth_year_real = {
-            {% for key, value in s.kaist.birth_year.items %}
-            {{ key }}: {{ value }},
-            {% endfor %}
-        };
-        [label_birth_year_real, data_birth_year_real] = extractLineData(raw_birth_year_real);
-        var data_birth_year_real = {
-            labels: label_birth_year_real,
-            datasets: [{data: data_birth_year_real}]
-        };
-        new Chart(ctx_birth_year_real).Line(data_birth_year_real);
-
         var ctx_start_year = $("#{{ s.name }}-start-year").get(0).getContext("2d");
         var raw_start_year = {
             {% for key, value in s.kaist.start_year.items %}
@@ -132,7 +172,14 @@ PUBLIC
         [label_start_year, data_start_year] = extractLineData(raw_start_year);
         var data_start_year = {
             labels: label_start_year,
-            datasets: [{data: data_start_year}]
+            datasets: [{
+                fillColor: "rgba(151,187,205,0.2)",
+                strokeColor: "rgba(151,187,205,1)",
+                pointColor: "rgba(151,187,205,1)",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(151,187,205,1)",
+                data: data_start_year}]
         };
         new Chart(ctx_start_year).Line(data_start_year);
 

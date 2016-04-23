@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from apps.core.backends import give_email_auth_token, get_username, \
@@ -31,7 +33,6 @@ def login(request):
         password = request.POST.get('password', 'asdf')
 
         username = get_username(email)
-        print username
         user = auth.authenticate(username=username, password=password)
         if not user:
             logger.info('login.fail', {'r': request, 'uid': username})
@@ -45,6 +46,15 @@ def login(request):
             request.session.pop('info_signup', None)
             auth.login(request, user)
             logger.info('login.success', {'r': request})
+
+            if not settings.DEBUG and user.is_staff:
+                title = '[SPARCS SSO] Staff Login'
+                message = 'time:%s; id:%s; ip:%s;'
+                emails = map(lambda x: x[1], settings.ADMINS)
+                time = timezone.now()
+                ip = request.META.get('REMOTE_ADDR', '0.0.0.0')
+                send_mail(title, '', 'noreply@sso.sparcs.org', emails,
+                          html_message=message % (time, username, ip))
 
             if user.profile.activate():
                 account_logger.warning('activate', {'r': request})

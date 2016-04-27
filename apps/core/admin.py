@@ -1,8 +1,9 @@
 from django.contrib import admin
 from django.contrib.auth import admin as uadmin
 from django.contrib.auth.models import User
-from apps.core.models import Notice, Service, ServiceMap, AccessToken, \
-         UserProfile, EmailAuthToken, ResetPWToken, PointLog, UserLog
+from apps.core.models import Notice, Statistic, Service, ServiceMap, \
+                             AccessToken, UserProfile, EmailAuthToken, \
+                             ResetPWToken, PointLog, UserLog
 
 
 # Filters
@@ -25,6 +26,10 @@ class UserFilter(admin.SimpleListFilter):
 # Admin for General Objects
 class NoticeAdmin(admin.ModelAdmin):
     list_display = ('title', 'valid_from', 'valid_to', 'text')
+
+
+class StatisticAdmin(admin.ModelAdmin):
+    list_display = ('time', 'data')
 
 
 # Admin for Service Related Objects
@@ -100,6 +105,7 @@ class UserLogAdmin(admin.ModelAdmin):
 
 admin.site.unregister(User)
 admin.site.register(Notice, NoticeAdmin)
+admin.site.register(Statistic, StatisticAdmin)
 admin.site.register(Service, ServiceAdmin)
 admin.site.register(ServiceMap, ServiceMapAdmin)
 admin.site.register(AccessToken, AccessTokenAdmin)

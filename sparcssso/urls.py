@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^credits/', general.credits),
     url(r'^terms/', general.terms),
     url(r'^privacy/', general.privacy),
+    url(r'^stats/', general.stats),
     url(r'^doc/dev/', general.doc_dev),
     url(r'^doc/sysop/', general.doc_sysop),
 

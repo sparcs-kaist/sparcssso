@@ -1,8 +1,9 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.utils import timezone, translation
-from apps.core.models import Notice, Service
+from apps.core.models import Notice, Statistic, Service
 import logging
+import json
 
 
 logger = logging.getLogger('sso')
@@ -41,6 +42,42 @@ def terms(request):
 # /privacy/
 def privacy(request):
     return render(request, 'privacy.html')
+
+
+# /stats/
+def stats(request):
+    level = 0
+    if request.user.is_authenticated():
+        if request.user.is_staff:
+            level = 2
+        elif request.user.profile.sparcs_id:
+            level = 1
+
+    raw_stats = Statistic.objects.order_by('-time')
+    if len(raw_stats) == 0:
+        raw_stat = {}
+    else:
+        time = raw_stats[0].time
+        raw_stat = json.loads(raw_stats[0].data)
+
+    stat = []
+    for name, value in raw_stat.iteritems():
+        if name != 'all':
+            service = Service.objects.get(name=name)
+            if level < 1 and not service.is_public:
+                continue
+
+        s = {}
+        s['name'] = name
+        s['alias'] = service.alias if name != 'all' else 'all'
+        s.update(value)
+
+        if name == 'all':
+            stat.insert(0, s)
+        else:
+            stat.append(s)
+
+    return render(request, 'stats.html', {'level': level, 'time': time, 'stat': stat})
 
 
 # /doc/dev/

@@ -11,6 +11,7 @@ urlpatterns = [
     url(r'^email/$', v0.email),
 
     # VERSION 1 #
+    url(r'^v1/logout/$', v1.logout),
     url(r'^v1/token/require/$', v1.token_require),
     url(r'^v1/token/info/$', v1.token_info),
     url(r'^v1/point/$', v1.point),

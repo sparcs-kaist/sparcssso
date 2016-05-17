@@ -1,14 +1,18 @@
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.validators import URLValidator
+from django.contrib import auth
 from django.db import transaction
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404
 from django.utils import timezone
+from django.utils.crypto import constant_time_compare
 from django.views.decorators.csrf import csrf_exempt
 from apps.core.backends import reg_service, validate_email
 from apps.core.models import Notice, Service, ServiceMap, AccessToken, PointLog
 from datetime import timedelta
+import datetime
+import hmac
 import json
 import logging
 import os
@@ -45,6 +49,36 @@ def get_callback(user, service, url):
 def versions(request):
     resp = {'versions': ['v1', ]}
     return HttpResponse(json.dumps(resp), content_type='application/json')
+
+
+# /logout/
+@login_required
+def logout(request):
+    name = request.GET.get('app', '')
+    service = Service.objects.filter(name=name).first()
+    if not service:
+        return redirect('/')
+
+    time = request.GET.get('time', '0')
+    time = int(time) if time.isdigit() else 0
+
+    date = datetime.datetime.fromtimestamp(time, timezone.utc)
+    now = timezone.now()
+    if (now - date).seconds > 5:
+        return redirect(service.url)
+
+    sm = ServiceMap.objects.filter(user=request.user, service=service).first()
+    if not sm:
+        return redirect(service.url)
+
+    m = hmac.new(str(service.secret_key),
+                 str('%s:%s' % (time, sm.sid))).hexdigest()
+    m_client = request.GET.get('m', '')
+    if constant_time_compare(m, m_client):
+        logger.info('logout', {'r': request})
+        auth.logout(request)
+
+    return redirect(service.url)
 
 
 # /token/require/

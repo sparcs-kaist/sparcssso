@@ -10,7 +10,7 @@
 <div class="doc">
     <p>본 문서는 SPARCS SSO와의 연동 및 테스트에 관한 사항과 서비스 정식 런칭 시 해야 할 일들에 대해 다룹니다. 각 서비스의 session 관련 개발자와 SPARCS SSO SYSOP은 본 문서를 숙지하고 있어야 합니다.</p>
     <p><b>작성자</b>: 14 samjo - PM, DEV, SYSOP (2015 ~)</p>
-    <p><b>최종수정</b>: 2016-02-22T14:01:00+0900</p>
+    <p><b>최종수정</b>: 2016-05-17T22:00:00+0900</p>
     
     <h2>등록</h2>
     <p>SSO와의 로그인 연동을 위해서는 지원 서비스가 다음의 조건을 만족시켜야 합니다.</p>
@@ -48,7 +48,7 @@
         <p>지원 서비스의 callback url 및 해지 url은 https로 시작해야 합니다. 그렇지 않은 경우 session hijacking 공격의 가능성과 secret key의 유출 위험이 있습니다.</p>
     </div>
 
-    <h2>로그인</h2>
+    <h2>로그인 및 로그아웃</h2>
     <h3>개요</h3>
     <p>사용자가 로그인 할 때는 다음과 같은 순서로 로그인 요청이 처리됩니다.</p>
     <ol>
@@ -80,7 +80,7 @@
         <li>sid는 uid와 같게 전송됩니다.</li>
         <li>사용자의 "서비스 관리" 페이지에 등록되지 않으며, 서비스 해지 요청을 하지 않습니다.</li>
     </ul>
-    
+
     <h3>정보 URL</h3>
     <p>로그인한 사용자의 정보를 가져오거나 변경하기 위해서는 <code>/api/v1/token/info/</code>에 다음과 같은 파라미터로 POST 요청을 보내야 합니다.</p>
     <ul>
@@ -115,7 +115,20 @@
     </div>
     <p>kaist_info는 json 포맷으로 다음과 같은 정보를 포함합니다. 각 정보가 무엇을 뜻하는지는 KAIST PORTAL의 "단일 인증 서버스 V3.0 적용 가이드 V1.0"을 참고하세요.</p>
     <p><code>ku_std_no, kaist_uid, ku_psft_user_status_kor, employeeType, ku_person_type, ku_kaist_org_id, ku_psft_user_status, ku_acad_prog_code, ku_born_date, ku_person_type_kor, sn, mail, displayname, givenname, ku_sex, ku_kname</code></p>
-    
+
+    <h3>로그아웃 URL</h3>
+    <p>지원 서비스가 SSO에 등록된 서비스일 경우 SSO에서 사용자를 로그아웃시킬 수 있습니다. 지원 서비스는 사용자가 <code>/api/v1/logout/</code>에 다음과 같은 파라미터로 GET요청을 보내도록 url로 리다이렉트시켜야 합니다.</p>
+    <ol>
+        <li>app: 지원 서비스의 고유 ID입니다.</li>
+        <li>time: Unix timestamp로 나타낸 현재 시간입니다. 10진법 정수여야 하며 시간대는 UTC를 사용하여야 합니다.</li>
+        <li>m: HMAC([[time]]:[[sid]])의 값이며, [0-9a-f]를 사용한 16진수로 표기되어야 합니다.  sid는 사용자가 지원 서비스에 대해 고유하게 부여받은 ID입니다.</li>
+    </ol>
+    <p>로그아웃에 성공에 관계 없이 사용자는 서비스의 대표 url로 redirect 됩니다.</p>
+    <div class="box box-warning">
+        <h4>시간 제한</h4>
+        <p>Replay attack을 방지하기 위해 서버 시간과 timestamp가 5초 이상 차이날 경우 요청은 무시되며, 서비스 대표 url로 redirect 됩니다.</p>
+    </div>
+
     <h2>서비스</h2>
     <h3>개요</h3>
     <p>지원 서비스 가입은 SSO에서 요청을 받는 즉시 이루어지며, <b>지원 서비스는 이를 통제할 수 없습니다</b>. 다만, SSO에서 로그인 정보를 얻은 뒤 지원 서비스에서 특정 또는 전체 기능을 차단하는 방법을 사용할 수는 있습니다.</p>

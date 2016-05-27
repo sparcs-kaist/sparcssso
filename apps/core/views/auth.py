@@ -7,7 +7,8 @@ from django.shortcuts import render, redirect
 from django.utils import timezone
 from apps.core.backends import give_email_auth_token, get_username, \
                                init_fb, init_tw, auth_fb, auth_tw, auth_kaist
-from apps.core.models import Notice, EmailAuthToken
+from apps.core.models import Notice, EmailAuthToken, Service
+from urlparse import urlparse, parse_qs
 import logging
 
 
@@ -28,6 +29,10 @@ def login(request):
     if 'next' in request.GET:
         request.session['next'] = request.GET['next']
 
+    query_dict = parse_qs(urlparse(request.session.get('next', '/')).query)
+    service = Service.objects.filter(name=query_dict.get('app', [''])[0]).first()
+    srv_name = service.alias if service else ''
+
     if request.method == 'POST':
         email = request.POST.get('email', 'none')
         password = request.POST.get('password', 'asdf')
@@ -36,7 +41,8 @@ def login(request):
         user = auth.authenticate(username=username, password=password)
         if not user:
             logger.info('login.fail', {'r': request, 'uid': username})
-            return render(request, 'account/login.html', {'fail': True, 'notice': notice})
+            return render(request, 'account/login.html',
+                          {'fail': True, 'notice': notice, 'service': srv_name})
         elif not user.is_active or not user.profile.email_authed:
             request.session['info_user'] = user.id
             logger.info('login.reject', {'r': request, 'uid': username})
@@ -62,7 +68,8 @@ def login(request):
             nexturl = request.session.pop('next', '/')
             return redirect(nexturl)
 
-    return render(request, 'account/login.html', {'notice': notice})
+    return render(request, 'account/login.html',
+                  {'notice': notice, 'service': srv_name})
 
 
 # /logout/

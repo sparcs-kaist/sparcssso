@@ -28,6 +28,7 @@
             <div class="collapse navbar-collapse" id="navbar">
                 <ul class="nav navbar-nav">
                     <li><a href="/stats/">Stats</a></li>
+                    <li><a href="/help/">Help</a></li>
                     {% if user.is_staff or user.profile.is_for_test or user.profile.sparcs_id %}
                     <li><a href="/doc/dev/">Dev Doc</a></li>
                     {% endif %}

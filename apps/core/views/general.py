@@ -80,6 +80,11 @@ def stats(request):
     return render(request, 'stats.html', {'level': level, 'time': time, 'stat': stat})
 
 
+# /help/
+def help(request):
+    return render(request, 'help.html')
+
+
 # /doc/dev/
 @login_required
 def doc_dev(request):

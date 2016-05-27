@@ -20,11 +20,11 @@
             {% endif %}
         </div>    
         <div class="row">
-            <div class="col-xs-offset-1 col-xs-5">
+            <div class="col-sm-6 col-md-offset-1 col-md-5">
                 <h4>{% trans "Login / Signup with Email" %}</h4>
                 {% if fail %}
                 <div class="form-group">
-                    <div class="col-xs-12">
+                    <div class="col-xs-offset-1 col-xs-10 col-sm-offset-0 col-sm-12">
                         <div class="alert alert-danger">
                             <b>{% trans "Invalid email / password" %}</b>
                         </div>
@@ -32,12 +32,12 @@
                 </div>
                 {% endif %}
                 <div class="form-group">
-                    <div class="col-xs-12">
+                    <div class="col-xs-offset-1 col-xs-10 col-sm-offset-0 col-sm-12">
                         <input type="email" class="form-control" name="email" placeholder="Email" required="required">
                     </div>
                 </div>
                 <div class="form-group">
-                    <div class="col-xs-12">
+                    <div class="col-xs-offset-1 col-xs-10 col-sm-offset-0 col-sm-12">
                         <input type="password" class="form-control" name="password" placeholder="Password" required="required">
                     </div>
                 </div>
@@ -48,7 +48,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xs-5">
+            <div class="col-sm-6 col-md-5">
                 <h4>{% trans "Login / Signup with Social Accounts" %}</h4>
                 <p>
                 <a class="social-icon" href="/account/login/fb/"><img src="/static/img/fb.png" alt="Facebook Login"></a> &nbsp; &nbsp; &nbsp;

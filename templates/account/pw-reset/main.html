@@ -12,15 +12,15 @@
     <fieldset>
         {% csrf_token %}
         <div class="form-group">
-            <label class="col-xs-2 control-label">{% trans "New Password" %} <span class="required"></span></label>
-            <div class="form-group col-xs-8">
+            <label class="col-sm-2 control-label">{% trans "New Password" %} <span class="required"></span></label>
+            <div class="col-xs-offset-1 col-xs-10 col-sm-offset-0 col-sm-8">
                 <input type="password" class="form-control" name="password" placeholder="pAss0wd!" id="password" required="required" maxlength="50" data-minlength="7">
                 <span class="help-block">{% trans "Password must be at least 7 characters" %}</span>
             </div>
         </div>
         <div class="form-group">
-            <label class="col-xs-2 control-label">{% trans "Type Again" %} <span class="required"></span></label>
-            <div class="form-group col-xs-8">
+            <label class="col-sm-2 control-label">{% trans "Type Again" %} <span class="required"></span></label>
+            <div class="col-xs-offset-1 col-xs-10 col-sm-offset-0 col-sm-8">
                 <input type="password" class="form-control" name="password2" placeholder="pAss0wd!" data-match="#password" data-match-error="Not match!" required="required" maxlength="50">
                 <div class="help-block with-errors"></div>
             </div>

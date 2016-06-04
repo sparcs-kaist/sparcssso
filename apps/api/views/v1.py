@@ -64,7 +64,7 @@ def logout(request):
 
     date = datetime.datetime.fromtimestamp(time, timezone.utc)
     now = timezone.now()
-    if (now - date).seconds > 5:
+    if abs((now - date).total_seconds()) > 10:
         return redirect(service.url)
 
     sm = ServiceMap.objects.filter(user=request.user, service=service).first()

@@ -62,6 +62,70 @@ PUBLIC
 </div>
 
 <script>
+    var deptData = {
+        3648: 'Bio and Brain Engineering',
+        132: 'Biological Sciences',
+        2222: 'Biomedical Science and Engineering Program',
+        936: 'Business',
+        33: 'Capstone Design',
+        451: 'Chemical and Biomolecular Engineering',
+        150: 'Chemistry',
+        441: 'Civil and Environmental Engineering',
+        4419: 'Departmemt of Aerospace Engineering',
+        4418: 'Departmemt of Mechanical Engineering',
+        331: 'Department of Industrial Systems Engineering',
+        151: 'Department of Mathematical Sciences',
+        3992: 'Division of Future Vehicle',
+        4201: 'Economics Program',
+        4431: 'Entrepreneurship Program',
+        4305: 'Executive MBA',
+        4398: 'Finance Executive MBA',
+        4303: 'Finance MBA',
+        3919: 'Financial Engineering Program',
+        4310: 'Financial Engineering Program',
+        973: 'General Required',
+        3941: 'Global Information &amp; Telecommunication Technology Program',
+        4200: 'Graduate Program for Future Strategy',
+        3539: 'Graduate School of Culture Technology',
+        4144: 'Graduate School of Information Security',
+        4438: 'Graduate School of Innovation & Technology Management',
+        4549: 'Graduate School of Knowledge Service Engineering',
+        3605: 'Graduate School of Medical Science and Engineering',
+        3990: 'Graduate School of Science and Technology Policy',
+        4422: 'Graduate School of Web Science Technology',
+        3799: 'Graduate school of EEWS',
+        3692: 'Graduate school of Nanoscience &amp; Technology',
+        4493: 'Green Business and Policy Program',
+        340: 'Industrial Design',
+        4312: 'Information Management Program',
+        3723: 'Information and Communications Engineering',
+        4306: 'Information and Media MBA',
+        3978: 'Intellectual Property Minor Program for Undergradu',
+        3920: 'Master of Science Journalism',
+        3882: 'Master of intellectual property',
+        421: 'Materials Science and Engineering',
+        4141: 'Minor Program in Culture Technology',
+        3993: 'Minor Program in Science and Technology Policy',
+        4425: 'Moon Soul Graduate School of Future Strategy',
+        221: 'Nuclear and Quantum Engineering',
+        110: 'Physics',
+        2410: 'Polymer Science and Engineering Program',
+        4182: 'Professional MBA',
+        4427: 'Program of Brain and Cognitive Engineering',
+        4547: 'School of Business and Technology Management',
+        4548: 'School of Business and Technology Management',
+        4421: 'School of Computing',
+        4423: 'School of Electrical Engineering',
+        4424: 'School of Humanities &amp; Social Sciences',
+        4301: 'School of Management Engineering',
+        4183: 'Social Entrepreneurship MBA',
+        3703: 'Software Graduate Program',
+        3701: 'Space Exploration Engineering Program',
+        4307: 'Techno-MBA',
+        3997: 'The Cho Chun Shik Graduate School for Green Transportation',
+        3520: 'The Robotics Program',
+        4: 'Undergraduate Research Participation',
+    };
     var extractLineData = function(dataset) {
         var keys = Object.keys(dataset); keys.sort();
         var min = parseInt(keys[0]);
@@ -191,7 +255,7 @@ PUBLIC
         var ctx_department = $("#{{ s.name }}-department").get(0).getContext("2d");
         var data_department = [
             {% for key, value in s.kaist.department.items %}
-            { value: {{ value }}, label: "{{ key }}" },
+            { value: {{ value }}, label: {{key}} in deptData ? deptData[{{key}}] : 'unknown' },
             {% endfor %}
         ];
         new Chart(ctx_department).Doughnut(data_department);

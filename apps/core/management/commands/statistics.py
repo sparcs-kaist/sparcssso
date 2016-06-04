@@ -100,7 +100,7 @@ class Command(BaseCommand):
                         kaist['birth_year'][birth_year] = 1
 
                 if 'ku_sex' in kaist_info:
-                    gender = 'male' if kaist_info['ku_sex'] == 'M' else 'F'
+                    gender = 'male' if kaist_info['ku_sex'] == 'M' else 'female'
                     kaist['gender'][gender] += 1
 
                 if 'ku_kaist_org_id' in kaist_info:

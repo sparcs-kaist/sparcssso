@@ -155,7 +155,7 @@ msgstr "이메일로 로그인 / 회원가입"
 
 #: templates/account/login.html:30
 msgid "Invalid email / password"
-msgstr "잘못된 이메일 / 비빌번호"
+msgstr "잘못된 이메일 / 비밀번호"
 
 #: templates/account/login.html:48 templates/base.html:48
 msgid "Sign Up"

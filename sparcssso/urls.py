@@ -5,7 +5,6 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.shortcuts import render
 from apps.core.views import general
-from apps.api.views import v0
 
 urlpatterns = [
     url(r'^$', general.main),
@@ -23,11 +22,6 @@ urlpatterns = [
     url(r'^account/', include('apps.core.urls')),
     url(r'^api/', include('apps.api.urls')),
     url(r'^manage/', include(admin.site.urls)),
-
-    # provide backward compatibility
-    url(r'^oauth/require/$', v0.token_require),
-    url(r'^oauth/info/$', v0.token_info),
-    url(r'^oauth/point/$', v0.point),
 ]
 
 if settings.DEBUG:

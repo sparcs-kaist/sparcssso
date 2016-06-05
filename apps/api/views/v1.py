@@ -33,7 +33,7 @@ def date2str(obj):
 def get_callback(user, service, url):
     is_test = user.profile.is_for_test
     if not is_test and not service:
-        raise Http404()
+        return None
     elif service:
         return service.callback_url
 
@@ -90,10 +90,19 @@ def token_require(request):
     url = request.GET.get('url', '')
     dest = get_callback(request.user, service, url)
 
-    if name.startswith('sparcs') and not request.user.profile.sparcs_id:
-        raise PermissionDenied()
-    elif request.user.is_superuser:
-        raise PermissionDenied()
+    alias = service.alias if service else url
+
+    reason = 0
+    if request.user.is_superuser:
+        reason = 1
+    elif name.startswith('sparcs') and not request.user.profile.sparcs_id:
+        reason = 2
+    elif not dest:
+        reason = 3
+
+    if reason:
+        return render(request, 'api/denied.html',
+                      {'reason': reason, 'alias': alias, 'dest': dest})
 
     token = AccessToken.objects.filter(user=request.user, service=service).first()
     if token:

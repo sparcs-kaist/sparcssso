@@ -6,6 +6,7 @@ import time
 # VALID ONLY AFTER 2016-05-18T23:59+09:00
 # Made by SPARCS SSO Team
 
+
 class Client:
     API_BASE_URL = 'https://sparcssso.kaist.ac.kr/api/v1/'
     LOGOUT_BASE_URL = '%slogout/' % API_BASE_URL
@@ -46,7 +47,6 @@ class Client:
         return '%s?app=%s&time=%s&m=%s' % (self.LOGOUT_BASE_URL, self.app_name,
                                            timestamp, m)
 
-
     def get_login_url(self, callback_url=''):
         if self.is_test and not callback_url:
             raise AssertionError('Need "callback_url"')
@@ -58,8 +58,8 @@ class Client:
     def get_user_info(self, tokenid):
         result = self._post_data(self.INFO_BASE_URL,
                                  {
-                                      'tokenid': tokenid,
-                                      'key': self.secret_key
+                                     'tokenid': tokenid,
+                                     'key': self.secret_key
                                  })
         return result
 
@@ -93,4 +93,3 @@ class Client:
     def get_notice(self):
         r = requests.get(self.NOTICE_BASE_URL, verify=True)
         return r.json()
-

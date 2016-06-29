@@ -14,7 +14,7 @@ GENDER = (
 )
 
 User.__unicode__ = lambda self: u'%s %s <%s>' % \
-        (self.first_name, self.last_name, self.username)
+    (self.first_name, self.last_name, self.username)
 
 
 # General Objects

@@ -2,8 +2,7 @@ from django.contrib import admin
 from django.contrib.auth import admin as uadmin
 from django.contrib.auth.models import User
 from apps.core.models import Notice, Statistic, Service, ServiceMap, \
-                             AccessToken, UserProfile, EmailAuthToken, \
-                             ResetPWToken, PointLog, UserLog
+    AccessToken, UserProfile, EmailAuthToken, ResetPWToken, PointLog, UserLog
 
 
 # Filters

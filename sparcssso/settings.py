@@ -157,12 +157,13 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Admins & Logging
 ADMINS = (('SSO SYSOP', 'sso.sysop@sparcs.org'),)
 
+FMT = '%(levelno)s/%(asctime)s (%(ip)s, %(username)s) %(name)s.%(message)s'
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
         'std': {
-            'format': '%(levelno)s/%(asctime)s (%(ip)s, %(username)s) %(name)s.%(message)s'
+            'format': FMT
         },
     },
     'handlers': {

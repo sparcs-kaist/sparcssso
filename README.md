@@ -2,6 +2,11 @@
 
 SPARCS SSO provides integrated login in SPARCS services, such as ARA or OTL.
 
+### Developers
+* samjo
+* pudding
+* gogi
+
 ### Tech
 
 SPARCS SSO uses following program / framework / libraries:

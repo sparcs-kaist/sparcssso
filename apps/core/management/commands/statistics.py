@@ -32,7 +32,7 @@ class Command(BaseCommand):
                     'birth_year': {},
                     'gender': {
                         'male': 0,
-                        'female':0
+                        'female': 0,
                     },
                     'department': {},
                     'employee': 0,
@@ -118,4 +118,3 @@ class Command(BaseCommand):
                         kaist['professor'] += 1
 
         Statistic(time=timezone.now(), data=json.dumps(stats)).save()
-

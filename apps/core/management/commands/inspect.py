@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 import netaddr
 import os
 
+
 class Command(BaseCommand):
     help = 'Inspect a user'
 

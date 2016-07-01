@@ -186,7 +186,9 @@ $(function() {
     $('#profile').validator(option);
     
     $("input[name=birthday]").datepicker({
-        dateFormat: "yy-mm-dd"  
+        dateFormat: "yy-mm-dd",
+        changeMonth: true,
+        changeYear: true,
     });
 });
 </script>

@@ -59,10 +59,11 @@
         <div class="form-group" style="margin-bottom:0">
             <label class="col-sm-2 control-label">{% trans "Gender, Birthday" %}</label>
             <div class="col-xs-offset-1 col-xs-4 col-sm-offset-0 col-sm-3">
-                <select name="gender" class="form-control">
-                    <option value="E" selected>{% trans "etc" %}</option>
-                    <option value="M">{% trans "Male" %}</option>
-                    <option value="F">{% trans "Female" %}</option>
+                <select class="form-control" name="gender">
+                    <option id="gender-H" value="*H">{% trans "Hide" %}</option>
+                    <option id="gender-M" value="*M">{% trans "Male" %}</option>
+                    <option id="gender-F" value="*F">{% trans "Female" %}</option>
+                    <option id="gender-E" value="*E">{% trans "etc" %}</option>
                 </select>
             </div>
             <div class="col-xs-6 col-sm-5">
@@ -81,9 +82,62 @@
     </fieldset>
 </form>
 
+<div class="modal fade" tabindex="-1" id="gender-type" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">{% trans "Type Your Gender" %}</h4>
+            </div>
+            <div class="text-center modal-body">
+                <input type="text" class="form-control" name="custom-gender" placeholder="type here...">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script type="text/javascript">
 $(function() {
-    $('select[name=gender]').val('{{info.gender}}');    
+    var common_gender = function(g) {
+        return g == '*H' || g == '*M' || g == '*F' || g == '*E';
+    };
+
+    var g = '{{info.gender}}';
+    if (common_gender(g))
+        $("select[name=gender]").val(g);
+    else if (g != '') {
+        $("#gender-E").text("{% trans "etc" %} (" + g + ")");
+        $("#gender-E").attr("value", g);
+        $("#gender-E").attr("selected", true);
+        $("input[name=custom-gender]").val(g);
+    }
+
+    $("select[name=gender]").change(function() {
+        var id = $("select[name=gender] option:selected").attr("id");
+        if (id == 'gender-E')
+            $("#gender-type").modal('show');
+    });
+
+    $("#gender-type").on('hide.bs.modal', function (e) {
+        var g = $("input[name='custom-gender']").val().trim();
+        var custom_option = $("#gender-E");
+        if (common_gender(g)) {
+            custom_option.attr("value", '*E');
+            custom_option.text("{% trans "etc" %}");
+            $("select[name=gender]").val(g);
+            $("input[name=custom-gender]").val("");
+        } else if (g == '') {
+            custom_option.attr("value", '*E');
+            custom_option.text("{% trans "etc" %}");
+        } else {
+            custom_option.attr("value", g);
+            custom_option.text("{% trans "etc" %} (" + g + ")");
+        }
+    });
+
     var option = {
         disable: true,
         custom: {

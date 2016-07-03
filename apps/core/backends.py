@@ -268,3 +268,12 @@ def auth_kaist(token):
             'kaist_info': k_info}
 
     return UserProfile.objects.filter(kaist_id=info['userid']).first(), info
+
+
+# Validate reCAPTCHA
+def validate_recaptcha(response):
+    data = {'secret': settings.RECAPTCHA_SECRET, 'response': response}
+    r = requests.post('https://www.google.com/recaptcha/api/siteverify', data = data)
+
+    result = r.json()
+    return result["success"]

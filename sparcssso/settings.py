@@ -104,6 +104,9 @@ with open(os.path.join(BASE_DIR, 'keys/kaist_app_admin_id')) as f:
 with open(os.path.join(BASE_DIR, 'keys/kaist_app_admin_pw')) as f:
     KAIST_APP_ADMIN_PW = f.read().strip()
 
+with open(os.path.join(BASE_DIR, 'keys/recaptcha_secret')) as f:
+    RECAPTCHA_SECRET = f.read().strip()
+
 
 # E-mail settings
 EMAIL_HOST = 'localhost'

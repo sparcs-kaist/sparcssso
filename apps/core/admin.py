@@ -62,7 +62,7 @@ class UserAdmin(uadmin.UserAdmin):
     get_name.short_description = 'Name'
 
     def get_gender(self, obj):
-        return self.get_profile(obj).get_gender_display()
+        return self.get_profile(obj).gender_display()
     get_gender.short_description = 'Gender'
 
     def get_point(self, obj):

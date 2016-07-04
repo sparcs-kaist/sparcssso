@@ -4,15 +4,6 @@ from django.utils import timezone
 import json
 
 
-MALE = 'M'
-FEMALE = 'F'
-ETC = 'E'
-GENDER = (
-    (MALE, 'Male'),
-    (FEMALE, 'Female'),
-    (ETC, 'etc'),
-)
-
 User.__unicode__ = lambda self: u'%s %s <%s>' % \
     (self.first_name, self.last_name, self.username)
 
@@ -84,7 +75,7 @@ class AccessToken(models.Model):
 # User Related Objects
 class UserProfile(models.Model):
     user = models.OneToOneField(User, related_name='profile')
-    gender = models.CharField(max_length=1, choices=GENDER, default=ETC)
+    gender = models.CharField(max_length=30)
     birthday = models.DateField(blank=True, null=True)
     point = models.IntegerField(default=0)
     email_authed = models.BooleanField(default=False)
@@ -96,6 +87,17 @@ class UserProfile(models.Model):
     kaist_info_time = models.DateField(blank=True, null=True)
     sparcs_id = models.CharField(max_length=50, blank=True, null=True)
     expire_time = models.DateTimeField(blank=True, null=True)
+
+    def gender_display(self):
+        if self.gender == '*M':
+            return 'Male'
+        elif self.gender == '*F':
+            return 'Female'
+        elif self.gender == '*H':
+            return 'Hide'
+        elif self.gender == '*E':
+            return 'etc'
+        return self.gender
 
     def activate(self):
         if self.expire_time:

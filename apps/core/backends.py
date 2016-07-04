@@ -23,10 +23,10 @@ logger = logging.getLogger('sso.account.backend')
 # {male, female, etc} -> {M, F, E}
 def parse_gender(gender):
     if gender == 'male':
-        return 'M'
+        return '*M'
     elif gender == 'female':
-        return 'F'
-    return 'E'
+        return '*F'
+    return gender
 
 
 # get username using email
@@ -231,7 +231,7 @@ def auth_tw(tokens, verifier):
 
     info = {'userid': tw_info['user_id'],
             'first_name': tw_info['screen_name'],
-            'gender': 'E'}
+            'gender': '*H'}
 
     return UserProfile.objects.filter(twitter_id=info['userid']).first(), info
 
@@ -263,8 +263,17 @@ def auth_kaist(token):
             'email': k_info.get('mail'),
             'first_name': k_info.get('givenname'),
             'last_name': k_info.get('sn'),
-            'gender': k_info.get('ku_sex'),
+            'gender': '*%s' % k_info.get('ku_sex'),
             'birthday': k_info.get('ku_born_date').replace('/', '-'),
             'kaist_info': k_info}
 
     return UserProfile.objects.filter(kaist_id=info['userid']).first(), info
+
+
+# Validate reCAPTCHA
+def validate_recaptcha(response):
+    data = {'secret': settings.RECAPTCHA_SECRET, 'response': response}
+    r = requests.post('https://www.google.com/recaptcha/api/siteverify', data = data)
+
+    result = r.json()
+    return result["success"]

@@ -24,9 +24,9 @@ with open(os.path.join(BASE_DIR, 'keys/django_secret')) as f:
     SECRET_KEY = f.read().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = not os.path.isfile(os.path.join(BASE_DIR, 'deploy'))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['sparcssso.kaist.ac.kr', 'sso.sparcs.org'] if not DEBUG else []
 
 
 # Application definition
@@ -104,6 +104,9 @@ with open(os.path.join(BASE_DIR, 'keys/kaist_app_admin_id')) as f:
 with open(os.path.join(BASE_DIR, 'keys/kaist_app_admin_pw')) as f:
     KAIST_APP_ADMIN_PW = f.read().strip()
 
+with open(os.path.join(BASE_DIR, 'keys/recaptcha_secret')) as f:
+    RECAPTCHA_SECRET = f.read().strip()
+
 
 # E-mail settings
 EMAIL_HOST = 'localhost'
@@ -112,12 +115,26 @@ EMAIL_HOST = 'localhost'
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'db.sqlite3',
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': 'db.sqlite3',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'sso',
+            'USER': 'sso',
+            'PASSWORD': 'DUMMY',
+            'HOST': 'localhost',
+            'PORT': '3306',
+        }
+    }
+    with open(os.path.join(BASE_DIR, 'keys/db_pw')) as f:
+        DATABASES['default']['PASSWORD'] = f.read().strip()
 
 
 # Internationalization
@@ -142,6 +159,7 @@ LOCALE_PATHS = (
     os.path.join(BASE_DIR, 'locale'),
 )
 
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
@@ -158,6 +176,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 ADMINS = (('SSO SYSOP', 'sso.sysop@sparcs.org'),)
 
 FMT = '%(levelno)s/%(asctime)s (%(ip)s, %(username)s) %(name)s.%(message)s'
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -188,3 +207,9 @@ LOGGING = {
         },
     },
 }
+
+if not DEBUG:
+    LOGGING['loggers']['django.request'] = {
+        'handlers': ['mail'],
+        'level': 'ERROR',
+    }

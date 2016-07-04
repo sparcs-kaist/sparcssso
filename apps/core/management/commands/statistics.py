@@ -24,6 +24,7 @@ class Command(BaseCommand):
                 'gender': {
                     'male': 0,
                     'female': 0,
+                    'hide': 0,
                     'etc': 0,
                 },
                 'birth_year': {},
@@ -65,11 +66,13 @@ class Command(BaseCommand):
                 if user.profile.is_for_test:
                     stat['account']['test'] += 1
 
-                if user.profile.gender == 'M':
+                if user.profile.gender == '*M':
                     stat['gender']['male'] += 1
-                if user.profile.gender == 'F':
+                elif user.profile.gender == '*F':
                     stat['gender']['female'] += 1
-                if user.profile.gender == 'E':
+                elif user.profile.gender == '*H':
+                    stat['gender']['hide'] += 1
+                else:
                     stat['gender']['etc'] += 1
 
                 if user.profile.birthday:

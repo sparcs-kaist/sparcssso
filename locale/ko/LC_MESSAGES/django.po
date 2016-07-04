@@ -222,6 +222,12 @@ msgstr "남자"
 msgid "Female"
 msgstr "여자"
 
+msgid "Hide"
+msgstr "숨김"
+
+msgid "Type Your Gender"
+msgstr "성별 입력"
+
 #: templates/account/profile.html:55
 msgid "Modify"
 msgstr "수정"

@@ -33,8 +33,8 @@ class StatisticAdmin(admin.ModelAdmin):
 
 # Admin for Service Related Objects
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'is_public', 'alias',
-                    'url', 'callback_url', 'unregister_url', 'cooltime')
+    list_display = ('name', 'is_shown', 'alias', 'scope', 'admin_user',
+                    'main_url', 'login_callback_url', 'unregister_url', 'cooltime')
 
 
 class ServiceMapAdmin(admin.ModelAdmin):
@@ -74,13 +74,13 @@ class UserAdmin(uadmin.UserAdmin):
     get_email_authed.short_description = 'Email Authed'
     get_email_authed.boolean = True
 
-    def get_is_for_test(self, obj):
-        return self.get_profile(obj).is_for_test
-    get_is_for_test.short_description = 'Test Account'
-    get_is_for_test.boolean = True
+    def get_test_enabled(self, obj):
+        return self.get_profile(obj).test_enabled
+    get_test_enabled.short_description = 'Test Account'
+    get_test_enabled.boolean = True
 
     list_display = ('email', 'username', 'get_name', 'get_gender', 'get_point',
-                    'get_email_authed', 'get_is_for_test')
+                    'get_email_authed', 'get_test_enabled')
     list_filter = ('is_staff', )
     inlines = (UserProfileInline, )
     ordering = ()

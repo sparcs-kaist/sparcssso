@@ -4,6 +4,15 @@ from django.utils import timezone
 import json
 
 
+SERVICE_PUBLIC = 'PUBLIC'
+SERVICE_SPARCS = 'SPARCS'
+SERVICE_TEST = 'TEST'
+SERVICE_SCOPE = (
+    (SERVICE_PUBLIC, 'Public'),
+    (SERVICE_SPARCS, 'SPARCS'),
+    (SERVICE_TEST, 'Test'),
+)
+
 User.__unicode__ = lambda self: u'%s %s <%s>' % \
     (self.first_name, self.last_name, self.username)
 
@@ -40,15 +49,20 @@ class Statistic(models.Model):
 # == Service Related Objects ==
 # Service: denotes single sso client
 class Service(models.Model):
-    name = models.CharField(max_length=20, primary_key=True) # unique name
-    is_public = models.BooleanField(default=True)            # decides to show in main page
-    alias = models.CharField(max_length=30)                  # name for human
-    url = models.CharField(max_length=200)                   # main
-    callback_url = models.CharField(max_length=200)          # login callback url
-    unregister_url = models.CharField(max_length=200)        # unregister check url
-    secret_key = models.CharField(max_length=100)            # secret key
-    cooltime = models.IntegerField()                         # cooltime for re-register
-    icon = models.ImageField()                               # icon of the service
+    name = models.CharField(max_length=20, primary_key=True)        # unique name
+    is_shown = models.BooleanField(default=True)                    # decides to show in main page
+    alias = models.CharField(max_length=30)                         # name for human
+    scope = models.CharField(max_length=5,
+                             choices=SERVICE_SCOPE,
+                             default=SERVICE_TEST)                  # scope of service
+    main_url = models.CharField(max_length=200)                     # main
+    login_callback_url = models.CharField(max_length=200)           # login callback url
+    unregister_url = models.CharField(max_length=200)               # unregister check url
+    secret_key = models.CharField(max_length=100)                   # secret key
+    admin_user = models.ForeignKey(User,
+                                   related_name='managed_services') # admin of service
+    cooltime = models.IntegerField()                                # cooltime for re-register
+    icon = models.ImageField()                                      # icon of the service
 
     def __unicode__(self):
         return self.alias
@@ -84,8 +98,9 @@ class UserProfile(models.Model):
     gender = models.CharField(max_length=30)                             # gender
     birthday = models.DateField(blank=True, null=True)                   # birthday
     point = models.IntegerField(default=0)                               # point
+    point_test = models.IntegerField(default=0)                          # point for test
     email_authed = models.BooleanField(default=False)                    # email authed state
-    is_for_test = models.BooleanField(default=False)                     # test mode state
+    test_enabled = models.BooleanField(default=False)                    # test mode state
     facebook_id = models.CharField(max_length=50, blank=True, null=True) # fb unique id
     twitter_id = models.CharField(max_length=50, blank=True, null=True)  # tw unique id
     kaist_id = models.CharField(max_length=50, blank=True, null=True)    # kaist uid
@@ -93,6 +108,15 @@ class UserProfile(models.Model):
     kaist_info_time = models.DateField(blank=True, null=True)            # kaist info updated time
     sparcs_id = models.CharField(max_length=50, blank=True, null=True)   # sparcs id
     expire_time = models.DateTimeField(blank=True, null=True)            # expire time
+
+    @property
+    def flags(self):
+        return {
+            'test': self.test_enabled,
+            'dev': self.user.is_staff or self.sparcs_id,
+            'sparcs': self.sparcs_id,
+            'sysop': self.user.is_staff
+        }
 
     def gender_display(self):
         if self.gender == '*M':

@@ -52,7 +52,7 @@ class Service(models.Model):
     name = models.CharField(max_length=20, primary_key=True)        # unique name
     is_shown = models.BooleanField(default=True)                    # decides to show in main page
     alias = models.CharField(max_length=30)                         # name for human
-    scope = models.CharField(max_length=5,
+    scope = models.CharField(max_length=6,
                              choices=SERVICE_SCOPE,
                              default=SERVICE_TEST)                  # scope of service
     main_url = models.CharField(max_length=200)                     # main
@@ -62,7 +62,7 @@ class Service(models.Model):
     admin_user = models.ForeignKey(User,
                                    related_name='managed_services') # admin of service
     cooltime = models.IntegerField()                                # cooltime for re-register
-    icon = models.ImageField()                                      # icon of the service
+    icon = models.ImageField(null=True, blank=True)                 # icon of the service
 
     def __unicode__(self):
         return self.alias

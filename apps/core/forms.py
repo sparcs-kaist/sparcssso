@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django.contrib.auth.models import User
-from apps.core.models import UserProfile
+from apps.core.models import UserProfile, Service
 
 
 class UserForm(ModelForm):
@@ -21,3 +21,12 @@ class UserProfileForm(ModelForm):
     class Meta:
         model = UserProfile
         fields = ('gender', 'birthday')
+
+
+class ServiceForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(ServiceForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = Service
+        fields = ('alias', 'main_url', 'login_callback_url', 'unregister_url', 'secret_key', 'cooltime')

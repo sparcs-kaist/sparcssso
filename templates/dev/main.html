@@ -55,7 +55,7 @@
 </form>
 
 <h3>Test Services</h3>
-<p>You can register / modify / remove test services.</p>
+<p>You can <a href="/dev/service/add/">register</a> / modify / remove test services.</p>
 <table class="table col-sm-10">
     <thead>
         <tr>
@@ -68,15 +68,15 @@
     <tbody>
         {% for service in services %}
         <tr>
-            <td>{{service.name}}</td>
-            <td>{{service.alias}}</td>
-            <td>{{service.main_url}}</td>
-            <td class="text-center"></td>
+            <td class="text-left">{{service.name}}</td>
+            <td class="text-left">{{service.alias}}</td>
+            <td class="text-left">{{service.main_url}}</td>
+            <td class="text-center"><a href="/dev/service/{{service.name}}/" class="btn btn-xs btn-warning">Modify</a> <button class="btn btn-xs btn-danger btn-remove" data-name="{{service.name}}">REMOVE</button></td>
         </tr>
         {% empty %}
         <tr>
             <td colspan="4">
-                No Services are Registered
+                No Test Services are Registered
             </td>
         </tr>
         {% endfor %}
@@ -93,6 +93,21 @@ $(function() {
         $('#test-enabled').prop('checked', true);
         
     $('#dev-panel').validator();
+    
+    $('.btn-remove').click(function() {
+        var data = {
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+        }
+        console.log(data);
+        $.ajax({
+            url: '/dev/service/' + $(this).data('name') + '/delete/',
+            type: 'POST',
+            data: data,
+            success: function(result) {
+                location.reload();
+            },
+        });
+    });
 });
 </script>
 

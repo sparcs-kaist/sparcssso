@@ -1,0 +1,30 @@
+{% extends "base.html"%}
+{% load i18n%}
+
+{ % block content % }
+<p> Whether you find errors, would like to suggest a fuction, or just want to know about us ,you can contact us right here. We will reply as soon as possible</p>
+<form>
+    <fieldset>
+        <div class="form-group">
+            <div class="Name">
+                <input type="name" class="form-control" name="name">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="Email">
+                <input type="email" class="form-control" name="email" >
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="Subject">
+                <input type="subject" class="form-control" name="subject">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class=Message">
+                <textarea type="message" class="form-control" name="message" cols = "50" rows = "6"></textarea>
+            </div>
+        </div>
+    </fieldset>
+</form>
+{%end block%}

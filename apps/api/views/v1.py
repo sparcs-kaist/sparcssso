@@ -45,12 +45,6 @@ def get_callback(user, service, url):
     return url
 
 
-# /versions/
-def versions(request):
-    resp = {'versions': ['v1', ]}
-    return HttpResponse(json.dumps(resp), content_type='application/json')
-
-
 # /logout/
 @login_required
 def logout(request):

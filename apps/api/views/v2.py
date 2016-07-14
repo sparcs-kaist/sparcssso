@@ -233,7 +233,7 @@ def point(request):
     profile = m.user.profile
     if delta != 0 and not message:
         raise SuspiciousOperation()
-    elif delta != 0 and abs((now - profile.point_time)) < 5:
+    elif delta != 0 and abs((now - profile.point_mod_time)) < 5:
         raise SuspiciousOperation()
 
     date = datetime.fromtimestamp(timestamp, timezone.utc)
@@ -254,7 +254,7 @@ def point(request):
             profile.point_test += delta
         else:
             profile.point += delta
-        profile.point_time = timezone.now()
+        profile.point_mod_time = timezone.now()
         profile.save()
 
         point += delta
@@ -266,7 +266,7 @@ def point(request):
         PointLog(user=m.user, service=service, delta=delta,
                  point=profile.point, action=message).save()
 
-    last_request = profile.point_time
+    last_request = profile.point_mod_time
     return HttpResponse(json.dumps({'point': point, 'modified': modified,
                                     'last_request': last_request}),
                                     content_type="application/json")

@@ -7,11 +7,11 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.utils import timezone
 from django.utils.crypto import constant_time_compare
+from django.utils.dateparse import parse_date
 from django.views.decorators.csrf import csrf_exempt
 from apps.core.backends import reg_service, validate_email
-from apps.core.models import Notice, Service, ServiceMap, AccessToken, PointLog
-from datetime import timedelta
-from datetime import datetime
+from apps.core.models import Notice, Service, ServiceMap, AccessToken, PointLog, Statistic
+from datetime import datetime, timedelta
 import hmac
 import json
 import logging
@@ -201,7 +201,7 @@ def logout(request):
 
 # /point/
 @csrf_exempt
-@transaction.atmoic
+@transaction.atomic
 def point(request):
     if request.method != 'POST':
         raise SuspiciousOperation()
@@ -301,4 +301,58 @@ def email(request):
 
 # /stats/
 def stats(request):
-    pass
+    level = 0
+    if request.user.is_authenticated():
+        if request.user.is_staff:
+            level = 2
+        elif request.user.profile.sparcs_id:
+            level = 1
+
+    client_ids = request.GET.get('client_ids', '').split(',')
+    client_list = filter(None, map(lambda x: Service.objects.filter(name=x).first(), client_ids))
+    if not client_list:
+        client_list = Service.objects.all()
+
+    if level == 1:
+        client_list = filter(lambda x: x.scope != 'TEST', client_list)
+    elif level == 0:
+        client_list = filter(lambda x: x.scope == 'PUBLIC', client_list)
+
+    start_date, end_date = None, None
+    try:
+        start_date = parse_date(request.GET.get('date_from', ''))
+    except:
+        pass
+    if not start_date:
+        start_date = timezone.now().date()
+
+    try:
+        end_date = parse_date(request.GET.get('date_to', ''))
+    except:
+        pass
+    if not end_date:
+        end_date = timezone.now().date()
+
+    raw_stats = Statistic.objects.filter(time_gte=start_date, time__lte=end_date)
+
+    stats = {}
+    for client in client_list:
+        stat = {'alias': client.alias, 'data': {}}
+        for raw_stat in raw_stats:
+            raw_data = json.load(raw_stat.data)
+
+            data = {}
+            if level == 0:
+                data['account']['all'] = raw_data['account']['all']
+                data['account']['kaist'] = raw_data['account']['kaist']
+            elif level == 1:
+                data['account'] = raw_data['account']
+                data['gender'] = raw_data['gender']
+                data['birth_year'] = raw_data['birth_year']
+            elif level == 2:
+                data = raw_data
+
+            stat['data'][raw_stat.time.isoformat()] = data
+        stats[client.name] = stat
+
+    return HttpResponse(json.dumps({'stats': stats}), content_type='application/json')

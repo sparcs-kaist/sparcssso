@@ -3,9 +3,13 @@
 SPARCS SSO provides integrated login in SPARCS services, such as ARA or OTL.
 
 ### Developers
-* samjo
-* pudding
-* gogi
+* samjo (PM)
+* zazang (Developer)
+* gogi (Developer)
+* pudding (Designer)
+* zoonoo (Translator)
+* ashe (Translator)
+
 
 ### Tech
 
@@ -26,6 +30,7 @@ SPARCS SSO sends some emails to users, so it requires a mail server such as post
 $ pip install -r requirements.txt
 $ mkdir keys
 $ echo "{{django_secret}}" >> keys/django_secret
+$ echo "{{recaptcha_secret}}" >> keys/recaptcha_secret
 $ echo "{{fb_app_id}}" >> keys/fb_app_id
 $ echo "{{fb_app_secret}}" >> keys/fb_app_secret
 $ echo "{{tw_app_id}}" >> keys/tw_app_id
@@ -33,7 +38,6 @@ $ echo "{{tw_app_secret}}" >> keys/tw_app_secret
 $ python manage.py makemigration core
 $ python manage.py migrate
 $ python manage.py compilemessage
-$ python manage.py runserver
 ```
 
 * Deploy
@@ -41,6 +45,7 @@ $ python manage.py runserver
 $ pip install -r requirements.txt
 $ mkdir keys
 $ echo "{{django_secret}}" >> keys/django_secret
+$ echo "{{recaptcha_secret}}" >> keys/recaptcha_secret
 $ echo "{{db_pw}}" >> keys/db_pw
 $ echo "{{fb_app_id}}" >> keys/fb_app_id
 $ echo "{{fb_app_secret}}" >> keys/fb_app_secret
@@ -49,11 +54,10 @@ $ echo "{{tw_app_secret}}" >> keys/tw_app_secret
 $ echo "{{kaist_app_secret}}" >> keys/kaist_app_secret
 $ echo "{{kaist_app_admin_id}}" >> keys/kaist_app_admin_id
 $ echo "{{kaist_app_admin_pw}}" >> keys/kaist_app_admin_pw
-$ ./switchenv
+$ touch deploy
 $ python manage.py makemigration core
 $ python manage.py migrate
 $ python manage.py compilemessage
-$ python manage.py runserver
 ```
 
 ### Contributing

@@ -98,7 +98,6 @@ $(function() {
         var data = {
             csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
         }
-        console.log(data);
         $.ajax({
             url: '/dev/service/' + $(this).data('name') + '/delete/',
             type: 'POST',

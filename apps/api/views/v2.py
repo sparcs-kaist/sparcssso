@@ -313,7 +313,7 @@ def stats(request):
     if not client_list:
         client_list = Service.objects.all()
 
-    if level == 1:
+    if level > 0:
         client_list = filter(lambda x: x.scope != 'TEST', client_list)
     elif level == 0:
         client_list = filter(lambda x: x.scope == 'PUBLIC', client_list)
@@ -332,7 +332,7 @@ def stats(request):
     except:
         pass
     if not end_date:
-        end_date = today
+        end_date = today.replace(hour=23, minute=59, second=59, microsecond=999999)
 
     raw_stats = Statistic.objects.filter(time__gte=start_date, time__lte=end_date)
 
@@ -340,9 +340,13 @@ def stats(request):
     for client in client_list:
         stat = {'alias': client.alias, 'data': {}}
         for raw_stat in raw_stats:
-            raw_data = json.load(raw_stat.data)
+            raw_data = json.loads(raw_stat.data)
+
+            if client.name not in raw_data:
+                continue
 
             data = {}
+            raw_data = raw_data[client.name]
             if level == 0:
                 data['account']['all'] = raw_data['account']['all']
                 data['account']['kaist'] = raw_data['account']['kaist']

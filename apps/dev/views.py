@@ -38,7 +38,6 @@ def main(request):
     return render(request, 'dev/main.html', {'profile': profile, 'services': services, 'success': success})
 
 
-
 # /doc/
 @login_required
 def doc(request):

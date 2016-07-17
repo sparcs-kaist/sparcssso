@@ -269,7 +269,7 @@ def point(request):
     last_request = date2str(profile.point_mod_time)
     return HttpResponse(json.dumps({'point': point, 'modified': modified,
                                     'last_request': last_request}),
-                                    content_type="application/json")
+                        content_type="application/json")
 
 
 # /notice/
@@ -286,7 +286,7 @@ def notice(request):
     else:
         date_after = datetime.fromtimestamp(date_after, timezone.utc)
 
-    notices = Notice.objects.filter(valid_to__gt=date_after)[offset:offset+limit]
+    notices = Notice.objects.filter(valid_to__gt=date_after)[offset:offset + limit]
 
     notices_dict = map(lambda x: x.to_dict(), notices)
     return HttpResponse(json.dumps({'notices': notices_dict}), content_type="application/json")

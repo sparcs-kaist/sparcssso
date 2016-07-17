@@ -17,12 +17,14 @@ storage = {
     'session': requests.Session(),
     'loggedin': False,
 }
+
+
 class TestHandler(BaseHTTPRequestHandler):
     def _do_root(self):
         return {
             'test-suites': {
                 'login': '/login',
-                'logout':  '/logout',
+                'logout': '/logout',
                 'point-get': '/point-get',
                 'point-modify': '/point-modify',
             },
@@ -153,4 +155,3 @@ def main(args):
         server.socket.close()
 if __name__ == '__main__':
     main(sys.argv)
-

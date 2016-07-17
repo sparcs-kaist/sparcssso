@@ -273,7 +273,7 @@ def auth_kaist(token):
 # Validate reCAPTCHA
 def validate_recaptcha(response):
     data = {'secret': settings.RECAPTCHA_SECRET, 'response': response}
-    r = requests.post('https://www.google.com/recaptcha/api/siteverify', data = data)
+    r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
 
     result = r.json()
     return result["success"]

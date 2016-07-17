@@ -99,7 +99,7 @@ class UserProfile(models.Model):
     birthday = models.DateField(blank=True, null=True)                   # birthday
     point = models.IntegerField(default=0)                               # point
     point_test = models.IntegerField(default=0)                          # point for test
-    point_mod_time = models.DateTimeField(blank=True, null=True)         # last point modified time
+    point_mod_time = models.DateTimeField(auto_now_add=True)             # last point modified time
     email_authed = models.BooleanField(default=False)                    # email authed state
     test_enabled = models.BooleanField(default=False)                    # test mode state
     facebook_id = models.CharField(max_length=50, blank=True, null=True) # fb unique id

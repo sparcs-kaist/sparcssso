@@ -52,7 +52,7 @@ def token_require(request):
         raise SuspiciousOperation()
 
     user = request.user
-    flags = user.flags
+    flags = user.profile.flags
 
     reason = 0
     if flags['sysop']:
@@ -91,7 +91,7 @@ def token_require(request):
     token.save()
     logger.info('token.create: app=%s' % client_id, {'r': request})
 
-    args = {'tokenid': token.tokenid}
+    args = {'code': token.tokenid, 'state': state}
     return redirect(service.login_callback_url + '?' + urllib.urlencode(args))
 
 
@@ -233,7 +233,7 @@ def point(request):
     profile = m.user.profile
     if delta != 0 and not message:
         raise SuspiciousOperation()
-    elif delta != 0 and abs((now - profile.point_mod_time)) < 5:
+    elif delta != 0 and abs((now - profile.point_mod_time).total_seconds()) < 5:
         raise SuspiciousOperation()
 
     date = datetime.fromtimestamp(timestamp, timezone.utc)
@@ -266,7 +266,7 @@ def point(request):
         PointLog(user=m.user, service=service, delta=delta,
                  point=profile.point, action=message).save()
 
-    last_request = profile.point_mod_time
+    last_request = date2str(profile.point_mod_time)
     return HttpResponse(json.dumps({'point': point, 'modified': modified,
                                     'last_request': last_request}),
                                     content_type="application/json")
@@ -318,22 +318,23 @@ def stats(request):
     elif level == 0:
         client_list = filter(lambda x: x.scope == 'PUBLIC', client_list)
 
+    today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
     start_date, end_date = None, None
     try:
         start_date = parse_date(request.GET.get('date_from', ''))
     except:
         pass
     if not start_date:
-        start_date = timezone.now().date()
+        start_date = today
 
     try:
         end_date = parse_date(request.GET.get('date_to', ''))
     except:
         pass
     if not end_date:
-        end_date = timezone.now().date()
+        end_date = today
 
-    raw_stats = Statistic.objects.filter(time_gte=start_date, time__lte=end_date)
+    raw_stats = Statistic.objects.filter(time__gte=start_date, time__lte=end_date)
 
     stats = {}
     for client in client_list:

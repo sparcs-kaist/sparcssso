@@ -4,7 +4,6 @@ import time
 import os
 import urllib
 
-
 # SPARCS SSO V2 Client Version Alpha 1
 # VALID FOR OLNY LOCAL DEVELOPMENT
 # Made by SPARCS SSO Team
@@ -13,9 +12,10 @@ import urllib
 class Client:
     SERVER_DOMAIN = 'https://sparcssso.kaist.ac.kr/'
     BETA_DOMAIN = 'https://ssobeta.sparcs.org/'
+    DOMAIN = None
 
     API_PREFIX = 'api/'
-    VERSION_PREFIX = 'v1/'
+    VERSION_PREFIX = 'v2/'
 
     URLS = {
         'token_require': 'token/require/',
@@ -25,9 +25,11 @@ class Client:
         'notice': 'notice/',
     }
 
-    def __init__(self, client_id, secret_key, is_beta=False):
-        DOMAIN = self.BETA_DOMAIN if is_beta else self.SERVER_DOMAIN
-        BASE_URL = '%s%s%s' % (DOMAIN, self.API_PREFIX, self.VERSION_PREFIX)
+    def __init__(self, client_id, secret_key, is_beta=False, server_addr=''):
+        self.DOMAIN = self.BETA_DOMAIN if is_beta else self.SERVER_DOMAIN
+        self.DOMAIN = server_addr if server_addr else self.DOMAIN
+
+        BASE_URL = '%s%s%s' % (self.DOMAIN, self.API_PREFIX, self.VERSION_PREFIX)
 
         for k in self.URLS:
             self.URLS[k] = '%s%s' % (BASE_URL, self.URLS[k])
@@ -38,7 +40,7 @@ class Client:
     def _post_data(self, url, data):
         r = requests.post(url, data, verify=True)
         if r.status_code == 400:
-            raise RuntimeError('INVALID_REQUESTI')
+            raise RuntimeError('INVALID_REQUEST')
         elif r.status_code == 403:
             raise RuntimeError('NO_PERMISSION')
         elif r.status_code != 200:
@@ -52,7 +54,7 @@ class Client:
     def get_logout_url(self, sid, redirect_uri):
         timestamp = int(time.time())
         sign = hmac.new(str(self.secret_key),
-                        str(''.join([sid, redirect_uri, timestamp]))).hexdigest()
+                        '%s%s%s' % (sid, redirect_uri, timestamp)).hexdigest()
 
         params = {
             'client_id': self.client_id,
@@ -61,7 +63,7 @@ class Client:
             'redirect_uri': redirect_uri,
             'sign': sign,
         }
-        return '%s?%s' % (self.LOGOUT_BASE_URL, urllib.urlencode(params))
+        return [self.URLS['logout'], params]
 
     def get_login_params(self):
         state = os.urandom(10).encode('hex')
@@ -70,12 +72,12 @@ class Client:
             'state': state,
         }
 
-        return ['%s?%s' % (self.REQUIRE_BASE_URL, urllib.urlencode(params)), state]
+        return ['%s?%s' % (self.URLS['token_require'], urllib.urlencode(params)), state]
 
-    def get_user_info(self, session, code):
+    def get_user_info(self, code):
         timestamp = int(time.time())
         sign = hmac.new(str(self.secret_key),
-                        str(''.join([code, timestamp]))).hexdigest()
+                        '%s%s' % (code, timestamp)).hexdigest()
 
         params = {
             'client_id': self.client_id,
@@ -83,7 +85,7 @@ class Client:
             'timestamp': timestamp,
             'sign': sign,
         }
-        return self._post_data(self.INFO_BASE_URL, params)
+        return self._post_data(self.URLS['token_info'], params)
 
     def get_point(self, sid):
         return self.modify_point(sid, 0, '')['point']
@@ -91,7 +93,8 @@ class Client:
     def modify_point(self, sid, delta, message, lower_bound=-100000000):
         timestamp = int(time.time())
         sign = hmac.new(str(self.secret_key),
-                        str(''.join([sid, delta, lower_bound, timestamp]))).hexdigest()
+                        '%s%s%s%s' % (sid, delta, lower_bound, timestamp)).hexdigest()
+
         params = {
             'client_id': self.client_id,
             'sid': sid,
@@ -101,7 +104,7 @@ class Client:
             'timestamp': timestamp,
             'sign': sign,
         }
-        return self._post_data(self.POINT_BASE_URL, params)
+        return self._post_data(self.URLS['point'], params)
 
     def get_notice(self, offset=0, limit=3, date_after=0):
         params = {
@@ -109,5 +112,5 @@ class Client:
             'limit': limit,
             'date_after': date_after,
         }
-        r = requests.get(self.NOTICE_BASE_URL, data=params, verify=True)
+        r = requests.get(self.URLS['notice'], data=params, verify=True)
         return r.json()

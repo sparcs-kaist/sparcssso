@@ -63,7 +63,7 @@ class Command(BaseCommand):
                     stat['account']['tw'] += 1
                 if user.profile.kaist_id:
                     stat['account']['kaist'] += 1
-                if user.profile.is_for_test:
+                if user.profile.test_enabled:
                     stat['account']['test'] += 1
 
                 if user.profile.gender == '*M':

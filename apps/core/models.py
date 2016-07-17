@@ -4,16 +4,26 @@ from django.utils import timezone
 import json
 
 
+SERVICE_PUBLIC = 'PUBLIC'
+SERVICE_SPARCS = 'SPARCS'
+SERVICE_TEST = 'TEST'
+SERVICE_SCOPE = (
+    (SERVICE_PUBLIC, 'Public'),
+    (SERVICE_SPARCS, 'SPARCS'),
+    (SERVICE_TEST, 'Test'),
+)
+
 User.__unicode__ = lambda self: u'%s %s <%s>' % \
     (self.first_name, self.last_name, self.username)
 
 
-# General Objects
+# == General Objects ==
+# Notice: denotes single notice
 class Notice(models.Model):
-    valid_from = models.DateTimeField()
-    valid_to = models.DateTimeField()
-    title = models.CharField(max_length=100)
-    text = models.TextField()
+    valid_from = models.DateTimeField()       # display start time
+    valid_to = models.DateTimeField()         # display end time
+    title = models.CharField(max_length=100)  # notice title
+    text = models.TextField()                 # notice content
 
     def to_dict(self):
         return {
@@ -27,66 +37,87 @@ class Notice(models.Model):
         return self.title
 
 
+# Statistic: denotes single raw json type statistic
 class Statistic(models.Model):
-    time = models.DateTimeField()
-    data = models.TextField()
+    time = models.DateTimeField()  # timestamp
+    data = models.TextField()      # raw json data
 
     def __unicode__(self):
         return u'Statistic at %s' % self.time
 
 
-# Service Related Objects
+# == Service Related Objects ==
+# Service: denotes single sso client
 class Service(models.Model):
-    name = models.CharField(max_length=20, primary_key=True)
-    is_public = models.BooleanField(default=True)
-    alias = models.CharField(max_length=30)
-    url = models.CharField(max_length=200)
-    callback_url = models.CharField(max_length=200)
-    unregister_url = models.CharField(max_length=200)
-    secret_key = models.CharField(max_length=100)
-    cooltime = models.IntegerField()
-    icon = models.ImageField()
+    name = models.CharField(max_length=20, primary_key=True)         # unique name
+    is_shown = models.BooleanField(default=True)                     # decides to show in main page
+    alias = models.CharField(max_length=30)                          # name for human
+    scope = models.CharField(max_length=6,
+                             choices=SERVICE_SCOPE,
+                             default=SERVICE_TEST)                   # scope of service
+    main_url = models.CharField(max_length=200)                      # main
+    login_callback_url = models.CharField(max_length=200)            # login callback url
+    unregister_url = models.CharField(max_length=200)                # unregister check url
+    secret_key = models.CharField(max_length=100)                    # secret key
+    admin_user = models.ForeignKey(User,
+                                   related_name='managed_services')  # admin of service
+    cooltime = models.IntegerField()                                 # cooltime for re-register
+    icon = models.ImageField(null=True, blank=True)                  # icon of the service
 
     def __unicode__(self):
         return self.alias
 
 
+# ServiceMap: denotes single (user, service) pair
 class ServiceMap(models.Model):
-    sid = models.CharField(max_length=20, primary_key=True)
-    user = models.ForeignKey(User, related_name='services')
-    service = models.ForeignKey(Service)
-    register_time = models.DateTimeField()
-    unregister_time = models.DateTimeField(null=True, blank=True)
+    sid = models.CharField(max_length=20, primary_key=True)        # unique mapping id
+    user = models.ForeignKey(User, related_name='services')        # user object
+    service = models.ForeignKey(Service)                           # service object
+    register_time = models.DateTimeField()                         # register time
+    unregister_time = models.DateTimeField(null=True, blank=True)  # unregister time
 
     def __unicode__(self):
         return u'%s - %s' % (self.service, self.user)
 
 
+# AccessToken: denotes single access token of (user, service) pair
 class AccessToken(models.Model):
-    tokenid = models.CharField(max_length=20, primary_key=True)
-    user = models.ForeignKey(User)
-    service = models.ForeignKey(Service, null=True, blank=True)
-    expire_time = models.DateTimeField()
+    tokenid = models.CharField(max_length=20, primary_key=True)  # unique token id
+    user = models.ForeignKey(User)                               # user object
+    service = models.ForeignKey(Service, null=True, blank=True)  # service object
+    expire_time = models.DateTimeField()                         # expire time
 
     def __unicode__(self):
         return u'%s - %s' % (self.service, self.user)
 
 
-# User Related Objects
+# == User Related Objects ==
+# UserProfile: denotes additional information of single user
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, related_name='profile')
-    gender = models.CharField(max_length=30)
-    birthday = models.DateField(blank=True, null=True)
-    point = models.IntegerField(default=0)
-    email_authed = models.BooleanField(default=False)
-    is_for_test = models.BooleanField(default=False)
-    facebook_id = models.CharField(max_length=50, blank=True, null=True)
-    twitter_id = models.CharField(max_length=50, blank=True, null=True)
-    kaist_id = models.CharField(max_length=50, blank=True, null=True)
-    kaist_info = models.TextField(blank=True, null=True)
-    kaist_info_time = models.DateField(blank=True, null=True)
-    sparcs_id = models.CharField(max_length=50, blank=True, null=True)
-    expire_time = models.DateTimeField(blank=True, null=True)
+    user = models.OneToOneField(User, related_name='profile')             # user object
+    gender = models.CharField(max_length=30)                              # gender
+    birthday = models.DateField(blank=True, null=True)                    # birthday
+    point = models.IntegerField(default=0)                                # point
+    point_test = models.IntegerField(default=0)                           # point for test
+    point_mod_time = models.DateTimeField(auto_now_add=True)              # last point modified time
+    email_authed = models.BooleanField(default=False)                     # email authed state
+    test_enabled = models.BooleanField(default=False)                     # test mode state
+    facebook_id = models.CharField(max_length=50, blank=True, null=True)  # fb unique id
+    twitter_id = models.CharField(max_length=50, blank=True, null=True)   # tw unique id
+    kaist_id = models.CharField(max_length=50, blank=True, null=True)     # kaist uid
+    kaist_info = models.TextField(blank=True, null=True)                  # additional kaist info
+    kaist_info_time = models.DateField(blank=True, null=True)             # kaist info updated time
+    sparcs_id = models.CharField(max_length=50, blank=True, null=True)    # sparcs id
+    expire_time = models.DateTimeField(blank=True, null=True)             # expire time
+
+    @property
+    def flags(self):
+        return {
+            'test': self.test_enabled,
+            'dev': self.user.is_staff or self.sparcs_id,
+            'sparcs': self.sparcs_id,
+            'sysop': self.user.is_staff
+        }
 
     def gender_display(self):
         if self.gender == '*M':
@@ -116,39 +147,43 @@ class UserProfile(models.Model):
         return u'%s''s profile' % self.user
 
 
+# EmailAuthToken: denotes single email auth token for an user
 class EmailAuthToken(models.Model):
-    tokenid = models.CharField(max_length=48, primary_key=True)
-    expire_time = models.DateTimeField()
-    user = models.ForeignKey(User)
+    tokenid = models.CharField(max_length=48, primary_key=True)  # unique token id
+    expire_time = models.DateTimeField()                         # expire time
+    user = models.ForeignKey(User)                               # user object
 
     def __unicode__(self):
         return u'%s - %s' % (self.user, self.tokenid)
 
 
+# ResetPWToken: denotes single password reset token for an user
 class ResetPWToken(models.Model):
-    tokenid = models.CharField(max_length=48, primary_key=True)
-    expire_time = models.DateTimeField()
-    user = models.ForeignKey(User)
+    tokenid = models.CharField(max_length=48, primary_key=True)  # unique token id
+    expire_time = models.DateTimeField()                         # expire time
+    user = models.ForeignKey(User)                               # user object
 
     def __unicode__(self):
         return u'%s - %s' % (self.user, self.tokenid)
 
 
+# PointLog: denotes single point log for a (user, service) pair
 class PointLog(models.Model):
-    user = models.ForeignKey(User, related_name='point_logs')
-    service = models.ForeignKey(Service)
-    time = models.DateTimeField(auto_now=True)
-    delta = models.IntegerField()
-    point = models.IntegerField()
-    action = models.CharField(max_length=200)
+    user = models.ForeignKey(User, related_name='point_logs')  # user object
+    service = models.ForeignKey(Service)                       # service object
+    time = models.DateTimeField(auto_now=True)                 # event time
+    delta = models.IntegerField()                              # delta point
+    point = models.IntegerField()                              # total point
+    action = models.CharField(max_length=200)                  # log message
 
     def __unicode__(self):
         return u'%s - %d by %s' % (self.user, self.delta, self.service)
 
 
+# UserLog: denotes single user log for an user
 class UserLog(models.Model):
-    user = models.ForeignKey(User, related_name='user_logs')
-    level = models.IntegerField()
-    time = models.DateTimeField(auto_now=True)
-    ip = models.GenericIPAddressField()
-    text = models.CharField(max_length=500)
+    user = models.ForeignKey(User, related_name='user_logs')  # user object
+    level = models.IntegerField()                             # level
+    time = models.DateTimeField(auto_now=True)                # event time
+    ip = models.GenericIPAddressField()                       # event ip
+    text = models.CharField(max_length=500)                   # log message

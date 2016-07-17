@@ -29,10 +29,10 @@
                 <ul class="nav navbar-nav">
                     <li><a href="/stats/">Stats</a></li>
                     <li><a href="/help/">Help</a></li>
-                    {% if user.is_staff or user.profile.is_for_test or user.profile.sparcs_id %}
-                    <li><a href="/doc/dev/">Dev Doc</a></li>
+                    {% if user.profile.flags.dev %}
+                    <li><a href="/dev/main">Dev Center</a></li>
                     {% endif %}
-                    {% if user.is_staff %}
+                    {% if user.profile.flags.sysop %}
                     <li><a href="/doc/sysop/">Sysop Doc</a></li>
                     <li><a href="/manage/">Manage</a></li>
                     {% endif %}
@@ -50,7 +50,8 @@
                             <li><a href="/account/deactivate/">{% trans "Deactivate" %}</a></li>
                         </ul>
                     </li>
-                    <li><a href="/account/logout/">{% trans "Logout" %}</a></li>
+                    <li><a href="#" id="logout-link">{% trans "Logout" %}</a></li>
+                    <form id="logout-form" action="/account/logout/" method="post" style="display:none">{% csrf_token %}</form>
                     {% else %}
                     <li><a href="/account/signup/">{% trans "Sign Up" %}</a></li>
                     <li><a href="/account/login/">{% trans "Login" %}</a></li>
@@ -87,16 +88,20 @@
                 <span style="color:#FF3399">S</span><span style="color:#33CC66">P</span><span style="color:#00CCFF">A</span><span style="color:#FF9900">R</span><span style="color:#33CCCC">C</span><span style="color:#9966FF">S</span>
             </a>
             SSO Team</p>
-        </footer>
+    </footer>
 
-        <script>
-            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-            ga('create', 'UA-71710431-1', 'auto');
-            ga('send', 'pageview');
-        </script>
+        ga('create', 'UA-71710431-1', 'auto');
+        ga('send', 'pageview');
+
+        $("#logout-link").click(function() {
+            $("#logout-form").submit();
+        });
+    </script>
 </body>
 </html>

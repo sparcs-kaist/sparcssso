@@ -104,7 +104,7 @@ class Client:
     def get_point(self, sid):
         return self.modify_point(sid, 0, '')['point']
 
-    def modify_point(self, sid, delta, message, lower_bound=-100000000):
+    def modify_point(self, sid, delta, message, lower_bound=0):
         timestamp = int(time.time())
         sign = hmac.new(str(self.secret_key),
                         '%s%s%s%s' % (sid, delta, lower_bound, timestamp)).hexdigest()

@@ -171,13 +171,12 @@ def logout(request):
     if not m:
         return redirect(service.main_url)
 
-    if not redirect_uri:
-        redirect_uri = service.main_url
-    validate = URLValidator()
-    try:
-        validate(redirect_uri)
-    except:
-        raise SuspiciousOperation()
+    if redirect_uri:
+        validate = URLValidator()
+        try:
+            validate(redirect_uri)
+        except:
+            raise SuspiciousOperation()
 
     now = timezone.now()
     date = datetime.fromtimestamp(timestamp, timezone.utc)
@@ -193,6 +192,8 @@ def logout(request):
         logger.info('logout', {'r': request})
         auth.logout(request)
 
+    if not redirect_uri:
+        redirect_uri = service.main_url
     return redirect(redirect_uri)
 
 
@@ -244,7 +245,7 @@ def point(request):
     sid = request.POST.get('sid', '')
     delta = request.POST.get('delta', '0')
     message = request.POST.get('message', '')
-    lower_bound = request.POST.get('lower_bound', '-100000000')
+    lower_bound = request.POST.get('lower_bound', '0')
     timestamp = request.POST.get('timestamp', '0')
     timestamp = int(timestamp) if timestamp.isdigit() else 0
     sign = request.POST.get('sign', '')

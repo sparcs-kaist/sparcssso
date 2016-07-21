@@ -77,8 +77,8 @@ class TestHandler(BaseHTTPRequestHandler):
             return {'success': False, 'reason': 'Not Logged In'}
 
         redirect_uri = 'https://example.com/?args=%s' % os.urandom(10).encode('hex')
-        [logout_url, data] = client.get_logout_url(storage['sid'], redirect_uri)
-        r = requests.post(logout_url, data, allow_redirects=False)
+        logout_url = client.get_logout_url(storage['sid'], redirect_uri)
+        r = requests.get(logout_url, allow_redirects=False)
         url = r.headers['Location']
 
         if redirect_uri != url:

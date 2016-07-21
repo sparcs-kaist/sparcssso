@@ -63,7 +63,7 @@ class Client:
             'redirect_uri': redirect_uri,
             'sign': sign,
         }
-        return [self.URLS['logout'], params]
+        return '%s?%s' % (self.URLS['logout'], urllib.urlencode(params))
 
     def get_login_params(self):
         state = os.urandom(10).encode('hex')

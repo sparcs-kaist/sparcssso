@@ -155,17 +155,13 @@ def token_info(request):
 
 
 # /logout/
-@csrf_exempt
 def logout(request):
-    if request.method != 'POST':
-        raise SuspiciousOperation()
-
-    client_id = request.POST.get('client_id', '')
-    sid = request.POST.get('sid', '')
-    timestamp = request.POST.get('timestamp', '0')
+    client_id = request.GET.get('client_id', '')
+    sid = request.GET.get('sid', '')
+    timestamp = request.GET.get('timestamp', '0')
     timestamp = int(timestamp) if timestamp.isdigit() else 0
-    redirect_uri = request.POST.get('redirect_uri', '')
-    sign = request.POST.get('sign', '')
+    redirect_uri = request.GET.get('redirect_uri', '')
+    sign = request.GET.get('sign', '')
 
     service = Service.objects.filter(name=client_id).first()
     if not service:
@@ -193,8 +189,9 @@ def logout(request):
     if not constant_time_compare(sign, sign_server):
         raise SuspiciousOperation()
 
-    logger.info('logout', {'r': request})
-    auth.logout(request)
+    if request.user and request.user.is_authenticated():
+        logger.info('logout', {'r': request})
+        auth.logout(request)
 
     return redirect(redirect_uri)
 
@@ -249,7 +246,7 @@ def point(request):
     point = profile.point_test if is_test_app else profile.point
     modified = False
 
-    if delta:
+    if delta and point >= lower_bound:
         if is_test_app:
             profile.point_test += delta
         else:
@@ -266,9 +263,9 @@ def point(request):
         PointLog(user=m.user, service=service, delta=delta,
                  point=profile.point, action=message).save()
 
-    last_request = date2str(profile.point_mod_time)
+    last_modified = date2str(profile.point_mod_time)
     return HttpResponse(json.dumps({'point': point, 'modified': modified,
-                                    'last_request': last_request}),
+                                    'last_modified': last_modified}),
                         content_type="application/json")
 
 

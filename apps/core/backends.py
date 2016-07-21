@@ -146,24 +146,13 @@ def reg_service(user, service):
 
 # Unregister Service
 def unreg_service(user, service):
-    default_result = {'status': '1', 'msg': 'Unknown Error'}
     m = ServiceMap.objects.filter(user=user, service=service).first()
     if not m or m.unregister_time:
-        return default_result
-
-    r = requests.post(service.unregister_url, verify=True,
-                      data={'sid': m.sid, 'key': service.secret_key})
-    try:
-        result = r.json()
-        status = result.get('status', '1')
-        if status != '0':
-            return result
-    except:
-        return default_result
+        return False
 
     m.unregister_time = timezone.now()
     m.save()
-    return result
+    return True
 
 
 # Facebook Init & Auth

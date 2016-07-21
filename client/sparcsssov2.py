@@ -4,7 +4,7 @@ import time
 import os
 import urllib
 
-# SPARCS SSO V2 Client Version Alpha 1
+# SPARCS SSO V2 Client Version BETA 1
 # VALID FOR OLNY LOCAL DEVELOPMENT
 # Made by SPARCS SSO Team
 
@@ -21,6 +21,7 @@ class Client:
         'token_require': 'token/require/',
         'token_info': 'token/info/',
         'logout': 'logout/',
+        'unregister': 'unregister/',
         'point': 'point/',
         'notice': 'notice/',
     }
@@ -51,20 +52,6 @@ class Client:
         except:
             raise RuntimeError('NOT_JSON_OBJECT')
 
-    def get_logout_url(self, sid, redirect_uri):
-        timestamp = int(time.time())
-        sign = hmac.new(str(self.secret_key),
-                        '%s%s%s' % (sid, redirect_uri, timestamp)).hexdigest()
-
-        params = {
-            'client_id': self.client_id,
-            'sid': sid,
-            'timestamp': timestamp,
-            'redirect_uri': redirect_uri,
-            'sign': sign,
-        }
-        return '%s?%s' % (self.URLS['logout'], urllib.urlencode(params))
-
     def get_login_params(self):
         state = os.urandom(10).encode('hex')
         params = {
@@ -86,6 +73,33 @@ class Client:
             'sign': sign,
         }
         return self._post_data(self.URLS['token_info'], params)
+
+    def get_logout_url(self, sid, redirect_uri):
+        timestamp = int(time.time())
+        sign = hmac.new(str(self.secret_key),
+                        '%s%s%s' % (sid, redirect_uri, timestamp)).hexdigest()
+
+        params = {
+            'client_id': self.client_id,
+            'sid': sid,
+            'timestamp': timestamp,
+            'redirect_uri': redirect_uri,
+            'sign': sign,
+        }
+        return '%s?%s' % (self.URLS['logout'], urllib.urlencode(params))
+
+    def get_unregister_url(self, sid):
+        timestamp = int(time.time())
+        sign = hmac.new(str(self.secret_key),
+                        '%s%s' % (sid, timestamp)).hexdigest()
+
+        params = {
+            'client_id': self.client_id,
+            'sid': sid,
+            'timestamp': timestamp,
+            'sign': sign,
+        }
+        return '%s?%s' % (self.URLS['unregister'], urllib.urlencode(params))
 
     def get_point(self, sid):
         return self.modify_point(sid, 0, '')['point']

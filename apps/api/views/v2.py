@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.utils.crypto import constant_time_compare
 from django.utils.dateparse import parse_date
 from django.views.decorators.csrf import csrf_exempt
-from apps.core.backends import reg_service, validate_email
+from apps.core.backends import reg_service, unreg_service, validate_email
 from apps.core.models import Notice, Service, ServiceMap, AccessToken, PointLog, Statistic
 from datetime import datetime, timedelta
 import hmac
@@ -194,6 +194,43 @@ def logout(request):
         auth.logout(request)
 
     return redirect(redirect_uri)
+
+
+# /unregister/
+def unregister(request):
+    client_id = request.GET.get('client_id', '')
+    sid = request.GET.get('sid', '')
+    timestamp = request.GET.get('timestamp', '0')
+    timestamp = int(timestamp) if timestamp.isdigit() else 0
+    sign = request.GET.get('sign', '')
+
+    service = Service.objects.filter(name=client_id).first()
+    if not service:
+        raise SuspiciousOperation()
+
+    m = ServiceMap.objects.filter(sid=sid, service=service).first()
+    if not m:
+        return redirect(service.main_url)
+
+    now = timezone.now()
+    date = datetime.fromtimestamp(timestamp, timezone.utc)
+    if abs((now - date).total_seconds()) >= 3:
+        raise SuspiciousOperation()
+
+    sign_server = hmac.new(str(service.secret_key),
+                           str('%s%s' % (sid, timestamp))).hexdigest()
+    if not constant_time_compare(sign, sign_server):
+        raise SuspiciousOperation()
+
+
+    result = unreg_service(request.user, service)
+    if result:
+        profile_logger.info('unregister.success: name=%s' % service.name, {'r': request})
+    else:
+        profile_logger.warning('unregister.fail: name=%s' % service.name, {'r': request})
+
+    request.session['removed'] = result
+    return redirect('/account/service/')
 
 
 # /point/

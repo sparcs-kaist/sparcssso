@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'^v2/token/require/$', v2.token_require),
     url(r'^v2/token/info/$', v2.token_info),
     url(r'^v2/logout/$', v2.logout),
+    url(r'^v2/unregister/$', v2.unregister),
     url(r'^v2/point/$', v2.point),
     url(r'^v2/notice/$', v2.notice),
     url(r'^v2/email/$', v2.email),

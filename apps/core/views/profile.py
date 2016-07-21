@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from apps.core.backends import unreg_service
-from apps.core.models import Service, ServiceMap, PointLog, UserLog
+from apps.core.models import ServiceMap, PointLog, UserLog
 from apps.core.forms import UserForm, UserProfileForm
 import logging
 
@@ -67,34 +66,15 @@ def toggle_test(request):
     return redirect('/account/profile/')
 
 
-# /unregister/
-@login_required
-def unregister(request):
-    if request.method != 'POST':
-        return redirect('/account/service/')
-
-    name = request.POST.get('app', '')
-    service = Service.objects.filter(name=name).first()
-    if service:
-        result = unreg_service(request.user, service)
-        if result['status'] == '0':
-            logger.info('unregister.success: name=%s' % service.name, {'r': request})
-        else:
-            logger.warning('unregister.fail: name=%s' % service.name, {'r': request})
-        request.session['result_unreg'] = result
-
-    return redirect('/account/service/')
-
-
 # /service/
 @login_required
 def service(request):
     user = request.user
     maps = ServiceMap.objects.filter(user=user, unregister_time=None)
 
-    result_unreg = request.session.pop('result_unreg', -1)
+    removed = request.session.pop('removed', False)
     return render(request, 'account/service.html',
-                  {'user': user, 'maps': maps, 'result_unreg': result_unreg})
+                  {'user': user, 'maps': maps, 'removed': removed})
 
 
 # /point/

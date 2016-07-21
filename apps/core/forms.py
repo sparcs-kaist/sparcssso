@@ -29,4 +29,4 @@ class ServiceForm(ModelForm):
 
     class Meta:
         model = Service
-        fields = ('alias', 'main_url', 'login_callback_url', 'unregister_url', 'secret_key', 'cooltime')
+        fields = ('alias', 'main_url', 'login_callback_url', 'unregister_url', 'cooltime')

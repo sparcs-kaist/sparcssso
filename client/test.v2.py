@@ -25,6 +25,7 @@ class TestHandler(BaseHTTPRequestHandler):
             'test-suites': {
                 'login': '/login',
                 'logout': '/logout',
+                'unregister': '/unregister',
                 'point-get': '/point-get',
                 'point-modify': '/point-modify',
             },
@@ -71,20 +72,36 @@ class TestHandler(BaseHTTPRequestHandler):
 
     def _do_logout(self):
         global storage
-        client = storage['client']
+        client, session = storage['client'], storage['session']
 
         if not storage['loggedin']:
             return {'success': False, 'reason': 'Not Logged In'}
 
         redirect_uri = 'https://example.com/?args=%s' % os.urandom(10).encode('hex')
-        [logout_url, data] = client.get_logout_url(storage['sid'], redirect_uri)
-        r = requests.post(logout_url, data, allow_redirects=False)
+        logout_url = client.get_logout_url(storage['sid'], redirect_uri)
+        r = session.get(logout_url, allow_redirects=False)
         url = r.headers['Location']
 
         if redirect_uri != url:
             return {'success': False, 'reason': 'Unknown'}
 
         storage['loggedin'] = False
+        return {'success': True}
+
+    def _do_unregister(self):
+        global storage
+        client, session = storage['client'], storage['session']
+
+        if not storage['loggedin']:
+            return {'success': False, 'reason': 'Not Logged In'}
+
+        unregister_url = client.get_unregister_url(storage['sid'])
+        r = session.get(unregister_url, allow_redirects=False)
+        url = r.headers['Location']
+
+        if url != '/account/service/':
+            return {'success': False, 'reason': 'Unknown'}
+
         return {'success': True}
 
     def _do_get_point(self):
@@ -122,6 +139,8 @@ class TestHandler(BaseHTTPRequestHandler):
             resp = self._do_login()
         elif path == '/logout':
             resp = self._do_logout()
+        elif path == '/unregister':
+            resp = self._do_unregister()
         elif path == '/point-get':
             resp = self._do_get_point()
         elif path.startswith('/point-modify'):

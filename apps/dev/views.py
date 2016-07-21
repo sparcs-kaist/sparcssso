@@ -63,11 +63,13 @@ def service(request, name):
                 name = 'test%s' % os.urandom(6).encode('hex')
                 if not Service.objects.filter(name=name).count():
                     break
+            secret_key = os.urandom(10).encode('hex')
 
         service_f = ServiceForm(request.POST)
         service = service_f.save(commit=False)
         service.is_shown = False
         service.scope = 'TEST'
+        service.secret_key = secret_key
         service.admin_user = request.user
         service.name = name
         service.save()

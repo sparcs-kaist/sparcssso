@@ -20,7 +20,7 @@
 <div class="service-row">
     {% for m in maps %}
     <div class="service">
-        <a href="{{m.service.main_url}}"><img src="{{m.service.icon.url}}" alt="{{m.service.name}}"></a>
+        <a href="{{m.service.main_url}}"><img src="{{m.service.icon_url}}" alt="{{m.service.name}}"></a>
         <p>{{m.service.alias}}</p>
         <p class="date">{% blocktrans with time=m.register_time|date:'Y-m-d' %}from {{time}}{% endblocktrans %}</p>
         <a class="btn btn-xs btn-danger" href="{{m.service.unregister_url}}">{% trans "Unregister" %}</a>

@@ -19,7 +19,7 @@
     <div class="service-row">
     {% for service in services %}
         <div class="service">
-            <a href="{{ service.main_url }}"><img src="{{ service.icon.url }}" alt="{{ service.name }}"></a>
+            <a href="{{ service.main_url }}"><img src="{{ service.icon_url }}" alt="{{ service.name }}"></a>
             <p>{{ service.alias }}</p>
         </div>
     {% endfor %}

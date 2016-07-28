@@ -12,7 +12,7 @@ logger = logging.getLogger('sso')
 # /main/
 def main(request):
     current_time = timezone.now()
-    services = Service.objects.filter(is_shown=True, icon__isnull=True)
+    services = Service.objects.filter(is_shown=True, icon__isnull=False)
     notice = Notice.objects.filter(valid_from__lte=current_time,
                                    valid_to__gt=current_time).first()
 

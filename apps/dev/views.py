@@ -58,21 +58,22 @@ def service(request, name):
         raise Http404
 
     if request.method == 'POST':
+        service_f = ServiceForm(request.POST, instance=service)
+        service_new = service_f.save(commit=False)
+
         if not service:
             while True:
                 name = 'test%s' % os.urandom(6).encode('hex')
                 if not Service.objects.filter(name=name).count():
                     break
-            secret_key = os.urandom(10).encode('hex')
 
-        service_f = ServiceForm(request.POST)
-        service = service_f.save(commit=False)
-        service.is_shown = False
-        service.scope = 'TEST'
-        service.secret_key = secret_key
-        service.admin_user = request.user
-        service.name = name
-        service.save()
+            service_new.name = name
+            service_new.is_shown = False
+            service_new.scope = 'TEST'
+            service_new.secret_key = os.urandom(10).encode('hex')
+            service_new.admin_user = request.user
+
+        service_new.save()
 
         return redirect('/dev/main/')
 

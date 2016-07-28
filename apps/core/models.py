@@ -64,6 +64,10 @@ class Service(models.Model):
     cooltime = models.IntegerField()                                 # cooltime for re-register
     icon = models.ImageField(null=True, blank=True)                  # icon of the service
 
+    @property
+    def icon_url(self):
+        return self.icon.url if self.icon else '/static/img/test-service.png'
+
     def __unicode__(self):
         return self.alias
 

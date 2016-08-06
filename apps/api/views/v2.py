@@ -223,7 +223,6 @@ def unregister(request):
     if not constant_time_compare(sign, sign_server):
         raise SuspiciousOperation()
 
-
     result = unreg_service(request.user, service)
     if result:
         profile_logger.info('unregister.success: name=%s' % service.name, {'r': request})

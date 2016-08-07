@@ -77,3 +77,6 @@ doc.sysop.html
 
 # Envorinment Indicator
 deploy
+
+# SPARCS SSO Test Server
+client/run

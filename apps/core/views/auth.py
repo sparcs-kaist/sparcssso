@@ -74,7 +74,7 @@ def login(request):
 
 # /logout/
 def logout(request):
-    if not request.user.is_authenticated():
+    if request.method != 'POST' or not request.user.is_authenticated():
         return redirect('/')
 
     logger.info('logout', {'r': request})

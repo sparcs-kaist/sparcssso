@@ -63,7 +63,7 @@ class Command(BaseCommand):
                     stat['account']['tw'] += 1
                 if user.profile.kaist_id:
                     stat['account']['kaist'] += 1
-                if user.profile.is_for_test:
+                if user.profile.test_enabled:
                     stat['account']['test'] += 1
 
                 if user.profile.gender == '*M':
@@ -88,7 +88,8 @@ class Command(BaseCommand):
                 kaist_info = json.loads(user.profile.kaist_info)
                 kaist = stat['kaist']
 
-                if 'ku_std_no' in kaist_info:
+                if 'ku_std_no' in kaist_info and \
+                        len(kaist_info['ku_std_no']) == 8:
                     start_year = kaist_info['ku_std_no'][:4]
                     if start_year in kaist['start_year']:
                         kaist['start_year'][start_year] += 1

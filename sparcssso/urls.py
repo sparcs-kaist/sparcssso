@@ -16,11 +16,12 @@ urlpatterns = [
     url(r'^privacy/', general.privacy),
     url(r'^stats/', general.stats),
     url(r'^help/', general.help),
-    url(r'^doc/dev/', general.doc_dev),
     url(r'^doc/sysop/', general.doc_sysop),
 
     url(r'^account/', include('apps.core.urls')),
     url(r'^api/', include('apps.api.urls')),
+    url(r'^dev/', include('apps.dev.urls')),
+
     url(r'^manage/', include(admin.site.urls)),
 ]
 

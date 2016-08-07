@@ -38,18 +38,13 @@ urlpatterns = [
     url(r'^disconnect/fb/$', profile.disconnect, {'type': 'FB'}),
     url(r'^disconnect/tw/$', profile.disconnect, {'type': 'TW'}),
 
-    url(r'^test/toggle/', profile.toggle_test),
-
-    url(r'^service/$', profile.service),
-    url(r'^unregister/$', profile.unregister),
-
-    url(r'^point/$', profile.point),
     url(r'^log/$', profile.log),
+    url(r'^point/$', profile.point),
+    url(r'^service/$', profile.service),
 
 
     # package: password
     url(r'^password/change/$', password.change),
-
     url(r'^password/reset/$', password.reset_email),
     url(r'^password/reset/(?P<tokenid>\w+)$', password.reset),
 ]

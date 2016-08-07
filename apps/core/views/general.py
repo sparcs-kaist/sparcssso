@@ -12,7 +12,7 @@ logger = logging.getLogger('sso')
 # /main/
 def main(request):
     current_time = timezone.now()
-    services = Service.objects.filter(is_public=True)
+    services = Service.objects.filter(is_shown=True, icon__isnull=False)
     notice = Notice.objects.filter(valid_from__lte=current_time,
                                    valid_to__gt=current_time).first()
 
@@ -64,7 +64,7 @@ def stats(request):
     for name, value in raw_stat.iteritems():
         if name != 'all':
             service = Service.objects.get(name=name)
-            if level < 1 and not service.is_public:
+            if level < 1 and not service.is_shown:
                 continue
 
         s = {}
@@ -83,16 +83,6 @@ def stats(request):
 # /help/
 def help(request):
     return render(request, 'help.html')
-
-
-# /doc/dev/
-@login_required
-def doc_dev(request):
-    user = request.user
-    profile = user.profile
-    if not user.is_staff and not profile.is_for_test and not profile.sparcs_id:
-        return redirect('/')
-    return render(request, 'doc.dev.html')
 
 
 # /doc/sysop/

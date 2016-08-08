@@ -4,8 +4,8 @@ import time
 import os
 import urllib
 
-# SPARCS SSO V2 Client Version BETA 1
-# VALID FOR OLNY LOCAL DEVELOPMENT
+# SPARCS SSO V2 Client Version 1.0
+# VALID ONLY AFTER 2016-08-08T14:53+09:00
 # Made by SPARCS SSO Team
 
 

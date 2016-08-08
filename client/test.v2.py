@@ -7,8 +7,8 @@ import sys
 import os
 import urlparse
 
-# SPARCS SSO V2 Client Test Server Version Alpha 1
-# VALID FOR ONLY LOCAL DEVELOPMENT
+# SPARCS SSO V2 Client Test Server Version 1.0
+# VALID ONLY AFTER 2016-08-08T14:55+09:00
 # Made by SPARCS SSO Team
 
 

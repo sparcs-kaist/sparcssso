@@ -2,7 +2,7 @@ import requests
 import hmac
 import time
 
-# SPARCS SSO Client Version 1.0.0
+# SPARCS SSO V1 Client Version 1.0
 # VALID ONLY AFTER 2016-05-18T23:59+09:00
 # Made by SPARCS SSO Team
 

@@ -43,6 +43,9 @@ def disconnect(request, type):
 
     uid = ''
     profile = request.user.profile
+    if profile.test_only:
+        return redirect('/account/profile/')
+
     if type == 'FB':
         uid = profile.facebook_id
         profile.facebook_id = ''
@@ -53,16 +56,6 @@ def disconnect(request, type):
 
     request.session['result_con'] = 5
     logger.info('disconnect: type=%s,id=%s' % (type.lower(), uid), {'r': request})
-    return redirect('/account/profile/')
-
-
-# /test/toggle/
-@login_required
-def toggle_test(request):
-    profile = request.user.profile
-    if request.method == 'POST' and profile.sparcs_id:
-        profile.is_for_test = not profile.is_for_test
-        profile.save()
     return redirect('/account/profile/')
 
 

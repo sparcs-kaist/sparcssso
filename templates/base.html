@@ -33,7 +33,6 @@
                     <li><a href="/dev/main">Dev Center</a></li>
                     {% endif %}
                     {% if user.profile.flags.sysop %}
-                    <li><a href="/doc/sysop/">Sysop Doc</a></li>
                     <li><a href="/manage/">Manage</a></li>
                     {% endif %}
                 </ul>
@@ -46,8 +45,10 @@
                             <li><a href="/account/service/">{% trans "Manage Service" %}</a></li>
                             <li><a href="/account/log/">{% trans "Logs" %}</a></li>
                             <li><a href="/account/point/">{% trans "Points" %}</a></li>
+                            {% if not user.profile.test_only %}
                             <li><a href="/account/password/change/">{% trans "Change Password" %}</a></li>
                             <li><a href="/account/deactivate/">{% trans "Deactivate" %}</a></li>
+                            {% endif %}
                         </ul>
                     </li>
                     <li><a href="#" id="logout-link">{% trans "Logout" %}</a></li>

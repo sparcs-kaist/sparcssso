@@ -193,7 +193,7 @@ def auth_fb(code, callback_url):
             'gender': parse_gender(fb_info.get('gender')),
             'birthday': fb_info.get('birthday')}
 
-    return UserProfile.objects.filter(facebook_id=info['userid']).first(), info
+    return UserProfile.objects.filter(facebook_id=info['userid'], test_only=False).first(), info
 
 
 # Twitter Init & Auth
@@ -222,7 +222,7 @@ def auth_tw(tokens, verifier):
             'first_name': tw_info['screen_name'],
             'gender': '*H'}
 
-    return UserProfile.objects.filter(twitter_id=info['userid']).first(), info
+    return UserProfile.objects.filter(twitter_id=info['userid'], test_only=False).first(), info
 
 
 # KAIST Auth
@@ -256,7 +256,7 @@ def auth_kaist(token):
             'birthday': k_info.get('ku_born_date').replace('/', '-'),
             'kaist_info': k_info}
 
-    return UserProfile.objects.filter(kaist_id=info['userid']).first(), info
+    return UserProfile.objects.filter(kaist_id=info['userid'], test_only=False).first(), info
 
 
 # Validate reCAPTCHA

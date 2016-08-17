@@ -16,6 +16,8 @@ logger = logging.getLogger('sso.core.password')
 @login_required
 def change(request):
     user = request.user
+    if user.profile.test_only:
+        return redirect('/account/profile/')
 
     fail = False
     if request.method == 'POST':
@@ -40,7 +42,7 @@ def reset_email(request):
     if request.method == 'POST':
         email = request.POST.get('email', '')
         user = User.objects.filter(email=email).first()
-        if not user:
+        if not user or user.profile.test_only:
             return render(request, 'account/pw-reset/send.html', {'fail': True, 'email': email})
 
         give_reset_pw_token(user)

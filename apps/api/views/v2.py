@@ -352,7 +352,8 @@ def stats(request):
     elif level == 0:
         client_list = filter(lambda x: x.scope == 'PUBLIC', client_list)
 
-    today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    today = timezone.local(timezone.now())\
+            .replace(hour=0, minute=0, second=0, microsecond=0)
     start_date, end_date = None, None
     try:
         start_date = parse_date(request.GET.get('date_from', ''))
@@ -382,6 +383,7 @@ def stats(request):
             data = {}
             raw_data = raw_data[client.name]
             if level == 0:
+                data['account'] = {}
                 data['account']['all'] = raw_data['account']['all']
                 data['account']['kaist'] = raw_data['account']['kaist']
             elif level == 1:

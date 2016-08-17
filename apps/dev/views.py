@@ -38,6 +38,7 @@ def main(request):
         profile.test_enabled = test_enabled
         profile.save()
         success = True
+        logger.info('profile.modify', {'r': request})
 
     return render(request, 'dev/main.html', {'profile': profile, 'services': services,
                                              'users': users, 'success': success})
@@ -69,7 +70,9 @@ def service(request, name):
             service_new.scope = 'TEST'
             service_new.secret_key = os.urandom(10).encode('hex')
             service_new.admin_user = request.user
-
+            logger.warn('service.create: name=%s' % name, {'r': request})
+        else:
+            logger.info('service.modify: name=%s' % name, {'r': request})
         service_new.save()
 
         return redirect('/dev/main/')
@@ -88,6 +91,7 @@ def service_delete(request, name):
         raise Http404
 
     service.delete()
+    logger.warn('service.delete: name=%s' % name, {'r': request})
     return redirect('/dev/main/')
 
 
@@ -109,11 +113,12 @@ def user(request, uid):
         if not birthday:
             birthday = None
         test_point = int(request.POST.get('test_point', '0'))
-        kaist_info = request.POST.get('kaist_info', '')
-        if not kaist_info:
-            kaist_info = '{ "kaist_uid": ""}'
-        kaist_info = json.loads(kaist_info)
-        kaist_id = kaist_info['kaist_uid']
+        try:
+            kaist_info = json.loads(request.POST.get('kaist_info', ''))
+            kaist_id = kaist_info['kaist_uid']
+        except:
+            kaist_info = {}
+            kaist_id = ""
 
         if not user:
             while True:
@@ -134,8 +139,10 @@ def user(request, uid):
                                             password=seed)
             profile = UserProfile(user=user, email_authed=True,
                                   test_enabled=True, test_only=True)
+            logger.warn('user.create: uid=%s' % username, {'r': request})
         else:
             profile = user.profile
+            logger.info('user.modify: uid=%s' % uid, {'r': request})
 
         user.first_name = first_name
         user.last_name = last_name
@@ -163,4 +170,5 @@ def user_delete(request, uid):
         raise Http404
 
     user.delete()
+    logger.warn('user.delete: uid=%s' % uid, {'r': request})
     return redirect('/dev/main/')

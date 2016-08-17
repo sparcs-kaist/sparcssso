@@ -156,7 +156,7 @@ def user(request, uid):
 
         return redirect('/dev/main/')
 
-    return render(request, 'dev/user.html', {'user': user})
+    return render(request, 'dev/user.html', {'tuser': user})
 
 
 # /user/(uid)/delete/

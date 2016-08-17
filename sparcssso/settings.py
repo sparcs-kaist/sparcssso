@@ -209,7 +209,7 @@ LOGGING = {
 }
 
 if not DEBUG:
-    LOGGING['handlers']['file']['filename'] = '/data/log/dev/info.log'
+    LOGGING['handlers']['file']['filename'] = '/data/log/sso/info.log'
     LOGGING['loggers']['django.request'] = {
         'handlers': ['mail'],
         'level': 'ERROR',

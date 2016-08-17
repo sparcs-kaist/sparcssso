@@ -16,7 +16,6 @@ urlpatterns = [
     url(r'^privacy/', general.privacy),
     url(r'^stats/', general.stats),
     url(r'^help/', general.help),
-    url(r'^doc/sysop/', general.doc_sysop),
 
     url(r'^account/', include('apps.core.urls')),
     url(r'^api/', include('apps.api.urls')),

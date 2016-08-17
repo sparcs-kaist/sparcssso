@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block app-header %}
+<link rel="stylesheet" type="text/css" href="/static/css/main.css">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.1.1/Chart.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<h1 class="doc-header">SPARCS SSO Statistics <small>({{ time|date:"Y-m-d\TH:i:sT"}})</small></h1>
+<p>Permission: 
+{% if level == 0 %}
+PUBLIC
+{% elif level == 1 %}
+<b>SPARCS</b>
+{% elif level == 2 %}
+<span class="text-danger"><b>SYSOP</b></span>
+{% endif %}
+</p>
+
+
+<script>
+
+// jquery ajax call function
+function get_stats(client_ids, date_from, date_to){
+	var arg_names = ["client_ids", "date_from", "date_to"];
+}
+
+// jquery ajax success function
+function draw_stats(){
+
+}
+
+</script>
+
+{% endblock %}

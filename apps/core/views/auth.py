@@ -130,6 +130,10 @@ def init(request, mode, type):
        (mode == 'RENEW' and method != 'POST'):
         return redirect('/account/profile/')
 
+    if is_authed and request.user.profile.test_only and \
+            (mode == 'CONN' or mode == 'RENEW'):
+        return redirect('/account/profile/')
+
     request.session['info_auth'] = {'mode': mode, 'type': type}
     callback_url = request.build_absolute_uri('/account/callback/')
 

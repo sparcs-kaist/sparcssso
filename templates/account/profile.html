@@ -87,6 +87,9 @@
 </div>
 
 <h3>{% trans "Social Accounts" %}</h3>
+{% if profile.test_only %}
+<p class="text-danger">Test accounts CANNOT connect / disconnect to social accounts.</p>
+{% else %}
 {% if profile.kaist_id %}
 <p class="text-info">{% trans "You can renew your KAIST SSO information." %}</p>
 {% else %}
@@ -166,6 +169,7 @@
         {% endif %}
     </div>
 </div>
+{% endif %}
 
 <script type="text/javascript">
 $(function() {

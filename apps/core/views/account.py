@@ -54,6 +54,9 @@ def signup(request, is_social=False):
 # /deactivate/
 @login_required
 def deactivate(request):
+    if request.user.profile.test_only:
+        return redirect('/')
+
     maps = ServiceMap.objects.filter(user=request.user, unregister_time=None)
     ok = len(maps) == 0
     fail = False

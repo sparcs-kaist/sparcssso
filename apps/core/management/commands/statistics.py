@@ -43,7 +43,7 @@ class Command(BaseCommand):
 
         users = User.objects.all()
         for user in users:
-            if user.profile.expire_time:
+            if user.profile.expire_time or user.profile.test_only:
                 continue
 
             services = ['all']

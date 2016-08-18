@@ -2,8 +2,8 @@
 {% load i18n %}
 
 {% block app-header %}
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.css">
 <link rel="stylesheet" type="text/css" href="/static/css/main.css">
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.1.1/Chart.min.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -18,19 +18,90 @@ PUBLIC
 {% endif %}
 </p>
 
+<div class="row">
+	<div role="tabpanel">
+		<!-- Nav tabs -->
+		<ul class="nav nav-tabs nav-stats" role="tablist">
+		</ul>
+		<!-- Tab panes -->
+		<div class="tab-content tab-content-stats">
+		</div>
+	</div>
+</div>
 
 <script>
+/**
+test code
+*/
+get_stats("all", "2016-08-16");
 
-// jquery ajax call function
+
+/**
+jquery ajax call
+@param - read https://wiki.sparcs.org/w/index.php/SPARCS_SSO_API_%EB%AA%85%EC%84%B8
+ */
 function get_stats(client_ids, date_from, date_to){
+	var param = {};
 	var arg_names = ["client_ids", "date_from", "date_to"];
+	for(var idx = 0; idx < arguments.length; idx++){
+		param[arg_names[idx]] = arguments[idx];
+	}
+	$.ajax({
+		url: "/api/v2/stats",
+		data: param,
+		success: success_stats,
+		dataType: "Json",
+	});
 }
 
-// jquery ajax success function
-function draw_stats(){
+/**
+jquery ajax success function
+ */
+function success_stats(data, textStatus, jqXHR){
+	var service = get_services(data);
 
+	add_nav_tabs(service);
 }
+
+
+/**
+Stats object manipulation function
+*/
+
+/**
+@param {obj} data - json object from stats api
+@returns {array} - array of services
+*/
+function get_services(data){
+	var stats = data["stats"];
+	return Object.keys(stats);
+}
+
+/**
+DOM manipulation function with jquery
+*/
+
+function add_nav_tabs(services){
+	function build_tags(s, c){
+		if(c == "nav-stats"){
+			var nav_tag = '<li role="presentation">'+
+						  '<a href="#'+s+'" aria-controls="'+s+'" role="tab" data-toggle="tab">'+
+						  s+'</a></li>';
+			return nav_tag;
+		} else if (c == "tab-content-stats"){
+			var tab_content_tag = '<div role="tabpanel" class="tab-pane"'+
+								  'id="'+s+'">...</div>';
+			return tab_content_tag;
+		}
+	}
+	for(var idx = 0; idx < services.length; idx++){
+		$(build_tags(services[idx], "nav-stats")).appendTo($(".nav-stats"));
+		$(build_tags(services[idx], "tab-content-stats")).appendTo($(".tab-content-stats"));
+	}
+}
+
 
 </script>
-
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.js"></script>
 {% endblock %}

@@ -27,7 +27,7 @@ def main(request):
     if request.method == 'POST':
         point_test = request.POST.get('point', '0')
         point_test = int(point_test) if point_test.isdigit() else 0
-        test_enabled = request.POST.get('test', 'D')
+        test_enabled = request.POST.get('test', 'D') == 'E'
 
         if profile.flags['sysop']:
             test_enabled = False

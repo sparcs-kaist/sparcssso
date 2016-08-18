@@ -120,8 +120,8 @@ class UserProfile(models.Model):
         return {
             'test': self.test_enabled,
             'test-only': self.test_only,
-            'dev': self.user.is_staff or self.sparcs_id,
-            'sparcs': self.sparcs_id,
+            'dev': self.user.is_staff or self.sparcs_id != '',
+            'sparcs': self.sparcs_id != '',
             'sysop': self.user.is_staff
         }
 

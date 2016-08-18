@@ -14,6 +14,8 @@
 <p>Only SPARCS members can access to {{alias}}. Please contact to SYSOP.</p>
 {% elif reason == 3 %}
 <p>Only TEST account can access to {{alias}}. Enable TEST settings on the <a href="/account/profile/">profile page</a>.</p>
+{% elif reason == 4 %}
+<p>TEST ONLY account cannot access to any non-test services.</p>
 {% endif %}
 
 <p><a class="btn btn-primary" href="{{dest}}">Back to {{alias}}</a></p>

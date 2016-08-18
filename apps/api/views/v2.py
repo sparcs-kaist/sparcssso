@@ -61,6 +61,8 @@ def token_require(request):
         reason = 2
     elif service.scope == 'TEST' and not flags['test']:
         reason = 3
+    elif service.scope != 'TEST' and flags['test-only']:
+        reason = 4
 
     if reason:
         return render(request, 'api/denied.html',

@@ -105,6 +105,7 @@ class UserProfile(models.Model):
     point_test = models.IntegerField(default=0)                           # point for test
     point_mod_time = models.DateTimeField(auto_now_add=True)              # last point modified time
     email_authed = models.BooleanField(default=False)                     # email authed state
+    test_only = models.BooleanField(default=False)                        # indicate test only
     test_enabled = models.BooleanField(default=False)                     # test mode state
     facebook_id = models.CharField(max_length=50, blank=True, null=True)  # fb unique id
     twitter_id = models.CharField(max_length=50, blank=True, null=True)   # tw unique id
@@ -118,8 +119,9 @@ class UserProfile(models.Model):
     def flags(self):
         return {
             'test': self.test_enabled,
-            'dev': self.user.is_staff or self.sparcs_id,
-            'sparcs': self.sparcs_id,
+            'test-only': self.test_only,
+            'dev': self.user.is_staff or self.sparcs_id != '',
+            'sparcs': self.sparcs_id != '',
             'sysop': self.user.is_staff
         }
 

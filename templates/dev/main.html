@@ -71,12 +71,42 @@
             <td class="text-left">{{service.name}}</td>
             <td class="text-left">{{service.alias}}</td>
             <td class="text-left">{{service.main_url}}</td>
-            <td class="text-center"><a href="/dev/service/{{service.name}}/" class="btn btn-xs btn-warning">Modify</a> <button class="btn btn-xs btn-danger btn-remove" data-name="{{service.name}}">REMOVE</button></td>
+            <td class="text-center"><a href="/dev/service/{{service.name}}/" class="btn btn-xs btn-warning">Modify</a> <button class="btn btn-xs btn-danger btn-service-remove" data-name="{{service.name}}">REMOVE</button></td>
         </tr>
         {% empty %}
         <tr>
             <td colspan="4">
                 No Test Services are Registered
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h3>Test Accounts</h3>
+<p>You can <a href="/dev/user/add/">register</a> / modify / remove test accounts.</p>
+<p class="text-warning"><b>Warning!</b> Test accounts are shared among ALL developers.</p>
+<table class="table col-sm-10">
+    <thead>
+        <tr>
+            <th>UID</th>
+            <th>Email</th>
+            <th>Name</th>
+            <th class="text-center">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td class="text-left">{{user.username}}</td>
+            <td class="text-left">{{user.email}}</td>
+            <td class="text-left">{{user.first_name}} {{user.last_name}}</td>
+            <td class="text-center"><a href="/dev/user/{{user.username}}/" class="btn btn-xs btn-warning">Modify</a> <button class="btn btn-xs btn-danger btn-user-remove" data-uid="{{user.username}}">REMOVE</button></td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">
+                No Test Accounts are Registered
             </td>
         </tr>
         {% endfor %}
@@ -94,12 +124,26 @@ $(function() {
         
     $('#dev-panel').validator();
     
-    $('.btn-remove').click(function() {
+    $('.btn-service-remove').click(function() {
         var data = {
             csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
         }
         $.ajax({
             url: '/dev/service/' + $(this).data('name') + '/delete/',
+            type: 'POST',
+            data: data,
+            success: function(result) {
+                location.reload();
+            },
+        });
+    });
+
+    $('.btn-user-remove').click(function() {
+        var data = {
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+        }
+        $.ajax({
+            url: '/dev/user/' + $(this).data('uid') + '/delete/',
             type: 'POST',
             data: data,
             success: function(result) {

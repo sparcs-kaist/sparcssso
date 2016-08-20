@@ -31,7 +31,7 @@ def date2str(obj):
 
 # get call back url
 def get_callback(user, service, url):
-    is_test = user.profile.test_enable
+    is_test = user.profile.test_enabled
     if not is_test and not service:
         return None
     elif service:
@@ -93,6 +93,8 @@ def token_require(request):
         reason = 2
     elif not dest:
         reason = 3
+    elif service.scope != 'TEST' and request.user.profile.test_only:
+        reason = 4
 
     if reason:
         return render(request, 'api/denied.html',

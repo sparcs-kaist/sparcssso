@@ -11,12 +11,13 @@ from django.views.decorators.csrf import csrf_exempt
 from apps.core.backends import reg_service, validate_email
 from apps.core.models import Notice, Service, ServiceMap, AccessToken, PointLog
 from datetime import timedelta
+from urllib import parse
+import binascii
 import datetime
 import hmac
 import json
 import logging
 import os
-import urllib
 
 
 logger = logging.getLogger('sso.api')
@@ -117,7 +118,7 @@ def token_require(request):
             return render(request, 'api/cooltime.html', {'service': service, 'left': d})
 
     while True:
-        tokenid = os.urandom(10).encode('hex')
+        tokenid = binascii.hexlify(os.urandom(10)).decode('utf-8')
         if not AccessToken.objects.filter(tokenid=tokenid, service=service).count():
             break
 
@@ -126,7 +127,7 @@ def token_require(request):
     token.save()
     logger.info('token.create: app=%s,url=%s' % (name, url), {'r': request})
     args = {'tokenid': token.tokenid}
-    return redirect(dest + '?' + urllib.urlencode(args))
+    return redirect(dest + '?' + parse.urlencode(args))
 
 
 # /token/info/

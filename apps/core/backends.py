@@ -6,15 +6,14 @@ from django.utils import timezone
 from apps.core.models import ServiceMap, UserProfile, EmailAuthToken, ResetPWToken
 from apps.core.forms import UserForm, UserProfileForm
 from xml.etree.ElementTree import fromstring
-import cgi
+from urllib import parse
+import binascii
 import datetime
 import requests
 import logging
 import oauth2 as oauth
 import os
 import re
-import urllib
-import urlparse
 
 
 logger = logging.getLogger('sso.account.backend')
@@ -56,7 +55,7 @@ def give_reset_pw_token(user):
         token.delete()
 
     while True:
-        tokenid = os.urandom(24).encode('hex')
+        tokenid = binascii.hexlify(os.urandom(24)).decode('utf-8')
         if not ResetPWToken.objects.filter(tokenid=tokenid).count():
             break
 
@@ -76,7 +75,7 @@ def give_email_auth_token(user):
         token.delete()
 
     while True:
-        tokenid = os.urandom(24).encode('hex')
+        tokenid = binascii.hexlify(os.urandom(24)).decode('utf-8')
         if not EmailAuthToken.objects.filter(tokenid=tokenid).count():
             break
 
@@ -96,8 +95,9 @@ def signup_core(post):
         password = user_f.cleaned_data['password']
         first_name = user_f.cleaned_data['first_name']
         last_name = user_f.cleaned_data['last_name']
+
         while True:
-            username = os.urandom(10).encode('hex')
+            username = binascii.hexlify(os.urandom(10)).decode('utf-8')
             if not User.objects.filter(username=username).count():
                 break
 
@@ -132,7 +132,7 @@ def reg_service(user, service):
     m = ServiceMap(user=user, service=service)
 
     while True:
-        sid = os.urandom(10).encode('hex')
+        sid = binascii.hexlify(os.urandom(10)).decode('utf-8')
         if not ServiceMap.objects.filter(sid=sid).count():
             break
 
@@ -162,7 +162,7 @@ def init_fb(callback_url):
         'scope': 'email',
         'redirect_uri': callback_url,
     }
-    return 'https://www.facebook.com/dialog/oauth?' + urllib.urlencode(args)
+    return 'https://www.facebook.com/dialog/oauth?' + parse.urlencode(args)
 
 
 def auth_fb(code, callback_url):
@@ -175,7 +175,7 @@ def auth_fb(code, callback_url):
 
     r = requests.get('https://graph.facebook.com/oauth/access_token?',
                      params=args, verify=True)
-    response = urlparse.parse_qs(r.text)
+    response = parse.parse_qs(r.text)
     access_token = response['access_token'][-1]
 
     args = {
@@ -205,7 +205,7 @@ def init_tw(callback_url):
     body = 'oauth_callback=' + callback_url
     resp, content = tw_client.request('https://twitter.com/oauth/request_token', 'POST', body)
 
-    tokens = dict(cgi.parse_qsl(content))
+    tokens = dict(parse.parse_qsl(content.decode('utf-8')))
     url = 'https://twitter.com/oauth/authenticate?oauth_token=%s' % tokens['oauth_token']
     return url, tokens
 
@@ -216,7 +216,7 @@ def auth_tw(tokens, verifier):
     client = oauth.Client(tw_consumer, token)
 
     resp, content = client.request('https://twitter.com/oauth/access_token', 'POST')
-    tw_info = dict(cgi.parse_qsl(content))
+    tw_info = dict(parse.parse_qsl(content.decode('utf-8')))
 
     info = {'userid': tw_info['user_id'],
             'first_name': tw_info['screen_name'],

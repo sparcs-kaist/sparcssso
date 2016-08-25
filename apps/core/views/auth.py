@@ -8,7 +8,7 @@ from django.utils import timezone
 from apps.core.backends import give_email_auth_token, get_username, \
     init_fb, init_tw, auth_fb, auth_tw, auth_kaist
 from apps.core.models import Notice, EmailAuthToken, Service
-from urlparse import urlparse, parse_qs
+from urllib.parse import urlparse, parse_qs
 import logging
 
 

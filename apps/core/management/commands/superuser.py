@@ -23,4 +23,4 @@ class Command(BaseCommand):
         user.profile = UserProfile(user=user, email_authed=True)
         user.profile.save()
 
-        self.stdout.write('Superuser created with admin@sso.sparcs.org/adminadmin')
+        print('Superuser created with admin@sso.sparcs.org / adminadmin')

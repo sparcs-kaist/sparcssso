@@ -74,14 +74,19 @@ class UserAdmin(uadmin.UserAdmin):
     get_email_authed.short_description = 'Email Authed'
     get_email_authed.boolean = True
 
+    def get_test_only(self, obj):
+        return self.get_profile(obj).test_only
+    get_test_only.short_description = 'Test Only'
+    get_test_only.boolean = True
+
     def get_test_enabled(self, obj):
         return self.get_profile(obj).test_enabled
     get_test_enabled.short_description = 'Test Account'
     get_test_enabled.boolean = True
 
     list_display = ('email', 'username', 'get_name', 'get_gender', 'get_point',
-                    'get_email_authed', 'get_test_enabled')
-    list_filter = ('is_staff', )
+                    'get_email_authed', 'get_test_only', 'get_test_enabled')
+    list_filter = ('is_staff', 'profile__test_only', 'profile__test_enabled')
     inlines = (UserProfileInline, )
     ordering = ()
 

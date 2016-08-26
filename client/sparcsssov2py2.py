@@ -1,11 +1,10 @@
-from urllib import parse
-import binascii
 import requests
 import hmac
 import time
 import os
+import urllib
 
-# SPARCS SSO V2 Client Version 1.0 for Python 3.x
+# SPARCS SSO V2 Client Version 1.0 for Python 2.x
 # VALID ONLY AFTER 2016-08-08T14:53+09:00
 # Made by SPARCS SSO Team
 
@@ -37,10 +36,7 @@ class Client:
             self.URLS[k] = '%s%s' % (BASE_URL, self.URLS[k])
 
         self.client_id = client_id
-        self.secret_key = str.encode(secret_key)
-
-    def _get_hmac(self, msg):
-        return hmac.new(self.secret_key, msg.encode()).hexdigest()
+        self.secret_key = secret_key
 
     def _post_data(self, url, data):
         r = requests.post(url, data, verify=True)
@@ -57,17 +53,18 @@ class Client:
             raise RuntimeError('NOT_JSON_OBJECT')
 
     def get_login_params(self):
-        state = binascii.hexlify(os.urandom(10)).decode()
+        state = os.urandom(10).encode('hex')
         params = {
             'client_id': self.client_id,
             'state': state,
         }
 
-        return ['%s?%s' % (self.URLS['token_require'], parse.urlencode(params)), state]
+        return ['%s?%s' % (self.URLS['token_require'], urllib.urlencode(params)), state]
 
     def get_user_info(self, code):
         timestamp = int(time.time())
-        sign = self._get_hmac('%s%s' % (code, timestamp))
+        sign = hmac.new(str(self.secret_key),
+                        '%s%s' % (code, timestamp)).hexdigest()
 
         params = {
             'client_id': self.client_id,
@@ -79,7 +76,8 @@ class Client:
 
     def get_logout_url(self, sid, redirect_uri):
         timestamp = int(time.time())
-        sign = self._get_hmac('%s%s%s' % (sid, redirect_uri, timestamp))
+        sign = hmac.new(str(self.secret_key),
+                        '%s%s%s' % (sid, redirect_uri, timestamp)).hexdigest()
 
         params = {
             'client_id': self.client_id,
@@ -88,11 +86,12 @@ class Client:
             'redirect_uri': redirect_uri,
             'sign': sign,
         }
-        return '%s?%s' % (self.URLS['logout'], parse.urlencode(params))
+        return '%s?%s' % (self.URLS['logout'], urllib.urlencode(params))
 
     def get_unregister_url(self, sid):
         timestamp = int(time.time())
-        sign = self._get_hmac('%s%s' % (sid, timestamp))
+        sign = hmac.new(str(self.secret_key),
+                        '%s%s' % (sid, timestamp)).hexdigest()
 
         params = {
             'client_id': self.client_id,
@@ -100,14 +99,15 @@ class Client:
             'timestamp': timestamp,
             'sign': sign,
         }
-        return '%s?%s' % (self.URLS['unregister'], parse.urlencode(params))
+        return '%s?%s' % (self.URLS['unregister'], urllib.urlencode(params))
 
     def get_point(self, sid):
         return self.modify_point(sid, 0, '')['point']
 
     def modify_point(self, sid, delta, message, lower_bound=0):
         timestamp = int(time.time())
-        sign = self._get_hmac('%s%s%s%s' % (sid, delta, lower_bound, timestamp))
+        sign = hmac.new(str(self.secret_key),
+                        '%s%s%s%s' % (sid, delta, lower_bound, timestamp)).hexdigest()
 
         params = {
             'client_id': self.client_id,

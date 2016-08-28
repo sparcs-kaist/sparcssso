@@ -9,7 +9,7 @@ class Command(BaseCommand):
     help = 'Get statistics of users'
 
     def handle(self, *args, **options):
-        services = list(map(lambda x: x.name, Service.objects.all())) + ['all']
+        services = map(lambda x: x.name, Service.objects.all()) + ['all']
         stats = {}
         for service in services:
             stats[service] = {

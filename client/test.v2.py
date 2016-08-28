@@ -1,12 +1,11 @@
-from bs4 import BeautifulSoup
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from sparcsssov2 import Client
-from urllib import parse
-import binascii
+from bs4 import BeautifulSoup
 import requests
 import json
 import sys
 import os
+import urlparse
 
 # SPARCS SSO V2 Client Test Server Version 1.0
 # VALID ONLY AFTER 2016-08-08T14:55+09:00
@@ -61,8 +60,8 @@ class TestHandler(BaseHTTPRequestHandler):
         r = session.get(login_url, allow_redirects=False)
 
         url = r.headers['Location']
-        parsed = parse.urlparse(url)
-        dic = parse.parse_qs(parsed.query)
+        parsed = urlparse.urlparse(url)
+        dic = urlparse.parse_qs(parsed.query)
         state, code = dic['state'][0], dic['code'][0]
         if state != old_state:
             return {'success': False, 'reason': 'Invalid State'}
@@ -78,8 +77,7 @@ class TestHandler(BaseHTTPRequestHandler):
         if not storage['loggedin']:
             return {'success': False, 'reason': 'Not Logged In'}
 
-        redirect_uri = 'https://example.com/?args=%s' % \
-                       binascii.hexlify(os.urandom(10)).decode('utf-8')
+        redirect_uri = 'https://example.com/?args=%s' % os.urandom(10).encode('hex')
         logout_url = client.get_logout_url(storage['sid'], redirect_uri)
         r = session.get(logout_url, allow_redirects=False)
         url = r.headers['Location']
@@ -123,7 +121,7 @@ class TestHandler(BaseHTTPRequestHandler):
         if not storage['loggedin']:
             return {'success': False, 'reason': 'Not Logged In'}
 
-        dic = parse.parse_qs(parse.urlparse(path).query)
+        dic = urlparse.parse_qs(urlparse.urlparse(path).query)
         delta = dic.get('delta', ['1000', ])[0].strip()
 
         result = client.modify_point(storage['sid'], delta, 'SPARCS SSO Automatic Test')
@@ -151,12 +149,12 @@ class TestHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Content-Type', 'text/json')
         self.end_headers()
-        self.wfile.write(bytes(json.dumps(resp), 'utf-8'))
+        self.wfile.write(json.dumps(resp))
 
 
 def main(args):
     if len(args) < 5:
-        print('usage: python test.v2.py <binding_port> <server_addr> <client_id> <secret_key>')
+        print 'usage: python test.v2.py <binding_port> <server_addr> <client_id> <secret_key>'
         exit(1)
 
     port = int(args[1])
@@ -169,10 +167,10 @@ def main(args):
 
     try:
         server = HTTPServer(('0.0.0.0', port), TestHandler)
-        print('Start SPARCS SSO Test HTTP Server on 0.0.0.0:%s' % port)
+        print 'Start SPARCS SSO Test HTTP Server on 0.0.0.0:%s' % port
         server.serve_forever()
     except KeyboardInterrupt:
-        print('Stop Test HTTP Server')
+        print 'Stop Test HTTP Server'
         server.socket.close()
 if __name__ == '__main__':
     main(sys.argv)

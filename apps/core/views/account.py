@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from django.contrib import auth
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
@@ -70,8 +69,7 @@ def deactivate(request):
             profile.save()
 
             logger.warning('deactivate.success', {'r': request})
-            auth.logout(request)
-            return redirect('/')
+            return redirect('/account/logout/')
 
         fail = True
         logger.warning('deactivate.fail', {'r': request})

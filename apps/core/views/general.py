@@ -60,10 +60,10 @@ def stats(request):
         raw_stat = json.loads(raw_stats[0].data)
 
     stat = []
-    for name, value in raw_stat.items():
+    for name, value in raw_stat.iteritems():
         if name != 'all':
-            service = Service.objects.filter(name=name).first()
-            if not service or (level < 1 and not service.is_shown):
+            service = Service.objects.get(name=name)
+            if level < 1 and not service.is_shown:
                 continue
 
         s = {}

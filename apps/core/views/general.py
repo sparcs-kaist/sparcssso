@@ -62,8 +62,8 @@ def stats(request):
     stat = []
     for name, value in raw_stat.iteritems():
         if name != 'all':
-            service = Service.objects.get(name=name)
-            if level < 1 and not service.is_shown:
+            service = Service.objects.filter(name=name).first()
+            if not service or (level < 1 and not service.is_shown):
                 continue
 
         s = {}

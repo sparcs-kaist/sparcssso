@@ -110,6 +110,10 @@
     <div class="alert alert-danger">
         <b>{% trans "You cannot renew your information with the other KAIST portal account." %}</b>
     </div>
+    {% elif result_con == 3 %}
+    <div class="alert alert-danger">
+        <b>{% trans "Please grant all requested permission" %}</b>
+    </div>
     {% elif result_con == 5 %}
     <div class="alert alert-success">
         <b>{% trans "Your social network account has been disconnected." %}</b>

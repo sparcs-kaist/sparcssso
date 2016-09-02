@@ -159,6 +159,7 @@ def unreg_service(user, service):
 def init_fb(callback_url):
     args = {
         'client_id': settings.FACEBOOK_APP_ID,
+        'auth_type': 'rerequest',
         'scope': 'email',
         'redirect_uri': callback_url,
     }
@@ -176,7 +177,19 @@ def auth_fb(code, callback_url):
     r = requests.get('https://graph.facebook.com/oauth/access_token?',
                      params=args, verify=True)
     response = urlparse.parse_qs(r.text)
+    if not response.has_key('access_token'):
+        return None, None
     access_token = response['access_token'][-1]
+
+    args = {
+        'access_token': access_token
+    }
+    r = requests.get('https://graph.facebook.com/v2.5/me/permissions', params=args, verify=True)
+    grant_info = r.json()
+
+    for data in grant_info["data"]:
+        if data["status"] == "declined":
+            return None, None
 
     args = {
         'fields': 'email,first_name,last_name,gender,birthday',
@@ -217,6 +230,9 @@ def auth_tw(tokens, verifier):
 
     resp, content = client.request('https://twitter.com/oauth/access_token', 'POST')
     tw_info = dict(cgi.parse_qsl(content))
+
+    if not tw_info.has_key('user_id'):
+        return None, None
 
     info = {'userid': tw_info['user_id'],
             'first_name': tw_info['screen_name'],

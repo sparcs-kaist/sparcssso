@@ -604,3 +604,8 @@ msgstr "활동 로그"
 #: templates/account/log.html:10
 msgid "You can see your action log up to recent 30."
 msgstr "최근 30개의 활동 로그가 나타납니다."
+
+#: templates/account/login.html:38
+#: templates/account/profile.html:115
+msgid "Please grant all requested permission"
+msgstr "요청한 권한을 모두 승인해주세요."

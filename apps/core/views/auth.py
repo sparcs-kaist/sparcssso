@@ -42,7 +42,7 @@ def login(request):
         if not user:
             logger.info('login.fail', {'r': request, 'uid': username})
             return render(request, 'account/login.html',
-                          {'fail': True, 'notice': notice, 'service': srv_name})
+                          {'fail': 1, 'notice': notice, 'service': srv_name})
         elif not user.is_active or not user.profile.email_authed:
             request.session['info_user'] = user.id
             logger.info('login.reject', {'r': request, 'uid': username})
@@ -68,8 +68,9 @@ def login(request):
             nexturl = request.session.pop('next', '/')
             return redirect(nexturl)
 
+    fail = request.session.pop('result_login', '')
     return render(request, 'account/login.html',
-                  {'notice': notice, 'service': srv_name})
+                  {'notice': notice, 'service': srv_name, 'fail': fail})
 
 
 # /logout/
@@ -167,11 +168,9 @@ def callback(request):
         token = request.COOKIES.get('SATHTOKEN')
         profile, info = auth_kaist(token)
 
-    logger.info('%s: id=%s' % (type.lower(), info['userid']), {'r': request, 'hide': True})
-
-    user = None
-    if profile:
-        user = profile.user
+    userid = info['userid'] if info else 'none'
+    logger.info('%s: id=%s' % (type.lower(), userid), {'r': request, 'hide': True})
+    user = profile.user if profile else None
 
     if mode == 'LOGIN':
         response = callback_login(request, type, user, info)
@@ -186,9 +185,12 @@ def callback(request):
 
 # from /callback/
 def callback_login(request, type, user, info):
+    if not user and not info:
+        request.session['result_login'] = 2
+        return redirect('/account/login/')
+
     if not user:
         request.session['info_signup'] = {'type': type, 'profile': info}
-
         response = redirect('/account/signup/')
         response.delete_cookie('SATHTOKEN')
         return response
@@ -213,7 +215,9 @@ def callback_login(request, type, user, info):
 def callback_conn(request, type, user, info):
     result_con = 0
     profile = request.user.profile
-    if user:
+    if not user and not info:
+        result_con = 3
+    elif user:
         result_con = 1
     elif type == 'FB' and not profile.facebook_id:
         profile.facebook_id = info['userid']
@@ -226,12 +230,14 @@ def callback_conn(request, type, user, info):
 
     profile.save()
     request.session['result_con'] = result_con
+
+    userid = info['userid'] if info else 'none'
     if result_con == 0:
         profile_logger.warning('connect.success: type=%s,id=%s'
-                               % (type.lower(), info['userid']), {'r': request})
+                               % (type.lower(), userid), {'r': request})
     else:
         profile_logger.warning('connect.fail: type=%s,id=%s'
-                               % (type.lower(), info['userid']), {'r': request})
+                               % (type.lower(), userid), {'r': request})
 
     return redirect('/account/profile/')
 

@@ -38,11 +38,11 @@ def get_username(email):
 
 
 # check given email is available or not
-def validate_email(email):
+def validate_email(email, exclude=''):
     if not re.match(r'[^@]+@[^@]+\.[^@]+', email):
         return False
 
-    return User.objects.filter(email=email).count() == 0
+    return User.objects.filter(email=email).exclude(email=exclude).count() == 0
 
 
 # give reset pw token to user
@@ -68,7 +68,7 @@ def give_reset_pw_token(user):
 # give email auth token to user
 def give_email_auth_token(user):
     title = '[SPARCS SSO] Email Authentication'
-    message = 'To authenticate your email, <a href="https://sparcssso.kaist.ac.kr/account/auth/email/%s">this link</a> in 24 hours.'
+    message = 'To authenticate your email, click <a href="https://sparcssso.kaist.ac.kr/account/email/%s">this link</a> in 24 hours.'
 
     tomorrow = timezone.now() + datetime.timedelta(days=1)
 

@@ -23,21 +23,6 @@ msgstr "개발팀"
 msgid "SYSOP"
 msgstr "관리자"
 
-#: templates/account/auth-email/fail.html:5
-#: templates/account/auth-email/success.html:5
-msgid "Email Authenticate"
-msgstr "이메일 인증"
-
-#: templates/account/auth-email/fail.html:10
-msgid "Email Authenticate Fail"
-msgstr "이메일 인증 실패"
-
-#: templates/account/auth-email/fail.html:11
-msgid "Failed to authenticate your email, because you entered wrong or expired token id."
-msgstr "토큰이 잘못되었거나 토큰의 유효기간이 만료되어 이메일을 인증하는데 실패했습니다."
-
-#: templates/account/auth-email/fail.html:12
-#: templates/account/auth-email/send.html:19
 #: templates/account/pw-reset/fail.html:12
 #: templates/account/pw-reset/main.html:31
 #: templates/account/pw-reset/send.html:33
@@ -45,53 +30,10 @@ msgstr "토큰이 잘못되었거나 토큰의 유효기간이 만료되어 이�
 msgid "Login Page"
 msgstr "로그인 페이지"
 
-#: templates/account/auth-email/fail.html:13
 #: templates/account/pw-reset/fail.html:13
 #: templates/account/signup/complete.html:18
 msgid "Main Page"
 msgstr "메인 페이지"
-
-#: templates/account/auth-email/send.html:9
-msgid "Email Authorization Required"
-msgstr "이메일 인증이 필요함"
-
-#: templates/account/auth-email/send.html:10
-#, python-format
-msgid ""
-"You need to authorize your email to login. Please check your email account: "
-"%(email)s."
-msgstr "로그인을 하려면 이메일 인증이 필요합니다. 이메일 계정을 확인해주세요: %(email)s."
-
-#: templates/account/auth-email/send.html:11
-msgid "If you want to resend the authorization email, click the button below."
-msgstr "인증 요청 메일을 재발송하고 싶으시면, 아래의 버튼을 누르세요."
-
-#: templates/account/auth-email/send.html:12
-msgid "We will expire the previous link and send a new email."
-msgstr "이전의 링크는 만료되고 새로운 이메일이 발송됩니다."
-
-#: templates/account/auth-email/send.html:18
-msgid "Resend Email"
-msgstr "이메일 재전송"
-
-#: templates/account/auth-email/sent.html:9
-msgid "Email Authorization Sent"
-msgstr "인증 요청 메일 전송됨"
-
-#: templates/account/auth-email/sent.html:10
-#, python-format
-msgid ""
-"Your authorization email has been sent to %(email)s. Redirecting to login "
-"page..."
-msgstr "인증 요청 메일이 주소 %(email)s 로 전송되었습니다. 로그인 페이지로 되돌아갑니다..."
-
-#: templates/account/auth-email/success.html:10
-msgid "Email Authenticate Success"
-msgstr "이메일 인증 성공"
-
-#: templates/account/auth-email/success.html:11
-msgid "Successfully authenticated your email! Redirecting to login page..."
-msgstr "이메일 인증에 성공했습니다! 로그인 페이지로 되돌아갑니다..."
 
 #: templates/account/deactivate.html:9 templates/base.html:43
 msgid "Deactivate"
@@ -189,6 +131,10 @@ msgstr "프로필 및 SNS 계정"
 msgid "You can change your information or connect / disconnect social accounts."
 msgstr "프로필 정보를 수정하거나 소셜 계정을 연결 및 연결 해제할 수 있습니다."
 
+#: templates/account/profile.html:10
+msgid "If you change your email, you need to verify it again."
+msgstr "이메일을 변경하면 다시 인증을 받아야 합니다."
+
 #: templates/account/profile.html:11
 msgid "Changed information may not be applied in other SPARCS services."
 msgstr "수정된 정보는 다른 SPARCS 서비스에 적용되지 않을 수 있습니다."
@@ -196,6 +142,26 @@ msgstr "수정된 정보는 다른 SPARCS 서비스에 적용되지 않을 수 �
 #: templates/account/profile.html:18
 msgid "Your information has been updated."
 msgstr "프로필 정보가 업데이트 되었습니다."
+
+#: templates/account/profile.html:19
+msgid "Verification email has been sent."
+msgstr "인증 이메일이 발송되었습니다."
+
+#: templates/account/profile.html:20
+msgid "Unable to verify the email address. Please try again."
+msgstr "이메일을 인증할 수 없습니다. 다시 시도하세요."
+
+#: templates/account/profile.html:21
+msgid "Your email has been successfully verified."
+msgstr "이메일 주소가 인증되었습니다."
+
+#: templates/account/profile.html:26
+msgid "Verified"
+msgstr "인증됨"
+
+#: templates/account/profile.html:26
+msgid "Verify"
+msgstr "인증하기"
 
 #: templates/account/profile.html:25
 #: templates/account/signup/main.html:32
@@ -609,3 +575,20 @@ msgstr "최근 30개의 활동 로그가 나타납니다."
 #: templates/account/profile.html:115
 msgid "Please grant all requested permission"
 msgstr "요청한 권한을 모두 승인해주세요."
+
+#: templates/api/denied.html:5
+msgid "Login Request Rejected"
+msgstr "로그인 요청 거부됨"
+
+#: templates/api/denied.html:10
+#, python-format
+msgid "Your login request for the service %(alias)s has been rejected."
+msgstr "%(alias)s 서비스에 대한 로그인 요청이 거부되었습니다."
+
+#: templates/api/denied.html:20
+msgid "You need to verify your email or connect to at least one SNS account."
+msgstr "적어도 한개의 SNS 계정과 연동하거나 이메일 인증을 해야 합니다."
+
+#: templates/api/denied.html:23
+msgid "Verify Email / Connect to SNS"
+msgstr "이메일 인증 / SNS 연동"

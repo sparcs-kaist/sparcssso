@@ -9,9 +9,6 @@ urlpatterns = [
     url(r'^login/$', auth.login),
     url(r'^logout/$', auth.logout),
 
-    url(r'^auth/email/$', auth.email_resend),
-    url(r'^auth/email/(?P<tokenid>\w+)$', auth.email),
-
     url(r'^login/fb/$', auth.init, {'mode': 'LOGIN', 'type': 'FB'}),
     url(r'^login/tw/$', auth.init, {'mode': 'LOGIN', 'type': 'TW'}),
     url(r'^login/kaist/$', auth.init, {'mode': 'LOGIN', 'type': 'KAIST'}),
@@ -35,8 +32,12 @@ urlpatterns = [
 
     # package: profile
     url(r'^profile/$', profile.main),
+
     url(r'^disconnect/fb/$', profile.disconnect, {'type': 'FB'}),
     url(r'^disconnect/tw/$', profile.disconnect, {'type': 'TW'}),
+
+    url(r'^email/$', profile.email_resend),
+    url(r'^email/(?P<tokenid>\w+)$', profile.email),
 
     url(r'^log/$', profile.log),
     url(r'^point/$', profile.point),

@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.utils import timezone, translation
+from django.core.mail import send_mail, BadHeaderError
 from apps.core.models import Notice, Statistic, Service
 import logging
 import json
@@ -101,3 +102,18 @@ def doc_sysop(request):
     if not request.user.is_staff:
         return redirect('/')
     return render(request, 'doc.sysop.html')
+
+def message(request):
+    subject = request.POST.get('subject','')
+    name = request.POST.get('name','')
+    from_email = requset.POST.get('from_email','')
+    message = requset.POST.get('message','')
+    if subject and name and from_email and message:
+        try:
+            contents = 'name :'  name + '/n' + 'message/n' + message
+            send_mail(subject, contents, from_email, ['sso@sparcs.org'])
+        except BadHeaderError:
+            return HttpResponse('Invalid header found.')
+        return HttpResponse('Thank you for your report.')
+    else:
+        HttpResonse('Make sure all fields are enterd and valid')

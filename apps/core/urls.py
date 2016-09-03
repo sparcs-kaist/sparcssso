@@ -25,7 +25,7 @@ urlpatterns = [
 
     # package: account
     url(r'^signup/$', account.signup),
-    url(r'^signup/social/$', account.signup, {'is_social': True}),
+    url(r'^signup/social/$', account.signup, {'social': True}),
 
     url(r'^deactivate/$', account.deactivate),
 

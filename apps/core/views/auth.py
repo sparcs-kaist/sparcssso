@@ -154,7 +154,7 @@ def callback_login(request, type, user, info):
 
     if not user:
         request.session['info_signup'] = {'type': type, 'profile': info}
-        response = redirect('/account/signup/')
+        response = redirect('/account/signup/social/')
         response.delete_cookie('SATHTOKEN')
         return response
 

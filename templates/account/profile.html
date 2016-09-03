@@ -72,14 +72,6 @@
                 <input type="text" class="form-control" name="birthday" placeholder="Birthday (YYYY-MM-DD)" data-vbirth="vbirth" value="{{profile.birthday|date:'Y-m-d'}}">
             </div>
         </div>
-        {% if profile.sparcs_id %}
-        <div class="form-group">
-            <label class="col-sm-2 control-label">SPARCS ID</label>
-            <div class="col-xs-offset-1 col-xs-10 col-sm-offset-0 col-sm-8">
-                <input type="text" class="form-control" value="{{profile.sparcs_id}}" disabled>
-            </div>
-        </div>
-        {% endif %}
 
         <div class="form-group">
             <div class="col-xs-12">
@@ -134,6 +126,10 @@
     {% elif result_con == 3 %}
     <div class="alert alert-danger">
         <b>{% trans "Please grant all requested permission" %}</b>
+    </div>
+    {% elif result_con == 4 %}
+    <div class="alert alert-danger">
+        <b>{% trans "To disconnect SNS account, either password has been set or other SNS accounts should be connected" %}</b>
     </div>
     {% elif result_con == 5 %}
     <div class="alert alert-success">

@@ -10,30 +10,17 @@
 {% block content %}
 <h1>{% trans "Signup" %}
 <small> 
-    {% if type == 'FB' %}
-        {% trans "with Facebook Account" %}
-    {% elif type == 'TW' %}
-        {% trans "with Twitter Account" %}
-    {% elif type == 'KAIST' %}
-        {% trans "with KAIST SSO" %}
-    {% elif type == 'EMAIL' %}
-        {% trans "with Email" %}
-    {% endif %}
+    {% trans "with Email" %}
 </small></h1>
-{% if type == 'EMAIL' %}
 <p>{% trans "Please fill up the following contents." %}</p>
-<p>{% trans "You NEED to authenticate your email to login." %}</p>
-{% else %}
-<p>{% trans "Please fill up the rest of the contents." %}</p>
-<p>{% trans "You can ONLY sign in with your social network account UNLESS you authenticate your email." %}</p>
-{% endif %}
+<p>{% trans "You NEED to verify your email to use services." %}</p>
 <form id="signup" class="form-horizontal" action="/account/signup/" method="post" enctype="multipart/form-data">
     <fieldset>
         {% csrf_token %}
         <div class="form-group">
             <label class="col-sm-2 control-label">{% trans "Email" %} <span class="required"></span></label>
             <div class="col-xs-offset-1 col-xs-10 col-sm-offset-0 col-sm-8">
-                <input type="email" class="form-control" name="email" placeholder="asdf@example.com" required="required" maxlength="50" data-remote="/api/v2/email/" data-error="{% trans "Not Valid or Duplicated Email" %}" value="{{info.email}}">
+                <input type="email" class="form-control" name="email" placeholder="asdf@example.com" required="required" maxlength="50" data-remote="/api/v2/email/" data-error="{% trans "Not Valid or Duplicated Email" %}">
                 <div class="help-block with-errors"></div>
             </div>
         </div>
@@ -51,10 +38,10 @@
         <div class="form-group">
             <label class="col-sm-2 control-label">{% trans "Name" %} <span class="required"></span></label>
             <div class="col-xs-offset-1 col-xs-6 col-sm-offset-0 col-sm-5">
-                <input type="text" class="form-control" name="first_name" placeholder="First Name" required="required" maxlength="30" value="{{info.first_name}}">
+                <input type="text" class="form-control" name="first_name" placeholder="First Name" required="required" maxlength="30">
             </div>
             <div class="col-xs-4 col-sm-3">
-                <input type="text" class="form-control" name="last_name" placeholder="Last Name" required="required" maxlength="30" value="{{info.last_name}}">
+                <input type="text" class="form-control" name="last_name" placeholder="Last Name" required="required" maxlength="30">
             </div>
         </div>
         <div class="form-group" style="margin-bottom:0">
@@ -68,19 +55,17 @@
                 </select>
             </div>
             <div class="col-xs-6 col-sm-5">
-                <input type="text" class="form-control" name="birthday" placeholder="Birthday (YYYY-MM-DD)" data-vbirth="vbirth" value="{{info.birthday}}">
+                <input type="text" class="form-control" name="birthday" placeholder="Birthday (YYYY-MM-DD)" data-vbirth="vbirth">
             </div>
         </div>
         <div class="form-group" style="margin-top:5px">
             By clicking on the signup button, you agree to <a href="/terms/" target="_blank">SPARCS SSO's terms of use</a> and <a href="/privacy/" target="_blank">privacy policy</a>
         </div>
 
-        {% if type == 'EMAIL' %}
         <input type="text" name="captcha" style="margin-left: -99999px !important" required>
         <div class="form-group" style="margin-top:-20px">
             <div class="g-recaptcha" style="display:inline-block" data-callback="captcha_check" data-expired-callback="captcha_expired" data-sitekey="6LdKJiQTAAAAAE03DTaBYonGRVuGdurgcLmpnjA2"></div>
         </div>
-        {% endif %}
 
         <div class="form-group">
             <div class="col-xs-12">
@@ -166,9 +151,6 @@ $(function() {
     };
     $('#signup').validator(option);
     
-    {% if type != 'EMAIL' %}
-    $('input[name=email]').trigger("change");
-    {% endif %}
     $('input[name=birthday]').datepicker({
         dateFormat: 'yy-mm-dd',
         changeMonth: true,
@@ -178,4 +160,3 @@ $(function() {
 });
 </script>
 {% endblock %}
-

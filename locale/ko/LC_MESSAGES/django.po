@@ -68,6 +68,10 @@ msgstr "뒤로"
 msgid "Reset"
 msgstr "초기화"
 
+#: templates/account/profile.html:120
+msgid "To disconnect SNS account, either password has been set or other SNS accounts should be connected"
+msgstr "SNS 계정과 연결을 끊으려면 비밀번호를 설정하거나 다른 SNS 계정이 연동되어 있어야 합니다."
+
 #: templates/account/deactivate.html:39
 msgid ""
 "You CANNOT deactivate your account since you are registered to at least one "
@@ -339,15 +343,16 @@ msgid "Welcome to join SPARCS SSO!"
 msgstr "SPARCS SSO에 가입하신 것을 환영합니다!"
 
 #: templates/account/signup/complete.html:13
-msgid ""
-"Verification Email is sent. Please verify your email first, and then login."
-msgstr "확인 이메일이 전송되었습니다. 먼저 이메일을 인증한 뒤 로그인해주세요."
+msgid "Verification Email is sent. Please verify your email to use services."
+msgstr "인증 이메일이 전송되었습니다. 서비스를 사용하시려면 이메일을 인증해주세요."
 
 #: templates/account/signup/complete.html:15
-msgid ""
-"You can login using your social account. If you verify your email, you can "
-"also login using email"
-msgstr "SNS 계정을 통해서 로그인하실 수 있습니다. 이메일을 인증하시면, 이메일로도 로그인이 가능합니다."
+msgid "You can login using your social account. If you set your password, you can also login using email."
+msgstr "SNS 계정을 통해서 로그인하실 수 있습니다. 비밀번호를 설정하시면 이메일로도 로그인이 가능합니다."
+
+#: templates/account/signup/complete.html:16
+msgid "Continue"
+msgstr "계속"
 
 #: templates/account/signup/main.html:10 templates/account/signup/main.html:72
 msgid "Signup"
@@ -374,12 +379,8 @@ msgid "Please fill up the following contents."
 msgstr "다음 내용을 작성해주세요."
 
 #: templates/account/signup/main.html:23
-msgid "You NEED to authenticate your email to login."
-msgstr "이메일 인증 후 로그인하실 수 있습니다."
-
-#: templates/account/signup/main.html:25
-msgid "Please fill up the rest of the contents."
-msgstr "나머지 내용을 작성해주세요."
+msgid "You NEED to verify your email to use services."
+msgstr "서비스를 사용하기 위해서는 이메일을 인증해야 합니다."
 
 #: templates/account/signup/main.html:26
 msgid ""
@@ -398,6 +399,22 @@ msgstr "비밀번호"
 #: templates/account/signup/main.html:73 templates/base.html:49
 msgid "Login"
 msgstr "로그인"
+
+#: templates/account/signup/sns.html:3
+msgid "Almost done...! Your account will be created as follows."
+msgstr "거의 완료되었습니다. 계정은 다음과 같은 정보로 생성될 것입니다."
+
+#: templates/account/signup/sns.html:4
+msgid "You can modify your information in the profile page after sign up."
+msgstr "다음 정보는 회원가입 후 프로필 페이지에서 변경할 수 있습니다."
+
+#: templates/account/signup/sns.html:5
+msgid "Warning! The email address is already exists. You will get random non-existing email address if you continue."
+msgstr "주의! 이 메일로 가입된 계정이 존재합니다. 회원가입을 진행하면 존재하지 않는 이메일 주소로 계정이 생성됩니다."
+
+#: templates/account/signup/sns.html:6
+msgid "Student ID"
+msgstr "학번"
 
 #: templates/base.html:41
 msgid "Profile / Connections"

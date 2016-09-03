@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
 from django.contrib import auth
-from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect
 from django.utils import timezone
-from apps.core.backends import give_email_auth_token, get_username, \
+from apps.core.backends import get_username, \
     init_fb, init_tw, auth_fb, auth_tw, auth_kaist
-from apps.core.models import Notice, EmailAuthToken, Service
+from apps.core.models import Notice, Service
 from urlparse import urlparse, parse_qs
 import logging
 
@@ -42,13 +42,11 @@ def login(request):
         if not user:
             logger.info('login.fail', {'r': request, 'uid': username})
             return render(request, 'account/login.html',
-                          {'fail': True, 'notice': notice, 'service': srv_name})
-        elif not user.is_active or not user.profile.email_authed:
-            request.session['info_user'] = user.id
+                          {'fail': 1, 'notice': notice, 'service': srv_name})
+        elif not user.is_active:
             logger.info('login.reject', {'r': request, 'uid': username})
-            return redirect('/account/auth/email/')
+            raise PermissionDenied()
         else:
-            request.session.pop('info_user', None)
             request.session.pop('info_signup', None)
             auth.login(request, user)
             logger.info('login.success', {'r': request})
@@ -68,8 +66,9 @@ def login(request):
             nexturl = request.session.pop('next', '/')
             return redirect(nexturl)
 
+    fail = request.session.pop('result_login', '')
     return render(request, 'account/login.html',
-                  {'notice': notice, 'service': srv_name})
+                  {'notice': notice, 'service': srv_name, 'fail': fail})
 
 
 # /logout/
@@ -80,41 +79,6 @@ def logout(request):
     logger.info('logout', {'r': request})
     auth.logout(request)
     return render(request, 'account/logout.html')
-
-
-# /auth/email/
-def email_resend(request):
-    userid = request.session.get('info_user', None)
-    if not userid:
-        return redirect('/')
-
-    user = User.objects.get(id=userid)
-    if request.method == 'POST':
-        give_email_auth_token(user)
-        request.session.pop('info_user')
-        logger.info('email.try', {'r': request, 'uid': user.username})
-        return render(request, 'account/auth-email/sent.html', {'email': user.email})
-
-    return render(request, 'account/auth-email/send.html', {'email': user.email})
-
-
-# /auth/email/<tokenid>
-def email(request, tokenid):
-    token = EmailAuthToken.objects.filter(tokenid=tokenid).first()
-    if not token:
-        return render(request, 'account/auth-email/fail.html')
-
-    if token.expire_time < timezone.now():
-        token.delete()
-        return render(request, 'account/auth-email/fail.html')
-
-    user = token.user
-    user.profile.email_authed = True
-    user.profile.save()
-    token.delete()
-
-    logger.info('email.done', {'r': request, 'uid': user.username})
-    return render(request, 'account/auth-email/done.html')
 
 
 # /login/{fb,tw,kaist}/, /connect/{fb,tw,kaist}/, /renew/kaist/
@@ -167,11 +131,9 @@ def callback(request):
         token = request.COOKIES.get('SATHTOKEN')
         profile, info = auth_kaist(token)
 
-    logger.info('%s: id=%s' % (type.lower(), info['userid']), {'r': request, 'hide': True})
-
-    user = None
-    if profile:
-        user = profile.user
+    userid = info['userid'] if info else 'none'
+    logger.info('%s: id=%s' % (type.lower(), userid), {'r': request, 'hide': True})
+    user = profile.user if profile else None
 
     if mode == 'LOGIN':
         response = callback_login(request, type, user, info)
@@ -186,14 +148,16 @@ def callback(request):
 
 # from /callback/
 def callback_login(request, type, user, info):
+    if not user and not info:
+        request.session['result_login'] = 2
+        return redirect('/account/login/')
+
     if not user:
         request.session['info_signup'] = {'type': type, 'profile': info}
-
-        response = redirect('/account/signup/')
+        response = redirect('/account/signup/social/')
         response.delete_cookie('SATHTOKEN')
         return response
 
-    request.session.pop('info_user', None)
     request.session.pop('info_signup', None)
     if type == 'KAIST':
         user.profile.set_kaist_info(info)
@@ -213,7 +177,9 @@ def callback_login(request, type, user, info):
 def callback_conn(request, type, user, info):
     result_con = 0
     profile = request.user.profile
-    if user:
+    if not user and not info:
+        result_con = 3
+    elif user:
         result_con = 1
     elif type == 'FB' and not profile.facebook_id:
         profile.facebook_id = info['userid']
@@ -226,12 +192,14 @@ def callback_conn(request, type, user, info):
 
     profile.save()
     request.session['result_con'] = result_con
+
+    userid = info['userid'] if info else 'none'
     if result_con == 0:
         profile_logger.warning('connect.success: type=%s,id=%s'
-                               % (type.lower(), info['userid']), {'r': request})
+                               % (type.lower(), userid), {'r': request})
     else:
         profile_logger.warning('connect.fail: type=%s,id=%s'
-                               % (type.lower(), info['userid']), {'r': request})
+                               % (type.lower(), userid), {'r': request})
 
     return redirect('/account/profile/')
 

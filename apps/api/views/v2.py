@@ -52,6 +52,7 @@ def token_require(request):
         raise SuspiciousOperation()
 
     user = request.user
+    profile = user.profile
     flags = user.profile.flags
 
     reason = 0
@@ -63,6 +64,9 @@ def token_require(request):
         reason = 3
     elif service.scope != 'TEST' and flags['test-only']:
         reason = 4
+    elif not (profile.email_authed or profile.facebook_id \
+            or profile.twitter_id or profile.kaist_id):
+        reason = 5
 
     if reason:
         return render(request, 'api/denied.html',
@@ -330,7 +334,7 @@ def notice(request):
 
 # /email/
 def email(request):
-    if validate_email(request.GET.get('email', '')):
+    if validate_email(request.GET.get('email', ''), request.GET.get('exclude', '')):
         return HttpResponse(status=200)
     return HttpResponse(status=400)
 

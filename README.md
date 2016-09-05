@@ -6,6 +6,7 @@ SPARCS SSO provides integrated login in SPARCS services, such as ARA or OTL.
 * samjo (PM)
 * zazang (Developer)
 * gogi (Developer)
+* todo (Developer)
 * pudding (Designer)
 * zoonoo (Translator)
 * ashe (Translator)
@@ -15,7 +16,7 @@ SPARCS SSO provides integrated login in SPARCS services, such as ARA or OTL.
 
 SPARCS SSO uses following program / framework / libraries:
 * Python 2.7.x
-* Django 1.9.1
+* Django 1.10.
 * MySQL (or MariaDB)
 * Bootstrap 3.3.x
 * jQuery 1.11.x

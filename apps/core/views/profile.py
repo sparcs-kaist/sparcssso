@@ -115,9 +115,8 @@ def service(request):
     user = request.user
     maps = ServiceMap.objects.filter(user=user, unregister_time=None)
 
-    removed = request.session.pop('removed', False)
     return render(request, 'account/service.html',
-                  {'user': user, 'maps': maps, 'removed': removed})
+                  {'user': user, 'maps': maps})
 
 
 # /point/

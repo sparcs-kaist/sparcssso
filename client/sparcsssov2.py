@@ -4,8 +4,8 @@ import time
 import os
 import urllib
 
-# SPARCS SSO V2 Client Version 1.0
-# VALID ONLY AFTER 2016-08-08T14:53+09:00
+# SPARCS SSO V2 Client Version 1.1
+# VALID ONLY AFTER 2016-09-10T01:00+09:00
 # Made by SPARCS SSO Team
 
 
@@ -88,7 +88,7 @@ class Client:
         }
         return '%s?%s' % (self.URLS['logout'], urllib.urlencode(params))
 
-    def get_unregister_url(self, sid):
+    def do_unregister(self, sid):
         timestamp = int(time.time())
         sign = hmac.new(str(self.secret_key),
                         '%s%s' % (sid, timestamp)).hexdigest()
@@ -99,7 +99,7 @@ class Client:
             'timestamp': timestamp,
             'sign': sign,
         }
-        return '%s?%s' % (self.URLS['unregister'], urllib.urlencode(params))
+        return self._post_data(self.URLS['unregister'], params)['success']
 
     def get_point(self, sid):
         return self.modify_point(sid, 0, '')['point']

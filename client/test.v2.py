@@ -90,16 +90,13 @@ class TestHandler(BaseHTTPRequestHandler):
 
     def _do_unregister(self):
         global storage
-        client, session = storage['client'], storage['session']
+        client = storage['client']
 
         if not storage['loggedin']:
             return {'success': False, 'reason': 'Not Logged In'}
 
-        unregister_url = client.get_unregister_url(storage['sid'])
-        r = session.get(unregister_url, allow_redirects=False)
-        url = r.headers['Location']
-
-        if url != '/account/service/':
+        result = client.do_unregister(storage['sid'])
+        if not result:
             return {'success': False, 'reason': 'Unknown'}
 
         return {'success': True}

@@ -204,12 +204,16 @@ def logout(request):
 
 
 # /unregister/
+@csrf_exempt
 def unregister(request):
-    client_id = request.GET.get('client_id', '')
-    sid = request.GET.get('sid', '')
-    timestamp = request.GET.get('timestamp', '0')
+    if request.method != 'POST':
+        raise SuspiciousOperation()
+
+    client_id = request.POST.get('client_id', '')
+    sid = request.POST.get('sid', '')
+    timestamp = request.POST.get('timestamp', '0')
     timestamp = int(timestamp) if timestamp.isdigit() else 0
-    sign = request.GET.get('sign', '')
+    sign = request.POST.get('sign', '')
 
     service = Service.objects.filter(name=client_id).first()
     if not service:
@@ -229,14 +233,14 @@ def unregister(request):
     if not constant_time_compare(sign, sign_server):
         raise SuspiciousOperation()
 
-    result = unreg_service(request.user, service)
+    result = unreg_service(m.user, service)
     if result:
         profile_logger.info('unregister.success: name=%s' % service.name, {'r': request})
     else:
         profile_logger.warning('unregister.fail: name=%s' % service.name, {'r': request})
 
-    request.session['removed'] = result
-    return redirect('/account/service/')
+    resp = {'success': result}
+    return HttpResponse(json.dumps(resp), content_type='application/json')
 
 
 # /point/

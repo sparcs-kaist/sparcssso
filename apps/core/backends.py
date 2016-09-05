@@ -157,6 +157,7 @@ def signup_social_core(type, profile):
     elif type == 'TW':
         user.profile.twitter_id = profile['userid']
     elif type == 'KAIST':
+        user.profile.email_authed = True
         user.profile.set_kaist_info(profile)
     user.profile.save()
 

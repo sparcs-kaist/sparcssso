@@ -103,7 +103,6 @@ class UserProfile(models.Model):
     birthday = models.DateField(blank=True, null=True)                    # birthday
     point = models.IntegerField(default=0)                                # point
     point_test = models.IntegerField(default=0)                           # point for test
-    point_mod_time = models.DateTimeField(auto_now_add=True)              # last point modified time
     email_authed = models.BooleanField(default=False)                     # email authed state
     password_set = models.BooleanField(default=True)                      # indicate password set
     test_only = models.BooleanField(default=False)                        # indicate test only

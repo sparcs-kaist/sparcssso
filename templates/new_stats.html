@@ -181,23 +181,17 @@ function get_data_of_s(data, s_name){
 */
 
 function get_formatted_data(s_data, property, ka_property){
-	console.log(s_data);
 	var r_values = {};
 	var date_arr = Object.keys(s_data).sort();
-	for(var idx = 0; idx < date_arr.length; idx++){
+    
+    for(var idx = 0; idx < date_arr.length; idx++){
 		var date_key = date_arr[idx];
 		var attr_obj = s_data[date_key];
-		console.log(date_key)
-		var property_arr = Object.keys(attr_obj);
-		// if property found
-		if(property_arr.indexOf(property) != -1){
-			var p_attr_obj = attr_obj[property];
-			for(var r_key in p_attr_obj){
-				if(Object.keys(r_values).indexOf(r_key) === -1){
-					r_values[r_key] = [];
-				}
-				r_values[r_key].push({"x": date_key, "y":p_attr_obj[r_key]});
-			}
+        
+        var property_arr = Object.keys(attr_obj);
+        // if property found
+        if(property_arr.indexOf(property) != -1){
+            r_values = get_coordinations(property, attr_obj, date_key, r_values);
 		} else {
 
 		}
@@ -209,7 +203,44 @@ function get_formatted_data(s_data, property, ka_property){
 	}
 	return r_arr;
 }
+/*
+manipulate p_attr_obj for purpose
+- account: delete key 'all'
+- birth_year: append {year: 0} which api does not contain for spacing
 
+@return: r_values
+*/
+function get_coordinations(property, attr_obj, date_key, r_values){
+    
+    var r_values = $.extend({}, r_values);
+    var p_attr_obj = attr_obj[property];
+    
+    switch(property){
+        case "account":
+            delete p_attr_obj.all;
+            break;
+        case "birth_year":
+            date_arr = Object.keys(p_attr_obj);
+            min_date = min(date_arr);
+            max_date = max(date_arr);
+            for(var d = min_date; d <= max_date; d++){
+                if(date_arr.indexOf(d+"") === -1){
+                    p_attr_obj[d] = 0;
+                }
+            }
+            break;
+        case "gender":
+            break;
+    }
+    
+    for(var r_key in p_attr_obj){
+		if(Object.keys(r_values).indexOf(r_key) === -1){
+			r_values[r_key] = [];
+		}
+		r_values[r_key].push({"x": date_key, "y":p_attr_obj[r_key]});
+	}
+    return r_values;
+}
 
 /**
 DOM manipulation function with jquery
@@ -224,6 +255,36 @@ function find_dropdown_menu_pos(){
 	$dm_left = $("#service-dropdown").position();
 	$("#service-dropdown-menu").css("left", $dm_left.left);
 }
+
+/*
+Help function
+*/
+function min(x /*: Array<number> */)/*:number*/ {
+    var value;
+    for (var i = 0; i < x.length; i++) {
+        if (value === undefined || x[i] < value) {
+            value = x[i];
+        }
+    }
+    if (value === undefined) {
+        return NaN;
+    }
+    return value;
+}
+
+function max(x /*: Array<number> */) /*:number*/ {
+    var value;
+    for (var i = 0; i < x.length; i++) {
+        if (value === undefined || x[i] > value) {
+            value = x[i];
+        }
+    }
+    if (value === undefined) {
+        return NaN;
+    }
+    return value;
+}
+
 
 
 </script>

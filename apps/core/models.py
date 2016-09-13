@@ -150,8 +150,3 @@ class UserLog(models.Model):
     time = models.DateTimeField(auto_now=True)
     ip = models.GenericIPAddressField()
     text = models.CharField(max_length=500)
-
-class Message(models.Model):
-    name = models.CharField(max_length = 20)
-    email = models.CharField(max_length = 50)
-    message = models.CharField(max_length = 500)

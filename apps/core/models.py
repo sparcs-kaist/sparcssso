@@ -20,9 +20,9 @@ User.__unicode__ = lambda self: u'%s %s <%s>' % \
 # == General Objects ==
 # Notice: denotes single notice
 class Notice(models.Model):
+    title = models.CharField(max_length=100)  # notice title
     valid_from = models.DateTimeField()       # display start time
     valid_to = models.DateTimeField()         # display end time
-    title = models.CharField(max_length=100)  # notice title
     text = models.TextField()                 # notice content
 
     def to_dict(self):
@@ -156,8 +156,8 @@ class UserProfile(models.Model):
 # EmailAuthToken: denotes single email auth token for an user
 class EmailAuthToken(models.Model):
     tokenid = models.CharField(max_length=48, primary_key=True)  # unique token id
-    expire_time = models.DateTimeField()                         # expire time
     user = models.ForeignKey(User)                               # user object
+    expire_time = models.DateTimeField()                         # expire time
 
     def __unicode__(self):
         return u'%s - %s' % (self.user, self.tokenid)
@@ -166,8 +166,8 @@ class EmailAuthToken(models.Model):
 # ResetPWToken: denotes single password reset token for an user
 class ResetPWToken(models.Model):
     tokenid = models.CharField(max_length=48, primary_key=True)  # unique token id
-    expire_time = models.DateTimeField()                         # expire time
     user = models.ForeignKey(User)                               # user object
+    expire_time = models.DateTimeField()                         # expire time
 
     def __unicode__(self):
         return u'%s - %s' % (self.user, self.tokenid)

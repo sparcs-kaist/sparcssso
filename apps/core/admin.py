@@ -52,6 +52,22 @@ class UserAdmin(uadmin.UserAdmin):
     class UserProfileInline(admin.StackedInline):
         model = UserProfile
         can_delete = False
+        fieldsets = (
+            ('General', {
+                'fields': (('gender', 'birthday'),
+                           ('email_authed', 'password_set'), 'expire_time'),
+            }),
+            ('Points', {
+                'fields': (('point', 'point_test'), ),
+            }),
+            ('SNS', {
+                'fields': (('facebook_id', 'twitter_id'),
+                           ('kaist_id', 'kaist_info_time'), 'kaist_info'),
+            }),
+            ('Debug', {
+                'fields': (('sparcs_id', 'test_only', 'test_enabled'), ),
+            }),
+        )
 
     def get_profile(self, obj):
         return UserProfile.objects.get(user=obj)

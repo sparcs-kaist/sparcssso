@@ -101,6 +101,8 @@ def email(request, tokenid):
 
     user = token.user
     user.profile.email_authed = True
+    if user.email.endswith('@sparcs.org'):
+        user.profile.sparcs_id = user.email.split('@')[0]
     user.profile.save()
     token.delete()
 

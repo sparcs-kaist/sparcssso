@@ -9,22 +9,43 @@
 <h1>{% trans "Profile &amp; Social Network Accounts" %}</h1>
 <p>{% trans "You can change your information or connect / disconnect social accounts." %}</p>
 <p>{% trans "Changed information may not be applied in other SPARCS services." %}</p>
+<p>{% trans "If you change your email, you need to verify it again." %}</p>
 <form id="profile" class="form-horizontal" action="/account/profile/" method="post" enctype="multipart/form-data">
     <fieldset>
-        {% if success %}
         <div class="form-group">
             <div class="col-xs-offset-1 col-xs-10 col-sm-offset-2 col-sm-8">
-               <div class="alert alert-success">
+                {% if result_prof == 1 %}
+                <div class="alert alert-success">
                    <b>{% trans "Your information has been updated." %}</b>
                 </div>
+                {% elif result_prof == 2 %}
+                <div class="alert alert-success">
+                   <b>{% trans "Verification email has been sent." %}</b>
+                </div>
+                {% elif result_prof == 3 %}
+                <div class="alert alert-danger">
+                   <b>{% trans "Unable to verify the email address. Please try again." %}</b>
+                </div>
+                {% elif result_prof == 4 %}
+                <div class="alert alert-success">
+                   <b>{% trans "Your email has been successfully verified." %}</b>
+                </div>
+                {% endif %}
             </div>
         </div>
-        {% endif %}
         {% csrf_token %}
         <div class="form-group">
             <label class="col-sm-2 control-label">{% trans "Email" %} <span class="required"></span></label>
-            <div class="col-xs-offset-1 col-xs-10 col-sm-offset-0 col-sm-8">
-                <input type="email" class="form-control" name="email" value="{{user.email}}" disabled>
+            <div class="col-xs-offset-1 col-xs-8 col-sm-offset-0 col-sm-6">
+                <input type="email" class="form-control" name="email" required="required" maxlength="50" data-remote="/api/v2/email/?exclude={{user.email}}" data-error="{% trans "Not Valid or Duplicated Email" %}" value="{{user.email}}">
+                <span class="help-block with-errors"></span>
+            </div>
+            <div class="col-xs-2 col-sm-2">
+                {% if user.profile.email_authed %}
+                <a href="#" disabled class="btn btn-success" style="width:100%">{% trans "Verified" %}</a>
+                {% else %}
+                <a href="/account/email/" class="btn btn-warning" style="width:100%">{% trans "Verify" %}</a>
+                {% endif %}
             </div>
         </div>
         <input type="hidden" name="password" value="qwerty1234">
@@ -51,14 +72,6 @@
                 <input type="text" class="form-control" name="birthday" placeholder="Birthday (YYYY-MM-DD)" data-vbirth="vbirth" value="{{profile.birthday|date:'Y-m-d'}}">
             </div>
         </div>
-        {% if profile.sparcs_id %}
-        <div class="form-group">
-            <label class="col-sm-2 control-label">SPARCS ID</label>
-            <div class="col-xs-offset-1 col-xs-10 col-sm-offset-0 col-sm-8">
-                <input type="text" class="form-control" value="{{profile.sparcs_id}}" disabled>
-            </div>
-        </div>
-        {% endif %}
 
         <div class="form-group">
             <div class="col-xs-12">
@@ -109,6 +122,14 @@
     {% elif result_con == 2 %}
     <div class="alert alert-danger">
         <b>{% trans "You cannot renew your information with the other KAIST portal account." %}</b>
+    </div>
+    {% elif result_con == 3 %}
+    <div class="alert alert-danger">
+        <b>{% trans "Please grant all requested permission" %}</b>
+    </div>
+    {% elif result_con == 4 %}
+    <div class="alert alert-danger">
+        <b>{% trans "To disconnect SNS account, either password has been set or other SNS accounts should be connected" %}</b>
     </div>
     {% elif result_con == 5 %}
     <div class="alert alert-success">

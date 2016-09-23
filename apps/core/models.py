@@ -20,9 +20,9 @@ User.__unicode__ = lambda self: u'%s %s <%s>' % \
 # == General Objects ==
 # Notice: denotes single notice
 class Notice(models.Model):
+    title = models.CharField(max_length=100)  # notice title
     valid_from = models.DateTimeField()       # display start time
     valid_to = models.DateTimeField()         # display end time
-    title = models.CharField(max_length=100)  # notice title
     text = models.TextField()                 # notice content
 
     def to_dict(self):
@@ -103,8 +103,8 @@ class UserProfile(models.Model):
     birthday = models.DateField(blank=True, null=True)                    # birthday
     point = models.IntegerField(default=0)                                # point
     point_test = models.IntegerField(default=0)                           # point for test
-    point_mod_time = models.DateTimeField(auto_now_add=True)              # last point modified time
     email_authed = models.BooleanField(default=False)                     # email authed state
+    password_set = models.BooleanField(default=True)                      # indicate password set
     test_only = models.BooleanField(default=False)                        # indicate test only
     test_enabled = models.BooleanField(default=False)                     # test mode state
     facebook_id = models.CharField(max_length=50, blank=True, null=True)  # fb unique id
@@ -120,8 +120,8 @@ class UserProfile(models.Model):
         return {
             'test': self.test_enabled,
             'test-only': self.test_only,
-            'dev': self.user.is_staff or self.sparcs_id != '',
-            'sparcs': self.sparcs_id != '',
+            'dev': self.user.is_staff or bool(self.sparcs_id),
+            'sparcs': bool(self.sparcs_id),
             'sysop': self.user.is_staff
         }
 
@@ -156,8 +156,8 @@ class UserProfile(models.Model):
 # EmailAuthToken: denotes single email auth token for an user
 class EmailAuthToken(models.Model):
     tokenid = models.CharField(max_length=48, primary_key=True)  # unique token id
-    expire_time = models.DateTimeField()                         # expire time
     user = models.ForeignKey(User)                               # user object
+    expire_time = models.DateTimeField()                         # expire time
 
     def __unicode__(self):
         return u'%s - %s' % (self.user, self.tokenid)
@@ -166,8 +166,8 @@ class EmailAuthToken(models.Model):
 # ResetPWToken: denotes single password reset token for an user
 class ResetPWToken(models.Model):
     tokenid = models.CharField(max_length=48, primary_key=True)  # unique token id
-    expire_time = models.DateTimeField()                         # expire time
     user = models.ForeignKey(User)                               # user object
+    expire_time = models.DateTimeField()                         # expire time
 
     def __unicode__(self):
         return u'%s - %s' % (self.user, self.tokenid)

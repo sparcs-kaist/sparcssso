@@ -1,13 +1,14 @@
 {% extends "base.html" %}
-<style>
-</style>
+
 {% load i18n %}
 
 {% block app-header %}
-<!--
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.css">
--->
+
 <link rel="stylesheet" type="text/css" href="/static/css/main.css">
+
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.ko.min.js"></script>
 
 <link rel="stylesheet" type="text/css" href="http://nvd3.org/assets/css/nv.d3.css">
 <script src="http://nvd3.org/assets/lib/d3.v3.js"></script>
@@ -17,6 +18,17 @@
 {% endblock %}
 
 {% block content %}
+<style>
+    .chart-header {
+        float: left;
+        font-weight: 600;
+        margin: 10px;
+    }
+    .datepicker {
+        padding: 6px 12px;
+    }
+</style>
+
 <h1 class="doc-header">SPARCS SSO Statistics <small>({{ time|date:"Y-m-d\TH:i:sT"}})</small></h1>
 <p>Permission: 
 {% if level == 0 %}
@@ -29,39 +41,65 @@ PUBLIC
 </p>
 
 <div class="row">
+    <div class="btn-group" role="group">
+        <div class="btn-group" role="group">
+		    <button class="btn btn-default dropdown-toggle" type="button" id="service-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+			    서비스
+			    <span class="caret"></span>
+		    </button>
+		    <ul id="service-dropdown-menu" class="dropdown-menu" aria-labelledby="service-dropdown">
+		    </ul>
+        </div>
+        <button type="button" class="btn btn-default datepicker">시작 날짜</button>
+        <button type="button" class="btn btn-default datepicker">끝 날짜</button>
+    </div>
+</div>
 
-	<div class="dropdown">
-		<button class="btn btn-default dropdown-toggle" type="button" id="service-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-			서비스 선택
-			<span class="caret"></span>
-		</button>
-		<ul id="service-dropdown-menu" class="dropdown-menu" aria-labelledby="service-dropdown">
-		</ul>
-	</div>
-	
-	<div>
+
+<div class="row" style="margin-top: 30px;">
+    <h4>선택한 서비스는 <span class="label label-info label-service">Loading..</span>입니다.</h4>
+
+    <p class="chart-header">Account</p>
+    <div>
 		<svg id="account-chart" style='width:100%; height:500px;'> </svg>
-	</div>	
+    </div>
+    
+    <p class="chart-header">birth_year</p>
 	<div>
 		<svg id="birth-year-chart" style='width:100%; height:500px;'> </svg>
 	</div>
+    
+    <p class="chart-header">Gender</p>
 	<div>
 		<svg id="gender-chart" style='width:100%; height:500px;'> </svg>
-	</div>
+    </div>
+    
+    <hr>
+    <p class="chart-header">KAIST - Gender</p>
+	<div>
+		<svg id="kaist-gender-chart" style='width:100%; height:500px;'> </svg>
+    </div>
+ 
 </div>
 
+
 <script>
-/**
-test code
-*/
-get_stats("all", "2016-08-16");
+$('.datepicker').datepicker({});
+
+var first_call_g = true;
+var s_date_g = "2016-08-16"
 
 $(document).ready(function(){
-	find_dropdown_menu_pos();
+    get_stats("all", s_date_g);
+    find_dropdown_menu_pos();
 });
 
 $(window).resize(function(){
 	find_dropdown_menu_pos();		
+});
+
+$("body").on("click", ".dropdown-service", function(){
+    change_service($(this).text());   
 });
 
 
@@ -83,21 +121,39 @@ function get_stats(client_ids, date_from, date_to){
 	});
 }
 
+
 /**
 jquery ajax success function
  */
 function success_stats(data, textStatus, jqXHR){
-	var service = get_services(data);
-	var s_data = get_data_of_s(data, "otlplus")
-	add_services(service);
-	
-	var property_arr = ["account", "birth_year", "gender"];
+    var service_list = get_services(data);
+    console.log(data);
+	var s_data = get_data_of_s(data, service_list[0]);
+    change_service_label(service_list[0]);
+
+    /* only first call, add services to dropdown */
+    if(first_call_g){
+        add_services(service_list);
+        first_call_g = false;
+    }
+    
+    var property_arr = get_properties(s_data);
 	for(var idx = 0; idx < property_arr.length; idx++){
 		var property = property_arr[idx];
 		var f_data = get_formatted_data(s_data, property);
 		draw_graph(f_data, property);
 	}
 }
+
+function change_service(s_name){
+    change_service_label(s_name);
+    get_stats(s_name, s_date_g);
+}
+
+function change_service_label(s_name){
+    $(".label-service").text(s_name);
+}
+
 
 /**
 Graph drawing function
@@ -149,6 +205,11 @@ function get_data_of_s(data, s_name){
 	return data["stats"][s_name]["data"];
 }
 
+function get_properties(s_data){
+    var date_arr = Object.keys(s_data);
+    return Object.keys(s_data[date_arr[0]]);
+}
+
 /*
 @param {obj} s_data - Data format
 {
@@ -180,7 +241,7 @@ function get_data_of_s(data, s_name){
 ]
 */
 
-function get_formatted_data(s_data, property, ka_property){
+function get_formatted_data(s_data, property){
 	var r_values = {};
 	var date_arr = Object.keys(s_data).sort();
     
@@ -191,7 +252,7 @@ function get_formatted_data(s_data, property, ka_property){
         var property_arr = Object.keys(attr_obj);
         // if property found
         if(property_arr.indexOf(property) != -1){
-            r_values = get_coordinations(property, attr_obj, date_key, r_values);
+            r_values = preprocess_data(attr_obj, date_key, r_values, property);
 		} else {
 
 		}
@@ -210,26 +271,23 @@ manipulate p_attr_obj for purpose
 
 @return: r_values
 */
-function get_coordinations(property, attr_obj, date_key, r_values){
+function preprocess_data(attr_obj, date_key, r_values, property, property_2nd) {
     
     var r_values = $.extend({}, r_values);
     var p_attr_obj = attr_obj[property];
     
     switch(property){
         case "account":
-            delete p_attr_obj.all;
+            delete p_attr_obj["all"];
             break;
         case "birth_year":
-            date_arr = Object.keys(p_attr_obj);
-            min_date = min(date_arr);
-            max_date = max(date_arr);
-            for(var d = min_date; d <= max_date; d++){
-                if(date_arr.indexOf(d+"") === -1){
-                    p_attr_obj[d] = 0;
-                }
-            }
+            p_attr_obj = preprocess_data_birth_year(p_attr_obj);
             break;
         case "gender":
+            break;
+        case "kaist":
+            /* 여기 구현 해야 함*/ 
+            p_attr_obj = preprocess_data_kaist(p_attr_obj, property_2nd);
             break;
     }
     
@@ -243,11 +301,48 @@ function get_coordinations(property, attr_obj, date_key, r_values){
 }
 
 /**
+@param {obj} p_attr_obj - apijson["birth_year"]
+- append {year: 0} which api does not contain for spacing
+@return preprocessed p_attr_obj
+*/
+function preprocess_data_birth_year(p_attr_obj){
+    date_arr = Object.keys(p_attr_obj);
+    min_date = min(date_arr);
+    max_date = max(date_arr);
+    for(var d = min_date; d <= max_date; d++){
+        if(date_arr.indexOf(d+"") === -1){
+            p_attr_obj[d] = 0;
+        }
+    }
+    return p_attr_obj;
+}
+
+/**
+parsing json["kaist"] to 2nd-depth
+@param {obj} p_attr_obj - apijson["kaist"]
+@param {string} property_2nd - birth_year, department, employee, gender, professor, start_year
+@return preprocessed p_attr_obj;
+*/
+function preprocess_data_kaist(p_attr_obj, property_2nd){
+    var p2nd_attr_obj = p_attr_obj[property_2nd];
+    switch(property_2nd){
+        case "birth_year":
+            preprocess_data_birth_year(p2nd_attr_obj);
+            break;
+        case "department":
+            break;
+        case "start_year":
+            break;
+    }
+}
+
+
+/**
 DOM manipulation function with jquery
 */
 function add_services(service){
 	for(var idx = 0; idx < service.length; idx++){
-		$(".dropdown-menu").append('<li id=dropdown-'+service[idx]+' ><a href="#">'+service[idx]+'</a></li>');
+		$("#service-dropdown-menu").append('<li id=dropdown-'+service[idx]+' class="dropdown-service"  ><a href="#">'+service[idx]+'</a></li>');
 	}
 }
 
@@ -288,7 +383,5 @@ function max(x /*: Array<number> */) /*:number*/ {
 
 
 </script>
-<!--
-<script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.js"></script>
--->
+
 {% endblock %}

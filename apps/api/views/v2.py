@@ -357,7 +357,7 @@ def stats(request):
     elif level == 0:
         client_list = filter(lambda x: x.scope == 'PUBLIC', client_list)
 
-    today = timezone.local(timezone.now())\
+    today = timezone.localtime(timezone.now())\
             .replace(hour=0, minute=0, second=0, microsecond=0)
     start_date, end_date = None, None
     try:

@@ -52,6 +52,7 @@ def token_require(request):
         raise SuspiciousOperation()
 
     user = request.user
+    profile = user.profile
     flags = user.profile.flags
 
     reason = 0
@@ -61,6 +62,11 @@ def token_require(request):
         reason = 2
     elif service.scope == 'TEST' and not flags['test']:
         reason = 3
+    elif service.scope != 'TEST' and flags['test-only']:
+        reason = 4
+    elif not (profile.email_authed or profile.facebook_id \
+            or profile.twitter_id or profile.kaist_id):
+        reason = 5
 
     if reason:
         return render(request, 'api/denied.html',
@@ -87,7 +93,7 @@ def token_require(request):
             break
 
     token = AccessToken(tokenid=tokenid, user=user, service=service,
-                        expire_time=timezone.now() + timedelta(seconds=5))
+                        expire_time=timezone.now() + timedelta(seconds=10))
     token.save()
     logger.info('token.create: app=%s' % client_id, {'r': request})
 
@@ -119,7 +125,7 @@ def token_info(request):
 
     now = timezone.now()
     date = datetime.fromtimestamp(timestamp, timezone.utc)
-    if abs((now - date).total_seconds()) >= 3:
+    if abs((now - date).total_seconds()) >= 5:
         raise SuspiciousOperation()
 
     sign_server = hmac.new(str(service.secret_key),
@@ -180,7 +186,7 @@ def logout(request):
 
     now = timezone.now()
     date = datetime.fromtimestamp(timestamp, timezone.utc)
-    if abs((now - date).total_seconds()) >= 3:
+    if abs((now - date).total_seconds()) >= 5:
         raise SuspiciousOperation()
 
     sign_server = hmac.new(str(service.secret_key),
@@ -198,12 +204,16 @@ def logout(request):
 
 
 # /unregister/
+@csrf_exempt
 def unregister(request):
-    client_id = request.GET.get('client_id', '')
-    sid = request.GET.get('sid', '')
-    timestamp = request.GET.get('timestamp', '0')
+    if request.method != 'POST':
+        raise SuspiciousOperation()
+
+    client_id = request.POST.get('client_id', '')
+    sid = request.POST.get('sid', '')
+    timestamp = request.POST.get('timestamp', '0')
     timestamp = int(timestamp) if timestamp.isdigit() else 0
-    sign = request.GET.get('sign', '')
+    sign = request.POST.get('sign', '')
 
     service = Service.objects.filter(name=client_id).first()
     if not service:
@@ -215,7 +225,7 @@ def unregister(request):
 
     now = timezone.now()
     date = datetime.fromtimestamp(timestamp, timezone.utc)
-    if abs((now - date).total_seconds()) >= 3:
+    if abs((now - date).total_seconds()) >= 5:
         raise SuspiciousOperation()
 
     sign_server = hmac.new(str(service.secret_key),
@@ -223,14 +233,14 @@ def unregister(request):
     if not constant_time_compare(sign, sign_server):
         raise SuspiciousOperation()
 
-    result = unreg_service(request.user, service)
+    result = unreg_service(m.user, service)
     if result:
         profile_logger.info('unregister.success: name=%s' % service.name, {'r': request})
     else:
         profile_logger.warning('unregister.fail: name=%s' % service.name, {'r': request})
 
-    request.session['removed'] = result
-    return redirect('/account/service/')
+    resp = {'success': result}
+    return HttpResponse(json.dumps(resp), content_type='application/json')
 
 
 # /point/
@@ -267,11 +277,9 @@ def point(request):
     profile = m.user.profile
     if delta != 0 and not message:
         raise SuspiciousOperation()
-    elif delta != 0 and abs((now - profile.point_mod_time).total_seconds()) < 5:
-        raise SuspiciousOperation()
 
     date = datetime.fromtimestamp(timestamp, timezone.utc)
-    if abs((now - date).total_seconds()) >= 3:
+    if abs((now - date).total_seconds()) >= 5:
         raise SuspiciousOperation()
 
     sign_server = hmac.new(str(service.secret_key),
@@ -288,7 +296,6 @@ def point(request):
             profile.point_test += delta
         else:
             profile.point += delta
-        profile.point_mod_time = timezone.now()
         profile.save()
 
         point += delta
@@ -300,9 +307,7 @@ def point(request):
         PointLog(user=m.user, service=service, delta=delta,
                  point=profile.point, action=message).save()
 
-    last_modified = date2str(profile.point_mod_time)
-    return HttpResponse(json.dumps({'point': point, 'modified': modified,
-                                    'last_modified': last_modified}),
+    return HttpResponse(json.dumps({'point': point, 'modified': modified}),
                         content_type="application/json")
 
 
@@ -328,7 +333,7 @@ def notice(request):
 
 # /email/
 def email(request):
-    if validate_email(request.GET.get('email', '')):
+    if validate_email(request.GET.get('email', ''), request.GET.get('exclude', '')):
         return HttpResponse(status=200)
     return HttpResponse(status=400)
 
@@ -352,7 +357,8 @@ def stats(request):
     elif level == 0:
         client_list = filter(lambda x: x.scope == 'PUBLIC', client_list)
 
-    today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    today = timezone.local(timezone.now())\
+            .replace(hour=0, minute=0, second=0, microsecond=0)
     start_date, end_date = None, None
     try:
         start_date = parse_date(request.GET.get('date_from', ''))
@@ -382,6 +388,7 @@ def stats(request):
             data = {}
             raw_data = raw_data[client.name]
             if level == 0:
+                data['account'] = {}
                 data['account']['all'] = raw_data['account']['all']
                 data['account']['kaist'] = raw_data['account']['kaist']
             elif level == 1:

@@ -1,4 +1,3 @@
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.utils import timezone, translation
 from apps.core.models import Notice, Statistic, Service
@@ -83,11 +82,3 @@ def stats(request):
 # /help/
 def help(request):
     return render(request, 'help.html')
-
-
-# /doc/sysop/
-@login_required
-def doc_sysop(request):
-    if not request.user.is_staff:
-        return redirect('/')
-    return render(request, 'doc.sysop.html')

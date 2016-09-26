@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
-from django.contrib.auth.hashers import check_password
+from django.contrib import auth
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import check_password
+from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.utils import timezone
-from apps.core.backends import signup_core, validate_recaptcha
+from apps.core.backends import signup_core, signup_social_core, validate_recaptcha
 from apps.core.models import ServiceMap
 import datetime
 import logging
@@ -12,48 +14,55 @@ import logging
 logger = logging.getLogger('sso.core.account')
 
 
-# /signup/, /signup/social/
-def signup(request, is_social=False):
+# /signup/, # /signup/social/
+def signup(request, social=False):
     if request.user.is_authenticated():
         return redirect('/')
 
-    if is_social and 'info_signup' not in request.session:
+    if social and 'info_signup' not in request.session:
         return redirect('/')
 
-    signup = request.session.get('info_signup',
-                                 {'type': 'EMAIL', 'profile': {'gender': '*H'}})
-    type = signup['type']
-    info = signup['profile']
+    if social:
+        info_signup = request.session['info_signup']
+        type, profile = info_signup['type'], info_signup['profile']
+
+        email = profile.get('email', '')
+        email_warning = email and User.objects.filter(email=email).count()
 
     if request.method == 'POST':
-        if type == 'EMAIL':
+        if social:
+            user = signup_social_core(type, profile)
+        else:
             result = validate_recaptcha(request.POST.get('g-recaptcha-response', ''))
             if not result:
                 return redirect('/')
 
-        user = signup_core(request.POST)
+            user = signup_core(request.POST)
 
         if user is None:
             return redirect('/')
 
-        if type == 'FB':
-            user.profile.facebook_id = info['userid']
-        elif type == 'TW':
-            user.profile.twitter_id = info['userid']
-        elif type == 'KAIST':
-            user.profile.set_kaist_info(info)
-
-        user.profile.save()
-        request.session.pop('info_signup', None)
         logger.warning('create', {'r': request, 'uid': user.username})
-        return render(request, 'account/signup/done.html', {'type': type})
 
-    return render(request, 'account/signup/main.html', {'type': type, 'info': info})
+        user.backend = 'django.contrib.auth.backends.ModelBackend'
+        auth.login(request, user)
+
+        nexturl = request.session.pop('next', '/')
+        return render(request, 'account/signup/done.html',
+                      {'type': 'SNS' if social else 'EMAIL', 'nexturl': nexturl})
+
+    if not social:
+        return render(request, 'account/signup/main.html')
+    return render(request, 'account/signup/sns.html', {'type': type, 'profile': profile,
+                                                       'email_warning': email_warning})
 
 
 # /deactivate/
 @login_required
 def deactivate(request):
+    if request.user.profile.test_only:
+        return redirect('/')
+
     maps = ServiceMap.objects.filter(user=request.user, unregister_time=None)
     ok = len(maps) == 0
     fail = False

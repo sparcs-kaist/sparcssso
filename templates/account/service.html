@@ -8,15 +8,6 @@
 {% block content %}
 <h1>{% trans "Manage Service" %}</h1>
 <p>{% trans "You can see and unregister services that you use." %}</p>
-<div class="row">
-    <div class="col-xs-offset-3 col-xs-6">
-        {% if removed %}
-        <div class="alert alert-success">
-            <b>{% trans "Successfully unregistered the service." %}</b>
-        </div>
-        {% endif %}
-    </div>
-</div>
 <div class="service-row">
     {% for m in maps %}
     <div class="service">

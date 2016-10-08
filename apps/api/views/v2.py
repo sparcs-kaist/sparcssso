@@ -64,8 +64,8 @@ def token_require(request):
         reason = 3
     elif service.scope != 'TEST' and flags['test-only']:
         reason = 4
-    elif not (profile.email_authed or profile.facebook_id \
-            or profile.twitter_id or profile.kaist_id):
+    elif not (profile.email_authed or profile.facebook_id
+              or profile.twitter_id or profile.kaist_id):
         reason = 5
 
     if reason:
@@ -358,7 +358,7 @@ def stats(request):
         client_list = filter(lambda x: x.scope == 'PUBLIC', client_list)
 
     today = timezone.local(timezone.now())\
-            .replace(hour=0, minute=0, second=0, microsecond=0)
+        .replace(hour=0, minute=0, second=0, microsecond=0)
     start_date, end_date = None, None
     try:
         start_date = parse_date(request.GET.get('date_from', ''))

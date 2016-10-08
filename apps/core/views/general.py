@@ -17,7 +17,7 @@ def _get_document(category, version=''):
     if version:
         for i in range(len(docs)):
             if docs[i].version == version:
-                prev_i, next_i, cur_i = i+1, i-1, i
+                prev_i, next_i, cur_i = i + 1, i - 1, i
                 break
 
         if cur_i == -1:

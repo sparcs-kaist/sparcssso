@@ -2,8 +2,8 @@ from django.contrib import admin
 from django.contrib.auth import admin as uadmin
 from django.contrib.auth.models import User
 from apps.core.models import Notice, Statistic, Document, Service, \
-     ServiceMap, AccessToken, UserProfile, EmailAuthToken, ResetPWToken, \
-     PointLog, UserLog
+    ServiceMap, AccessToken, UserProfile, EmailAuthToken, ResetPWToken, \
+    PointLog, UserLog
 
 
 # Filters
@@ -33,7 +33,7 @@ class StatisticAdmin(admin.ModelAdmin):
 
 
 class DocumentAdmin(admin.ModelAdmin):
-    list_display  = ('category', 'version', 'date_apply', 'date_version')
+    list_display = ('category', 'version', 'date_apply', 'date_version')
 
 
 # Admin for Service Related Objects

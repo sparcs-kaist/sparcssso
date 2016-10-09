@@ -150,3 +150,4 @@ class UserLog(models.Model):
     time = models.DateTimeField(auto_now=True)
     ip = models.GenericIPAddressField()
     text = models.CharField(max_length=500)
+

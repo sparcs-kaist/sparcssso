@@ -169,7 +169,7 @@ LOGGING = {
         'file': {
             'level': 'INFO',
             'class': 'apps.logger.FileHandler',
-            'filename': '/data/log/dev/info.log',
+            'filename': '/home/gogi/info.log',
             'maxBytes': 30 * 1024 * 1024,
             'backupCount': 5,
             'formatter': 'std',

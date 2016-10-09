@@ -85,6 +85,8 @@ def stats(request):
 # /help/
 def help(request):
     return render(request, 'help.html')
+<<<<<<< HEAD
+
 
 # /contact/
 def contact(request):
@@ -114,3 +116,22 @@ def contact(request):
     return render(request, 'contact.html',
             {'name': name, 'email': email, 'subject': subject, 'message':message})
 
+# /doc/dev/
+@login_required
+def doc_dev(request):
+    user = request.user
+    profile = user.profile
+    if not user.is_staff and not profile.is_for_test and not profile.sparcs_id:
+        return redirect('/')
+    return render(request, 'doc.dev.html')
+
+
+# /doc/sysop/
+@login_required
+def doc_sysop(request):
+    if not request.user.is_staff:
+        return redirect('/')
+    return render(request, 'doc.sysop.html')
+
+=======
+>>>>>>> develop

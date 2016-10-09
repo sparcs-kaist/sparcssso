@@ -72,5 +72,11 @@ media/
 # Passwords / Secret Keys
 keys/
 
-# sysop doc
+# SYSOP Documents
 doc.sysop.html
+
+# Envorinment Indicator
+deploy
+
+# SPARCS SSO Test Server
+client/run

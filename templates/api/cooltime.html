@@ -10,5 +10,5 @@
 <p class="text-danger">{% blocktrans with alias=service.alias %}Your account is in a cooltime for the service {{alias}}{% endblocktrans %}</p>
 <p>{% blocktrans with alias=service.alias %}You can use {{alias}} again after {{left}} days.{% endblocktrans %}</p>
 
-<p><a class="btn btn-primary" href="{{service.url}}">{% blocktrans with alias=service.alias %}Back to {{alias}}{% endblocktrans %}</a></p>
+<p><a class="btn btn-primary" href="{{service.main_url}}">{% blocktrans with alias=service.alias %}Back to {{alias}}{% endblocktrans %}</a></p>
 {% endblock %}

@@ -31,11 +31,11 @@ def date2str(obj):
 
 # get call back url
 def get_callback(user, service, url):
-    is_test = user.profile.is_for_test
+    is_test = user.profile.test_enable
     if not is_test and not service:
         return None
     elif service:
-        return service.callback_url
+        return service.login_callback_url
 
     validate = URLValidator()
     try:
@@ -43,12 +43,6 @@ def get_callback(user, service, url):
     except:
         raise Http404()
     return url
-
-
-# /versions/
-def versions(request):
-    resp = {'versions': ['v1', ]}
-    return HttpResponse(json.dumps(resp), content_type='application/json')
 
 
 # /logout/
@@ -65,11 +59,11 @@ def logout(request):
     date = datetime.datetime.fromtimestamp(time, timezone.utc)
     now = timezone.now()
     if abs((now - date).total_seconds()) > 10:
-        return redirect(service.url)
+        return redirect(service.main_url)
 
     sm = ServiceMap.objects.filter(user=request.user, service=service).first()
     if not sm:
-        return redirect(service.url)
+        return redirect(service.main_url)
 
     m = hmac.new(str(service.secret_key),
                  str('%s:%s' % (time, sm.sid))).hexdigest()
@@ -78,7 +72,7 @@ def logout(request):
         logger.info('logout', {'r': request})
         auth.logout(request)
 
-    return redirect(service.url)
+    return redirect(service.main_url)
 
 
 # /token/require/
@@ -170,8 +164,7 @@ def token_info(request):
         'last_name': user.last_name,
         'gender': profile.gender,
         'birthday': date2str(profile.birthday),
-        'is_for_test': profile.is_for_test,
-        'is_for_test': profile.is_for_test,
+        'is_for_test': profile.test_enabled,
         'facebook_id': profile.facebook_id,
         'twitter_id': profile.twitter_id,
         'kaist_id': profile.kaist_id,

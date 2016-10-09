@@ -24,6 +24,7 @@ class Command(BaseCommand):
                 'gender': {
                     'male': 0,
                     'female': 0,
+                    'hide': 0,
                     'etc': 0,
                 },
                 'birth_year': {},
@@ -32,7 +33,7 @@ class Command(BaseCommand):
                     'birth_year': {},
                     'gender': {
                         'male': 0,
-                        'female':0
+                        'female': 0,
                     },
                     'department': {},
                     'employee': 0,
@@ -42,7 +43,7 @@ class Command(BaseCommand):
 
         users = User.objects.all()
         for user in users:
-            if user.profile.expire_time:
+            if user.profile.expire_time or user.profile.test_only:
                 continue
 
             services = ['all']
@@ -62,14 +63,16 @@ class Command(BaseCommand):
                     stat['account']['tw'] += 1
                 if user.profile.kaist_id:
                     stat['account']['kaist'] += 1
-                if user.profile.is_for_test:
+                if user.profile.test_enabled:
                     stat['account']['test'] += 1
 
-                if user.profile.gender == 'M':
+                if user.profile.gender == '*M':
                     stat['gender']['male'] += 1
-                if user.profile.gender == 'F':
+                elif user.profile.gender == '*F':
                     stat['gender']['female'] += 1
-                if user.profile.gender == 'E':
+                elif user.profile.gender == '*H':
+                    stat['gender']['hide'] += 1
+                else:
                     stat['gender']['etc'] += 1
 
                 if user.profile.birthday:
@@ -85,7 +88,8 @@ class Command(BaseCommand):
                 kaist_info = json.loads(user.profile.kaist_info)
                 kaist = stat['kaist']
 
-                if 'ku_std_no' in kaist_info:
+                if 'ku_std_no' in kaist_info and \
+                        len(kaist_info['ku_std_no']) == 8:
                     start_year = kaist_info['ku_std_no'][:4]
                     if start_year in kaist['start_year']:
                         kaist['start_year'][start_year] += 1
@@ -118,4 +122,3 @@ class Command(BaseCommand):
                         kaist['professor'] += 1
 
         Statistic(time=timezone.now(), data=json.dumps(stats)).save()
-

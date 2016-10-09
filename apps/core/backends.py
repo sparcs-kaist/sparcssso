@@ -23,10 +23,10 @@ logger = logging.getLogger('sso.account.backend')
 # {male, female, etc} -> {M, F, E}
 def parse_gender(gender):
     if gender == 'male':
-        return 'M'
+        return '*M'
     elif gender == 'female':
-        return 'F'
-    return 'E'
+        return '*F'
+    return gender
 
 
 # get username using email
@@ -38,15 +38,18 @@ def get_username(email):
 
 
 # check given email is available or not
-def validate_email(email):
+def validate_email(email, exclude=''):
     if not re.match(r'[^@]+@[^@]+\.[^@]+', email):
         return False
 
-    return User.objects.filter(email=email).count() == 0
+    return User.objects.filter(email=email).exclude(email=exclude).count() == 0
 
 
 # give reset pw token to user
 def give_reset_pw_token(user):
+    if user.email.endswith('@sso.sparcs.org'):
+        return
+
     title = '[SPARCS SSO] Reset Password'
     message = 'To reset your password, please click <a href="https://sparcssso.kaist.ac.kr/account/password/reset/%s">this link</a> in 24 hours.'
 
@@ -67,8 +70,11 @@ def give_reset_pw_token(user):
 
 # give email auth token to user
 def give_email_auth_token(user):
+    if user.email.endswith('@sso.sparcs.org'):
+        return
+
     title = '[SPARCS SSO] Email Authentication'
-    message = 'To authenticate your email, <a href="https://sparcssso.kaist.ac.kr/account/auth/email/%s">this link</a> in 24 hours.'
+    message = 'To authenticate your email, click <a href="https://sparcssso.kaist.ac.kr/account/email/%s">this link</a> in 24 hours.'
 
     tomorrow = timezone.now() + datetime.timedelta(days=1)
 
@@ -118,6 +124,47 @@ def signup_core(post):
         return None
 
 
+# social signup core
+def signup_social_core(type, profile):
+    while True:
+        username = os.urandom(10).encode('hex')
+        if not User.objects.filter(username=username).count():
+            break
+
+    first_name = profile.get('first_name', '')
+    last_name = profile.get('last_name', '')
+
+    email = profile.get('email', '')
+    if not email:
+        email = 'random-%s@sso.sparcs.org'  % os.urandom(6).encode('hex')
+
+    while True:
+        if not User.objects.filter(email=email).count():
+            break
+        email = 'random-%s@sso.sparcs.org'  % os.urandom(6).encode('hex')
+
+    password = os.urandom(12).encode('hex')
+    user = User.objects.create_user(username=username, first_name=first_name,
+                                    last_name=last_name, email=email, password=password)
+    user.save()
+
+    user.profile = UserProfile(gender=profile.get('gender', '*H'), password_set=False)
+    if 'birthday' in profile:
+        user.profile.birthday = profile['birthday']
+
+    if type == 'FB':
+        user.profile.facebook_id = profile['userid']
+    elif type == 'TW':
+        user.profile.twitter_id = profile['userid']
+    elif type == 'KAIST':
+        if email.endswith('@kaist.ac.kr'):
+            user.profile.email_authed = True
+        user.profile.set_kaist_info(profile)
+    user.profile.save()
+
+    return user
+
+
 # Register Service
 def reg_service(user, service):
     m = ServiceMap.objects.filter(user=user, service=service).first()
@@ -146,30 +193,20 @@ def reg_service(user, service):
 
 # Unregister Service
 def unreg_service(user, service):
-    default_result = {'status': '1', 'msg': 'Unknown Error'}
     m = ServiceMap.objects.filter(user=user, service=service).first()
     if not m or m.unregister_time:
-        return default_result
-
-    r = requests.post(service.unregister_url, verify=True,
-                      data={'sid': m.sid, 'key': service.secret_key})
-    try:
-        result = r.json()
-        status = result.get('status', '1')
-        if status != '0':
-            return result
-    except:
-        return default_result
+        return False
 
     m.unregister_time = timezone.now()
     m.save()
-    return result
+    return True
 
 
 # Facebook Init & Auth
 def init_fb(callback_url):
     args = {
         'client_id': settings.FACEBOOK_APP_ID,
+        'auth_type': 'rerequest',
         'scope': 'email',
         'redirect_uri': callback_url,
     }
@@ -187,7 +224,19 @@ def auth_fb(code, callback_url):
     r = requests.get('https://graph.facebook.com/oauth/access_token?',
                      params=args, verify=True)
     response = urlparse.parse_qs(r.text)
+    if 'access_token' not in response:
+        return None, None
     access_token = response['access_token'][-1]
+
+    args = {
+        'access_token': access_token
+    }
+    r = requests.get('https://graph.facebook.com/v2.5/me/permissions', params=args, verify=True)
+    grant_info = r.json()
+
+    for data in grant_info["data"]:
+        if data["status"] == "declined":
+            return None, None
 
     args = {
         'fields': 'email,first_name,last_name,gender,birthday',
@@ -204,7 +253,7 @@ def auth_fb(code, callback_url):
             'gender': parse_gender(fb_info.get('gender')),
             'birthday': fb_info.get('birthday')}
 
-    return UserProfile.objects.filter(facebook_id=info['userid']).first(), info
+    return UserProfile.objects.filter(facebook_id=info['userid'], test_only=False).first(), info
 
 
 # Twitter Init & Auth
@@ -229,11 +278,14 @@ def auth_tw(tokens, verifier):
     resp, content = client.request('https://twitter.com/oauth/access_token', 'POST')
     tw_info = dict(cgi.parse_qsl(content))
 
+    if 'user_id' not in tw_info:
+        return None, None
+
     info = {'userid': tw_info['user_id'],
             'first_name': tw_info['screen_name'],
-            'gender': 'E'}
+            'gender': '*H'}
 
-    return UserProfile.objects.filter(twitter_id=info['userid']).first(), info
+    return UserProfile.objects.filter(twitter_id=info['userid'], test_only=False).first(), info
 
 
 # KAIST Auth
@@ -263,8 +315,17 @@ def auth_kaist(token):
             'email': k_info.get('mail'),
             'first_name': k_info.get('givenname'),
             'last_name': k_info.get('sn'),
-            'gender': k_info.get('ku_sex'),
+            'gender': '*%s' % k_info.get('ku_sex'),
             'birthday': k_info.get('ku_born_date').replace('/', '-'),
             'kaist_info': k_info}
 
-    return UserProfile.objects.filter(kaist_id=info['userid']).first(), info
+    return UserProfile.objects.filter(kaist_id=info['userid'], test_only=False).first(), info
+
+
+# Validate reCAPTCHA
+def validate_recaptcha(response):
+    data = {'secret': settings.RECAPTCHA_SECRET, 'response': response}
+    r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+
+    result = r.json()
+    return result["success"]

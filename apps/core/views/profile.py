@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from apps.core.backends import unreg_service
-from apps.core.models import Service, ServiceMap, PointLog, UserLog
+from django.utils import timezone
+from apps.core.backends import give_email_auth_token
+from apps.core.models import ServiceMap, EmailAuthToken, PointLog, UserLog
 from apps.core.forms import UserForm, UserProfileForm
 import logging
 
@@ -16,24 +17,29 @@ def main(request):
     user = request.user
     profile = user.profile
 
-    success = False
+    result_prof = request.session.pop('result_prof', -1)
     result_con = request.session.pop('result_con', -1)
     if request.method == 'POST':
         user_f = UserForm(request.POST)
         profile_f = UserProfileForm(request.POST, instance=profile)
 
         if user_f.is_valid() and profile_f.is_valid():
+            email = user_f.cleaned_data['email']
+            if user.email != email:
+                user.email = email
+                user.profile.email_authed = False
+
             user.first_name = user_f.cleaned_data['first_name']
             user.last_name = user_f.cleaned_data['last_name']
             user.save()
 
             profile = profile_f.save()
-            success = True
+            result_prof = 1
             logger.info('modify', {'r': request})
 
     return render(request, 'account/profile.html',
                   {'user': user, 'profile': profile,
-                   'success': success, 'result_con': result_con})
+                   'result_prof': result_prof, 'result_con': result_con})
 
 
 # /disconnect/{fb,tw}/
@@ -44,12 +50,21 @@ def disconnect(request, type):
 
     uid = ''
     profile = request.user.profile
+    if profile.test_only:
+        return redirect('/account/profile/')
+
     if type == 'FB':
         uid = profile.facebook_id
         profile.facebook_id = ''
     elif type == 'TW':
         uid = profile.twitter_id
         profile.twitter_id = ''
+
+    if not profile.password_set and not (profile.facebook_id or
+            profile.twitter_id or profile.kaist_id):
+        request.session['result_con'] = 4
+        return redirect('/account/profile/')
+
     profile.save()
 
     request.session['result_con'] = 5
@@ -57,33 +72,43 @@ def disconnect(request, type):
     return redirect('/account/profile/')
 
 
-# /test/toggle/
+# /email/
 @login_required
-def toggle_test(request):
-    profile = request.user.profile
-    if request.method == 'POST' and profile.sparcs_id:
-        profile.is_for_test = not profile.is_for_test
-        profile.save()
+def email_resend(request):
+    user = request.user
+    if user.profile.email_authed:
+        return redirect('/account/profile/')
+
+    give_email_auth_token(user)
+    logger.info('email.try', {'r': request})
+    request.session['result_prof'] = 2
+
     return redirect('/account/profile/')
 
 
-# /unregister/
+# /email/<tokenid>
 @login_required
-def unregister(request):
-    if request.method != 'POST':
-        return redirect('/account/service/')
+def email(request, tokenid):
+    token = EmailAuthToken.objects.filter(tokenid=tokenid).first()
+    if not token:
+        request.session['result_prof'] = 3
+        return redirect('/account/profile/')
 
-    name = request.POST.get('app', '')
-    service = Service.objects.filter(name=name).first()
-    if service:
-        result = unreg_service(request.user, service)
-        if result['status'] == '0':
-            logger.info('unregister.success: name=%s' % service.name, {'r': request})
-        else:
-            logger.warning('unregister.fail: name=%s' % service.name, {'r': request})
-        request.session['result_unreg'] = result
+    if token.expire_time < timezone.now():
+        token.delete()
+        request.session['result_prof'] = 3
+        return redirect('/account/profile/')
 
-    return redirect('/account/service/')
+    user = token.user
+    user.profile.email_authed = True
+    if user.email.endswith('@sparcs.org'):
+        user.profile.sparcs_id = user.email.split('@')[0]
+    user.profile.save()
+    token.delete()
+
+    request.session['result_prof'] = 4
+    logger.info('email.done', {'r': request})
+    return redirect('/account/profile/')
 
 
 # /service/
@@ -92,9 +117,8 @@ def service(request):
     user = request.user
     maps = ServiceMap.objects.filter(user=user, unregister_time=None)
 
-    result_unreg = request.session.pop('result_unreg', -1)
     return render(request, 'account/service.html',
-                  {'user': user, 'maps': maps, 'result_unreg': result_unreg})
+                  {'user': user, 'maps': maps})
 
 
 # /point/

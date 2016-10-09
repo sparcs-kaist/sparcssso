@@ -16,8 +16,13 @@ urlpatterns = [
     url(r'^privacy/', general.privacy),
     url(r'^stats/', general.stats),
     url(r'^help/', general.help),
+<<<<<<< HEAD
     url(r'^contact/', general.contact),
 
+    url(r'^doc/dev/', general.doc_dev),
+    url(r'^doc/sysop/', general.doc_sysop),
+=======
+>>>>>>> develop
 
     url(r'^account/', include('apps.core.urls')),
     url(r'^api/', include('apps.api.urls')),

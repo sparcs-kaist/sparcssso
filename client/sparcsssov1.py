@@ -1,22 +1,36 @@
-import hmac
 import requests
+import hmac
 import time
 
-# SPARCS SSO Client Version 0.9.5 (BETA)
+# SPARCS SSO V1 Client Version 1.0
 # VALID ONLY AFTER 2016-05-18T23:59+09:00
 # Made by SPARCS SSO Team
 
-class Client:
-    API_BASE_URL = 'https://sparcssso.kaist.ac.kr/api/v1/'
-    LOGOUT_BASE_URL = '%slogout/' % API_BASE_URL
-    REQUIRE_BASE_URL = '%stoken/require/' % API_BASE_URL
-    INFO_BASE_URL = '%stoken/info/' % API_BASE_URL
-    POINT_BASE_URL = '%spoint/' % API_BASE_URL
-    NOTICE_BASE_URL = '%snotice/' % API_BASE_URL
 
-    def __init__(self, is_test=False, app_name='', secret_key=''):
+class Client:
+    SERVER_DOMAIN = 'https://sparcssso.kaist.ac.kr/'
+    BETA_DOMAIN = 'https://ssobeta.sparcs.org/'
+
+    API_PREFIX = 'api/'
+    VERSION_PREFIX = 'v1/'
+
+    URLS = {
+        'token_require': 'token/require/',
+        'token_info': 'token/info/',
+        'logout': 'logout/',
+        'point': 'point/',
+        'notice': 'notice/',
+    }
+
+    def __init__(self, is_test=False, is_beta=False, app_name='', secret_key=''):
         if not is_test and (not app_name or not secret_key):
             raise AssertionError('Need "app_name" and "secret_key"')
+
+        DOMAIN = self.BETA_DOMAIN if is_beta else self.SERVER_DOMAIN
+        BASE_URL = '%s%s%s' % (DOMAIN, self.API_PREFIX, self.VERSION_PREFIX)
+
+        for k in self.URLS:
+            self.URLS[k] = '%s%s' % (BASE_URL, self.URLS[k])
 
         self.is_test = is_test
         self.app_name = app_name
@@ -46,7 +60,6 @@ class Client:
         return '%s?app=%s&time=%s&m=%s' % (self.LOGOUT_BASE_URL, self.app_name,
                                            timestamp, m)
 
-
     def get_login_url(self, callback_url=''):
         if self.is_test and not callback_url:
             raise AssertionError('Need "callback_url"')
@@ -58,8 +71,8 @@ class Client:
     def get_user_info(self, tokenid):
         result = self._post_data(self.INFO_BASE_URL,
                                  {
-                                      'tokenid': tokenid,
-                                      'key': self.secret_key
+                                     'tokenid': tokenid,
+                                     'key': self.secret_key
                                  })
         return result
 
@@ -93,4 +106,3 @@ class Client:
     def get_notice(self):
         r = requests.get(self.NOTICE_BASE_URL, verify=True)
         return r.json()
-

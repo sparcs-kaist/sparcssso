@@ -9,22 +9,43 @@
 <h1>{% trans "Profile &amp; Social Network Accounts" %}</h1>
 <p>{% trans "You can change your information or connect / disconnect social accounts." %}</p>
 <p>{% trans "Changed information may not be applied in other SPARCS services." %}</p>
+<p>{% trans "If you change your email, you need to verify it again." %}</p>
 <form id="profile" class="form-horizontal" action="/account/profile/" method="post" enctype="multipart/form-data">
     <fieldset>
-        {% if success %}
         <div class="form-group">
             <div class="col-xs-offset-1 col-xs-10 col-sm-offset-2 col-sm-8">
-               <div class="alert alert-success">
+                {% if result_prof == 1 %}
+                <div class="alert alert-success">
                    <b>{% trans "Your information has been updated." %}</b>
                 </div>
+                {% elif result_prof == 2 %}
+                <div class="alert alert-success">
+                   <b>{% trans "Verification email has been sent." %}</b>
+                </div>
+                {% elif result_prof == 3 %}
+                <div class="alert alert-danger">
+                   <b>{% trans "Unable to verify the email address. Please try again." %}</b>
+                </div>
+                {% elif result_prof == 4 %}
+                <div class="alert alert-success">
+                   <b>{% trans "Your email has been successfully verified." %}</b>
+                </div>
+                {% endif %}
             </div>
         </div>
-        {% endif %}
         {% csrf_token %}
         <div class="form-group">
             <label class="col-sm-2 control-label">{% trans "Email" %} <span class="required"></span></label>
-            <div class="col-xs-offset-1 col-xs-10 col-sm-offset-0 col-sm-8">
-                <input type="email" class="form-control" name="email" value="{{user.email}}" disabled>
+            <div class="col-xs-offset-1 col-xs-8 col-sm-offset-0 col-sm-6">
+                <input type="email" class="form-control" name="email" required="required" maxlength="50" data-remote="/api/v2/email/?exclude={{user.email}}" data-error="{% trans "Not Valid or Duplicated Email" %}" value="{{user.email}}">
+                <span class="help-block with-errors"></span>
+            </div>
+            <div class="col-xs-2 col-sm-2">
+                {% if user.profile.email_authed %}
+                <a href="#" disabled class="btn btn-success" style="width:100%">{% trans "Verified" %}</a>
+                {% else %}
+                <a href="/account/email/" class="btn btn-warning" style="width:100%">{% trans "Verify" %}</a>
+                {% endif %}
             </div>
         </div>
         <input type="hidden" name="password" value="qwerty1234">
@@ -41,23 +62,16 @@
             <label class="col-sm-2 control-label">{% trans "Gender, Birthday" %}</label>
             <div class="col-xs-offset-1 col-xs-4 col-sm-offset-0 col-sm-3">
                 <select class="form-control" name="gender">
-                    <option value="E">{% trans "etc" %}</option>
-                    <option value="M">{% trans "Male" %}</option>
-                    <option value="F">{% trans "Female" %}</option>
+                    <option id="gender-H" value="*H">{% trans "Hide" %}</option>
+                    <option id="gender-M" value="*M">{% trans "Male" %}</option>
+                    <option id="gender-F" value="*F">{% trans "Female" %}</option>
+                    <option id="gender-E" value="*E">{% trans "etc" %}</option>
                 </select>
             </div>
             <div class="col-xs-6 col-sm-5">
                 <input type="text" class="form-control" name="birthday" placeholder="Birthday (YYYY-MM-DD)" data-vbirth="vbirth" value="{{profile.birthday|date:'Y-m-d'}}">
             </div>
         </div>
-        {% if profile.sparcs_id %}
-        <div class="form-group">
-            <label class="col-sm-2 control-label">SPARCS ID</label>
-            <div class="col-xs-offset-1 col-xs-10 col-sm-offset-0 col-sm-8">
-                <input type="text" class="form-control" value="{{profile.sparcs_id}}" disabled>
-            </div>
-        </div>
-        {% endif %}
 
         <div class="form-group">
             <div class="col-xs-12">
@@ -68,29 +82,27 @@
     </fieldset>
 </form>
 
-{% if profile.sparcs_id or profile.is_for_test %}
-<h3>테스트 기능</h3>
-<p class="text-info">테스트 기능을 활성화하면 정식 등록되지 않은 서비스에서도 로그인 할 수 있습니다.</p>
-<p class="text-info">이는 개발의 편의를 위해 SPARCS 회원에게만 제공되는 것입니다.</b>
-<p class="text-info">현재 테스트 기능이 {% if not profile.is_for_test %}비{% endif %}활성화되어 있습니다.</p>
-
-{% if profile.sparcs_id %}
-<form class="social-form" action="/account/test/toggle/" method="post">
-    {% csrf_token %}
-    {% if profile.is_for_test %}
-    <button type="submit" class="btn btn-success">비활성화</button>
-    {% else %}
-    <button type="submit" class="btn btn-danger">활성화</button>
-    <p class="text-danger"><b>경고!</b> 악의적인 링크를 클릭했을 때 SPARCS SSO에 등록된 모든 정보가 유출될 수 있습니다.</p>
-    {% endif %}
-</form>
-{% else %}
-<p class="text-info">테스트 전용 계정에서는 테스트 기능을 비활성화 할 수 없습니다.</p>
-{% endif %}
-
-{% endif %}
+<div class="modal fade" tabindex="-1" id="gender-type" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">{% trans "Type Your Gender" %}</h4>
+            </div>
+            <div class="text-center modal-body">
+                <input type="text" class="form-control" name="custom-gender" maxlength="30" placeholder="type here...">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <h3>{% trans "Social Accounts" %}</h3>
+{% if profile.test_only %}
+<p class="text-danger">Test accounts CANNOT connect / disconnect to social accounts.</p>
+{% else %}
 {% if profile.kaist_id %}
 <p class="text-info">{% trans "You can renew your KAIST SSO information." %}</p>
 {% else %}
@@ -110,6 +122,14 @@
     {% elif result_con == 2 %}
     <div class="alert alert-danger">
         <b>{% trans "You cannot renew your information with the other KAIST portal account." %}</b>
+    </div>
+    {% elif result_con == 3 %}
+    <div class="alert alert-danger">
+        <b>{% trans "Please grant all requested permission" %}</b>
+    </div>
+    {% elif result_con == 4 %}
+    <div class="alert alert-danger">
+        <b>{% trans "To disconnect SNS account, either password has been set or other SNS accounts should be connected" %}</b>
     </div>
     {% elif result_con == 5 %}
     <div class="alert alert-success">
@@ -170,10 +190,47 @@
         {% endif %}
     </div>
 </div>
+{% endif %}
 
 <script type="text/javascript">
 $(function() {
-    $("select[name=gender]").val('{{profile.gender}}');
+    var common_gender = function(g) {
+        return g == '*H' || g == '*M' || g == '*F' || g == '*E';
+    };
+
+    var g = '{{profile.gender}}';
+    if (common_gender(g))
+        $("select[name=gender]").val(g);
+    else if (g != '') {
+        $("#gender-E").text("{% trans "etc" %} (" + g + ")");
+        $("#gender-E").attr("value", g);
+        $("#gender-E").attr("selected", true);
+        $("input[name=custom-gender]").val(g);
+    }
+
+    $("select[name=gender]").change(function() {
+        var id = $("select[name=gender] option:selected").attr("id");
+        if (id == 'gender-E')
+            $("#gender-type").modal('show');
+    });
+
+    $("#gender-type").on('hide.bs.modal', function (e) {
+        var g = $("input[name='custom-gender']").val().trim();
+        var custom_option = $("#gender-E");
+        if (common_gender(g)) {
+            custom_option.attr("value", '*E');
+            custom_option.text("{% trans "etc" %}");
+            $("select[name=gender]").val(g);
+            $("input[name=custom-gender]").val("");
+        } else if (g == '') {
+            custom_option.attr("value", '*E');
+            custom_option.text("{% trans "etc" %}");
+        } else {
+            custom_option.attr("value", g);
+            custom_option.text("{% trans "etc" %} (" + g + ")");
+        }
+    });
+
     var option = {
         disable: true,
         custom: {
@@ -186,7 +243,10 @@ $(function() {
     $('#profile').validator(option);
     
     $("input[name=birthday]").datepicker({
-        dateFormat: "yy-mm-dd"  
+        dateFormat: "yy-mm-dd",
+        changeMonth: true,
+        changeYear: true,
+        yearRange: "1930:-00",
     });
 });
 </script>

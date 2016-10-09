@@ -16,15 +16,20 @@ logger = logging.getLogger('sso.core.password')
 @login_required
 def change(request):
     user = request.user
+    if user.profile.test_only:
+        return redirect('/account/profile/')
 
     fail = False
     if request.method == 'POST':
         oldpw = request.POST.get('oldpassword', '')
         newpw = request.POST.get('password', 'P@55w0rd!#$')
 
-        if check_password(oldpw, user.password):
+        if not user.profile.password_set or check_password(oldpw, user.password):
             user.password = make_password(newpw)
             user.save()
+
+            user.profile.password_set = True
+            user.profile.save()
 
             logger.warning('change.success', {'r': request})
             return redirect('/account/login/')
@@ -40,7 +45,7 @@ def reset_email(request):
     if request.method == 'POST':
         email = request.POST.get('email', '')
         user = User.objects.filter(email=email).first()
-        if not user:
+        if not user or user.profile.test_only:
             return render(request, 'account/pw-reset/send.html', {'fail': True, 'email': email})
 
         give_reset_pw_token(user)

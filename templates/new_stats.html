@@ -24,8 +24,13 @@
         font-weight: 600;
         margin: 10px;
     }
-    .datepicker {
-        padding: 6px 12px;
+
+    .top-panel {
+        width: 60%;
+        margin: 0 auto;
+    }
+
+    .input-daterange {
     }
 </style>
 
@@ -41,17 +46,20 @@ PUBLIC
 </p>
 
 <div class="row">
-    <div class="btn-group" role="group">
-        <div class="btn-group" role="group">
-		    <button class="btn btn-default dropdown-toggle" type="button" id="service-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-			    서비스
-			    <span class="caret"></span>
-		    </button>
-		    <ul id="service-dropdown-menu" class="dropdown-menu" aria-labelledby="service-dropdown">
-		    </ul>
+    <div class="input-daterange input-group top-panel" id="datepicker">
+        <div class="input-group-btn btn-group" role="group">
+            <div class="btn-group" role="group">
+		        <button class="btn btn-default dropdown-toggle" type="button" id="service-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+			        서비스
+			        <span class="caret"></span>
+		        </button>
+		        <ul id="service-dropdown-menu" class="dropdown-menu" aria-labelledby="service-dropdown">
+		        </ul>
+            </div>
         </div>
-        <button type="button" class="btn btn-default datepicker">시작 날짜</button>
-        <button type="button" class="btn btn-default datepicker">끝 날짜</button>
+        <input type="text" class="form-control date-control s-date" name="start" value="" />
+        <span class="input-group-addon">~</span>
+        <input type="text" class="form-control date-control e-date" name="end" value="" />
     </div>
 </div>
 
@@ -84,13 +92,31 @@ PUBLIC
 
 
 <script>
-$('.datepicker').datepicker({});
 
 var first_call_g = true;
+
+/*
+s_date_g: start date, manually
+e_date_g: date of today
+*/
 var s_date_g = "2016-08-16"
+var e_date_g = (new Date()).toISOString().substring(0, 10);
+var service_g = "all"
+
+$('.input-daterange').datepicker({
+    autoclose: true,
+    todayHighlight: true,
+    format: "yyyy-mm-dd",
+    
+    }).on("changeDate", function(e){
+        s_date_g = $(".s-date").val();
+        e_date_g = $(".e-date").val();
+        get_stats(service_g, s_date_g, e_date_g);
+});
 
 $(document).ready(function(){
-    get_stats("all", s_date_g);
+    set_date_to_calendar(s_date_g, e_date_g);
+    get_stats(service_g, s_date_g, e_date_g);
     find_dropdown_menu_pos();
 });
 
@@ -99,8 +125,10 @@ $(window).resize(function(){
 });
 
 $("body").on("click", ".dropdown-service", function(){
-    change_service($(this).text());   
+    service_g = $(this).text();
+    change_service(service_g);   
 });
+
 
 
 /**
@@ -137,17 +165,21 @@ function success_stats(data, textStatus, jqXHR){
         first_call_g = false;
     }
     
-    var property_arr = get_properties(s_data);
-	for(var idx = 0; idx < property_arr.length; idx++){
-		var property = property_arr[idx];
-		var f_data = get_formatted_data(s_data, property);
-		draw_graph(f_data, property);
-	}
+    if(Object.keys(s_data).length != 0){
+        var property_arr = get_properties(s_data);
+	    for(var idx = 0; idx < property_arr.length; idx++){
+	    	var property = property_arr[idx];
+	    	var f_data = get_formatted_data(s_data, property);
+    		draw_graph(f_data, property);
+        }
+    } else {
+        alert("선택한 구간의 데이터가 없습니다!");
+    }
 }
 
 function change_service(s_name){
     change_service_label(s_name);
-    get_stats(s_name, s_date_g);
+    get_stats(s_name, s_date_g, e_date_g);
 }
 
 function change_service_label(s_name){
@@ -349,6 +381,11 @@ function add_services(service){
 function find_dropdown_menu_pos(){
 	$dm_left = $("#service-dropdown").position();
 	$("#service-dropdown-menu").css("left", $dm_left.left);
+}
+
+function set_date_to_calendar(s_date, e_date){
+    $(".s-date").val(s_date);
+    $(".e-date").val(e_date);
 }
 
 /*

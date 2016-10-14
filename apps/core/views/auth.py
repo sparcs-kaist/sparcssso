@@ -30,7 +30,7 @@ def login(request):
         request.session['next'] = request.GET['next']
 
     query_dict = parse_qs(urlparse(request.session.get('next', '/')).query)
-    service = Service.objects.filter(name=query_dict.get('app', [''])[0]).first()
+    service = Service.objects.filter(name=query_dict.get('client_id', [''])[0]).first()
     srv_name = service.alias if service else ''
 
     if request.method == 'POST':

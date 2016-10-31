@@ -88,17 +88,13 @@ def help(request):
 
 # /contact/
 def contact(request):
-    name = ''
-    email = ''
-    subject = ''
-    message = ''
     if request.method == 'POST':
         subject = request.POST.get('subject','')
         name = request.POST.get('name','')
         email = request.POST.get('email','')
         message = request.POST.get('message','')
         recipients = ['gogi@sparcs.org']
-        real_subject = "Sparcs SSO Report : " + subject
+        real_subject = "SPARCS SSO Report : " + subject
 
         result = validate_recaptcha(request.POST.get('g-recaptcha-response',''))
 
@@ -112,8 +108,7 @@ def contact(request):
             except ValueError:
                 raise SuspiciousOperation()
             return redirect('/thanks/')
-    return render(request, 'contact.html',
-            {'name': name, 'email': email, 'subject': subject, 'message':message})
+    return render(request, 'contact.html')
 
 # /thanks/
 def thanks(request):

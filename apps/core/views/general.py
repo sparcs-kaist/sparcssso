@@ -93,24 +93,33 @@ def contact(request):
     subject = ''
     message = ''
     if request.method == 'POST':
+        subject = request.POST.get('subject','')
         name = request.POST.get('name','')
         email = request.POST.get('email','')
-        subject = request.POST.get('subject','')
         message = request.POST.get('message','')
         recipients = ['gogi@sparcs.org']
+        real_subject = "Sparcs SSO Report : " + subject
 
         result = validate_recaptcha(request.POST.get('g-recaptcha-response',''))
 
         if not result:
             return redirect('/')
 
-        if name and email and message:
+        if subject and name and email and message:
             try:
-                contents = 'name :' + name + '\n' + 'message\n' + message
-                send_mail(subject, contents, email, recipients)
+                contents = 'subject : ' + subject + '\nname : ' + name + '\nmessage\n' + message
+                send_mail(real_subject, contents, email, recipients)
             except ValueError:
                 raise SuspiciousOperation()
-            return redirect('/contact/thanks/')
+            return redirect('/thanks/')
     return render(request, 'contact.html',
             {'name': name, 'email': email, 'subject': subject, 'message':message})
 
+# /thanks/
+def thanks(request):
+    state = ''
+    if request.method == 'POST':
+        state = requset.POST.get('state','')
+        if state:
+            return redirect('/')
+    return render(request, 'thanks.html')

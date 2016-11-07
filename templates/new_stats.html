@@ -50,7 +50,7 @@ PUBLIC
         <div class="input-group-btn btn-group" role="group">
             <div class="btn-group" role="group">
 		        <button class="btn btn-default dropdown-toggle" type="button" id="service-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-			        서비스
+                    <span class="s-name">서비스</span>
 			        <span class="caret"></span>
 		        </button>
 		        <ul id="service-dropdown-menu" class="dropdown-menu" aria-labelledby="service-dropdown">
@@ -60,6 +60,9 @@ PUBLIC
         <input type="text" class="form-control date-control s-date" name="start" value="" />
         <span class="input-group-addon">~</span>
         <input type="text" class="form-control date-control e-date" name="end" value="" />
+        <span class="input-group-btn">
+            <button class="btn btn-default btn-primary btn-get-stat" type="button">Go!</button>
+        </span>
     </div>
 </div>
 
@@ -106,12 +109,7 @@ var service_g = "all"
 $('.input-daterange').datepicker({
     autoclose: true,
     todayHighlight: true,
-    format: "yyyy-mm-dd",
-    
-    }).on("changeDate", function(e){
-        s_date_g = $(".s-date").val();
-        e_date_g = $(".e-date").val();
-        get_stats(service_g, s_date_g, e_date_g);
+    format: "yyyy-mm-dd",    
 });
 
 $(document).ready(function(){
@@ -129,6 +127,12 @@ $("body").on("click", ".dropdown-service", function(){
     change_service(service_g);   
 });
 
+$(".btn-get-stat").click(function(){
+    s_date_g = $(".s-date").val();
+    e_date_g = $(".e-date").val();
+    get_stats(service_g, s_date_g, e_date_g);
+    change_service_label(service_g);
+});
 
 
 /**
@@ -173,13 +177,14 @@ function success_stats(data, textStatus, jqXHR){
     		draw_graph(f_data, property);
         }
     } else {
-        alert("선택한 구간의 데이터가 없습니다!");
+        // alert("선택한 구간의 데이터가 없습니다!");
     }
 }
 
 function change_service(s_name){
-    change_service_label(s_name);
-    get_stats(s_name, s_date_g, e_date_g);
+    $(".s-name").text(s_name);
+    // change_service_label(s_name);
+    // get_stats(s_name, s_date_g, e_date_g);
 }
 
 function change_service_label(s_name){

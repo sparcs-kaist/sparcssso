@@ -68,7 +68,6 @@ PUBLIC
 
 
 <div class="row" style="margin-top: 30px;">
-    <h4>선택한 서비스는 <span class="label label-info label-service">Loading..</span>입니다.</h4>
 
     <p class="chart-header">Account</p>
     <div>
@@ -131,7 +130,6 @@ $(".btn-get-stat").click(function(){
     s_date_g = $(".s-date").val();
     e_date_g = $(".e-date").val();
     get_stats(service_g, s_date_g, e_date_g);
-    change_service_label(service_g);
 });
 
 
@@ -161,7 +159,7 @@ function success_stats(data, textStatus, jqXHR){
     var service_list = get_services(data);
     console.log(data);
 	var s_data = get_data_of_s(data, service_list[0]);
-    change_service_label(service_list[0]);
+    change_service(service_list[0]);
 
     /* only first call, add services to dropdown */
     if(first_call_g){
@@ -183,12 +181,6 @@ function success_stats(data, textStatus, jqXHR){
 
 function change_service(s_name){
     $(".s-name").text(s_name);
-    // change_service_label(s_name);
-    // get_stats(s_name, s_date_g, e_date_g);
-}
-
-function change_service_label(s_name){
-    $(".label-service").text(s_name);
 }
 
 

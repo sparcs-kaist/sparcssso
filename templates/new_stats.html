@@ -166,13 +166,19 @@ function success_stats(data, textStatus, jqXHR){
         add_services(service_list);
         first_call_g = false;
     }
-    
     if(Object.keys(s_data).length != 0){
         var property_arr = get_properties(s_data);
-	    for(var idx = 0; idx < property_arr.length; idx++){
+        for(var idx = 0; idx < property_arr.length; idx++){
 	    	var property = property_arr[idx];
-	    	var f_data = get_formatted_data(s_data, property);
-    		draw_graph(f_data, property);
+            var f_data = make_formatted_to_arr(
+                get_formatted_data(s_data)[property]
+            );
+            
+            if(property != "kaist"){
+                console.log(f_data);
+                draw_graph(f_data, property);
+            }
+            
         }
     } else {
         // alert("선택한 구간의 데이터가 없습니다!");
@@ -253,45 +259,64 @@ function get_properties(s_data){
 		...
 	},
 }
-@returns {array} - Data format
-[
-	{
-		key: "label1",
-		values:[
-			{ x1: val_x1, y1: val_y1},
-			{ x2: val_x2, y2: val_y2},
-			...
-		]
+@returns {obj} - Data format
+{
+    property: {
+        label1: {
+		    key: "label1",
+		    values:[
+			    { x1: val_x1, y1: val_y1},
+			    { x2: val_x2, y2: val_y2},
+			    ...
+                ]
+        }
 	},
-	{
-		key: "label2",
-		...
-	}
-]
+    kaist: {
+        2nd_property: {
+            label2: {
+		        key: "label2",
+		        ...
+            }
+        }
+    }
+}
 */
 
-function get_formatted_data(s_data, property){
-	var r_values = {};
-	var date_arr = Object.keys(s_data).sort();
+function get_formatted_data(s_data){
     
+    var formatted_obj = {};
+	var date_arr = Object.keys(s_data).sort();
     for(var idx = 0; idx < date_arr.length; idx++){
 		var date_key = date_arr[idx];
 		var attr_obj = s_data[date_key];
-        
-        var property_arr = Object.keys(attr_obj);
-        // if property found
-        if(property_arr.indexOf(property) != -1){
-            r_values = preprocess_data(attr_obj, date_key, r_values, property);
-		} else {
+        for(var property in attr_obj){
+            if(property != "kaist"){
+                for(var label in attr_obj[property]){
+                    if(!is_valid_key_arr(formatted_obj, [property, label])){
+                        formatted_obj = set_emt_to_obj(formatted_obj, [property, label], {
+                            "key": label,
+                            "values": []
+                        })
+                    }
+                    formatted_obj[property][label]["values"]
+                    .push({
+                        "x": date_key,
+                        "y": attr_obj[property][label]
+                    });
+                }
+            } else{
+            }
+        }
 
-		}
 	}
-	
+    return formatted_obj;
+    /*
 	var r_arr = [];
 	for(var r_key in r_values){
 		r_arr.push({"key": r_key, "values": r_values[r_key]});
-	}
+    }
 	return r_arr;
+    */
 }
 /*
 manipulate p_attr_obj for purpose
@@ -362,6 +387,8 @@ function preprocess_data_kaist(p_attr_obj, property_2nd){
             break;
         case "start_year":
             break;
+        case "gender":
+            break;
     }
 }
 
@@ -414,7 +441,45 @@ function max(x /*: Array<number> */) /*:number*/ {
     return value;
 }
 
+function is_valid_key_arr(obj, key_arr){
+    for(var idx in key_arr){
+        var key = key_arr[idx];
+        if(Object.keys(obj).indexOf(key) != -1){
+            var obj = obj[key];
+        } else {
+            return false;
+        }
+    }
+    return true;
+}
 
+function set_emt_to_obj(obj, key_arr, value){
+    var copied_obj = JSON.parse(JSON.stringify(obj));  
+    if(key_arr.length == 1){
+        var key = key_arr[0];
+        copied_obj[key] = value;
+    } else {
+        var key = key_arr.shift();
+        if(!is_key(copied_obj, key)){
+            copied_obj[key] = {};
+        }
+        var new_obj = copied_obj[key]; 
+        copied_obj[key] = set_emt_to_obj(new_obj, key_arr, value);
+    }
+    return copied_obj;
+}
+
+function is_key(obj, key){
+    return (Object.keys(obj).indexOf(key+"") != -1);
+}
+
+function make_formatted_to_arr(formatted_obj){
+    var r_arr = [];
+    for(var label in formatted_obj){
+        r_arr.push(formatted_obj[label]);
+    }
+    return r_arr;
+}
 
 </script>
 

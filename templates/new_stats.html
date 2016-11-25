@@ -489,6 +489,14 @@ function preprocess_data_kaist(p_attr_obj, property_2nd){
     }
 }
 
+/**
+- There can be too many bars in year graph.
+- sholud select column whose delta is huge
+@return select below 6 date to represent year graph
+*/
+function postprocess_data_year(formatted_data) {
+
+}
 
 /**
 DOM manipulation function with jquery

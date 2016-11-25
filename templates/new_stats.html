@@ -49,12 +49,12 @@ PUBLIC
     <div class="input-daterange input-group top-panel" id="datepicker">
         <div class="input-group-btn btn-group" role="group">
             <div class="btn-group" role="group">
-		        <button class="btn btn-default dropdown-toggle" type="button" id="service-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                <button class="btn btn-default dropdown-toggle" type="button" id="service-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                     <span class="s-name">서비스</span>
-			        <span class="caret"></span>
-		        </button>
-		        <ul id="service-dropdown-menu" class="dropdown-menu" aria-labelledby="service-dropdown">
-		        </ul>
+                    <span class="caret"></span>
+                </button>
+                <ul id="service-dropdown-menu" class="dropdown-menu" aria-labelledby="service-dropdown">
+                </ul>
             </div>
         </div>
         <input type="text" class="form-control date-control s-date" name="start" value="" />
@@ -71,23 +71,23 @@ PUBLIC
 
     <p class="chart-header">Account</p>
     <div>
-		<svg id="account-chart" style='width:100%; height:500px;'> </svg>
+        <svg id="account-chart" style='width:100%; height:500px;'> </svg>
     </div>
     
     <p class="chart-header">birth_year</p>
-	<div>
-		<svg id="birth-year-chart" style='width:100%; height:500px;'> </svg>
-	</div>
+    <div>
+        <svg id="birth-year-chart" style='width:100%; height:500px;'> </svg>
+    </div>
     
     <p class="chart-header">Gender</p>
-	<div>
-		<svg id="gender-chart" style='width:100%; height:500px;'> </svg>
+    <div>
+        <svg id="gender-chart" style='width:100%; height:500px;'> </svg>
     </div>
     
     <hr>
     <p class="chart-header">KAIST - Gender</p>
-	<div>
-		<svg id="kaist-gender-chart" style='width:100%; height:500px;'> </svg>
+    <div>
+        <svg id="kaist-gender-chart" style='width:100%; height:500px;'> </svg>
     </div>
  
 </div>
@@ -118,7 +118,7 @@ $(document).ready(function(){
 });
 
 $(window).resize(function(){
-	find_dropdown_menu_pos();		
+    find_dropdown_menu_pos();        
 });
 
 $("body").on("click", ".dropdown-service", function(){
@@ -138,17 +138,17 @@ jquery ajax call
 @param - read https://wiki.sparcs.org/w/index.php/SPARCS_SSO_API_%EB%AA%85%EC%84%B8
  */
 function get_stats(client_ids, date_from, date_to){
-	var param = {};
-	var arg_names = ["client_ids", "date_from", "date_to"];
-	for(var idx = 0; idx < arguments.length; idx++){
-		param[arg_names[idx]] = arguments[idx];
-	}
-	$.ajax({
-		url: "/api/v2/stats/",
-		data: param,
-		success: success_stats,
-		dataType: "Json",
-	});
+    var param = {};
+    var arg_names = ["client_ids", "date_from", "date_to"];
+    for(var idx = 0; idx < arguments.length; idx++){
+        param[arg_names[idx]] = arguments[idx];
+    }
+    $.ajax({
+        url: "/api/v2/stats/",
+        data: param,
+        success: success_stats,
+        dataType: "Json",
+    });
 }
 
 
@@ -158,7 +158,7 @@ jquery ajax success function
 function success_stats(data, textStatus, jqXHR){
     var service_list = get_services(data);
     console.log(data);
-	var s_data = get_data_of_s(data, service_list[0]);
+    var s_data = get_data_of_s(data, service_list[0]);
     change_service(service_list[0]);
 
     /* only first call, add services to dropdown */
@@ -169,7 +169,7 @@ function success_stats(data, textStatus, jqXHR){
     if(Object.keys(s_data).length != 0){
         var property_arr = get_properties(s_data);
         for(var idx = 0; idx < property_arr.length; idx++){
-	    	var property = property_arr[idx];
+            var property = property_arr[idx];
             var f_data = make_formatted_to_arr(
                 get_formatted_data(s_data)[property]
             );
@@ -194,32 +194,32 @@ function change_service(s_name){
 Graph drawing function
 */
 function draw_graph(f_data, property){
-	var property = property.replace("_", "-");
-	nv.addGraph(function() {
-		var chart = nv.models.multiBarChart()
-			.transitionDuration(350)
-			.reduceXTicks(true)   //If 'false', every single x-axis tick label will be rendered.
-			.rotateLabels(0)      //Angle to rotate x-axis labels.
-			.showControls(true)   //Allow user to switch between 'Grouped' and 'Stacked' mode.
-			.groupSpacing(0.1)    //Distance between each group of bars.
-			;
+    var property = property.replace("_", "-");
+    nv.addGraph(function() {
+        var chart = nv.models.multiBarChart()
+            .transitionDuration(350)
+            .reduceXTicks(true)   //If 'false', every single x-axis tick label will be rendered.
+            .rotateLabels(0)      //Angle to rotate x-axis labels.
+            .showControls(true)   //Allow user to switch between 'Grouped' and 'Stacked' mode.
+            .groupSpacing(0.1)    //Distance between each group of bars.
+            ;
 
-		chart.xAxis
-			.tickFormat(function(d){
-				return d3.time.format("%x")(new Date(d))
-			});
+        chart.xAxis
+            .tickFormat(function(d){
+                return d3.time.format("%x")(new Date(d))
+            });
 
-		chart.yAxis
-			.tickFormat(d3.format(',.1f'));
+        chart.yAxis
+            .tickFormat(d3.format(',.1f'));
 
-		d3.select("#"+property+"-chart")
-			.datum(f_data)
-			.call(chart);
+        d3.select("#"+property+"-chart")
+            .datum(f_data)
+            .call(chart);
 
-		nv.utils.windowResize(chart.update);
+        nv.utils.windowResize(chart.update);
 
-		return chart;
-	});
+        return chart;
+    });
 }
 
 
@@ -232,12 +232,12 @@ Stats object manipulation function
 @returns {array} - array of services
 */
 function get_services(data){
-	var stats = data["stats"];
-	return Object.keys(stats);
+    var stats = data["stats"];
+    return Object.keys(stats);
 }
 
 function get_data_of_s(data, s_name){
-	return data["stats"][s_name]["data"];
+    return data["stats"][s_name]["data"];
 }
 
 function get_properties(s_data){
@@ -248,34 +248,34 @@ function get_properties(s_data){
 /*
 @param {obj} s_data - Data format
 {
-	2016-08-17T12:46:56+00:00: {
-		account: {
-			all: int_all,
-			email: int_email,
-			...
-		},
-	},
-	2016-08-18T12:55:35+00:00: {
-		...
-	},
+    2016-08-17T12:46:56+00:00: {
+        account: {
+            all: int_all,
+            email: int_email,
+            ...
+        },
+    },
+    2016-08-18T12:55:35+00:00: {
+        ...
+    },
 }
 @returns {obj} - Data format
 {
     property: {
         label1: {
-		    key: "label1",
-		    values:[
-			    { x1: val_x1, y1: val_y1},
-			    { x2: val_x2, y2: val_y2},
-			    ...
+            key: "label1",
+            values:[
+                { x1: val_x1, y1: val_y1},
+                { x2: val_x2, y2: val_y2},
+                ...
                 ]
         }
-	},
+    },
     kaist: {
         2nd_property: {
             label2: {
-		        key: "label2",
-		        ...
+                key: "label2",
+                ...
             }
         }
     }
@@ -285,10 +285,10 @@ function get_properties(s_data){
 function get_formatted_data(s_data){
     
     var formatted_obj = {};
-	var date_arr = Object.keys(s_data).sort();
+    var date_arr = Object.keys(s_data).sort();
     for(var idx = 0; idx < date_arr.length; idx++){
-		var date_key = date_arr[idx];
-		var attr_obj = s_data[date_key];
+        var date_key = date_arr[idx];
+        var attr_obj = s_data[date_key];
         for(var property in attr_obj){
             if(property != "kaist"){
                 for(var label in attr_obj[property]){
@@ -308,14 +308,14 @@ function get_formatted_data(s_data){
             }
         }
 
-	}
+    }
     return formatted_obj;
     /*
-	var r_arr = [];
-	for(var r_key in r_values){
-		r_arr.push({"key": r_key, "values": r_values[r_key]});
+    var r_arr = [];
+    for(var r_key in r_values){
+        r_arr.push({"key": r_key, "values": r_values[r_key]});
     }
-	return r_arr;
+    return r_arr;
     */
 }
 /*
@@ -346,11 +346,11 @@ function preprocess_data(attr_obj, date_key, r_values, property, property_2nd) {
     }
     
     for(var r_key in p_attr_obj){
-		if(Object.keys(r_values).indexOf(r_key) === -1){
-			r_values[r_key] = [];
-		}
-		r_values[r_key].push({"x": date_key, "y":p_attr_obj[r_key]});
-	}
+        if(Object.keys(r_values).indexOf(r_key) === -1){
+            r_values[r_key] = [];
+        }
+        r_values[r_key].push({"x": date_key, "y":p_attr_obj[r_key]});
+    }
     return r_values;
 }
 
@@ -397,14 +397,14 @@ function preprocess_data_kaist(p_attr_obj, property_2nd){
 DOM manipulation function with jquery
 */
 function add_services(service){
-	for(var idx = 0; idx < service.length; idx++){
-		$("#service-dropdown-menu").append('<li id=dropdown-'+service[idx]+' class="dropdown-service"  ><a href="#">'+service[idx]+'</a></li>');
-	}
+    for(var idx = 0; idx < service.length; idx++){
+        $("#service-dropdown-menu").append('<li id=dropdown-'+service[idx]+' class="dropdown-service"  ><a href="#">'+service[idx]+'</a></li>');
+    }
 }
 
 function find_dropdown_menu_pos(){
-	$dm_left = $("#service-dropdown").position();
-	$("#service-dropdown-menu").css("left", $dm_left.left);
+    $dm_left = $("#service-dropdown").position();
+    $("#service-dropdown-menu").css("left", $dm_left.left);
 }
 
 function set_date_to_calendar(s_date, e_date){

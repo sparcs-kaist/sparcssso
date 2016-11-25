@@ -68,43 +68,46 @@ PUBLIC
 
 
 <div class="row" style="margin-top: 30px;">
-
-    <p class="chart-header">Account</p>
-    <div>
-        <svg id="account-chart" style='width:100%; height:500px;'> </svg>
+    
+    <div class="chart-lv-1">
+        <p class="chart-header">Birth_Year</p>
+        <div>
+            <svg id="birth-year-chart" style='width:100%; height:500px;'> </svg>
+        </div>
+    
+        <p class="chart-header">Gender</p>
+        <div>
+            <svg id="gender-chart" style='width:100%; height:500px;'> </svg>
+        </div>
     </div>
     
-    <p class="chart-header">Birth_Year</p>
-    <div>
-        <svg id="birth-year-chart" style='width:100%; height:500px;'> </svg>
-    </div>
+    <div class="chart-lv-2">
+        <p class="chart-header">Account</p>
+        <div>
+            <svg id="account-chart" style='width:100%; height:500px;'> </svg>
+        </div>
     
-    <p class="chart-header">Gender</p>
-    <div>
-        <svg id="gender-chart" style='width:100%; height:500px;'> </svg>
-    </div>
+        <hr>
+        <p class="chart-header">KAIST - Gender</p>
+        <div>
+            <svg id="kaist-gender-chart" style='width:100%; height:500px;'> </svg>
+        </div>
     
-    <hr>
-    <p class="chart-header">KAIST - Gender</p>
-    <div>
-        <svg id="kaist-gender-chart" style='width:100%; height:500px;'> </svg>
-    </div>
+        <p class="chart-header">KAIST - Start_Year</p>
+        <div>
+            <svg id="kaist-start-year-chart" style='width:100%; height:500px;'> </svg>
+        </div>
     
-    <p class="chart-header">KAIST - Start_Year</p>
-    <div>
-        <svg id="kaist-start-year-chart" style='width:100%; height:500px;'> </svg>
-    </div>
+        <p class="chart-header">KAIST - Birth_Year</p>
+        <div>
+            <svg id="kaist-birth-year-chart" style='width:100%; height:500px;'> </svg>
+        </div>
     
-    <p class="chart-header">KAIST - Birth_Year</p>
-    <div>
-        <svg id="kaist-birth-year-chart" style='width:100%; height:500px;'> </svg>
+        <p class="chart-header">KAIST - Department</p>
+        <div>
+            <svg id="kaist-department-chart" style='width:100%; height:500px;'> </svg>
+        </div>
     </div>
-    
-    <p class="chart-header">KAIST - Department</p>
-    <div>
-        <svg id="kaist-department-chart" style='width:100%; height:500px;'> </svg>
-    </div>
-
 </div>
 
 
@@ -175,6 +178,7 @@ function success_stats(data, textStatus, jqXHR){
     console.log(data);
     var s_data = get_data_of_s(data, service_list[0]);
     change_service(service_list[0]);
+    destroy_not_auth_chart(s_data);
 
     /* only first call, add services to dropdown */
     if(first_call_g){
@@ -294,7 +298,11 @@ function get_services(data){
 }
 
 function get_data_of_s(data, s_name){
-    return data["stats"][s_name]["data"];
+    if(typeof(s_name) == "undefined"){
+        return {};
+    } else{
+        return data["stats"][s_name]["data"];
+    }
 }
 
 function get_properties(s_data){
@@ -500,6 +508,17 @@ function set_date_to_calendar(s_date, e_date){
     $(".s-date").val(s_date);
     $(".e-date").val(e_date);
 }
+
+function destroy_not_auth_chart(s_data){
+    var len = Object.keys(s_data).length;
+    if(len == 0){
+        $(".chart-lv-1").remove();
+        $(".chart-lv-2").remove();
+    } else if (len < 3){
+        $(".chart-lv-2").remove();
+    }
+}
+
 
 /*
 Help function

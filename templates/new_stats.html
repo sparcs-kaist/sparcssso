@@ -74,7 +74,7 @@ PUBLIC
         <svg id="account-chart" style='width:100%; height:500px;'> </svg>
     </div>
     
-    <p class="chart-header">birth_year</p>
+    <p class="chart-header">Birth_Year</p>
     <div>
         <svg id="birth-year-chart" style='width:100%; height:500px;'> </svg>
     </div>
@@ -89,7 +89,22 @@ PUBLIC
     <div>
         <svg id="kaist-gender-chart" style='width:100%; height:500px;'> </svg>
     </div>
- 
+    
+    <p class="chart-header">KAIST - Start_Year</p>
+    <div>
+        <svg id="kaist-start-year-chart" style='width:100%; height:500px;'> </svg>
+    </div>
+    
+    <p class="chart-header">KAIST - Birth_Year</p>
+    <div>
+        <svg id="kaist-birth-year-chart" style='width:100%; height:500px;'> </svg>
+    </div>
+    
+    <p class="chart-header">KAIST - Department</p>
+    <div>
+        <svg id="kaist-department-chart" style='width:100%; height:500px;'> </svg>
+    </div>
+
 </div>
 
 
@@ -168,17 +183,31 @@ function success_stats(data, textStatus, jqXHR){
     }
     if(Object.keys(s_data).length != 0){
         var property_arr = get_properties(s_data);
+        var property_kaist_arr = get_properties_kaist(s_data);
         for(var idx = 0; idx < property_arr.length; idx++){
             var property = property_arr[idx];
-            var f_data = make_formatted_to_arr(
-                get_formatted_data(s_data)[property]
-            );
             
-            if(property != "kaist"){
-                console.log(f_data);
+            formatted_data = get_formatted_data(s_data);
+
+            if(property != "kaist"){ 
+                var f_data = make_formatted_to_arr(
+                    formatted_data[property]
+                );
                 draw_graph(f_data, property);
+            } else{
+                for(var kaidx in property_kaist_arr){
+                    var property_kaist = property_kaist_arr[kaidx]
+                    if(property_kaist != "department"){
+                        var f_data = make_formatted_to_arr(
+                            formatted_data[property][property_kaist]
+                        );
+                        draw_graph_kaist(f_data, property, property_kaist);
+                    } else { /* departemnt case */
+                        var f_data = formatted_data[property][property_kaist];
+                        draw_graph_dept(f_data);
+                    }
+                }
             }
-            
         }
     } else {
         // alert("선택한 구간의 데이터가 없습니다!");
@@ -210,7 +239,7 @@ function draw_graph(f_data, property){
             });
 
         chart.yAxis
-            .tickFormat(d3.format(',.1f'));
+            .tickFormat(d3.format(',.0f'));
 
         d3.select("#"+property+"-chart")
             .datum(f_data)
@@ -220,6 +249,34 @@ function draw_graph(f_data, property){
 
         return chart;
     });
+}
+
+function draw_graph_kaist(f_data, property, property_2nd){
+    var property = property.replace("_", "-");
+    var property_2nd = property_2nd.replace("_", "-");
+    var property_class = [property, property_2nd].join("-");
+    draw_graph(f_data, property_class);
+}
+
+function draw_graph_dept(f_data) {
+    nv.addGraph(function() {
+        var chart = nv.models.pieChart()
+            .x(function(d) { return d.label })
+            .y(function(d) { return d.value })
+            .showLabels(true)
+            .labelThreshold(.05)
+            .labelType("percent") 
+            .donut(true)
+            .donutRatio(0.35)
+            .valueFormat(d3.format(',.0f'));
+
+        d3.select("#kaist-department-chart")
+            .datum(f_data)
+            .transition().duration(350)
+            .call(chart);
+        
+        return chart;
+    }); 
 }
 
 
@@ -242,7 +299,12 @@ function get_data_of_s(data, s_name){
 
 function get_properties(s_data){
     var date_arr = Object.keys(s_data);
-    return Object.keys(s_data[date_arr[0]]);
+    return Object.keys(s_data[date_arr[date_arr.length -1]]);
+}
+
+function get_properties_kaist(s_data) {
+    var date_arr = Object.keys(s_data);
+    return Object.keys(s_data[date_arr[date_arr.length -1]]["kaist"]);
 }
 
 /*
@@ -277,8 +339,11 @@ function get_properties(s_data){
                 key: "label2",
                 ...
             }
-        }
-    }
+        },
+        department: [
+            {label: "label", value: "value"},
+        ]
+    }   
 }
 */
 
@@ -289,8 +354,10 @@ function get_formatted_data(s_data){
     for(var idx = 0; idx < date_arr.length; idx++){
         var date_key = date_arr[idx];
         var attr_obj = s_data[date_key];
+        
         for(var property in attr_obj){
             if(property != "kaist"){
+                preprocess_data(attr_obj, property);
                 for(var label in attr_obj[property]){
                     if(!is_valid_key_arr(formatted_obj, [property, label])){
                         formatted_obj = set_emt_to_obj(formatted_obj, [property, label], {
@@ -304,35 +371,64 @@ function get_formatted_data(s_data){
                         "y": attr_obj[property][label]
                     });
                 }
-            } else{
+            } else{ /* kaist case */
+                for(var property_2nd in attr_obj[property]){
+                    var attr_2nd_obj = attr_obj[property][property_2nd];
+                    
+                    preprocess_data(attr_obj, property, property_2nd);
+                    
+                    if(property_2nd != "department"){
+                        for(var label in attr_2nd_obj){
+                            if(!is_valid_key_arr(formatted_obj, [property, property_2nd, label])){
+                                formatted_obj = set_emt_to_obj(formatted_obj,
+                                        [property, property_2nd, label], {
+                                    "key": label,
+                                    "values": []
+                                })
+                            }
+                            formatted_obj[property][property_2nd][label]["values"]
+                            .push({
+                                "x": date_key,
+                                "y": attr_2nd_obj[label]
+                            });
+                        }
+                    } else { /* most recent department case */
+                        if(idx == date_arr.length - 1){
+                            if(!is_valid_key_arr(formatted_obj, [property, property_2nd])){
+                                formatted_obj = set_emt_to_obj(formatted_obj,
+                                    [property, property_2nd], []);
+                            }
+                            for(var code in attr_2nd_obj){
+                                if(is_key(dept_data, code)){
+                                    formatted_obj[property][property_2nd]
+                                    .push({
+                                        "label": dept_data[code],
+                                        "value": attr_2nd_obj[code],
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
-
     }
     return formatted_obj;
-    /*
-    var r_arr = [];
-    for(var r_key in r_values){
-        r_arr.push({"key": r_key, "values": r_values[r_key]});
-    }
-    return r_arr;
-    */
 }
 /*
-manipulate p_attr_obj for purpose
-- account: delete key 'all'
+manipulate formatted_obj for purpose
 - birth_year: append {year: 0} which api does not contain for spacing
 
 @return: r_values
 */
-function preprocess_data(attr_obj, date_key, r_values, property, property_2nd) {
+function preprocess_data(attr_obj, property, property_2nd) {
     
-    var r_values = $.extend({}, r_values);
     var p_attr_obj = attr_obj[property];
     
     switch(property){
         case "account":
-            delete p_attr_obj["all"];
+            // delete p_attr_obj["all"];
+            // now, api does not provide "all" case;
             break;
         case "birth_year":
             p_attr_obj = preprocess_data_birth_year(p_attr_obj);
@@ -345,13 +441,6 @@ function preprocess_data(attr_obj, date_key, r_values, property, property_2nd) {
             break;
     }
     
-    for(var r_key in p_attr_obj){
-        if(Object.keys(r_values).indexOf(r_key) === -1){
-            r_values[r_key] = [];
-        }
-        r_values[r_key].push({"x": date_key, "y":p_attr_obj[r_key]});
-    }
-    return r_values;
 }
 
 /**
@@ -480,6 +569,73 @@ function make_formatted_to_arr(formatted_obj){
     }
     return r_arr;
 }
+
+/* global data */
+var dept_data = {
+    0: 'Undecided',
+    3648: 'Bio and Brain Engineering',
+    132: 'Biological Sciences',
+    2222: 'Biomedical Science and Engineering Program',
+    936: 'Business',
+    33: 'Capstone Design',
+    451: 'Chemical and Biomolecular Engineering',
+    150: 'Chemistry',
+    441: 'Civil and Environmental Engineering',
+    4419: 'Departmemt of Aerospace Engineering',
+    4418: 'Departmemt of Mechanical Engineering',
+    331: 'Department of Industrial Systems Engineering',
+    151: 'Department of Mathematical Sciences',
+    3992: 'Division of Future Vehicle',
+    4201: 'Economics Program',
+    4431: 'Entrepreneurship Program',
+    4305: 'Executive MBA',
+    4398: 'Finance Executive MBA',
+    4303: 'Finance MBA',
+    3919: 'Financial Engineering Program',
+    4310: 'Financial Engineering Program',
+    973: 'General Required',
+    3941: 'Global Information &amp; Telecommunication Technology Program',
+    4200: 'Graduate Program for Future Strategy',
+    3539: 'Graduate School of Culture Technology',
+    4144: 'Graduate School of Information Security',
+    4438: 'Graduate School of Innovation & Technology Management',
+    4549: 'Graduate School of Knowledge Service Engineering',
+    3605: 'Graduate School of Medical Science and Engineering',
+    3990: 'Graduate School of Science and Technology Policy',
+    4422: 'Graduate School of Web Science Technology',
+    3799: 'Graduate school of EEWS',
+    3692: 'Graduate school of Nanoscience &amp; Technology',
+    4493: 'Green Business and Policy Program',
+    340: 'Industrial Design',
+    4312: 'Information Management Program',
+    3723: 'Information and Communications Engineering',
+    4306: 'Information and Media MBA',
+    3978: 'Intellectual Property Minor Program for Undergradu',
+    3920: 'Master of Science Journalism',
+    3882: 'Master of intellectual property',
+    421: 'Materials Science and Engineering',
+    4141: 'Minor Program in Culture Technology',
+    3993: 'Minor Program in Science and Technology Policy',
+    4425: 'Moon Soul Graduate School of Future Strategy',
+    221: 'Nuclear and Quantum Engineering',
+    110: 'Physics',
+    2410: 'Polymer Science and Engineering Program',
+    4182: 'Professional MBA',
+    4427: 'Program of Brain and Cognitive Engineering',
+    4547: 'School of Business and Technology Management',
+    4548: 'School of Business and Technology Management',
+    4421: 'School of Computing',
+    4423: 'School of Electrical Engineering',
+    4424: 'School of Humanities &amp; Social Sciences',
+    4301: 'School of Management Engineering',
+    4183: 'Social Entrepreneurship MBA',
+    3703: 'Software Graduate Program',
+    3701: 'Space Exploration Engineering Program',
+    4307: 'Techno-MBA',
+    3997: 'The Cho Chun Shik Graduate School for Green Transportation',
+    3520: 'The Robotics Program',
+    4: 'Undergraduate Research Participation',
+};
 
 </script>
 

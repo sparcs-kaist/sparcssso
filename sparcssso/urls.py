@@ -11,9 +11,10 @@ urlpatterns = [
 
     url(r'^lang/(?P<code>\w+)', general.lang),
 
+    url(r'^terms/(?P<version>[\w\.]+)?$', general.terms),
+    url(r'^privacy/(?P<version>[\w\.]+)?$', general.privacy),
+
     url(r'^credits/', general.credits),
-    url(r'^terms/', general.terms),
-    url(r'^privacy/', general.privacy),
     url(r'^stats/', general.stats),
     url(r'^help/', general.help),
     url(r'^contact/', general.contact),

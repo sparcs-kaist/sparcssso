@@ -20,7 +20,6 @@ urlpatterns = [
     url(r'^contact/', general.contact),
     url(r'^thanks/', general.thanks),
 
-
     url(r'^account/', include('apps.core.urls')),
     url(r'^api/', include('apps.api.urls')),
     url(r'^dev/', include('apps.dev.urls')),

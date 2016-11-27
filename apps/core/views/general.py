@@ -1,5 +1,8 @@
 from django.shortcuts import render, redirect
 from django.utils import timezone, translation
+from django.core.mail import send_mail, BadHeaderError
+from django.core.exceptions import SuspiciousOperation
+from apps.core.backends import validate_recaptcha
 from apps.core.models import Notice, Statistic, Document, Service
 import logging
 import json
@@ -122,3 +125,33 @@ def stats(request):
 # /help/
 def help(request):
     return render(request, 'help.html')
+
+# /contact/
+def contact(request):
+    if request.method == 'POST':
+        subject = request.POST.get('subject','')
+        name = request.POST.get('name','')
+        email = request.POST.get('email','')
+        message = request.POST.get('message','')
+        recipients = ['gogi@sparcs.org']
+        real_subject = "SPARCS SSO Report : " + subject
+
+        result = validate_recaptcha(request.POST.get('g-recaptcha-response',''))
+
+        if subject and name and email and message:
+            try:
+                contents = 'subject : ' + subject + '\nname : ' + name + '\nmessage\n' + message
+                send_mail(real_subject, contents, email, recipients)
+            except ValueError:
+                raise SuspiciousOperation()
+            return redirect('/thanks/')
+    return render(request, 'contact.html')
+
+# /thanks/
+def thanks(request):
+    state = ''
+    if request.method == 'POST':
+        state = requset.POST.get('state','')
+        if state:
+            return redirect('/')
+    return render(request, 'thanks.html')

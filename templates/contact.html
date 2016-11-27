@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block app-header %}
+<link rel="stylesheet" type="text/css" href="/static/css/main.css">
+<script src='https://www.google.com/recaptcha/api.js'></script>
+{% endblock %}
+
+{% block content %}
+<form id="contact-form" class="form-horizontal" action="/contact/" method="post">
+    {% csrf_token %}
+    <h1 class = "pagetitle">Contact us</h1>
+
+    <div class = "note">
+        <p>We are here to answer any questions you may have about our Sparcs SSO.</p> 
+        <p>Reach out to us and we'll respond as soon as you can.</p>
+    </div>
+    
+    <div class="form-group">
+        <label for="id_subject" class="col-sm-2 control-label">Subject: <span class="required"></span></label>
+        <div class="col-sm-9">
+            <select class="form-control" name="subject" id="id_subject" required>
+                <option value="">Select subject</option>
+                <option value="Error in webpage">There is an error in webpage</option>
+                <option value="Suggest new function">I want to suggest new function</option>
+                <option value="Etc">Etc</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="id_name" class="col-xs-12 col-sm-2 control-label">Name: <span class="required"></span></label>
+        <div class="col-xs-offset-1 col-xs-10 col-sm-offset-0 col-sm-3">
+            <input type="text" class="form-control" name="name" id="id_name" placeholder="Your name" required/>
+        </div>
+
+        <label for="id_email" class="col-xs-12 col-sm-2 control-label">Email: <span class="required"></span></label>
+        <div class="col-xs-offset-1 col-xs-10 col-sm-offset-0 col-sm-4">
+            <input type="email" class="form-control" name="email" id="id_email" placeholder="Your email" required/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="id_message" class="col-xs-12 col-sm-2 control-label">Message: <span class="required"></span></label>
+        <div class="col-xs-12 col-sm-9">
+            <textarea class="form-control" rows="6" name="message" id="id_message" style="resize:none;" required></textarea>
+        </div>
+    </div>
+
+    <div class="g-recaptcha" style="display:inline-block" data-callback="captcha_check" data-expired-callback="captcha_expired" data-sitekey="6LdKJiQTAAAAAE03DTaBYonGRVuGdurgcLmpnjA2"></div>
+
+    <div class="submit-row">
+        <button type="submit" class="btn btn-default" id="SubmitB" disabled>Send to SPARCS</button>
+    </div>
+</form>
+
+
+<script type="text/javascript">
+var captcha_check = function(){
+    $('input[name=captcha]').val('captcha');
+    $('#SubmitB').removeAttr('disabled');
+};
+
+var captcha_expired = function() {
+    $('input[name=captcha]').val('');
+};
+
+</script>
+{% endblock %}

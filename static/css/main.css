@@ -81,6 +81,63 @@ img.profile {
     float:left;
 }
 
+.alert-wrap {
+    margin-top:0;
+}
+
+.login-form {
+    margin-top:20px;
+}
+
+.login-form > .col-wrap {
+    width:90%;
+    max-width:350px;
+    margin:0 auto;
+}
+
+.login-email-links {
+    margin-top:5px;
+    text-align:right;
+}
+
+.login-email-links a {
+    color:#666;
+}
+
+.alert-invalid-account {
+    margin-top:10px;
+}
+
+.btn-login {
+    height:50px;
+    line-height:40px;
+    padding:5px 0;
+    font-size:18px;
+}
+
+.btn-login > img {
+    float:left;
+    padding-left:10px;
+    height:100%;
+}
+
+.btn-facebook, .btn-facebook:hover,
+.btn-facebook:focus, .btn-facebook:active {
+    background-color:rgb(59,87,157);
+    color:white;
+}
+
+.btn-twitter, .btn-twitter:hover,
+.btn-twitter:focus, .btn-twitter:active {
+    background-color:rgb(0,172,238);
+    color:white;
+}
+
+.btn-kaist, .btn-kaist:hover,
+.btn-kaist:focus, .btn-kaist:active {
+    background-color:rgb(1,67,143);
+    color:white;
+}
 
 .social-icon > img {
     width:83px;

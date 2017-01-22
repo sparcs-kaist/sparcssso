@@ -2,8 +2,9 @@
 
 SPARCS SSO provides integrated login in SPARCS services, such as ARA or OTL.
 
-### Developers
-* samjo (PM)
+### Credits
+* samjo (SYSOP, PM, Developer)
+* hou (SYSOP)
 * zazang (Developer)
 * gogi (Developer)
 * todo (Developer)
@@ -24,4 +25,3 @@ SPARCS SSO uses following program / framework / libraries:
 
 ### More?
 See [developer documents](https://wiki.sparcs.org/w/index.php/SPARCS_SSO)
-

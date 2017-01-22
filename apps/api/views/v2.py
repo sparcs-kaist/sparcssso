@@ -125,7 +125,7 @@ def token_info(request):
 
     now = timezone.now()
     date = datetime.fromtimestamp(timestamp, timezone.utc)
-    if abs((now - date).total_seconds()) >= 5:
+    if abs((now - date).total_seconds()) >= 10:
         raise SuspiciousOperation()
 
     sign_server = hmac.new(str(service.secret_key),
@@ -186,7 +186,7 @@ def logout(request):
 
     now = timezone.now()
     date = datetime.fromtimestamp(timestamp, timezone.utc)
-    if abs((now - date).total_seconds()) >= 5:
+    if abs((now - date).total_seconds()) >= 30:
         raise SuspiciousOperation()
 
     sign_server = hmac.new(str(service.secret_key),
@@ -225,7 +225,7 @@ def unregister(request):
 
     now = timezone.now()
     date = datetime.fromtimestamp(timestamp, timezone.utc)
-    if abs((now - date).total_seconds()) >= 5:
+    if abs((now - date).total_seconds()) >= 10:
         raise SuspiciousOperation()
 
     sign_server = hmac.new(str(service.secret_key),

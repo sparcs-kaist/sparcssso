@@ -173,6 +173,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # Admins & Logging
+TEAM_EMAILS = ['sso@sparcs.org', ]
 ADMINS = (('SSO SYSOP', 'sso.sysop@sparcs.org'),)
 
 FMT = '%(levelno)s/%(asctime)s (%(ip)s, %(username)s) %(name)s.%(message)s'

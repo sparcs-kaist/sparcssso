@@ -95,10 +95,6 @@ msgstr "로 가셔서 모든 서비스의 등록을 해제해주세요."
 msgid "Welcome to SPARCS SSO!"
 msgstr "SPARCS SSO에 오신 것을 환영합니다!"
 
-#: templates/account/login.html:25
-msgid "Login / Signup with Email"
-msgstr "이메일로 로그인 / 회원가입"
-
 #: templates/account/login.html:30
 msgid "Invalid email / password"
 msgstr "잘못된 이메일 / 비밀번호"
@@ -107,9 +103,21 @@ msgstr "잘못된 이메일 / 비밀번호"
 msgid "Sign Up"
 msgstr "회원가입"
 
-#: templates/account/login.html:53
-msgid "Login / Signup with Social Accounts"
-msgstr "소셜 계정으로 로그인 / 회원가입"
+#: templates/account/login.html:51
+msgid "Email Login"
+msgstr "이메일로 로그인"
+
+#: templates/account/login.html:61
+msgid "KAIST SSO Login / Signup"
+msgstr "카이스트 통합인증으로 로그인 / 가입"
+
+#: templates/account/login.html:61
+msgid "Facebook Login / Signup"
+msgstr "페이스북으로 로그인 / 가입"
+
+#: templates/account/login.html:61
+msgid "Twitter Login / Signup"
+msgstr "트위터로 로그인 / 가입"
 
 #: templates/account/logout.html:4
 msgid "SPARCS SSO Logout"

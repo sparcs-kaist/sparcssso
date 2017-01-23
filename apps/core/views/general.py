@@ -1,7 +1,7 @@
+from django.conf import settings
 from django.shortcuts import render, redirect
 from django.utils import timezone, translation
-from django.core.mail import send_mail, BadHeaderError
-from django.core.exceptions import SuspiciousOperation
+from django.core.mail import send_mail
 from apps.core.backends import validate_recaptcha
 from apps.core.models import Notice, Statistic, Document, Service
 import logging
@@ -126,32 +126,20 @@ def stats(request):
 def help(request):
     return render(request, 'help.html')
 
+
 # /contact/
 def contact(request):
+    submitted = False
     if request.method == 'POST':
-        subject = request.POST.get('subject','')
-        name = request.POST.get('name','')
-        email = request.POST.get('email','')
-        message = request.POST.get('message','')
-        recipients = ['gogi@sparcs.org']
-        real_subject = "SPARCS SSO Report : " + subject
-
+        topic = request.POST.get('topic', '')
+        name = request.POST.get('name', '')
+        sender = request.POST.get('email', '')
+        message = request.POST.get('message', '')
         result = validate_recaptcha(request.POST.get('g-recaptcha-response',''))
 
-        if subject and name and email and message:
-            try:
-                contents = 'subject : ' + subject + '\nname : ' + name + '\nmessage\n' + message
-                send_mail(real_subject, contents, email, recipients)
-            except ValueError:
-                raise SuspiciousOperation()
-            return redirect('/thanks/')
-    return render(request, 'contact.html')
+        if topic and name and sender and message and result:
+            subject = "[SPARCS SSO Report] %s (by %s)" % (topic, name)
+            send_mail(subject, message, sender, settings.TEAM_EMAILS)
+            submitted = True
 
-# /thanks/
-def thanks(request):
-    state = ''
-    if request.method == 'POST':
-        state = requset.POST.get('state','')
-        if state:
-            return redirect('/')
-    return render(request, 'thanks.html')
+    return render(request, 'contact.html', {'submitted': submitted})

@@ -38,12 +38,12 @@
         {% csrf_token %}
         <div class="form-group">
             <div class="col-xs-12">
-                <input type="email" class="form-control" name="email" placeholder="Email" required="required">
+                <input type="email" class="form-control" name="email" placeholder="{% trans "Email" %}" required="required">
             </div>
         </div>
         <div class="form-group">
             <div class="col-xs-12">
-                <input type="password" class="form-control" name="password" placeholder="Password" required="required">
+                <input type="password" class="form-control" name="password" placeholder="{% trans "Password" %}" required="required">
             </div>
         </div>
         <div class="form-group">

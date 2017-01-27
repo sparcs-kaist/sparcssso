@@ -57,7 +57,7 @@
     </form>
     <hr/>
     <div class="login-social-wrap">
-        <button class="btn btn-default btn-block btn-login btn-kaist">
+        <button class="btn btn-default btn-block btn-login btn-kaist {% if not kaist_enabled %}disabled{% endif %}">
             {% trans "KAIST SSO Login / Signup" %}
         </button>
         <button class="btn btn-default btn-block btn-login btn-facebook">

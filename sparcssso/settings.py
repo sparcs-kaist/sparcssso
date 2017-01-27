@@ -20,13 +20,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-with open(os.path.join(BASE_DIR, 'keys/django_secret')) as f:
-    SECRET_KEY = f.read().strip()
+SECRET_KEY = 'r#f-7qnrv40bl+(wkmin6)u7mez#s$7^+8zo%k^+_sm^vw+95p'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = not os.path.isfile(os.path.join(BASE_DIR, 'deploy'))
+DEBUG = True
 
-ALLOWED_HOSTS = ['sparcssso.kaist.ac.kr', 'sso.sparcs.org'] if not DEBUG else []
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -83,29 +82,23 @@ LOGOUT_URL = '/account/logout/'
 
 # Facebook, Twitter, KAIST API Key
 
-with open(os.path.join(BASE_DIR, 'keys/fb_app_id')) as f:
-    FACEBOOK_APP_ID = f.read().strip()
+FACEBOOK_APP_ID = ''
 
-with open(os.path.join(BASE_DIR, 'keys/fb_app_secret')) as f:
-    FACEBOOK_APP_SECRET = f.read().strip()
+FACEBOOK_APP_SECRET = ''
 
-with open(os.path.join(BASE_DIR, 'keys/tw_app_id')) as f:
-    TWITTER_APP_ID = f.read().strip()
+TWITTER_APP_ID = ''
 
-with open(os.path.join(BASE_DIR, 'keys/tw_app_secret')) as f:
-    TWITTER_APP_SECRET = f.read().strip()
+TWITTER_APP_SECRET = ''
 
-with open(os.path.join(BASE_DIR, 'keys/kaist_app_secret')) as f:
-    KAIST_APP_SECRET = f.read().strip()
+KAIST_APP_ENABLED = False
 
-with open(os.path.join(BASE_DIR, 'keys/kaist_app_admin_id')) as f:
-    KAIST_APP_ADMIN_ID = f.read().strip()
+KAIST_APP_SECRET = ''
 
-with open(os.path.join(BASE_DIR, 'keys/kaist_app_admin_pw')) as f:
-    KAIST_APP_ADMIN_PW = f.read().strip()
+KAIST_APP_ADMIN_ID = ''
 
-with open(os.path.join(BASE_DIR, 'keys/recaptcha_secret')) as f:
-    RECAPTCHA_SECRET = f.read().strip()
+KAIST_APP_ADMIN_PW = ''
+
+RECAPTCHA_SECRET = ''
 
 
 # E-mail settings
@@ -115,26 +108,12 @@ EMAIL_HOST = 'localhost'
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
-if DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'sso',
-            'USER': 'sso',
-            'PASSWORD': 'DUMMY',
-            'HOST': 'localhost',
-            'PORT': '3306',
-        }
-    }
-    with open(os.path.join(BASE_DIR, 'keys/db_pw')) as f:
-        DATABASES['default']['PASSWORD'] = f.read().strip()
+}
 
 
 # Internationalization
@@ -209,9 +188,9 @@ LOGGING = {
     },
 }
 
-if not DEBUG:
-    LOGGING['handlers']['file']['filename'] = '/data/log/sso/info.log'
-    LOGGING['loggers']['django.request'] = {
-        'handlers': ['mail'],
-        'level': 'ERROR',
-    }
+
+# Local Settings
+try:
+    from .local_settings import *
+except ImportError:
+    pass

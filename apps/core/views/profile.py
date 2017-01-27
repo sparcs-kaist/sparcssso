@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.utils import timezone
@@ -37,9 +37,14 @@ def main(request):
             result_prof = 1
             logger.info('modify', {'r': request})
 
-    return render(request, 'account/profile.html',
-                  {'user': user, 'profile': profile,
-                   'result_prof': result_prof, 'result_con': result_con})
+    context = {
+        'user': user,
+        'profile': profile,
+        'result_prof': result_prof,
+        'result_con': result_con,
+        'kaist_enabled': settings.KAIST_APP_ENABLED,
+    }
+    return render(request, 'account/profile.html', context)
 
 
 # /disconnect/{fb,tw}/

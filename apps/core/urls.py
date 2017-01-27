@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.conf.urls import url
 from django.shortcuts import redirect
 from apps.core.views import auth, account, profile, password
@@ -11,13 +12,9 @@ urlpatterns = [
 
     url(r'^login/fb/$', auth.init, {'mode': 'LOGIN', 'type': 'FB'}),
     url(r'^login/tw/$', auth.init, {'mode': 'LOGIN', 'type': 'TW'}),
-    url(r'^login/kaist/$', auth.init, {'mode': 'LOGIN', 'type': 'KAIST'}),
 
     url(r'^connect/fb/$', auth.init, {'mode': 'CONN', 'type': 'FB'}),
     url(r'^connect/tw/$', auth.init, {'mode': 'CONN', 'type': 'TW'}),
-    url(r'^connect/kaist/$', auth.init, {'mode': 'CONN', 'type': 'KAIST'}),
-
-    url(r'^renew/kaist/$', auth.init, {'mode': 'RENEW', 'type': 'KAIST'}),
 
     url(r'^callback$', auth.callback),
     url(r'^callback/$', auth.callback),
@@ -49,3 +46,11 @@ urlpatterns = [
     url(r'^password/reset/$', password.reset_email),
     url(r'^password/reset/(?P<tokenid>\w+)$', password.reset),
 ]
+
+
+if settings.KAIST_APP_ENABLED:
+    urlpatterns += [
+        url(r'^login/kaist/$', auth.init, {'mode': 'LOGIN', 'type': 'KAIST'}),
+        url(r'^connect/kaist/$', auth.init, {'mode': 'CONN', 'type': 'KAIST'}),
+        url(r'^renew/kaist/$', auth.init, {'mode': 'RENEW', 'type': 'KAIST'}),
+    ]

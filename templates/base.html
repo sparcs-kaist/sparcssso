@@ -27,9 +27,8 @@
 
             <div class="collapse navbar-collapse" id="navbar">
                 <ul class="nav navbar-nav">
-                    <li><a href="/stats/">Stats</a></li>
-                    <li><a href="/contact/">Contact</a></li>
-                    <li><a href="/help/">Help</a></li>
+                    <li><a href="/stats/">{% trans "Stats" %}</a></li>
+                    <li><a href="/help/">{% trans "Help" %}</a></li>
                     {% if user.profile.flags.dev %}
                     <li><a href="/dev/main">Dev Center</a></li>
                     {% endif %}
@@ -77,6 +76,7 @@
     <footer class="container">
         <p class="info">
             <a href="/credits/">{% trans "Credits" %}</a> |
+            <a href="/contact/">{% trans "Contact" %}</a> |
             <a href="/terms/">{% trans "Terms of Use" %}</a> |
             <a href="/privacy/">{% trans "Privacy Policy" %}</a>
         </p>

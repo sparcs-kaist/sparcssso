@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block content %}
-<h1 class="doc-header">SPARCS SSO Statistics <small>({{ time|date:"Y-m-d\TH:i:sT"}})</small></h1>
+<h1 class="doc-header">SPARCS SSO Statistics <small>({% if time %}{{ time|date:"Y-m-d\TH:i:sT"}}{% else %}No Data{% endif %})</small></h1>
 <p>Permission: 
 {% if level == 0 %}
 PUBLIC

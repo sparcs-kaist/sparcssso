@@ -95,10 +95,10 @@ def stats(request):
         elif request.user.profile.sparcs_id:
             level = 1
 
+    time = None
+    raw_stat = {}
     raw_stats = Statistic.objects.order_by('-time')
-    if len(raw_stats) == 0:
-        raw_stat = {}
-    else:
+    if len(raw_stats) > 0:
         time = raw_stats[0].time
         raw_stat = json.loads(raw_stats[0].data)
 

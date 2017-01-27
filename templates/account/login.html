@@ -38,12 +38,12 @@
         {% csrf_token %}
         <div class="form-group">
             <div class="col-xs-12">
-                <input type="email" class="form-control" name="email" placeholder="Email" required="required">
+                <input type="email" class="form-control" name="email" placeholder="{% trans "Email" %}" required="required">
             </div>
         </div>
         <div class="form-group">
             <div class="col-xs-12">
-                <input type="password" class="form-control" name="password" placeholder="Password" required="required">
+                <input type="password" class="form-control" name="password" placeholder="{% trans "Password" %}" required="required">
             </div>
         </div>
         <div class="form-group">
@@ -57,7 +57,7 @@
     </form>
     <hr/>
     <div class="login-social-wrap">
-        <button class="btn btn-default btn-block btn-login btn-kaist">
+        <button class="btn btn-default btn-block btn-login btn-kaist {% if not kaist_enabled %}disabled{% endif %}">
             {% trans "KAIST SSO Login / Signup" %}
         </button>
         <button class="btn btn-default btn-block btn-login btn-facebook">

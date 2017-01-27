@@ -121,6 +121,16 @@ img.profile {
     height:100%;
 }
 
+.btn-kaist, .btn-kaist:hover,
+.btn-kaist:focus, .btn-kaist:active {
+    background-color:rgb(1,67,143);
+    color:white;
+}
+
+.btn-kaist.disabled {
+    background-color: gray !important;
+}
+
 .btn-facebook, .btn-facebook:hover,
 .btn-facebook:focus, .btn-facebook:active {
     background-color:rgb(59,87,157);
@@ -133,11 +143,6 @@ img.profile {
     color:white;
 }
 
-.btn-kaist, .btn-kaist:hover,
-.btn-kaist:focus, .btn-kaist:active {
-    background-color:rgb(1,67,143);
-    color:white;
-}
 
 .social-icon > img {
     width:83px;
@@ -147,6 +152,10 @@ img.profile {
 .social-icon > img.disabled {
     filter:grayscale(100%);
     -webkit-filter:grayscale(100%);
+}
+
+.social-form .btn.disabled {
+    background-color: gray;
 }
 
 

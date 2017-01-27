@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.conf import settings
 from django.contrib import auth
 from django.core.exceptions import PermissionDenied
@@ -66,9 +65,13 @@ def login(request):
             nexturl = request.session.pop('next', '/')
             return redirect(nexturl)
 
-    fail = request.session.pop('result_login', '')
-    return render(request, 'account/login.html',
-                  {'notice': notice, 'service': srv_name, 'fail': fail})
+    context = {
+        'notice': notice,
+        'service': srv_name,
+        'fail': request.session.pop('result_login', ''),
+        'kaist_enabled': settings.KAIST_APP_ENABLED,
+    }
+    return render(request, 'account/login.html', context)
 
 
 # /logout/

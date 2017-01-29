@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block app-header %}
+<link rel="stylesheet" type="text/css" href="/static/css/main.css">
+<script src="/static/js/validator.min.js"></script>
+<script src='https://www.google.com/recaptcha/api.js'></script>
+{% endblock %}
+
+{% block content %}
+<h1>{% trans "Contact Us" %}</h1>
+<p>{% trans "We are here to answer any questions you may have about our SPARCS SSO." %}</p> 
+<p>{% trans "Reach out to us and we'll respond as soon as you can." %}</p>
+<p class="text-danger">{% trans "DO NOT send PASSWORD or other SENSITIVE DATA using this form" %}</p>
+
+<form id="contact" class="form-horizontal" action="/contact/" method="post">
+    {% csrf_token %}
+    <div class="row">
+        {% if submitted %}
+        <div class="col-xs-offset-1 col-xs-10 alert alert-success">
+            {% trans "Your message is successfully sent! Thank you for your feedback!" %}
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="form-group">
+        <label class="col-xs-2 col-sm-2 control-label">{% trans "Topic" %}: <span class="required"></span></label>
+        <div class="col-xs-9 col-sm-9">
+            <select class="form-control" name="topic" required>
+                <option value="">{% trans "Select Topic" %}</option>
+                <option value="bugs">{% trans "Bug Report" %}</option>
+                <option value="suggestions">{% trans "Suggestions" %}</option>
+                <option value="accounts">{% trans "Accounts" %}</option>
+                <option value="etc">{% trans "etc" %}</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-xs-2 col-sm-2 control-label">{% trans "Name" %}: <span class="required"></span></label>
+        <div class="col-xs-9 col-sm-3">
+            <input type="text" class="form-control" name="name" required/>
+        </div>
+
+        <label class="col-xs-2 col-sm-2 control-label">{% trans "Email" %}: <span class="required"></span></label>
+        <div class="col-xs-9 col-sm-4">
+            <input type="email" class="form-control" name="email" required/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-xs-12 col-sm-2 control-label">{% trans "Message" %}: <span class="required"></span></label>
+        <div class="col-xs-12 col-sm-9">
+            <textarea class="form-control" rows="6" name="message" style="resize:none;" required></textarea>
+        </div>
+    </div>
+
+    <input type="text" name="captcha" style="margin-left: -99999px !important" required>
+    <div class="form-group">
+        <div class="g-recaptcha" style="display:inline-block" data-callback="captcha_check" data-expired-callback="captcha_expired" data-sitekey="6LdKJiQTAAAAAE03DTaBYonGRVuGdurgcLmpnjA2"></div>
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-default">{% trans "Send to SSO Team" %}</button>
+    </div>
+</form>
+
+<script type="text/javascript">
+var captcha_check = function(){
+    $('input[name=captcha]').val('captcha');
+};
+
+var captcha_expired = function() {
+    $('input[name=captcha]').val('');
+};
+
+$(function() {
+    $('#contact').validator();
+});
+</script>
+{% endblock %}

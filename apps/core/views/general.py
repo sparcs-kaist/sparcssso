@@ -1,5 +1,8 @@
+from django.conf import settings
 from django.shortcuts import render, redirect
 from django.utils import timezone, translation
+from django.core.mail import send_mail
+from apps.core.backends import validate_recaptcha
 from apps.core.models import Notice, Statistic, Document, Service
 import logging
 import json
@@ -92,10 +95,10 @@ def stats(request):
         elif request.user.profile.sparcs_id:
             level = 1
 
+    time = None
+    raw_stat = {}
     raw_stats = Statistic.objects.order_by('-time')
-    if len(raw_stats) == 0:
-        raw_stat = {}
-    else:
+    if len(raw_stats) > 0:
         time = raw_stats[0].time
         raw_stat = json.loads(raw_stats[0].data)
 
@@ -122,3 +125,21 @@ def stats(request):
 # /help/
 def help(request):
     return render(request, 'help.html')
+
+
+# /contact/
+def contact(request):
+    submitted = False
+    if request.method == 'POST':
+        topic = request.POST.get('topic', '')
+        name = request.POST.get('name', '')
+        sender = request.POST.get('email', '')
+        message = request.POST.get('message', '')
+        result = validate_recaptcha(request.POST.get('g-recaptcha-response',''))
+
+        if topic and name and sender and message and result:
+            subject = "[SPARCS SSO Report] %s (by %s)" % (topic, name)
+            send_mail(subject, message, sender, settings.TEAM_EMAILS)
+            submitted = True
+
+    return render(request, 'contact.html', {'submitted': submitted})

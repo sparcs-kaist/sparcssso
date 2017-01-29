@@ -179,12 +179,12 @@
         {% if not profile.kaist_id %}
         <form class="social-form" action="/account/connect/kaist/" method="post">
             {% csrf_token %}
-            <button type="submit" class="btn btn-primary">{% trans "Connect" %}</button>
+            <button type="submit" class="btn btn-primary {% if not kaist_enabled %}disabled{% endif %}">{% trans "Connect" %}</button>
         </form>
         {% else %}
         <form class="social-form" action="/account/renew/kaist/" method="post">
             {% csrf_token %}
-            <button type="submit" class="btn btn-warning">{% trans "Renew" %}</button>
+            <button type="submit" class="btn btn-warning {% if not kaist_enabled %}disabled{% endif %}">{% trans "Renew" %}</button>
             <p class="text-info">{% trans "Renewed at" %} {{profile.kaist_info_time|date:'Y-m-d'}}</p>
         </form>
         {% endif %}

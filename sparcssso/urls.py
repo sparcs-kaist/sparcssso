@@ -17,6 +17,7 @@ urlpatterns = [
     url(r'^credits/', general.credits),
     url(r'^stats/', general.stats),
     url(r'^help/', general.help),
+    url(r'^contact/', general.contact),
 
     url(r'^account/', include('apps.core.urls')),
     url(r'^api/', include('apps.api.urls')),

@@ -4,16 +4,14 @@ from django.core.mail import send_mail
 from django.utils import timezone
 from apps.core.models import ServiceMap, UserProfile, EmailAuthToken, ResetPWToken
 from apps.core.forms import UserForm, UserProfileForm
+from secrets import token_hex
 from xml.etree.ElementTree import fromstring
-import cgi
+from urllib.parse import parse_qs, parse_qsl, urlencode
 import datetime
 import requests
 import logging
 import oauth2 as oauth
-import os
 import re
-import urllib
-import urlparse
 
 
 logger = logging.getLogger('sso.account.backend')
@@ -58,7 +56,7 @@ def give_reset_pw_token(user):
         token.delete()
 
     while True:
-        tokenid = os.urandom(24).encode('hex')
+        tokenid = token_hex(24)
         if not ResetPWToken.objects.filter(tokenid=tokenid).count():
             break
 
@@ -81,7 +79,7 @@ def give_email_auth_token(user):
         token.delete()
 
     while True:
-        tokenid = os.urandom(24).encode('hex')
+        tokenid = token_hex(24)
         if not EmailAuthToken.objects.filter(tokenid=tokenid).count():
             break
 
@@ -102,7 +100,7 @@ def signup_core(post):
         first_name = user_f.cleaned_data['first_name']
         last_name = user_f.cleaned_data['last_name']
         while True:
-            username = os.urandom(10).encode('hex')
+            username = token_hex(10)
             if not User.objects.filter(username=username).count():
                 break
 
@@ -126,7 +124,7 @@ def signup_core(post):
 # social signup core
 def signup_social_core(type, profile):
     while True:
-        username = os.urandom(10).encode('hex')
+        username = token_hex(10)
         if not User.objects.filter(username=username).count():
             break
 
@@ -135,16 +133,15 @@ def signup_social_core(type, profile):
 
     email = profile.get('email', '')
     if not email:
-        email = 'random-%s@sso.sparcs.org' % os.urandom(6).encode('hex')
+        email = 'random-{}@sso.sparcs.org'.format(token_hex(6))
 
     while True:
         if not User.objects.filter(email=email).count():
             break
-        email = 'random-%s@sso.sparcs.org' % os.urandom(6).encode('hex')
+        email = 'random-{}@sso.sparcs.org'.format(token_hex(6))
 
-    password = os.urandom(12).encode('hex')
     user = User.objects.create_user(username=username, first_name=first_name,
-                                    last_name=last_name, email=email, password=password)
+                                    last_name=last_name, email=email, password=token_hex(12))
     user.save()
 
     user.profile = UserProfile(gender=profile.get('gender', '*H'), password_set=False)
@@ -178,7 +175,7 @@ def reg_service(user, service):
     m = ServiceMap(user=user, service=service)
 
     while True:
-        sid = os.urandom(10).encode('hex')
+        sid = token_hex(10)
         if not ServiceMap.objects.filter(sid=sid).count():
             break
 
@@ -209,7 +206,7 @@ def init_fb(callback_url):
         'scope': 'email',
         'redirect_uri': callback_url,
     }
-    return 'https://www.facebook.com/dialog/oauth?' + urllib.urlencode(args)
+    return 'https://www.facebook.com/dialog/oauth?' + urlencode(args)
 
 
 def auth_fb(code, callback_url):
@@ -222,7 +219,7 @@ def auth_fb(code, callback_url):
 
     r = requests.get('https://graph.facebook.com/oauth/access_token?',
                      params=args, verify=True)
-    response = urlparse.parse_qs(r.text)
+    response = parse_qs(r.text)
     if 'access_token' not in response:
         return None, None
     access_token = response['access_token'][-1]
@@ -264,7 +261,7 @@ def init_tw(callback_url):
     body = 'oauth_callback=' + callback_url
     resp, content = tw_client.request('https://twitter.com/oauth/request_token', 'POST', body)
 
-    tokens = dict(cgi.parse_qsl(content))
+    tokens = dict(parse_qsl(content))
     url = 'https://twitter.com/oauth/authenticate?oauth_token=%s' % tokens['oauth_token']
     return url, tokens
 
@@ -275,7 +272,7 @@ def auth_tw(tokens, verifier):
     client = oauth.Client(tw_consumer, token)
 
     resp, content = client.request('https://twitter.com/oauth/access_token', 'POST')
-    tw_info = dict(cgi.parse_qsl(content))
+    tw_info = dict(parse_qsl(content))
 
     if 'user_id' not in tw_info:
         return None, None

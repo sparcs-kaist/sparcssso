@@ -12,11 +12,11 @@ from django.views.decorators.csrf import csrf_exempt
 from apps.core.backends import reg_service, unreg_service, validate_email
 from apps.core.models import Notice, Service, ServiceMap, AccessToken, PointLog, Statistic
 from datetime import datetime, timedelta
+from secrets import token_hex
+from urllib.parse import urlencode
 import hmac
 import json
 import logging
-import os
-import urllib
 
 
 logger = logging.getLogger('sso.api')
@@ -36,6 +36,10 @@ def extract_flag(flags):
     if flags['sparcs']:
         result.append('SPARCS')
     return result
+
+
+def get_hash(key, msg):
+    return hmac.new(key.encode(), msg.encode()).hexdigest()
 
 
 # /token/require/
@@ -64,8 +68,8 @@ def token_require(request):
         reason = 3
     elif service.scope != 'TEST' and flags['test-only']:
         reason = 4
-    elif not (profile.email_authed or profile.facebook_id
-              or profile.twitter_id or profile.kaist_id):
+    elif not (profile.email_authed or profile.facebook_id or
+              profile.twitter_id or profile.kaist_id):
         reason = 5
 
     if reason:
@@ -88,7 +92,7 @@ def token_require(request):
             return render(request, 'api/cooltime.html', {'service': service, 'left': d})
 
     while True:
-        tokenid = os.urandom(10).encode('hex')
+        tokenid = token_hex(10)
         if not AccessToken.objects.filter(tokenid=tokenid, service=service).count():
             break
 
@@ -98,7 +102,7 @@ def token_require(request):
     logger.info('token.create: app=%s' % client_id, {'r': request})
 
     args = {'code': token.tokenid, 'state': state}
-    return redirect(service.login_callback_url + '?' + urllib.urlencode(args))
+    return redirect(service.login_callback_url + '?' + urlencode(args))
 
 
 # /token/info/
@@ -128,8 +132,7 @@ def token_info(request):
     if abs((now - date).total_seconds()) >= 10:
         raise SuspiciousOperation()
 
-    sign_server = hmac.new(str(service.secret_key),
-                           str('%s%s' % (code, timestamp))).hexdigest()
+    sign_server = get_hash(service.secret_key, '{}{}'.format(code, timestamp))
     if not constant_time_compare(sign, sign_server):
         raise SuspiciousOperation()
 
@@ -189,8 +192,8 @@ def logout(request):
     if abs((now - date).total_seconds()) >= 30:
         raise SuspiciousOperation()
 
-    sign_server = hmac.new(str(service.secret_key),
-                           str('%s%s%s' % (sid, redirect_uri, timestamp))).hexdigest()
+    sign_server = get_hash(service.secret_key,
+                           '{}{}{}'.format(sid, redirect_uri, timestamp))
     if not constant_time_compare(sign, sign_server):
         raise SuspiciousOperation()
 
@@ -228,8 +231,7 @@ def unregister(request):
     if abs((now - date).total_seconds()) >= 10:
         raise SuspiciousOperation()
 
-    sign_server = hmac.new(str(service.secret_key),
-                           str('%s%s' % (sid, timestamp))).hexdigest()
+    sign_server = get_hash(service.secret_key, '{}{}'.format(sid, timestamp))
     if not constant_time_compare(sign, sign_server):
         raise SuspiciousOperation()
 
@@ -282,8 +284,8 @@ def point(request):
     if abs((now - date).total_seconds()) >= 5:
         raise SuspiciousOperation()
 
-    sign_server = hmac.new(str(service.secret_key),
-                           str('%s%s%s%s' % (sid, delta, lower_bound, timestamp))).hexdigest()
+    sign_server = get_hash(service.secret_key,
+                           '{}{}{}{}'.format(sid, delta, lower_bound, timestamp))
     if not constant_time_compare(sign, sign_server):
         raise SuspiciousOperation()
 
@@ -326,8 +328,7 @@ def notice(request):
         date_after = datetime.fromtimestamp(date_after, timezone.utc)
 
     notices = Notice.objects.filter(valid_to__gt=date_after)[offset:offset + limit]
-
-    notices_dict = map(lambda x: x.to_dict(), notices)
+    notices_dict = list(map(lambda x: x.to_dict(), notices))
     return HttpResponse(json.dumps({'notices': notices_dict}), content_type="application/json")
 
 

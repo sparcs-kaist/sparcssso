@@ -5,9 +5,9 @@ from django.shortcuts import render, redirect
 from django.http import Http404
 from apps.core.models import Service, UserProfile
 from apps.core.forms import ServiceForm
+from secrets import token_hex
 import logging
 import json
-import os
 
 
 logger = logging.getLogger('sso.dev')
@@ -61,14 +61,14 @@ def service(request, name):
 
         if not service:
             while True:
-                name = 'test%s' % os.urandom(6).encode('hex')
+                name = 'test{}'.format(token_hex(6))
                 if not Service.objects.filter(name=name).count():
                     break
 
             service_new.name = name
             service_new.is_shown = False
             service_new.scope = 'TEST'
-            service_new.secret_key = os.urandom(10).encode('hex')
+            service_new.secret_key = token_hex(10)
             service_new.admin_user = request.user
             logger.warn('service.create: name=%s' % name, {'r': request})
         else:
@@ -122,13 +122,13 @@ def user(request, uid):
 
         if not user:
             while True:
-                seed = os.urandom(4).encode('hex')
-                email = 'test-%s@sso.sparcs.org' % seed
+                seed = token_hex(4)
+                email = 'test-{}@sso.sparcs.org'.format(seed)
                 if not User.objects.filter(email=email).count():
                     break
 
             while True:
-                username = 'test%s' % os.urandom(8).encode('hex')
+                username = 'test{}'.format(token_hex(8))
                 if not User.objects.filter(username=username).count():
                     break
 

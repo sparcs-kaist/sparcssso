@@ -103,10 +103,10 @@ def stats(request):
         raw_stat = json.loads(raw_stats[0].data)
 
     stat = []
-    for name, value in raw_stat.iteritems():
+    for name, value in raw_stat.items():
         if name != 'all':
-            service = Service.objects.get(name=name)
-            if level < 1 and not service.is_shown:
+            service = Service.objects.filter(name=name).first()
+            if not service or (level < 1 and not service.is_shown):
                 continue
 
         s = {}
@@ -135,7 +135,7 @@ def contact(request):
         name = request.POST.get('name', '')
         sender = request.POST.get('email', '')
         message = request.POST.get('message', '')
-        result = validate_recaptcha(request.POST.get('g-recaptcha-response',''))
+        result = validate_recaptcha(request.POST.get('g-recaptcha-response', ''))
 
         if topic and name and sender and message and result:
             subject = "[SPARCS SSO Report] %s (by %s)" % (topic, name)

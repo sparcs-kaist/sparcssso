@@ -7,8 +7,10 @@
 
 {% block content %}
 {% if notice %}
-<div class="alert alert-main alert-warning">
-    <strong>{{ notice.title }}</strong> {% autoescape off %}{{ notice.text }}{% endautoescape %}
+<div class="alert-wrap">
+    <div class="alert alert-warning">
+        <strong>{{ notice.title }}</strong> {% autoescape off %}{{ notice.text }}{% endautoescape %}
+    </div>
 </div>
 {% endif %}
 

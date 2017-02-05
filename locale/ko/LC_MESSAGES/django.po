@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: v0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-26 21:32+0900\n"
+"POT-Creation-Date: 2017-02-05 22:34+0900\n"
 "PO-Revision-Date: 2016-01-01 19:21+0900\n"
 "Last-Translator: Jae-Sung Kim <wotjd1102@kaist.ac.kr>\n"
 "Language-Team: SPARCS SSO Team <sso@sparcs.org>\n"
@@ -17,48 +17,48 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: templates/account/deactivate.html:4 templates/account/deactivate.html:9
+#: templates/account/deactivate.html:4 templates/account/deactivate.html:10
 #: templates/base.html:50
 msgid "Deactivate"
 msgstr "비활성화"
 
-#: templates/account/deactivate.html:11
+#: templates/account/deactivate.html:12
 msgid "Your account will be removed permanently 60 days after the deactivation"
 msgstr "비활성화된 후 60일이 지난 계정은 영구히 삭제됩니다."
 
 #: templates/account/deactivate.html:12
-msgid "If you login within the 60 days, your account will become ACTIVE again."
-msgstr "60일 내에 로그인하면, 계정이 다시 활성화됩니다."
-
-#: templates/account/deactivate.html:13
 msgid "If you still would like to proceed, enter your password."
 msgstr "계속하길 원하시면, 비밀번호를 입력해주세요."
 
-#: templates/account/deactivate.html:20 templates/account/pw-change.html:17
+#: templates/account/deactivate.html:13
+msgid "If you login within the 60 days, your account will become ACTIVE again."
+msgstr "60일 내에 로그인하면, 계정이 다시 활성화됩니다."
+
+#: templates/account/deactivate.html:18 templates/account/pw-change.html:17
 msgid "WRONG current password!"
 msgstr "비밀번호를 잘못 입력하셨습니다"
 
-#: templates/account/deactivate.html:31
+#: templates/account/deactivate.html:27
 msgid "DEACTIVATE"
 msgstr "비활성화"
 
-#: templates/account/deactivate.html:37
+#: templates/account/deactivate.html:31
 msgid ""
 "You CANNOT deactivate your account since you are registered to at least one "
 "SPARCS service yet."
 msgstr ""
 "계정이 하나 이상의 SPARCS 서비스에 등록되어있어 비활성화가 불가능합니다."
 
-#: templates/account/deactivate.html:38
+#: templates/account/deactivate.html:32
 msgid "Go to"
 msgstr "먼저 "
 
-#: templates/account/deactivate.html:38 templates/account/service.html:4
+#: templates/account/deactivate.html:32 templates/account/service.html:4
 #: templates/account/service.html:9 templates/base.html:45
 msgid "Manage Service"
 msgstr "서비스 관리"
 
-#: templates/account/deactivate.html:38
+#: templates/account/deactivate.html:32
 msgid "page first, and unregister all services."
 msgstr "로 가셔서 모든 서비스의 등록을 해제해주세요."
 
@@ -71,55 +71,55 @@ msgstr "활동 로그"
 msgid "You can see your action log up to recent 30."
 msgstr "최근 30개의 활동 로그가 나타납니다."
 
-#: templates/account/login.html:4 templates/account/login.html:17
+#: templates/account/login.html:4 templates/account/login.html:18
 #: templates/base.html:58
 msgid "Login"
 msgstr "로그인"
 
-#: templates/account/login.html:18
+#: templates/account/login.html:19
 msgid "Welcome to SPARCS SSO!"
 msgstr "SPARCS SSO에 오신 것을 환영합니다!"
 
-#: templates/account/login.html:29
+#: templates/account/login.html:27
 msgid "Invalid email / password"
 msgstr "잘못된 이메일 / 비밀번호"
 
-#: templates/account/login.html:33 templates/account/profile.html:128
+#: templates/account/login.html:31 templates/account/profile.html:128
 msgid "Please grant all requested permission"
 msgstr "요청한 권한을 모두 승인해주세요."
 
-#: templates/account/login.html:41 templates/account/profile.html:38
-#: templates/account/signup/main.html:21 templates/account/signup/sns.html:31
+#: templates/account/login.html:38 templates/account/profile.html:38
+#: templates/account/signup/main.html:18 templates/account/signup/sns.html:31
 #: templates/contact.html:45
 msgid "Email"
 msgstr "이메일"
 
-#: templates/account/login.html:46 templates/account/signup/main.html:28
+#: templates/account/login.html:41 templates/account/signup/main.html:23
 msgid "Password"
 msgstr "비밀번호"
 
-#: templates/account/login.html:51
+#: templates/account/login.html:44
 msgid "Email Login"
 msgstr "이메일로 로그인"
 
-#: templates/account/login.html:54 templates/base.html:57
+#: templates/account/login.html:46 templates/base.html:57
 msgid "Sign Up"
 msgstr "회원가입"
 
-#: templates/account/login.html:54 templates/account/pw-reset/main.html:30
+#: templates/account/login.html:46 templates/account/pw-reset/main.html:30
 #: templates/base.html:59
 msgid "Reset Password"
 msgstr "비밀번호 재설정"
 
-#: templates/account/login.html:61
+#: templates/account/login.html:55
 msgid "KAIST SSO Login / Signup"
 msgstr "카이스트 통합인증으로 로그인 / 가입"
 
-#: templates/account/login.html:64
+#: templates/account/login.html:58
 msgid "Facebook Login / Signup"
 msgstr "페이스북으로 로그인 / 가입"
 
-#: templates/account/login.html:67
+#: templates/account/login.html:61
 msgid "Twitter Login / Signup"
 msgstr "트위터로 로그인 / 가입"
 
@@ -127,13 +127,13 @@ msgstr "트위터로 로그인 / 가입"
 msgid "SPARCS SSO Logout"
 msgstr "SPARCS SSO 로그아웃"
 
-#: templates/account/logout.html:9 templates/base.html:54
+#: templates/account/logout.html:10 templates/base.html:54
 msgid "Logout"
 msgstr "로그아웃"
 
-#: templates/account/logout.html:10
-msgid "Successfully logged out. Redirecting to main page..."
-msgstr "로그아웃되었습니다. 메인 페이지로 되돌아갑니다..."
+#: templates/account/logout.html:11
+msgid "Successfully logged out."
+msgstr "로그아웃되었습니다."
 
 #: templates/account/point.html:4 templates/account/point.html:9
 #: templates/base.html:47
@@ -186,7 +186,7 @@ msgstr "이메일을 인증할 수 없습니다. 다시 시도하세요."
 msgid "Your email has been successfully verified."
 msgstr "이메일 주소가 인증되었습니다."
 
-#: templates/account/profile.html:40 templates/account/signup/main.html:23
+#: templates/account/profile.html:40 templates/account/signup/main.html:19
 msgid "Not Valid or Duplicated Email"
 msgstr "잘못되었거나 이미 가입된 이메일입니다."
 
@@ -198,38 +198,31 @@ msgstr "인증됨"
 msgid "Verify"
 msgstr "인증하기"
 
-#: templates/account/profile.html:53 templates/account/signup/main.html:39
+#: templates/account/profile.html:53 templates/account/signup/main.html:34
 #: templates/account/signup/sns.html:38 templates/contact.html:40
 msgid "Name"
 msgstr "이름"
 
-#: templates/account/profile.html:62 templates/account/signup/main.html:48
-#: templates/account/signup/sns.html:44
+#: templates/account/profile.html:62 templates/account/signup/sns.html:44
 msgid "Gender, Birthday"
 msgstr "성별 및 생일"
 
-#: templates/account/profile.html:65 templates/account/signup/main.html:51
-#: templates/account/signup/sns.html:48 templates/account/signup/sns.html:54
+#: templates/account/profile.html:65 templates/account/signup/sns.html:48
+#: templates/account/signup/sns.html:54
 msgid "Hide"
 msgstr "숨김"
 
-#: templates/account/profile.html:66 templates/account/signup/main.html:52
-#: templates/account/signup/sns.html:50
+#: templates/account/profile.html:66 templates/account/signup/sns.html:50
 msgid "Male"
 msgstr "남자"
 
-#: templates/account/profile.html:67 templates/account/signup/main.html:53
-#: templates/account/signup/sns.html:52
+#: templates/account/profile.html:67 templates/account/signup/sns.html:52
 msgid "Female"
 msgstr "여자"
 
 #: templates/account/profile.html:68 templates/account/profile.html:205
 #: templates/account/profile.html:222 templates/account/profile.html:227
-#: templates/account/profile.html:230 templates/account/signup/main.html:54
-#: templates/account/signup/main.html:114
-#: templates/account/signup/main.html:131
-#: templates/account/signup/main.html:136
-#: templates/account/signup/main.html:139 templates/contact.html:34
+#: templates/account/profile.html:230 templates/contact.html:34
 msgid "etc"
 msgstr "기타"
 
@@ -241,11 +234,11 @@ msgstr "수정"
 msgid "Reset"
 msgstr "초기화"
 
-#: templates/account/profile.html:90 templates/account/signup/main.html:84
+#: templates/account/profile.html:90
 msgid "Type Your Gender"
 msgstr "성별 입력"
 
-#: templates/account/profile.html:96 templates/account/signup/main.html:90
+#: templates/account/profile.html:96
 msgid "Close"
 msgstr "닫기"
 
@@ -326,7 +319,7 @@ msgid "New Password"
 msgstr "새 비밀번호"
 
 #: templates/account/pw-change.html:35 templates/account/pw-reset/main.html:18
-#: templates/account/signup/main.html:31
+#: templates/account/signup/main.html:25
 msgid "Password must be at least 7 characters"
 msgstr "비밀번호는 최소 7자리 이상이어야 합니다."
 
@@ -364,7 +357,7 @@ msgstr "잘못된 토큰이거나 유효기간이 만료되어 비밀번호 재�
 #: templates/account/pw-reset/fail.html:11
 #: templates/account/pw-reset/main.html:31
 #: templates/account/pw-reset/send.html:32
-#: templates/account/signup/main.html:73 templates/account/signup/sns.html:88
+#: templates/account/signup/main.html:54 templates/account/signup/sns.html:88
 msgid "Login Page"
 msgstr "로그인 페이지"
 
@@ -444,23 +437,31 @@ msgstr ""
 msgid "Continue"
 msgstr "계속"
 
-#: templates/account/signup/main.html:4 templates/account/signup/main.html:11
-#: templates/account/signup/main.html:72 templates/account/signup/sns.html:4
+#: templates/account/signup/main.html:4 templates/account/signup/main.html:12
+#: templates/account/signup/main.html:53 templates/account/signup/sns.html:4
 #: templates/account/signup/sns.html:11 templates/account/signup/sns.html:87
 msgid "Signup"
 msgstr "회원가입"
 
-#: templates/account/signup/main.html:13
+#: templates/account/signup/main.html:12
 msgid "with Email"
 msgstr "(이메일)"
 
-#: templates/account/signup/main.html:15
+#: templates/account/signup/main.html:13
 msgid "Please fill up the following contents."
 msgstr "다음 내용을 작성해주세요."
 
-#: templates/account/signup/main.html:16
+#: templates/account/signup/main.html:14
 msgid "You NEED to verify your email to use services."
 msgstr "서비스를 사용하기 위해서는 이메일을 인증해야 합니다."
+
+#: templates/account/signup/main.html:28
+msgid "Re-type Password"
+msgstr "비밀번호 재입력"
+
+#: templates/account/signup/main.html:29
+msgid "Not match!"
+msgstr "일치하지 않습니다"
 
 #: templates/account/signup/sns.html:14
 msgid "with Facebook Account"
@@ -547,16 +548,16 @@ msgid "Credits"
 msgstr "만든 사람들"
 
 #: templates/base.html:79
-msgid "Contact"
-msgstr "연락하기"
-
-#: templates/base.html:80
 msgid "Terms of Use"
 msgstr "이용 약관"
 
-#: templates/base.html:81
+#: templates/base.html:80
 msgid "Privacy Policy"
 msgstr "개인정보취급방침"
+
+#: templates/base.html:83
+msgid "Contact"
+msgstr "연락하기"
 
 #: templates/base.html:84
 msgid "Dev Team"
@@ -627,6 +628,7 @@ msgid "OR, you have sent data that violates forms."
 msgstr "또는, 전송하신 데이터가 형식에 맞지 않습니다."
 
 #: templates/error/403.html:4
+#: venv/lib/python2.7/site-packages/django/views/csrf.py:109
 msgid "Forbidden"
 msgstr "금지된 접근"
 
@@ -670,10 +672,10 @@ msgstr "뒤로"
 msgid "Main"
 msgstr "메인"
 
-#: templates/main.html:17
+#: templates/main.html:19
 msgid "Welcome to SPARCS Single Sign On!"
 msgstr "SPARCS 통합 인증에 오신 것을 환영합니다!"
 
-#: templates/main.html:18
+#: templates/main.html:20
 msgid "You can use the following services using SPARCS SSO"
 msgstr "현재 SPARCS SSO를 통해 다음 서비스를 사용할 수 있습니다."

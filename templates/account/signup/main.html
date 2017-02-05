@@ -8,89 +8,51 @@
 {% endblock %}
 
 {% block content %}
-<h1>{% trans "Signup" %}
-<small> 
-    {% trans "with Email" %}
-</small></h1>
-<p>{% trans "Please fill up the following contents." %}</p>
-<p>{% trans "You NEED to verify your email to use services." %}</p>
-<form id="signup" class="form-horizontal" action="/account/signup/" method="post" enctype="multipart/form-data">
-    <fieldset>
+<div class="wrap-content-sm">
+    <h1>{% trans "Signup" %} <small>{% trans "with Email" %}</small></h1>
+    <p>{% trans "Please fill up the following contents." %}</p>
+    <p>{% trans "You NEED to verify your email to use services." %}</p>
+    <form class="row" action="/account/signup/" method="post" data-toggle="validator">
         {% csrf_token %}
-        <div class="form-group">
-            <label class="col-sm-2 control-label">{% trans "Email" %} <span class="required"></span></label>
-            <div class="col-xs-offset-1 col-xs-10 col-sm-offset-0 col-sm-8">
-                <input type="email" class="form-control" name="email" placeholder="asdf@example.com" required="required" maxlength="50" data-remote="/api/v2/email/" data-error="{% trans "Not Valid or Duplicated Email" %}">
-                <div class="help-block with-errors"></div>
+        <div class="form-group col-xs-12 text-left">
+            <label class="control-label">{% trans "Email" %}</label>
+            <input type="email" class="form-control" name="email" placeholder="asdf@example.com" required="required" maxlength="50" data-remote="/api/v2/email/" data-error="{% trans "Not Valid or Duplicated Email" %}">
+            <div class="help-block with-errors"></div>
+        </div>
+        <div class="form-group col-xs-12 text-left">
+            <label class="control-label">{% trans "Password" %}</label>
+            <input type="password" class="form-control" name="password" placeholder="p@ss0wd!" id="password" required="required" maxlength="50" data-minlength="7">
+            <span class="help-block">{% trans "Password must be at least 7 characters" %}</span>
+        </div>
+        <div class="form-group col-xs-12 text-left">
+            <label class="control-label">{% trans "Re-type Password" %}</label>
+            <input type="password" class="form-control" name="password2" placeholder="p@ssw0rd!" data-match="#password" data-match-error="{% trans "Not match!" %}" required="required" maxlength="50">
+            <div class="help-block with-errors"></div>
+        </div>
+        <div class="form-group col-xs-12 text-left">
+            <div>
+                <label class="control-label">{% trans "Name" %}</label>
+            </div>
+            <div class="col-xs-8" style="padding: 0">
+                <input type="text" class="form-control col-xs-6" name="first_name" placeholder="First Name" required="required" maxlength="30">
+            </div>
+            <div class="col-xs-4" style="padding: 0">
+                <input type="text" class="form-control col-xs-4" name="last_name" placeholder="Last Name" required="required" maxlength="30">
             </div>
         </div>
-        <div class="form-group">
-            <label class="col-sm-2 control-label">{% trans "Password" %} <span class="required"></span></label>
-            <div class="col-xs-offset-1 col-xs-10 col-sm-offset-0 col-sm-4">
-                <input type="password" class="form-control" name="password" placeholder="pAss0wd!" id="password" required="required" maxlength="50" data-minlength="7">
-                <span class="help-block">{% trans "Password must be at least 7 characters" %}</span>
-            </div>
-            <div class="col-xs-offset-1 col-xs-10 col-sm-offset-0 col-sm-4">
-                <input type="password" class="form-control" name="password2" placeholder="Re-type password" data-match="#password" data-match-error="Not match!" required="required" maxlength="50">
-                <div class="help-block with-errors"></div>
-            </div>  
+        <div class="form-group col-xs-12">
+            <p>By clicking on the signup button, you agree to <a href="/terms/" target="_blank">SPARCS SSO's terms of use</a> and <a href="/privacy/" target="_blank">privacy policy</a></p>
         </div>
-        <div class="form-group">
-            <label class="col-sm-2 control-label">{% trans "Name" %} <span class="required"></span></label>
-            <div class="col-xs-offset-1 col-xs-6 col-sm-offset-0 col-sm-5">
-                <input type="text" class="form-control" name="first_name" placeholder="First Name" required="required" maxlength="30">
-            </div>
-            <div class="col-xs-4 col-sm-3">
-                <input type="text" class="form-control" name="last_name" placeholder="Last Name" required="required" maxlength="30">
-            </div>
-        </div>
-        <div class="form-group" style="margin-bottom:0">
-            <label class="col-sm-2 control-label">{% trans "Gender, Birthday" %}</label>
-            <div class="col-xs-offset-1 col-xs-4 col-sm-offset-0 col-sm-3">
-                <select class="form-control" name="gender">
-                    <option id="gender-H" value="*H">{% trans "Hide" %}</option>
-                    <option id="gender-M" value="*M">{% trans "Male" %}</option>
-                    <option id="gender-F" value="*F">{% trans "Female" %}</option>
-                    <option id="gender-E" value="*E">{% trans "etc" %}</option>
-                </select>
-            </div>
-            <div class="col-xs-6 col-sm-5">
-                <input type="text" class="form-control" name="birthday" placeholder="Birthday (YYYY-MM-DD)" data-vbirth="vbirth">
-            </div>
-        </div>
-        <div class="form-group" style="margin-top:5px">
-            By clicking on the signup button, you agree to <a href="/terms/" target="_blank">SPARCS SSO's terms of use</a> and <a href="/privacy/" target="_blank">privacy policy</a>
-        </div>
-
-        <input type="text" name="captcha" style="margin-left: -99999px !important" required>
-        <div class="form-group" style="margin-top:-20px">
+        <div class="form-group col-xs-12" style="margin-top:-20px">
+            <input type="text" name="captcha" value="" required class="input-hidden">
             <div class="g-recaptcha" style="display:inline-block" data-callback="captcha_check" data-expired-callback="captcha_expired" data-sitekey="6LdKJiQTAAAAAE03DTaBYonGRVuGdurgcLmpnjA2"></div>
         </div>
 
-        <div class="form-group">
-            <div class="col-xs-12">
-                <button type="submit" class="btn btn-warning">{% trans "Signup" %}</button>
-                <a class="btn btn-default" href="/account/login/">{% trans "Login Page" %}</a>
-            </div>
+        <div class="form-group col-xs-12">
+            <button type="submit" class="btn btn-warning">{% trans "Signup" %}</button>
+            <a class="btn btn-default" href="/account/login/">{% trans "Login Page" %}</a>
         </div>
-    </fieldset>
-</form>
-
-<div class="modal fade" tabindex="-1" id="gender-type" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">{% trans "Type Your Gender" %}</h4>
-            </div>
-            <div class="text-center modal-body">
-                <input type="text" class="form-control" name="custom-gender" maxlength="30" placeholder="type here...">
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
-            </div>
-        </div>
-    </div>
+    </form>
 </div>
 
 <script type="text/javascript">
@@ -101,62 +63,5 @@ var captcha_check = function() {
 var captcha_expired = function() {
     $('input[name=captcha]').val('');
 };
-
-$(function() {
-    var common_gender = function(g) {
-        return g == '*H' || g == '*M' || g == '*F' || g == '*E';
-    };
-
-    var g = '{{info.gender}}';
-    if (common_gender(g))
-        $("select[name=gender]").val(g);
-    else if (g != '') {
-        $("#gender-E").text("{% trans "etc" %} (" + g + ")");
-        $("#gender-E").attr("value", g);
-        $("#gender-E").attr("selected", true);
-        $("input[name=custom-gender]").val(g);
-    }
-
-    $("select[name=gender]").change(function() {
-        var id = $("select[name=gender] option:selected").attr("id");
-        if (id == 'gender-E')
-            $("#gender-type").modal('show');
-    });
-
-    $("#gender-type").on('hide.bs.modal', function (e) {
-        var g = $("input[name='custom-gender']").val().trim();
-        var custom_option = $("#gender-E");
-        if (common_gender(g)) {
-            custom_option.attr("value", '*E');
-            custom_option.text("{% trans "etc" %}");
-            $("select[name=gender]").val(g);
-            $("input[name=custom-gender]").val("");
-        } else if (g == '') {
-            custom_option.attr("value", '*E');
-            custom_option.text("{% trans "etc" %}");
-        } else {
-            custom_option.attr("value", g);
-            custom_option.text("{% trans "etc" %} (" + g + ")");
-        }
-    });
-
-    var option = {
-        disable: true,
-        custom: {
-            vbirth: function(el) { var re = /^\d{4}-\d{2}-\d{2}$/; return el.val().trim() == '' || re.test(el.val()); }
-        },
-        errors: {
-            vbirth: 'Format should be YYYY-MM-DD'
-        }
-    };
-    $('#signup').validator(option);
-    
-    $('input[name=birthday]').datepicker({
-        dateFormat: 'yy-mm-dd',
-        changeMonth: true,
-        changeYear: true,
-        yearRange: "1930:-00",
-    });
-});
 </script>
 {% endblock %}

@@ -6,19 +6,27 @@
 {% block header %}{% endblock %}
 
 {% block content %}
-<h1>{% trans "Manage Service" %}</h1>
-<p>{% trans "You can see and unregister services that you use." %}</p>
-<div class="service-row">
-    {% for m in maps %}
-    <div class="service">
-        <a href="{{m.service.main_url}}"><img src="{{m.service.icon_url}}" alt="{{m.service.name}}"></a>
-        <p>{{m.service.alias}}</p>
-        <p class="date">{% blocktrans with time=m.register_time|date:'Y-m-d' %}from {{time}}{% endblocktrans %}</p>
-        <a class="btn btn-xs btn-danger" href="{{m.service.unregister_url}}">{% trans "Unregister" %}</a>
+<div class="wrap-content-xs">
+    <h1>{% trans "Manage Service" %}</h1>
+    <p>{% trans "You can see and unregister services that you use." %}</p>
+
+    <div class="services-list">
+        {% for m in maps %}
+        <div class="media service">
+            <div class="media-left">
+                <a href="{{m.service.main_url}}">
+                    <img class="media-object" src="{{m.service.icon_url}}" alt="{{m.service.name}}">
+                </a>
+            </div>
+            <div class="media-body">
+                <h4 class="media-heading">{{m.service.alias}} <small>(Scope: {{m.service.get_scope_display}})</small></h4>
+                <p class="date">{% blocktrans with time=m.register_time|date:'Y-m-d' %}from {{time}}{% endblocktrans %}</p>
+                <p class="action"><a class="btn btn-xs btn-danger" href="{{m.service.unregister_url}}">{% trans "Unregister" %}</a></p>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-info">{% trans "There are no services to show." %}</p>
+        {% endfor %}
     </div>
-    {% empty %}
-    <p class="text-info">{% trans "There are no services to show." %}</p>
-    {% endfor %}
 </div>
 {% endblock %}
-

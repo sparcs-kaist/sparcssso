@@ -28,6 +28,9 @@ def main(request):
             if user.email != email:
                 user.email = email
                 user.profile.email_authed = False
+                tokens = EmailAuthToken.objects.filter(user=user).all()
+                for token in tokens:
+                    token.delete()
 
             user.first_name = user_f.cleaned_data['first_name']
             user.last_name = user_f.cleaned_data['last_name']

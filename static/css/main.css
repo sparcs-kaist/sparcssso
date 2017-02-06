@@ -159,6 +159,33 @@ section.container {
     margin-bottom: 10px;
 }
 
+/* Service */
+.services-list .service {
+    background-color: #f3f3f3;
+    padding: 5px;
+    text-align: left;
+}
+
+.services-list .service img {
+    width: 100px;
+    height: 100px;
+}
+
+.services-list .service .media-body {
+    position: relative;
+}
+
+.services-list .service .date {
+    color: gray;
+}
+
+.services-list .service .action {
+    position: absolute;
+    margin: 0;
+    bottom: 0;
+    right: 0;
+}
+
 
 /* Documents */
 .doc-header {
@@ -195,32 +222,6 @@ section.container {
     margin-bottom:5px;
 }
 
-
-.service-row {
-    margin-top:20px;
-}
-
-.service {
-    width:150px;
-    display:inline-block;
-}
-
-.service img {
-    width:100px;
-    height:100px;
-    margin-bottom:5px;
-}
-
-.service p {
-    font-weight:700;
-    font-size:20px;
-}
-
-.service p.date {
-    margin-top:0;
-    font-size:12px;
-    color:gray;
-}
 
 
 h1.err-title {

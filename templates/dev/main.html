@@ -3,56 +3,43 @@
 
 {% block htitle %}SPARCS SSO Developer Center{% endblock %}
 
-{% block header %}{% endblock %}
-
 {% block content %}
-<h1>SPARCS SSO Developer Center <small><a href="https://wiki.sparcs.org/w/index.php/SPARCS_SSO">&gt; Docs &lt;</a></small></h1>
-<p>You can enable or disable test features, view your sparcs id and view/modify your test points.</p>
-<p>To use test services, you need to enable test features. However, it may leads to leak your personal information.</p>
-<p>All contents in this page will not be affect for any live services.</p>
-<form id="dev-panel" class="form-horizontal" action="/dev/main/" method="post">
-    <fieldset>
+<div class="wrap-content">
+    <h1>SPARCS SSO Developer Center <small><a href="https://wiki.sparcs.org/w/index.php/SPARCS_SSO">&gt; Docs &lt;</a></small></h1>
+    <p>You can enable or disable test features, view your sparcs id and view/modify your test points. To use test services, you need to enable test features. However, it may leads to leak your personal information.</p>
+    <p>All contents in this page will not be affect for any live services.</p>
+    <form class="row" action="/dev/main/" method="post" data-toggle="validator">
         {% if success %}
-        <div class="form-group">
-            <div class="col-xs-offset-1 col-xs-10 col-sm-offset-2 col-sm-8">
-               <div class="alert alert-success">
-                   <b>Your developer info has been updated.</b>
-                </div>
+        <div class="form-group col-xs-12">
+           <div class="alert alert-success">
+               <b>Your developer info has been updated.</b>
             </div>
         </div>
         {% endif %}
         {% csrf_token %}
-        <div class="form-group">
-            <label class="col-sm-2 control-label">Test Feature</label>
-            <div class="col-xs-offset-1 col-xs-10 col-sm-offset-0 col-sm-8">
-                <label class="radio-inline">
-                    <input type="radio" name="test" id="test-enabled" value="E"> <span class="text-danger">Enable</span>
-                </label>
-                <label class="radio-inline">
-                    <input type="radio" name="test" id="test-disabled" value="D" checked="checked"> <span class="text-info">Disable</span>
-                </label>
-            </div>
+        <div class="form-group col-xs-12">
+            <label class="control-label">Test Feature</label>
+            <label class="radio-inline">
+                <input type="radio" name="test" id="test-enabled" value="E"> <span class="text-danger">Enable</span>
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="test" id="test-disabled" value="D" checked="checked"> <span class="text-info">Disable</span>
+            </label>
         </div>
-        <div class="form-group">
-            <label class="col-sm-2 control-label">SPARCS ID</label>
-            <div class="col-xs-offset-1 col-xs-10 col-sm-offset-0 col-sm-8">
-                <input type="text" class="form-control" value="{% if not profile.sparcs_id %}NOT SPARCS USER{% else %}{{profile.sparcs_id}}{% endif %}" disabled>
-            </div>
+        <div class="form-group col-xs-12">
+            <label class="control-label">SPARCS ID</label>
+            <input type="text" class="form-control" value="{% if not profile.sparcs_id %}NOT SPARCS USER{% else %}{{profile.sparcs_id}}{% endif %}" readonly>
         </div>
-        <div class="form-group">
-            <label class="col-sm-2 control-label">Test Point</label>
-            <div class="col-xs-offset-1 col-xs-10 col-sm-offset-0 col-sm-8">
-                <input type="number" class="form-control" name="point" value="{{profile.point_test}}" required>
-            </div>
+        <div class="form-group col-xs-12">
+            <label class="control-label">Test Point</label>
+            <input type="number" class="form-control" name="point" value="{{profile.point_test}}" required>
         </div>
-        <div class="form-group">
-            <div class="col-xs-12">
-                <button type="submit" class="btn btn-primary">Modify</button>
-                <a class="btn btn-default" href="/dev/main/">Reset</a>
-            </div>
+        <div class="form-group col-xs-12">
+            <button type="submit" class="btn btn-primary">Modify</button>
+            <a class="btn btn-default" href="/dev/main/">Reset</a>
         </div>
-    </fieldset>
-</form>
+    </form>
+</div>
 
 <h3>Test Services</h3>
 <p>You can <a href="/dev/service/add/">register</a> / modify / remove test services.</p>
@@ -114,44 +101,41 @@
 </table>
 </div>
 
-<script type="text/javascript">
+<script>
 $(function() {
-    if ('{{profile.flags.sysop}}' == 'True')
+  if ('{{profile.flags.sysop}}' == 'True')
     $('input[name=test]').prop('disabled', true);
 
-    if ('{{profile.flags.test}}' == 'True') 
-        $('#test-enabled').prop('checked', true);
-        
-    $('#dev-panel').validator();
-    
-    $('.btn-service-remove').click(function() {
-        var data = {
-            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
-        }
-        $.ajax({
-            url: '/dev/service/' + $(this).data('name') + '/delete/',
-            type: 'POST',
-            data: data,
-            success: function(result) {
-                location.reload();
-            },
-        });
-    });
+  if ('{{profile.flags.test}}' == 'True') 
+    $('#test-enabled').prop('checked', true);
 
-    $('.btn-user-remove').click(function() {
-        var data = {
-            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
-        }
-        $.ajax({
-            url: '/dev/user/' + $(this).data('uid') + '/delete/',
-            type: 'POST',
-            data: data,
-            success: function(result) {
-                location.reload();
-            },
-        });
+  $('.btn-service-remove').click(function() {
+    var data = {
+      csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+    };
+    $.ajax({
+      url: '/dev/service/' + $(this).data('name') + '/delete/',
+      type: 'POST',
+      data: data,
+      success: function(result) {
+        location.reload();
+      },
     });
+  });
+
+  $('.btn-user-remove').click(function() {
+    var data = {
+      csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+    };
+    $.ajax({
+      url: '/dev/user/' + $(this).data('uid') + '/delete/',
+      type: 'POST',
+      data: data,
+      success: function(result) {
+        location.reload();
+      },
+    });
+  });
 });
 </script>
-
 {% endblock %}

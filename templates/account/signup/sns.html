@@ -3,92 +3,87 @@
 
 {% block htitle %}SPARCS SSO {% trans "Signup" %}{% endblock %}
 
-{% block header %}
-<script src='https://www.google.com/recaptcha/api.js'></script>
-{% endblock %}
-
 {% block content %}
-<h1>{% trans "Signup" %}
-<small> 
-    {% if type == 'FB' %}
-        {% trans "with Facebook Account" %}
-    {% elif type == 'TW' %}
-        {% trans "with Twitter Account" %}
-    {% elif type == 'KAIST' %}
-        {% trans "with KAIST SSO" %}
+<div class="wrap-content-sm">
+    <h1>{% trans "Signup" %}
+    <small> 
+        {% if type == 'FB' %}
+            {% trans "with Facebook Account" %}
+        {% elif type == 'TW' %}
+            {% trans "with Twitter Account" %}
+        {% elif type == 'KAIST' %}
+            {% trans "with KAIST SSO" %}
+        {% endif %}
+    </small></h1>
+    <p>{% trans "Almost done...! Your account will be created as follows." %}</p>
+    <p>{% trans "You can modify your information in the profile page after sign up." %}
+    {% if email_warning %}
+    <p class="text-danger">{% trans "Warning! The email address is already exists. You will get random non-existing email address if you continue." %}</p>
     {% endif %}
-</small></h1>
-<p>{% trans "Almost done...! Your account will be created as follows." %}</p>
-<p>{% trans "You can modify your information in the profile page after sign up." %}
-{% if email_warning %}
-<p class="text-danger">{% trans "Warning! The email address is already exists. You will get random non-existing email address if you continue." %}</p>
-{% endif %}
-<form id="signup" class="form-horizontal" action="/account/signup/social/" method="post" enctype="multipart/form-data">
-    <fieldset>
+    <form class="row" action="/account/signup/social/" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {% if profile.email %}
-        <div class="form-group" style="margin-bottom:5px">
-            <label class="col-sm-2 control-label">{% trans "Email" %}</label>
-            <div class="col-xs-offset-1 col-xs-10 col-sm-offset-0 col-sm-8">
-                <p class="form-control-static" style="text-align:left">{{profile.email}}</p>
-            </div>
+        <div class="form-group col-xs-12 text-left">
+            <label class="control-label">{% trans "Email" %}</label>
+            <input type="email" class="form-control" readonly="readonly" value="{{profile.email}}">
         </div>
         {% endif %}
-        <div class="form-group" style="margin-bottom:5px">
-            <label class="col-sm-2 control-label">{% trans "Name" %}</label>
-            <div class="col-xs-offset-1 col-xs-10 col-sm-offset-0 col-sm-8">
-                <p class="form-control-static" style="text-align:left">{{profile.first_name}} {{profile.last_name}}</p>
+        <div class="form-group col-xs-12 text-left">
+            <div>
+                <label class="control-label">{% trans "Name" %}</label>
+            </div>
+            <div class="col-xs-8" style="padding: 0">
+                <input type="text" class="form-control" readonly="readonly" value="{{profile.first_name}}">
+            </div>
+            <div class="col-xs-4" style="padding: 0">
+                <input type="text" class="form-control" readonly="readonly" value="{{profile.last_name}}">
             </div>
         </div>
-        <div class="form-group" style="margin-bottom:5px">
-            <label class="col-sm-2 control-label">{% trans "Gender, Birthday" %}</label>
-            <div class="col-xs-offset-1 col-xs-10 col-sm-offset-0 col-sm-8">
-                <p class="form-control-static" style="text-align:left">
+        <div class="form-group col-xs-12 text-left">
+            <div>
+                <label class="control-label">{% trans "Gender, Birthday" %}</label>
+            </div>
+            <div class="col-xs-4" style="padding: 0">
+                <input type="text" class="form-control" readonly="readonly" value="
                 {% if not profile.gender %}
-                    {% trans "Hide" %},
+                    {% trans "Hide" %}
                 {% elif profile.gender == '*M' %}
-                    {% trans "Male" %},
+                    {% trans "Male" %}
                 {% elif profile.gender == '*F' %}
-                    {% trans "Female" %},
+                    {% trans "Female" %}
                 {% elif profile.gender == '*H' %}
-                    {% trans "Hide" %},
+                    {% trans "Hide" %}
                 {% else %}
-                    {{profile.gender}},
-                {% endif %}
+                    {{profile.gender}}
+                    {% endif %}
+                ">
+            </div>
+            <div class="col-xs-8" style="padding: 0">
+                <input type="text" class="form-control" readonly="readonly" value="
                 {% if profile.birthday %}
                     {{profile.birthday}}
                 {% else %}
                     ????-??-??
                 {% endif %}
-                </p>
+                ">
             </div>
-        </div>
-        {% if profile.kaist_info.ku_std_no %}
-        <div class="form-group" style="margin-bottom:5px">
-            <label class="col-sm-2 control-label">{% trans "Student ID" %}</label>
-            <div class="col-xs-offset-1 col-xs-10 col-sm-offset-0 col-sm-8">
-                <p class="form-control-static" style="text-align:left">{{profile.kaist_info.ku_std_no}}</p>
-            </div>
-        </div>
-        {% endif %}
-        <div class="form-group" style="margin-top:5px">
-            By clicking on the signup button, you agree to <a href="/terms/" target="_blank">SPARCS SSO's terms of use</a> and <a href="/privacy/" target="_blank">privacy policy</a>
         </div>
 
-        {% if type == 'EMAIL' %}
-        <input type="text" name="captcha" style="margin-left: -99999px !important" required>
-        <div class="form-group" style="margin-top:-20px">
-            <div class="g-recaptcha" style="display:inline-block" data-callback="captcha_check" data-expired-callback="captcha_expired" data-sitekey="6LdKJiQTAAAAAE03DTaBYonGRVuGdurgcLmpnjA2"></div>
+        {% if profile.kaist_info.ku_std_no %}
+        <div class="form-group col-xs-12 text-left">
+            <label class="control-label">{% trans "Student ID" %}</label>
+            <input type="text" class="form-control" readonly="readonly" value="{{profile.kaist_info.ku_std_no}}">
         </div>
         {% endif %}
+
+        <div class="form-group col-xs-12">
+            <p>By clicking on the signup button, you agree to <a href="/terms/" target="_blank">SPARCS SSO's terms of use</a> and <a href="/privacy/" target="_blank">privacy policy</a></p>
+        </div>
 
         <div class="form-group">
-            <div class="col-xs-12">
-                <button type="submit" class="btn btn-warning">{% trans "Signup" %}</button>
-                <a class="btn btn-default" href="/account/login/">{% trans "Login Page" %}</a>
-            </div>
+            <button type="submit" class="btn btn-warning">{% trans "Signup" %}</button>
+            <a class="btn btn-default" href="/account/login/">{% trans "Login Page" %}</a>
         </div>
-    </fieldset>
-</form>
+    </form>
+</div>
 {% endblock %}
-

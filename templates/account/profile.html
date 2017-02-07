@@ -53,10 +53,10 @@
                 <label class="control-label">{% trans "Name" %}</label>
             </div>
             <div class="col-xs-8" style="padding: 0">
-                <input type="text" class="form-control col-xs-6" name="first_name" placeholder="First Name" required="required" maxlength="30" value="{{user.first_name}}">
+                <input type="text" class="form-control" name="first_name" placeholder="First Name" required="required" maxlength="30" value="{{user.first_name}}">
             </div>
             <div class="col-xs-4" style="padding: 0">
-                <input type="text" class="form-control col-xs-4" name="last_name" placeholder="Last Name" required="required" maxlength="30" value="{{user.last_name}}">
+                <input type="text" class="form-control" name="last_name" placeholder="Last Name" required="required" maxlength="30" value="{{user.last_name}}">
             </div>
         </div>
         <div class="form-group col-xs-12 text-left">
@@ -195,62 +195,63 @@
     {% endif %}
 </div>
 
-<script type="text/javascript">
+<script>
 $(function() {
-    var common_gender = function(g) {
-        return g == '*H' || g == '*M' || g == '*F' || g == '*E';
-    };
+  var common_gender = function(g) {
+    return g == '*H' || g == '*M' || g == '*F' || g == '*E';
+  };
 
-    var g = '{{profile.gender}}';
-    if (common_gender(g))
-        $("select[name=gender]").val(g);
-    else if (g != '') {
-        $("#gender-E").text("{% trans "etc" %} (" + g + ")");
-        $("#gender-E").attr("value", g);
-        $("#gender-E").attr("selected", true);
-        $("input[name=custom-gender]").val(g);
+  var g = '{{profile.gender}}';
+  if (common_gender(g)) {
+    $("select[name=gender]").val(g);
+  } else if (g != '') {
+    $("#gender-E").text("{% trans "etc" %} (" + g + ")");
+    $("#gender-E").attr("value", g);
+    $("#gender-E").attr("selected", true);
+    $("input[name=custom-gender]").val(g);
+  }
+
+  $("select[name=gender]").change(function() {
+    var id = $("select[name=gender] option:selected").attr("id");
+    if (id == 'gender-E') {
+        $("#gender-type").modal('show');
     }
+  });
 
-    $("select[name=gender]").change(function() {
-        var id = $("select[name=gender] option:selected").attr("id");
-        if (id == 'gender-E')
-            $("#gender-type").modal('show');
-    });
+  $("#gender-type").on('hide.bs.modal', function (e) {
+    var g = $("input[name='custom-gender']").val().trim();
+    var custom_option = $("#gender-E");
+    if (common_gender(g)) {
+      custom_option.attr("value", '*E');
+      custom_option.text("{% trans "etc" %}");
+      $("select[name=gender]").val(g);
+      $("input[name=custom-gender]").val("");
+    } else if (g == '') {
+      custom_option.attr("value", '*E');
+      custom_option.text("{% trans "etc" %}");
+    } else {
+      custom_option.attr("value", g);
+      custom_option.text("{% trans "etc" %} (" + g + ")");
+    }
+  });
 
-    $("#gender-type").on('hide.bs.modal', function (e) {
-        var g = $("input[name='custom-gender']").val().trim();
-        var custom_option = $("#gender-E");
-        if (common_gender(g)) {
-            custom_option.attr("value", '*E');
-            custom_option.text("{% trans "etc" %}");
-            $("select[name=gender]").val(g);
-            $("input[name=custom-gender]").val("");
-        } else if (g == '') {
-            custom_option.attr("value", '*E');
-            custom_option.text("{% trans "etc" %}");
-        } else {
-            custom_option.attr("value", g);
-            custom_option.text("{% trans "etc" %} (" + g + ")");
-        }
-    });
+  var option = {
+    disable: true,
+    custom: {
+      vbirth: function(el) { var re = /^\d{4}-\d{2}-\d{2}$/; return el.val().trim() == '' || re.test(el.val()); }
+    },
+    errors: {
+      vbirth: "Format should be YYYY-MM-DD"
+    }
+  };
+  $('#profile').validator(option);
 
-    var option = {
-        disable: true,
-        custom: {
-            vbirth: function(el) { var re = /^\d{4}-\d{2}-\d{2}$/; return el.val().trim() == '' || re.test(el.val()); }
-        },
-        errors: {
-            vbirth: "Format should be YYYY-MM-DD"
-        }
-    };
-    $('#profile').validator(option);
-    
-    $("input[name=birthday]").datepicker({
-        dateFormat: "yy-mm-dd",
-        changeMonth: true,
-        changeYear: true,
-        yearRange: "1930:-00",
-    });
+  $("input[name=birthday]").datepicker({
+    dateFormat: "yy-mm-dd",
+    changeMonth: true,
+    changeYear: true,
+    yearRange: "1930:-00",
+  });
 });
 </script>
 {% endblock %}

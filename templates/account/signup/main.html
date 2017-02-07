@@ -34,10 +34,10 @@
                 <label class="control-label">{% trans "Name" %}</label>
             </div>
             <div class="col-xs-8" style="padding: 0">
-                <input type="text" class="form-control col-xs-6" name="first_name" placeholder="First Name" required="required" maxlength="30">
+                <input type="text" class="form-control" name="first_name" placeholder="First Name" required="required" maxlength="30">
             </div>
             <div class="col-xs-4" style="padding: 0">
-                <input type="text" class="form-control col-xs-4" name="last_name" placeholder="Last Name" required="required" maxlength="30">
+                <input type="text" class="form-control" name="last_name" placeholder="Last Name" required="required" maxlength="30">
             </div>
         </div>
         <div class="form-group col-xs-12">
@@ -55,13 +55,13 @@
     </form>
 </div>
 
-<script type="text/javascript">
+<script>
 var captcha_check = function() {
-    $('input[name=captcha]').val('captcha');
+  $('input[name=captcha]').val('captcha');
 };
 
 var captcha_expired = function() {
-    $('input[name=captcha]').val('');
+  $('input[name=captcha]').val('');
 };
 </script>
 {% endblock %}

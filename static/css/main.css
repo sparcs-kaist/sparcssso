@@ -65,7 +65,7 @@ section.container {
 
 /* Alerts */
 .alert-wrap {
-    margin-top: 0;
+    margin-top: -1px;
 }
 
 .alert {
@@ -159,6 +159,7 @@ section.container {
     margin-bottom: 10px;
 }
 
+
 /* Service */
 .services-list .service {
     background-color: #f3f3f3;
@@ -218,12 +219,26 @@ section.container {
     padding-bottom:10px;
 }
 
-.jumbotron > p {
+.jumbotron .hidden-xs p {
     margin-bottom:5px;
 }
 
+.service-board {
+    max-width: 767px;
+    margin: 20px auto 0 auto;
+}
 
+.service-board .service {
+    display: inline-block;
+    padding: 0 20px;
+}
 
+.service-board .service img {
+    width: 100px;
+    height: 100px;
+}
+
+/* Error */
 h1.err-title {
     margin:15px 0 10px;
     font-size:48px;

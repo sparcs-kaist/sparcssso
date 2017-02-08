@@ -41,9 +41,9 @@
             </div>
             <div class="col-xs-3" style="padding: 0">
                 {% if user.profile.email_authed %}
-                <a href="#" disabled class="btn btn-success" style="width:100%">{% trans "Verified" %}</a>
+                <button class="btn btn-success" disabled style="width:100%">{% trans "Verified" %}</a>
                 {% else %}
-                <a href="/account/email/" class="btn btn-warning" style="width:100%">{% trans "Verify" %}</a>
+                <button id="verify-email" class="btn btn-warning" type="button" style="width:100%">{% trans "Verify" %}</a>
                 {% endif %}
             </div>
         </div>
@@ -218,6 +218,15 @@ $(function() {
     }
   });
 
+  $("input[name=email]").keyup(function() {
+    var email = $("input[name=email]").val();
+    $("#verify-email").attr("disabled", email != "{{user.email}}");
+  });
+
+  $("#verify-email").click(function() {
+     location.href = "/account/email/";
+  });
+
   $("#gender-type").on('hide.bs.modal', function (e) {
     var g = $("input[name='custom-gender']").val().trim();
     var custom_option = $("#gender-E");
@@ -238,7 +247,7 @@ $(function() {
   var option = {
     disable: true,
     custom: {
-      vbirth: function(el) { var re = /^\d{4}-\d{2}-\d{2}$/; return el.val().trim() == '' || re.test(el.val()); }
+      vbirth: function(el) { var re = /^\d{4}-\d{2}-\d{2}$/; return el.val().trim() != '' && !re.test(el.val()); }
     },
     errors: {
       vbirth: "Format should be YYYY-MM-DD"

@@ -16,9 +16,11 @@
 
 <div class="jumbotron" style="margin-top:20px">
     <h1>SPARCS SSO</h1>
-    <p>{% trans "Welcome to SPARCS Single Sign On!" %}</p>
-    <p>{% trans "You can use the following services using SPARCS SSO" %}</p>
-    <div class="service-row">
+    <div class="hidden-xs">
+        <p>{% trans "Welcome to SPARCS Single Sign On!" %}</p>
+        <p>{% trans "You can use the following services using SPARCS SSO" %}</p>
+    </div>
+    <div class="service-board">
     {% for service in services %}
         <div class="service">
             <a href="{{ service.main_url }}"><img src="{{ service.icon_url }}" alt="{{ service.name }}"></a>
@@ -28,4 +30,3 @@
     </div>
 </div>
 {% endblock %}
-

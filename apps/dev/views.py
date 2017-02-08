@@ -112,7 +112,8 @@ def user(request, uid):
         birthday = request.POST.get('birthday', None)
         if not birthday:
             birthday = None
-        test_point = int(request.POST.get('test_point', '0'))
+        point_test = int(request.POST.get('point_test', '0'))
+
         try:
             kaist_info = json.loads(request.POST.get('kaist_info', ''))
             kaist_id = kaist_info['kaist_uid']
@@ -150,7 +151,7 @@ def user(request, uid):
 
         profile.gender = gender
         profile.birthday = birthday
-        profile.test_point = test_point
+        profile.point_test = point_test
         profile.set_kaist_info({'userid': kaist_id, 'kaist_info': kaist_info})
         profile.save()
 

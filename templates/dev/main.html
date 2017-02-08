@@ -6,8 +6,7 @@
 {% block content %}
 <div class="wrap-content">
     <h1>SPARCS SSO Developer Center <small><a href="https://wiki.sparcs.org/w/index.php/SPARCS_SSO">&gt; Docs &lt;</a></small></h1>
-    <p>You can enable or disable test features, view your sparcs id and view/modify your test points. To use test services, you need to enable test features. However, it may leads to leak your personal information.</p>
-    <p>All contents in this page will not be affect for any live services.</p>
+    <p>You can enable or disable test features, view your sparcs id and view/modify your test points. All contents in this page will not be affect for any live services.</p>
     <form class="row" action="/dev/main/" method="post" data-toggle="validator">
         {% if success %}
         <div class="form-group col-xs-12">
@@ -17,20 +16,23 @@
         </div>
         {% endif %}
         {% csrf_token %}
-        <div class="form-group col-xs-12">
-            <label class="control-label">Test Feature</label>
-            <label class="radio-inline">
-                <input type="radio" name="test" id="test-enabled" value="E"> <span class="text-danger">Enable</span>
-            </label>
-            <label class="radio-inline">
-                <input type="radio" name="test" id="test-disabled" value="D" checked="checked"> <span class="text-info">Disable</span>
-            </label>
+        <div class="form-group col-xs-12 text-left">
+            <label class="control-label">Test Feature - <span class="text-warning">TAKE EXTRA CAUTION</span></label>
+            <p class="text-warning">To use test services, you need to enable test features. However, it may leads to leak your personal information.</p>
+            <div>
+                <label class="radio-inline">
+                    <input type="radio" name="test" id="test-enabled" value="E"> <span class="text-danger">Enable</span>
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="test" id="test-disabled" value="D" checked="checked"> <span class="text-info">Disable</span>
+                </label>
+            </div>
         </div>
-        <div class="form-group col-xs-12">
+        <div class="form-group col-xs-12 text-left">
             <label class="control-label">SPARCS ID</label>
             <input type="text" class="form-control" value="{% if not profile.sparcs_id %}NOT SPARCS USER{% else %}{{profile.sparcs_id}}{% endif %}" readonly>
         </div>
-        <div class="form-group col-xs-12">
+        <div class="form-group col-xs-12 text-left">
             <label class="control-label">Test Point</label>
             <input type="number" class="form-control" name="point" value="{{profile.point_test}}" required>
         </div>
@@ -43,62 +45,65 @@
 
 <h3>Test Services</h3>
 <p>You can <a href="/dev/service/add/">register</a> / modify / remove test services.</p>
-<table class="table col-sm-10">
-    <thead>
-        <tr>
-            <th>Client ID</th>
-            <th>Alias</th>
-            <th>Main URL</th>
-            <th class="text-center">Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for service in services %}
-        <tr>
-            <td class="text-left">{{service.name}}</td>
-            <td class="text-left">{{service.alias}}</td>
-            <td class="text-left">{{service.main_url}}</td>
-            <td class="text-center"><a href="/dev/service/{{service.name}}/" class="btn btn-xs btn-warning">Modify</a> <button class="btn btn-xs btn-danger btn-service-remove" data-name="{{service.name}}">REMOVE</button></td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="4">
-                No Test Services are Registered
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Client ID</th>
+                <th>Alias</th>
+                <th>Main URL</th>
+                <th class="text-center">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for service in services %}
+            <tr>
+                <td class="text-left">{{service.name}}</td>
+                <td class="text-left">{{service.alias}}</td>
+                <td class="text-left">{{service.main_url}}</td>
+                <td class="text-center"><a href="/dev/service/{{service.name}}/" class="btn btn-xs btn-warning">Modify</a> <button class="btn btn-xs btn-danger btn-service-remove" data-name="{{service.name}}">REMOVE</button></td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">
+                    No Test Services are Registered
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
 <h3>Test Accounts</h3>
 <p>You can <a href="/dev/user/add/">register</a> / modify / remove test accounts.</p>
 <p class="text-warning"><b>Warning!</b> Test accounts are shared among ALL developers.</p>
-<table class="table col-sm-10">
-    <thead>
-        <tr>
-            <th>UID</th>
-            <th>Email</th>
-            <th>Name</th>
-            <th class="text-center">Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for user in users %}
-        <tr>
-            <td class="text-left">{{user.username}}</td>
-            <td class="text-left">{{user.email}}</td>
-            <td class="text-left">{{user.first_name}} {{user.last_name}}</td>
-            <td class="text-center"><a href="/dev/user/{{user.username}}/" class="btn btn-xs btn-warning">Modify</a> <button class="btn btn-xs btn-danger btn-user-remove" data-uid="{{user.username}}">REMOVE</button></td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="4">
-                No Test Accounts are Registered
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>UID</th>
+                <th>Email</th>
+                <th>Name</th>
+                <th class="text-center">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td class="text-left">{{user.username}}</td>
+                <td class="text-left">{{user.email}}</td>
+                <td class="text-left">{{user.first_name}} {{user.last_name}}</td>
+                <td class="text-center"><a href="/dev/user/{{user.username}}/" class="btn btn-xs btn-warning">Modify</a> <button class="btn btn-xs btn-danger btn-user-remove" data-uid="{{user.username}}">REMOVE</button></td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">
+                    No Test Accounts are Registered
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 
 <script>

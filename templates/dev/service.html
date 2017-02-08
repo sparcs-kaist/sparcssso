@@ -8,31 +8,31 @@
     <h1>Test Service {% if service %}Edit{% else %}Add{% endif %}</h1>
     <form class="row" action="/dev/service/{% if service %}{{service.name}}{% else %}add{% endif %}/" method="post" data-toggle="validator">
         {% csrf_token %}
-        <div class="form-group col-xs-12">
+        <div class="form-group col-xs-12 text-left">
             <label class="control-label">Name</label>
             <input type="text" class="form-control" name="name" readonly value="{% if service %}{{service.name}}{% else %}AUTO GENERATED{% endif %}">
         </div>
-        <div class="form-group col-xs-12">
+        <div class="form-group col-xs-12 text-left">
             <label class="control-label">Alias</label>
             <input type="text" class="form-control" name="alias" placeholder="my test app" required="required" maxlength="30" value="{{service.alias}}">
         </div>
-        <div class="form-group col-xs-12">
+        <div class="form-group col-xs-12 text-left">
             <label class="control-label">Main URL</label>
             <input type="url" class="form-control" name="main_url" placeholder="https://example.com/" required="required" maxlength="200" value="{{service.main_url}}">
         </div>
-        <div class="form-group col-xs-12">
+        <div class="form-group col-xs-12 text-left">
             <label class="control-label">Login Callback URL</label>
             <input type="url" class="form-control" name="login_callback_url" placeholder="https://example.com/account/login/callback/" required="required" maxlength="200" value="{{service.login_callback_url}}">
         </div>
-        <div class="form-group col-xs-12">
+        <div class="form-group col-xs-12 text-left">
             <label class="control-label">Unregister URL</label>
             <input type="url" class="form-control" name="unregister_url" placeholder="https://example.com/account/unregister/" required="required" maxlength="200" value="{{service.unregister_url}}">
         </div>
-        <div class="form-group col-xs-12">
+        <div class="form-group col-xs-12 text-left">
             <label class="control-label">Secret Key</label>
             <input type="text" class="form-control" readonly name="secret_key" value="{% if service %}{{service.secret_key}}{% else %}AUTO GENERATED{% endif %}">
         </div>
-        <div class="form-group col-xs-12">
+        <div class="form-group col-xs-12 text-left">
             <label class="control-label">Cooltime</label>
             <input type="number" class="form-control" name="cooltime" placeholder="0" required="required" max="60" value="{{service.cooltime}}">
         </div>

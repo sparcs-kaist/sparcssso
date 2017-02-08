@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: v0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-06 22:54+0900\n"
+"POT-Creation-Date: 2017-02-08 23:58+0900\n"
 "PO-Revision-Date: 2016-01-01 19:21+0900\n"
 "Last-Translator: Jae-Sung Kim <wotjd1102@kaist.ac.kr>\n"
 "Language-Team: SPARCS SSO Team <sso@sparcs.org>\n"
@@ -88,7 +88,7 @@ msgid "Please grant all requested permission"
 msgstr "요청한 권한을 모두 승인해주세요."
 
 #: templates/account/login.html:38 templates/account/profile.html:36
-#: templates/account/signup/main.html:18 templates/account/signup/sns.html:31
+#: templates/account/signup/main.html:18 templates/account/signup/sns.html:26
 #: templates/contact.html:45
 msgid "Email"
 msgstr "이메일"
@@ -198,30 +198,31 @@ msgid "Verify"
 msgstr "인증하기"
 
 #: templates/account/profile.html:53 templates/account/signup/main.html:34
-#: templates/account/signup/sns.html:38 templates/contact.html:40
+#: templates/account/signup/sns.html:32 templates/contact.html:40
+#: templates/dev/user.html:17
 msgid "Name"
 msgstr "이름"
 
-#: templates/account/profile.html:64 templates/account/signup/sns.html:44
+#: templates/account/profile.html:64 templates/account/signup/sns.html:43
+#: templates/dev/user.html:28
 msgid "Gender, Birthday"
 msgstr "성별 및 생일"
 
-#: templates/account/profile.html:68 templates/account/signup/sns.html:48
-#: templates/account/signup/sns.html:54
+#: templates/account/profile.html:68 templates/account/signup/sns.html:46
 msgid "Hide"
 msgstr "숨김"
 
-#: templates/account/profile.html:69 templates/account/signup/sns.html:50
+#: templates/account/profile.html:69 templates/account/signup/sns.html:46
 msgid "Male"
 msgstr "남자"
 
-#: templates/account/profile.html:70 templates/account/signup/sns.html:52
+#: templates/account/profile.html:70 templates/account/signup/sns.html:46
 msgid "Female"
 msgstr "여자"
 
 #: templates/account/profile.html:71 templates/account/profile.html:208
-#: templates/account/profile.html:225 templates/account/profile.html:230
-#: templates/account/profile.html:233 templates/contact.html:34
+#: templates/account/profile.html:235 templates/account/profile.html:240
+#: templates/account/profile.html:243 templates/contact.html:34
 msgid "etc"
 msgstr "기타"
 
@@ -363,12 +364,12 @@ msgstr "잘못된 토큰이거나 유효기간이 만료되어 비밀번호 재�
 #: templates/account/pw-reset/fail.html:12
 #: templates/account/pw-reset/main.html:26
 #: templates/account/pw-reset/send.html:26
-#: templates/account/signup/main.html:53 templates/account/signup/sns.html:88
+#: templates/account/signup/main.html:53 templates/account/signup/sns.html:66
 msgid "Login Page"
 msgstr "로그인 페이지"
 
 #: templates/account/pw-reset/fail.html:13
-#: templates/account/signup/done.html:17
+#: templates/account/signup/done.html:18
 msgid "Main Page"
 msgstr "메인 페이지"
 
@@ -417,20 +418,20 @@ msgstr "서비스 해지"
 msgid "There are no services to show."
 msgstr "등록된 서비스가 없습니다."
 
-#: templates/account/signup/done.html:4 templates/account/signup/done.html:9
+#: templates/account/signup/done.html:4 templates/account/signup/done.html:10
 msgid "Signup Complete"
 msgstr "회원가입 완료"
 
-#: templates/account/signup/done.html:10
+#: templates/account/signup/done.html:11
 msgid "Welcome to join SPARCS SSO!"
 msgstr "SPARCS SSO에 가입하신 것을 환영합니다!"
 
-#: templates/account/signup/done.html:12
-msgid "Verification Email is sent. Please verify your email to use services."
+#: templates/account/signup/done.html:13
+msgid "Verification email is sent. Please verify your email to use services."
 msgstr ""
 "인증 이메일이 전송되었습니다. 서비스를 사용하시려면 이메일을 인증해주세요."
 
-#: templates/account/signup/done.html:14
+#: templates/account/signup/done.html:15
 msgid ""
 "You can login using your social account. If you set your password, you can "
 "also login using email."
@@ -438,13 +439,13 @@ msgstr ""
 "SNS 계정을 통해서 로그인하실 수 있습니다. 비밀번호를 설정하시면 이메일로도 로"
 "그인이 가능합니다."
 
-#: templates/account/signup/done.html:16
+#: templates/account/signup/done.html:17
 msgid "Continue"
 msgstr "계속"
 
 #: templates/account/signup/main.html:4 templates/account/signup/main.html:12
 #: templates/account/signup/main.html:52 templates/account/signup/sns.html:4
-#: templates/account/signup/sns.html:11 templates/account/signup/sns.html:87
+#: templates/account/signup/sns.html:8 templates/account/signup/sns.html:65
 msgid "Signup"
 msgstr "회원가입"
 
@@ -460,27 +461,27 @@ msgstr "다음 내용을 작성해주세요."
 msgid "You NEED to verify your email to use services."
 msgstr "서비스를 사용하기 위해서는 이메일을 인증해야 합니다."
 
-#: templates/account/signup/sns.html:14
+#: templates/account/signup/sns.html:11
 msgid "with Facebook Account"
 msgstr "(페이스북)"
 
-#: templates/account/signup/sns.html:16
+#: templates/account/signup/sns.html:13
 msgid "with Twitter Account"
 msgstr "(트위터)"
 
-#: templates/account/signup/sns.html:18
+#: templates/account/signup/sns.html:15
 msgid "with KAIST SSO"
 msgstr "(KAIST Portal)"
 
-#: templates/account/signup/sns.html:21
+#: templates/account/signup/sns.html:18
 msgid "Almost done...! Your account will be created as follows."
 msgstr "거의 완료되었습니다. 계정은 다음과 같은 정보로 생성될 것입니다."
 
-#: templates/account/signup/sns.html:22
+#: templates/account/signup/sns.html:18
 msgid "You can modify your information in the profile page after sign up."
 msgstr "다음 정보는 회원가입 후 프로필 페이지에서 변경할 수 있습니다."
 
-#: templates/account/signup/sns.html:24
+#: templates/account/signup/sns.html:20
 msgid ""
 "Warning! The email address is already exists. You will get random non-"
 "existing email address if you continue."
@@ -488,43 +489,43 @@ msgstr ""
 "주의! 이 메일로 가입된 계정이 존재합니다. 회원가입을 진행하면 존재하지 않는 "
 "이메일 주소로 계정이 생성됩니다."
 
-#: templates/account/signup/sns.html:68
+#: templates/account/signup/sns.html:55
 msgid "Student ID"
 msgstr "학번"
 
-#: templates/api/cooltime.html:4 templates/api/cooltime.html:9
+#: templates/api/cooltime.html:4 templates/api/cooltime.html:8
 msgid "In COOLTIME!"
 msgstr "서비스 이용 불가능 기간"
 
-#: templates/api/cooltime.html:10
+#: templates/api/cooltime.html:9
 #, python-format
 msgid "Your account is in a cooltime for the service %(alias)s"
 msgstr "당신의 계정은 %(alias)s 서비스에 대해 일시 정지 상태입니다."
 
-#: templates/api/cooltime.html:11
+#: templates/api/cooltime.html:10
 #, python-format
 msgid "You can use %(alias)s again after %(left)s days."
 msgstr "%(left)s 일이 지난 후 %(alias)s 서비스를 다시 이용하실 수 있습니다."
 
-#: templates/api/cooltime.html:13
+#: templates/api/cooltime.html:12
 #, python-format
 msgid "Back to %(alias)s"
 msgstr "%(alias)s로 돌아가기"
 
-#: templates/api/denied.html:9
+#: templates/api/denied.html:8
 msgid "Login Request Rejected"
 msgstr "로그인 요청 거부됨"
 
-#: templates/api/denied.html:10
+#: templates/api/denied.html:9
 #, python-format
 msgid "Your login request for the service %(alias)s has been rejected."
 msgstr "%(alias)s 서비스에 대한 로그인 요청이 거부되었습니다."
 
-#: templates/api/denied.html:25
+#: templates/api/denied.html:24
 msgid "You need to verify your email or connect to at least one SNS account."
 msgstr "적어도 한개의 SNS 계정과 연동하거나 이메일 인증을 해야 합니다."
 
-#: templates/api/denied.html:26
+#: templates/api/denied.html:25
 msgid "Verify Email / Connect to SNS"
 msgstr "이메일 인증 / SNS 연동"
 
@@ -639,7 +640,7 @@ msgstr "이 페이지에 접근할 수 있는 권한이 없습니다."
 
 #: templates/error/404.html:4
 msgid "Not Found"
-msgstr "존재하지 않는 페이지"
+msgstr "없는 페이지"
 
 #: templates/error/404.html:9
 msgid "Server cannot find your requested resources."
@@ -661,11 +662,11 @@ msgstr "서버가 요청을 처리할 수 없습니다."
 msgid "Please try again after few minutes."
 msgstr "잠시 후에 다시 시도해주세요."
 
-#: templates/error/base.html:15
+#: templates/error/base.html:16
 msgid "Go Back"
 msgstr "뒤로"
 
-#: templates/error/base.html:16
+#: templates/error/base.html:17
 msgid "Main"
 msgstr "메인"
 

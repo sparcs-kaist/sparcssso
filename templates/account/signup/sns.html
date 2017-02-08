@@ -15,8 +15,7 @@
             {% trans "with KAIST SSO" %}
         {% endif %}
     </small></h1>
-    <p>{% trans "Almost done...! Your account will be created as follows." %}</p>
-    <p>{% trans "You can modify your information in the profile page after sign up." %}
+    <p>{% trans "Almost done...! Your account will be created as follows." %} {% trans "You can modify your information in the profile page after sign up." %}
     {% if email_warning %}
     <p class="text-danger">{% trans "Warning! The email address is already exists. You will get random non-existing email address if you continue." %}</p>
     {% endif %}
@@ -44,28 +43,10 @@
                 <label class="control-label">{% trans "Gender, Birthday" %}</label>
             </div>
             <div class="col-xs-4" style="padding: 0">
-                <input type="text" class="form-control" readonly="readonly" value="
-                {% if not profile.gender %}
-                    {% trans "Hide" %}
-                {% elif profile.gender == '*M' %}
-                    {% trans "Male" %}
-                {% elif profile.gender == '*F' %}
-                    {% trans "Female" %}
-                {% elif profile.gender == '*H' %}
-                    {% trans "Hide" %}
-                {% else %}
-                    {{profile.gender}}
-                    {% endif %}
-                ">
+                <input type="text" class="form-control" readonly="readonly" value="{% if not profile.gender %}{% trans "Hide" %}{% elif profile.gender == '*M' %}{% trans "Male" %}{% elif profile.gender == '*F' %}{% trans "Female" %}{% elif profile.gender == '*H' %}{% trans "Hide" %}{% else %}{{profile.gender}}{% endif %}">
             </div>
             <div class="col-xs-8" style="padding: 0">
-                <input type="text" class="form-control" readonly="readonly" value="
-                {% if profile.birthday %}
-                    {{profile.birthday}}
-                {% else %}
-                    ????-??-??
-                {% endif %}
-                ">
+                <input type="text" class="form-control" readonly="readonly" value="{% if profile.birthday %}{{profile.birthday}}{% else %}????-??-??{% endif %}">
             </div>
         </div>
 

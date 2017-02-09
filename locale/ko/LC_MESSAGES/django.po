@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: v0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-08 23:58+0900\n"
+"POT-Creation-Date: 2017-02-09 18:33+0900\n"
 "PO-Revision-Date: 2016-01-01 19:21+0900\n"
 "Last-Translator: Jae-Sung Kim <wotjd1102@kaist.ac.kr>\n"
 "Language-Team: SPARCS SSO Team <sso@sparcs.org>\n"
@@ -89,7 +89,7 @@ msgstr "요청한 권한을 모두 승인해주세요."
 
 #: templates/account/login.html:38 templates/account/profile.html:36
 #: templates/account/signup/main.html:18 templates/account/signup/sns.html:26
-#: templates/contact.html:45
+#: templates/contact.html:25 templates/contact.html:31
 msgid "Email"
 msgstr "이메일"
 
@@ -198,8 +198,8 @@ msgid "Verify"
 msgstr "인증하기"
 
 #: templates/account/profile.html:53 templates/account/signup/main.html:34
-#: templates/account/signup/sns.html:32 templates/contact.html:40
-#: templates/dev/user.html:17
+#: templates/account/signup/sns.html:32 templates/contact.html:25
+#: templates/contact.html:28 templates/dev/user.html:17
 msgid "Name"
 msgstr "이름"
 
@@ -222,7 +222,7 @@ msgstr "여자"
 
 #: templates/account/profile.html:71 templates/account/profile.html:208
 #: templates/account/profile.html:235 templates/account/profile.html:240
-#: templates/account/profile.html:243 templates/contact.html:34
+#: templates/account/profile.html:243 templates/contact.html:45
 msgid "etc"
 msgstr "기타"
 
@@ -565,11 +565,11 @@ msgstr "개발팀"
 msgid "SYSOP"
 msgstr "관리자"
 
-#: templates/contact.html:11
+#: templates/contact.html:12
 msgid "Contact Us"
 msgstr "SSO Team에게 연락하기"
 
-#: templates/contact.html:12
+#: templates/contact.html:13
 msgid "We are here to answer any questions you may have about our SPARCS SSO."
 msgstr "SPARCS SSO Team은 언제든지 질문에 답변할 준비가 되어 있습니다."
 
@@ -581,35 +581,39 @@ msgstr "최대한 빨리 답변드리겠습니다."
 msgid "DO NOT send PASSWORD or other SENSITIVE DATA using this form"
 msgstr "절대 비빌번호나 민감한 정보를 전송하지 마세요."
 
-#: templates/contact.html:21
+#: templates/contact.html:20
 msgid "Your message is successfully sent! Thank you for your feedback!"
 msgstr "메시지가 잘 전송되었습니다! 피드백에 감사드립니다."
 
-#: templates/contact.html:27
+#: templates/contact.html:37
 msgid "Topic"
 msgstr "주제"
 
-#: templates/contact.html:30
+#: templates/contact.html:37 templates/contact.html:49
+msgid "Title"
+msgstr "제목"
+
+#: templates/contact.html:41
 msgid "Select Topic"
 msgstr "주제 선택"
 
-#: templates/contact.html:31
+#: templates/contact.html:42
 msgid "Bug Report"
 msgstr "버그"
 
-#: templates/contact.html:32
+#: templates/contact.html:43
 msgid "Suggestions"
 msgstr "제안"
 
-#: templates/contact.html:33
+#: templates/contact.html:44
 msgid "Accounts"
 msgstr "계정"
 
-#: templates/contact.html:52
+#: templates/contact.html:55
 msgid "Message"
 msgstr "메시지"
 
-#: templates/contact.html:64
+#: templates/contact.html:65
 msgid "Send to SSO Team"
 msgstr "SSO Team에게 전송"
 
@@ -670,10 +674,10 @@ msgstr "뒤로"
 msgid "Main"
 msgstr "메인"
 
-#: templates/main.html:19
+#: templates/main.html:20
 msgid "Welcome to SPARCS Single Sign On!"
 msgstr "SPARCS 통합 인증에 오신 것을 환영합니다!"
 
-#: templates/main.html:20
+#: templates/main.html:21
 msgid "You can use the following services using SPARCS SSO"
 msgstr "현재 SPARCS SSO를 통해 다음 서비스를 사용할 수 있습니다."

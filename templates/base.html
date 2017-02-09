@@ -7,10 +7,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <title>{% block htitle %}SPARCS SSO{% endblock %}</title>
     
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/bootstrap.flatly.min.css">
 
     <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     {% block app-header %} {% endblock %}
 </head>
 <body>
@@ -76,18 +76,18 @@
     <footer class="container">
         <p class="info">
             <a href="/credits/">{% trans "Credits" %}</a> |
-            <a href="/contact/">{% trans "Contact" %}</a> |
             <a href="/terms/">{% trans "Terms of Use" %}</a> |
             <a href="/privacy/">{% trans "Privacy Policy" %}</a>
         </p>
         <p class="info">
-            <a href="#">{% trans "Dev Team" %} (sso (at) sparcs.org)</a> |
-            <a href="#">{% trans "SYSOP" %} (sso.sysop (at) sparcs.org)</a>
+            <a href="/contact/">{% trans "Contact" %}</a> |
+            <a href="mailto:sso@sparcs.org">{% trans "Dev Team" %}</a> |
+            <a href="mailto:sso.sysop@sparcs.org">{% trans "SYSOP" %}</a>
         </p>
         <p class="copyright">
             Copyright © 2017,
             <a href="http://sparcs.org/">
-                <span style="color:#FF3399">S</span><span style="color:#33CC66">P</span><span style="color:#00CCFF">A</span><span style="color:#FF9900">R</span><span style="color:#33CCCC">C</span><span style="color:#9966FF">S</span>
+                <span style="color:#f39">S</span><span style="color:#3c6">P</span><span style="color:#0cf">A</span><span style="color:#f90">R</span><span style="color:#3cc">C</span><span style="color:#96f">S</span>
             </a>
             SSO Team</p>
     </footer>

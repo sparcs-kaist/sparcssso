@@ -6,9 +6,12 @@
 {% block header %}{% endblock %}
 
 {% block content %}
-<h1>{% trans "Logout" %}</h1>
-<p>{% trans "Successfully logged out. Redirecting to main page..." %}</p>
+<div class="wrap-content-xs">
+    <h1>{% trans "Logout" %}</h1>
+    <p>{% trans "Successfully logged out." %}</p>
+</div>
+
 <script>
-setTimeout("location.href='/'", 2000);
+setTimeout("location.href='/'", 1000);
 </script>
 {% endblock %}

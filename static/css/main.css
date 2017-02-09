@@ -1,157 +1,142 @@
+/* General */
+body {
+    min-width: 320px;
+}
+
+p {
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+form {
+    margin-top: 10px;
+}
+
+form .form-group:last-of-type {
+    margin-bottom: 0;
+}
+
+hr {
+    margin: 7px 0;
+}
+
+.input-hidden {
+    height: 0;
+    padding: 0;
+    border: none;
+}
+
+.help-block {
+    float: left;
+    font-size: 14px;
+    margin-bottom: 0px;
+}
+
+.has-error .control-label {
+    color: black;
+}
+
+
+/* Containers */
 .container {
-    text-align:center;
+    text-align: center;
     word-wrap: break-word;
 }
 
 section.container {
-    margin-top:-20px;
+    margin-top: -20px;
+}
+
+.wrap-content {
+    max-width: 767px;
+    margin: 0 auto;
+}
+
+.wrap-content-sm {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.wrap-content-xs {
+    max-width: 320px;
+    margin: 0 auto;
+}
+
+
+/* Alerts */
+.alert-wrap {
+    margin-top: -1px;
 }
 
 .alert {
-    margin-bottom:0;
-    padding:7px 5px;
-}
-
-.alert-main {
-    margin-bottom:20px;
-    padding:15px;
-}
-
-p {
-    font-size:16px;
-    margin-bottom:5px;
-}
-
-form {
-    margin-top:20px;
-}
-
-.form-horizontal .control-label {
-    padding-top:7px;
-    margin-bottom:0;
-    display:block;
-    margin-bottom:5px;
-}
-
-@media (min-width: 768px) {
-    .form-horizontal .control-label {
-        text-align:right;
-        margin-bottom:0;
-    }
-}
-
-.help-block {
-    float:left;
-    font-size:14px;
-    margin-bottom:0px;
-}
-
-.help-block > ul {
-    margin-bottom:0px;
-}
-
-.form-group > .form-group {
-    margin-left:0px;
-    margin-right:0px;
-}
-
-.has-error .control-label {
-    color:black;
-}
-
-.media-heading {
-    margin-top: 3px;
-    margin-bottom:10px;
-}
-
-
-span.required {
-    color: red;
-    font-size:12px;
-}
-
-span.required:before {
-    content: "*";
-}
-
-
-img.profile {
-    height:200px;
-    width:auto;
-    float:left;
-}
-
-.alert-wrap {
-    margin-top:0;
-}
-
-.login-form {
-    margin-top:20px;
-}
-
-.login-form > .col-wrap {
-    width:90%;
-    max-width:350px;
-    margin:0 auto;
-}
-
-.login-email-links {
-    margin-top:5px;
-    text-align:right;
-}
-
-.login-email-links a {
-    color:#666;
+    margin-bottom: 0;
+    padding: 7px 5px;
 }
 
 .alert-invalid-account {
-    margin-top:10px;
+    margin-top: 10px;
+}
+
+
+/* Login */
+.login-email-links {
+    margin-top: 5px;
+    text-align: right;
+}
+
+.login-email-links a {
+    color: #666;
 }
 
 .btn-login {
-    height:50px;
-    line-height:40px;
-    padding:5px 0;
-    font-size:18px;
+    height: 50px;
+    line-height: 36px;
+    padding: 5px 0;
+    font-size: 18px;
 }
 
 .btn-login > img {
-    float:left;
-    padding-left:10px;
-    height:100%;
+    float: left;
+    padding-left: 5px;
+    height: 100%;
 }
 
 .btn-kaist, .btn-kaist:hover,
 .btn-kaist:focus, .btn-kaist:active {
-    background-color:rgb(1,67,143);
-    color:white;
+    background-color: rgb(1, 67, 143);
+    border-color: rgb(1, 67, 143);
+    color: white;
 }
 
-.btn-kaist.disabled {
+.btn-kaist:disabled {
     background-color: gray !important;
+    border-color: gray !important;
 }
 
 .btn-facebook, .btn-facebook:hover,
 .btn-facebook:focus, .btn-facebook:active {
-    background-color:rgb(59,87,157);
-    color:white;
+    background-color: rgb(59, 87, 157);
+    border-color: rgb(59, 87, 157);
+    color: white;
 }
 
 .btn-twitter, .btn-twitter:hover,
 .btn-twitter:focus, .btn-twitter:active {
-    background-color:rgb(0,172,238);
-    color:white;
+    background-color: rgb(0, 172, 238);
+    border-color: rgb(0, 172, 238);
+    color: white;
 }
 
 
-.social-icon > img {
-    width:83px;
-    height:83px;
+/* Profile */
+.social-icon img {
+    width: 83px;
+    height: 83px;
 }
 
-.social-icon > img.disabled {
-    filter:grayscale(100%);
-    -webkit-filter:grayscale(100%);
+.social-icon img.disabled {
+    -webkit-filter: grayscale(100%);
+            filter: grayscale(100%);
 }
 
 .social-form .btn.disabled {
@@ -159,108 +144,101 @@ img.profile {
 }
 
 
+/* Credit */
 .credit {
-    text-align:left;
+    text-align: left;
 }
 
 .credit img {
-    width:100px;
-    height:100px;
+    width: 100px;
+    height: 100px;
+}
+
+.media-heading {
+    margin-top: 3px;
+    margin-bottom: 10px;
 }
 
 
-.doc {
-    text-align:left;
+/* Service */
+.services-list .service {
+    background-color: #f3f3f3;
+    padding: 5px;
+    text-align: left;
 }
 
-.doc li {
-    font-size:16px;
+.services-list .service img {
+    width: 100px;
+    height: 100px;
 }
 
-.doc li ul li {
-    font-size:14px;
+.services-list .service .media-body {
+    position: relative;
 }
 
-.doc h2 {
-    border-bottom:1px solid #eee;
-    padding-bottom:5px;
-    margin-top:40px;
+.services-list .service .date {
+    color: gray;
 }
 
-.doc .box {
-    padding:20px;
-    margin:20px 0;
-    border:1px solid #eee;
-    border-left-width: 5px;
+.services-list .service .action {
+    position: absolute;
+    margin: 0;
+    bottom: 0;
+    right: 0;
 }
 
-.doc .box h4 {
-    margin-top:0;
-}
 
-.doc .box p:last-child {
-    margin-bottom:0;
-}
-
-.doc .box-warning {
-    border-left-color:#aa6708;
-}
-
-.doc .box-warning h4 {
-    color:#aa6708;
-}
-
-.doc .box-danger {
-    border-left-color:#ce4844;
-}
-
-.doc .box-danger h4 {
-    color:#ce4844;
-}
-
+/* Documents */
 .doc-header {
     margin-top:20px;
     margin-bottom:20px;
 }
 
+.doc h2, .doc h3 {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+    margin-top: 30px;
+}
 
+.doc {
+    text-align: left;
+}
+
+.doc ol li {
+    font-size: 16px;
+}
+
+.doc ol ol li {
+    font-size: 14px;
+}
+
+
+/* Main */
 .jumbotron {
     padding-top:10px;
     padding-bottom:10px;
 }
 
-.jumbotron > p {
+.jumbotron .hidden-xs p {
     margin-bottom:5px;
 }
 
-
-.service-row {
-    margin-top:20px;
+.service-board {
+    max-width: 767px;
+    margin: 20px auto 0 auto;
 }
 
-.service {
-    width:150px;
-    display:inline-block;
+.service-board .service {
+    display: inline-block;
+    padding: 0 20px;
 }
 
-.service img {
-    width:100px;
-    height:100px;
-    margin-bottom:5px;
+.service-board .service img {
+    width: 100px;
+    height: 100px;
 }
 
-.service p {
-    font-weight:700;
-    font-size:20px;
-}
-
-.service p.date {
-    margin-top:0;
-    font-size:12px;
-    color:gray;
-}
-
-
+/* Error */
 h1.err-title {
     margin:15px 0 10px;
     font-size:48px;
@@ -274,6 +252,7 @@ p.err-code {
 }
 
 
+/* Footer */
 footer {
     margin-top:10px;
     padding-top:10px;

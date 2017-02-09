@@ -6,9 +6,10 @@
 {% block header %}{% endblock %}
 
 {% block content %}
-<h1>{% trans "Password Reset Fail" %}</h1>
-<p class="text-danger">{% trans "Failed to reset your password, because you entered wrong or expired token id." %}</p>
-<a class="btn btn-primary" href="/account/login/">{% trans "Login Page" %}</a>
-<a class="btn btn-default" href="/">{% trans "Main Page" %}</a>
+<div class="wrap-content-xs">
+    <h1>{% trans "Reset Fail" %}</h1>
+    <p class="text-danger">{% trans "Failed to reset your password, because you entered wrong or expired token id." %}</p>
+    <a class="btn btn-primary" href="/account/login/">{% trans "Login Page" %}</a>
+    <a class="btn btn-default" href="/">{% trans "Main Page" %}</a>
+</div>
 {% endblock %}
-

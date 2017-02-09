@@ -6,13 +6,15 @@
 {% endblock %}
 
 {% block content %}
-<h1 class="err-title">{% block title %} {% endblock %}</h1>
-<p class="err-code">HTTP/1.1 {% block code %}{% endblock %}</p>
-<ul class="list-unstyled">
-    {% block try %}{% endblock %}
-</ul>
-<p>
-<a href="javascript:window.history.go(-1)" class="btn btn-warning">{% trans "Go Back" %}</a> &nbsp;
-    <a href="/" class="btn btn-default">{% trans "Main" %}</a>
-</p>
+<div class="wrap-content-xs">
+    <h1 class="err-title">{% block title %} {% endblock %}</h1>
+    <p class="err-code">HTTP/1.1 {% block code %}{% endblock %}</p>
+    <ul class="list-unstyled">
+        {% block try %}{% endblock %}
+    </ul>
+    <p>
+    <a href="javascript:window.history.go(-1)" class="btn btn-warning">{% trans "Go Back" %}</a> &nbsp;
+        <a href="/" class="btn btn-default">{% trans "Main" %}</a>
+    </p>
+</div>
 {% endblock %}

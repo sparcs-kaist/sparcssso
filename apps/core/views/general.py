@@ -131,15 +131,16 @@ def help(request):
 def contact(request):
     submitted = False
     if request.method == 'POST':
-        topic = request.POST.get('topic', '')
         name = request.POST.get('name', '')
-        sender = request.POST.get('email', '')
+        email = request.POST.get('email', '')
+        topic = request.POST.get('topic', '')
+        title = request.POST.get('title', '')
         message = request.POST.get('message', '')
         result = validate_recaptcha(request.POST.get('g-recaptcha-response',''))
 
-        if topic and name and sender and message and result:
-            subject = "[SPARCS SSO Report] %s (by %s)" % (topic, name)
-            send_mail(subject, message, sender, settings.TEAM_EMAILS)
+        if name and email and topic and title and message and result:
+            subject = "[SPARCS SSO Report - {}] {} (by {})".format(topic, title, name)
+            send_mail(subject, message, email, settings.TEAM_EMAILS)
             submitted = True
 
     return render(request, 'contact.html', {'submitted': submitted})

@@ -30,6 +30,10 @@ class NoticeAdmin(admin.ModelAdmin):
 
 class StatisticAdmin(admin.ModelAdmin):
     list_display = ('time', 'data')
+    readonly_fields = map(lambda x: x.name, Statistic._meta.fields)
+
+    def has_add_permission(self, request, obj=None):
+        return False
 
 
 class DocumentAdmin(admin.ModelAdmin):
@@ -43,13 +47,24 @@ class ServiceAdmin(admin.ModelAdmin):
 
 
 class ServiceMapAdmin(admin.ModelAdmin):
+    actions = None
     list_display = ('sid', 'user', 'service',
                     'register_time', 'unregister_time')
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 class AccessTokenAdmin(admin.ModelAdmin):
     list_display = ('tokenid', 'user', 'service', 'expire_time')
     list_filter = (UserFilter, )
+    readonly_fields = map(lambda x: x.name, AccessToken._meta.fields)
+
+    def has_add_permission(self, request, obj=None):
+        return False
 
 
 # Admin for User Related Objects
@@ -109,18 +124,42 @@ class UserAdmin(uadmin.UserAdmin):
 
 class EmailAuthTokenAdmin(admin.ModelAdmin):
     list_display = ('tokenid', 'expire_time', 'user')
+    readonly_fields = map(lambda x: x.name, EmailAuthToken._meta.fields)
+
+    def has_add_permission(self, request, obj=None):
+        return False
 
 
 class ResetPWTokenAdmin(admin.ModelAdmin):
     list_display = ('tokenid', 'expire_time', 'user')
+    readonly_fields = map(lambda x: x.name, ResetPWToken._meta.fields)
+
+    def has_add_permission(self, request, obj=None):
+        return False
 
 
 class PointLogAdmin(admin.ModelAdmin):
+    actions = None
     list_display = ('user', 'service', 'time', 'delta', 'action')
+    readonly_fields = map(lambda x: x.name, PointLog._meta.fields)
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 class UserLogAdmin(admin.ModelAdmin):
+    actions = None
     list_display = ('user', 'level', 'time', 'ip', 'text')
+    readonly_fields = map(lambda x: x.name, UserLog._meta.fields)
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 admin.site.unregister(User)

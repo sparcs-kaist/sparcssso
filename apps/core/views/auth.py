@@ -38,14 +38,10 @@ def login(request):
 
         username = get_username(email)
         user = auth.authenticate(username=username, password=password)
-        if not user:
-            logger.info('login.fail', {'r': request, 'uid': username})
-            return render(request, 'account/login.html',
-                          {'fail': 1, 'notice': notice, 'service': srv_name})
-        elif not user.is_active:
+        if user and not user.is_active:
             logger.info('login.reject', {'r': request, 'uid': username})
             raise PermissionDenied()
-        else:
+        elif user:
             request.session.pop('info_signup', None)
             auth.login(request, user)
             logger.info('login.success', {'r': request})
@@ -64,6 +60,9 @@ def login(request):
 
             nexturl = request.session.pop('next', '/')
             return redirect(nexturl)
+        else:
+            logger.info('login.fail', {'r': request, 'uid': username})
+            request.session['result_login'] = 1
 
     context = {
         'notice': notice,

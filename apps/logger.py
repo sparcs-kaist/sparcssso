@@ -1,10 +1,17 @@
 from django.core.validators import ip_address_validators
 from django.apps import apps
-from logging.handlers import RotatingFileHandler
+from logging import Handler
 
 
-class FileHandler(RotatingFileHandler, object):
+class DBHandler(Handler):
+    model_loaded = False
+
     def emit(self, record):
+        if not self.model_loaded:
+            self.User = apps.get_model('auth', 'User')
+            self.UserLog = apps.get_model('core', 'UserLog')
+            self.model_loaded = True
+
         record.ip = '0.0.0.0'
         record.username = 'undefined'
 
@@ -24,15 +31,6 @@ class FileHandler(RotatingFileHandler, object):
             record.username = record.args['uid']
 
         hide = record.args.get('hide', False)
-
-        UserProfile = apps.get_model('core', 'UserProfile')
-        profile = UserProfile.objects.filter(user__username=record.username).first()
-        if profile and not hide:
-            manager = profile.user.user_logs
-            if manager.count() >= 30:
-                manager.order_by('time')[0].delete()
-            UserLog = apps.get_model('core', 'UserLog')
-            UserLog(user=profile.user, level=record.levelno, ip=record.ip,
-                    text='%s.%s' % (record.name, record.getMessage())).save()
-
-        super(FileHandler, self).emit(record)
+        user = self.User.objects.filter(username=record.username).first()
+        self.UserLog(user=user, level=record.levelno, ip=record.ip, hide=hide,
+                     text='%s.%s' % (record.name, record.getMessage())).save()

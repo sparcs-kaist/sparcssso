@@ -155,24 +155,14 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 TEAM_EMAILS = ['sso@sparcs.org', ]
 ADMINS = (('SSO SYSOP', 'sso.sysop@sparcs.org'),)
 
-FMT = '%(levelno)s/%(asctime)s (%(ip)s, %(username)s) %(name)s.%(message)s'
-
+LOG_FILE = os.path.join(BASE_DIR, 'log/info.log')
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'formatters': {
-        'std': {
-            'format': FMT
-        },
-    },
     'handlers': {
         'file': {
             'level': 'INFO',
-            'class': 'apps.logger.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'log/info.log'),
-            'maxBytes': 30 * 1024 * 1024,
-            'backupCount': 5,
-            'formatter': 'std',
+            'class': 'apps.logger.DBHandler',
         },
         'mail': {
             'level': 'ERROR',

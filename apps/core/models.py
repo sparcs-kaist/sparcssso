@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.utils.timezone import localtime
 import json
 
 
@@ -220,10 +221,17 @@ class PointLog(models.Model):
         return u'%s - %d by %s' % (self.user, self.delta, self.service)
 
 
-# UserLog: denotes single user log for an user
+# UserLog: denotes single user log for an user / (or global)
 class UserLog(models.Model):
-    user = models.ForeignKey(User, related_name='user_logs')  # user object
+    user = models.ForeignKey(User, related_name='user_logs',  # user object
+                             blank=True, null=True)
     level = models.IntegerField()                             # level
     time = models.DateTimeField(auto_now=True)                # event time
     ip = models.GenericIPAddressField()                       # event ip
+    hide = models.BooleanField(default=False)                 # hide log to users
     text = models.CharField(max_length=500)                   # log message
+
+    def pretty(self):
+        time_str = localtime(self.time).isoformat()
+        return u'{}/{} ({}, {}) {}'.format(self.level, time_str, self.ip,
+                                           self.user.username, self.text)

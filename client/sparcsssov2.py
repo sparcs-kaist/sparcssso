@@ -1,8 +1,8 @@
+from urllib.parse import urlencode
+from secrets import token_hex
 import requests
 import hmac
 import time
-import os
-import urllib
 
 # SPARCS SSO V2 Client Version 1.1
 # VALID ONLY AFTER 2016-09-10T01:00+09:00
@@ -32,10 +32,13 @@ class Client:
 
         BASE_URL = '%s%s%s' % (self.DOMAIN, self.API_PREFIX, self.VERSION_PREFIX)
 
-        self.URLS = {k: '%s%s' % (BASE_URL, v) for k, v in self.URLS.iteritems()}
+        self.URLS = {k: '%s%s' % (BASE_URL, v) for k, v in self.URLS.items()}
 
         self.client_id = client_id
-        self.secret_key = secret_key
+        self.secret_key = secret_key.encode()
+
+    def _get_hmac(self, msg):
+        return hmac.new(self.secret_key, msg.encode()).hexdigest()
 
     def _post_data(self, url, data):
         r = requests.post(url, data, verify=True)
@@ -52,18 +55,17 @@ class Client:
             raise RuntimeError('NOT_JSON_OBJECT')
 
     def get_login_params(self):
-        state = os.urandom(10).encode('hex')
+        state = token_hex(10)
         params = {
             'client_id': self.client_id,
             'state': state,
         }
 
-        return ['%s?%s' % (self.URLS['token_require'], urllib.urlencode(params)), state]
+        return ['%s?%s' % (self.URLS['token_require'], urlencode(params)), state]
 
     def get_user_info(self, code):
         timestamp = int(time.time())
-        sign = hmac.new(str(self.secret_key),
-                        '%s%s' % (code, timestamp)).hexdigest()
+        sign = self._get_hmac('{}{}'.format(code, timestamp))
 
         params = {
             'client_id': self.client_id,
@@ -75,8 +77,7 @@ class Client:
 
     def get_logout_url(self, sid, redirect_uri):
         timestamp = int(time.time())
-        sign = hmac.new(str(self.secret_key),
-                        '%s%s%s' % (sid, redirect_uri, timestamp)).hexdigest()
+        sign = self._get_hmac('{}{}{}'.format(sid, redirect_uri, timestamp))
 
         params = {
             'client_id': self.client_id,
@@ -85,12 +86,11 @@ class Client:
             'redirect_uri': redirect_uri,
             'sign': sign,
         }
-        return '%s?%s' % (self.URLS['logout'], urllib.urlencode(params))
+        return '%s?%s' % (self.URLS['logout'], urlencode(params))
 
     def do_unregister(self, sid):
         timestamp = int(time.time())
-        sign = hmac.new(str(self.secret_key),
-                        '%s%s' % (sid, timestamp)).hexdigest()
+        sign = self._get_hmac('{}{}'.format(sid, timestamp))
 
         params = {
             'client_id': self.client_id,
@@ -105,8 +105,7 @@ class Client:
 
     def modify_point(self, sid, delta, message, lower_bound=0):
         timestamp = int(time.time())
-        sign = hmac.new(str(self.secret_key),
-                        '%s%s%s%s' % (sid, delta, lower_bound, timestamp)).hexdigest()
+        sign = self._get_hmac('{}{}{}{}'.format(sid, delta, lower_bound, timestamp))
 
         params = {
             'client_id': self.client_id,

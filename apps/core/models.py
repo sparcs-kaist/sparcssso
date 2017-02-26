@@ -14,7 +14,7 @@ SERVICE_SCOPE = (
     (SERVICE_TEST, 'Test'),
 )
 
-User.__unicode__ = lambda self: u'%s %s <%s>' % \
+User.__str__ = lambda self: u'%s %s <%s>' % \
     (self.first_name, self.last_name, self.username)
 
 
@@ -34,7 +34,7 @@ class Notice(models.Model):
             'text': self.text,
         }
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
 
@@ -43,7 +43,7 @@ class Statistic(models.Model):
     time = models.DateTimeField()  # timestamp
     data = models.TextField()      # raw json data
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Statistic at %s' % self.time
 
 
@@ -77,7 +77,7 @@ class Document(models.Model):
         result.append('</ol>' * depth)
         return '\n'.join(result)
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Document of cat:%s ver:%s' % (self.category, self.version)
 
 
@@ -103,7 +103,7 @@ class Service(models.Model):
     def icon_url(self):
         return self.icon.url if self.icon else '/static/img/test-service.png'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.alias
 
 
@@ -115,7 +115,7 @@ class ServiceMap(models.Model):
     register_time = models.DateTimeField()                         # register time
     unregister_time = models.DateTimeField(null=True, blank=True)  # unregister time
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s - %s' % (self.service, self.user)
 
 
@@ -126,7 +126,7 @@ class AccessToken(models.Model):
     service = models.ForeignKey(Service, null=True, blank=True)  # service object
     expire_time = models.DateTimeField()                         # expire time
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s - %s' % (self.service, self.user)
 
 
@@ -184,7 +184,7 @@ class UserProfile(models.Model):
         self.kaist_info_time = timezone.now()
         self.save()
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s''s profile' % self.user
 
 
@@ -194,7 +194,7 @@ class EmailAuthToken(models.Model):
     user = models.ForeignKey(User)                               # user object
     expire_time = models.DateTimeField()                         # expire time
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s - %s' % (self.user, self.tokenid)
 
 
@@ -204,7 +204,7 @@ class ResetPWToken(models.Model):
     user = models.ForeignKey(User)                               # user object
     expire_time = models.DateTimeField()                         # expire time
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s - %s' % (self.user, self.tokenid)
 
 
@@ -217,7 +217,7 @@ class PointLog(models.Model):
     point = models.IntegerField()                              # total point
     action = models.CharField(max_length=200)                  # log message
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s - %d by %s' % (self.user, self.delta, self.service)
 
 

@@ -10,10 +10,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.ko.min.js"></script>
 
-<link rel="stylesheet" type="text/css" href="http://nvd3.org/assets/css/nv.d3.css">
-<script src="http://nvd3.org/assets/lib/d3.v3.js"></script>
-<script src="http://nvd3.org/assets/js/nv.d3.js"></script>
-<script src="http://nvd3.org/assets/js/data/stream_layers.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+
+
 
 {% endblock %}
 
@@ -32,6 +31,12 @@
 
     .input-daterange {
     }
+    
+    .chart-body {
+        width: 100%;
+        height: 500px;
+        margin: 20px 0;
+    }
 </style>
 
 <h1 class="doc-header">SPARCS SSO Statistics <small>({{ time|date:"Y-m-d\TH:i:sT"}})</small></h1>
@@ -45,8 +50,11 @@ PUBLIC
 {% endif %}
 </p>
 
+<!-- Stat request bar -->
 <div class="row">
     <div class="input-daterange input-group top-panel" id="datepicker">
+
+        <!-- Service  -->
         <div class="input-group-btn btn-group" role="group">
             <div class="btn-group" role="group">
                 <button class="btn btn-default dropdown-toggle" type="button" id="service-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
@@ -57,59 +65,68 @@ PUBLIC
                 </ul>
             </div>
         </div>
+        
+        <!-- Date -->
         <input type="text" class="form-control date-control s-date" name="start" value="" />
         <span class="input-group-addon">~</span>
         <input type="text" class="form-control date-control e-date" name="end" value="" />
+        
+        <!-- Go btn -->
         <span class="input-group-btn">
             <button class="btn btn-default btn-primary btn-get-stat" type="button">Go!</button>
         </span>
     </div>
 </div>
 
+<div class="row">
+    <ul class="nav nav-tabs" role="tablist">        
+        <li>
+            <a href="#total-tab"
+                role="tab" data-toggle="tab"
+                arai-controls="total-tab" id="total-link">전체</a>
+        </li>
+        <li>
+            <a href="#recent-tab"
+                role="tab" data-toggle="tab"
+                aria-controls="recent-tab" id="recent-link">최신</a>
+        </li>                
+    </ul>
+</div>
 
 <div class="row" style="margin-top: 30px;">
+    <div class="tab-content"> 
+        <div role="tabpanel" class="tab-pane active" id="total-tab">
+            <div class="chart-lv-1">
+                <div id="birth-year-t-chart" class="chart-body"></div>
+                <div id="gender-t-chart" class="chart-body"></div>
+            </div>
     
-    <div class="chart-lv-1">
-        <p class="chart-header">Birth_Year</p>
-        <div>
-            <svg id="birth-year-chart" style='width:100%; height:500px;'> </svg>
+            <div class="chart-lv-2">
+                <div id="account-t-chart" class="chart-body"></div>
+                <hr />
+                <div id="kaist-gender-t-chart" class="chart-body"></div>
+                <div id="kaist-start-year-t-chart" class="chart-body"></div>
+                <div id="kaist-birth-year-t-chart" class="chart-body"></div>
+                <div id="kaist-department-t-chart" class="chart-body"></div>
+            </div>
         </div>
+        <div role="tabpanel" class="tab-panel" id="recent-tab">
+            <div class="chart-lv-1">
+                <div id="birth-year-r-chart" class="chart-body"></div>
+                <div id="gender-r-chart" class="chart-body"></div>
+            </div>
     
-        <p class="chart-header">Gender</p>
-        <div>
-            <svg id="gender-chart" style='width:100%; height:500px;'> </svg>
-        </div>
-    </div>
-    
-    <div class="chart-lv-2">
-        <p class="chart-header">Account</p>
-        <div>
-            <svg id="account-chart" style='width:100%; height:500px;'> </svg>
-        </div>
-    
-        <hr>
-        <p class="chart-header">KAIST - Gender</p>
-        <div>
-            <svg id="kaist-gender-chart" style='width:100%; height:500px;'> </svg>
-        </div>
-    
-        <p class="chart-header">KAIST - Start_Year</p>
-        <div>
-            <svg id="kaist-start-year-chart" style='width:100%; height:500px;'> </svg>
-        </div>
-    
-        <p class="chart-header">KAIST - Birth_Year</p>
-        <div>
-            <svg id="kaist-birth-year-chart" style='width:100%; height:500px;'> </svg>
-        </div>
-    
-        <p class="chart-header">KAIST - Department</p>
-        <div>
-            <svg id="kaist-department-chart" style='width:100%; height:500px;'> </svg>
+            <div class="chart-lv-2">
+                <div id="account-r-chart" class="chart-body"></div>
+                <hr />
+                <div id="kaist-gender-r-chart" class="chart-body"></div>
+                <div id="kaist-start-year-r-chart" class="chart-body"></div>
+                <div id="kaist-birth-year-r-chart" class="chart-body"></div>
+                <div id="kaist-department-r-chart" class="chart-body"></div>
+            </div>
         </div>
     </div>
 </div>
-
 
 <script>
 
@@ -130,6 +147,7 @@ $('.input-daterange').datepicker({
 });
 
 $(document).ready(function(){
+    $('.nav-tabs a:first').tab('show')
     set_date_to_calendar(s_date_g, e_date_g);
     get_stats(service_g, s_date_g, e_date_g);
     find_dropdown_menu_pos();
@@ -175,11 +193,10 @@ jquery ajax success function
  */
 function success_stats(data, textStatus, jqXHR){
     var service_list = get_services(data);
-    console.log(data);
     var s_data = get_data_of_s(data, service_list[0]);
     change_service(service_list[0]);
     destroy_not_auth_chart(s_data);
-
+    
     /* only first call, add services to dropdown */
     if(first_call_g){
         add_services(service_list);
@@ -188,28 +205,18 @@ function success_stats(data, textStatus, jqXHR){
     if(Object.keys(s_data).length != 0){
         var property_arr = get_properties(s_data);
         var property_kaist_arr = get_properties_kaist(s_data);
+        var formatted_data = get_formatted_data(s_data);
         for(var idx = 0; idx < property_arr.length; idx++){
             var property = property_arr[idx];
             
-            formatted_data = get_formatted_data(s_data);
-
             if(property != "kaist"){ 
-                var f_data = make_formatted_to_arr(
-                    formatted_data[property]
-                );
-                draw_graph(f_data, property);
+                var f_data = formatted_data[property];
+                draw_graph(formatted_data[property], property);
             } else{
                 for(var kaidx in property_kaist_arr){
                     var property_kaist = property_kaist_arr[kaidx]
-                    if(property_kaist != "department"){
-                        var f_data = make_formatted_to_arr(
-                            formatted_data[property][property_kaist]
-                        );
-                        draw_graph_kaist(f_data, property, property_kaist);
-                    } else { /* departemnt case */
-                        var f_data = formatted_data[property][property_kaist];
-                        draw_graph_dept(f_data);
-                    }
+                    var f_data = formatted_data[property][property_kaist];
+                    draw_graph_kaist(f_data, property, property_kaist);
                 }
             }
         }
@@ -226,61 +233,121 @@ function change_service(s_name){
 /**
 Graph drawing function
 */
-function draw_graph(f_data, property){
+
+function draw_graph(f_data, property) {
+
+    var black_list = ["kaist-professor", "kaist-employee"]
+    if(is_emt_of_arr(black_list, property)){
+        return 0;
+    }
+
     var property = property.replace("_", "-");
-    nv.addGraph(function() {
-        var chart = nv.models.multiBarChart()
-            .transitionDuration(350)
-            .reduceXTicks(true)   //If 'false', every single x-axis tick label will be rendered.
-            .rotateLabels(0)      //Angle to rotate x-axis labels.
-            .showControls(true)   //Allow user to switch between 'Grouped' and 'Stacked' mode.
-            .groupSpacing(0.1)    //Distance between each group of bars.
-            ;
+    
+    var t_chart_option = get_t_chart_option(property, f_data);
+    Highcharts.chart(property + "-t-chart", t_chart_option); 
 
-        chart.xAxis
-            .tickFormat(function(d){
-                return d3.time.format("%x")(new Date(d))
-            });
+    var r_chart_option = get_r_chart_option(property, f_data);
+    Highcharts.chart(property + "-r-chart", r_chart_option); 
 
-        chart.yAxis
-            .tickFormat(d3.format(',.0f'));
-
-        d3.select("#"+property+"-chart")
-            .datum(f_data)
-            .call(chart);
-
-        nv.utils.windowResize(chart.update);
-
-        return chart;
-    });
 }
 
 function draw_graph_kaist(f_data, property, property_2nd){
-    var property = property.replace("_", "-");
-    var property_2nd = property_2nd.replace("_", "-");
     var property_class = [property, property_2nd].join("-");
+    property_class = property_class.replace("_", "-")
     draw_graph(f_data, property_class);
 }
 
-function draw_graph_dept(f_data) {
-    nv.addGraph(function() {
-        var chart = nv.models.pieChart()
-            .x(function(d) { return d.label })
-            .y(function(d) { return d.value })
-            .showLabels(true)
-            .labelThreshold(.05)
-            .labelType("percent") 
-            .donut(true)
-            .donutRatio(0.35)
-            .valueFormat(d3.format(',.0f'));
+function get_column_base_option(property, f_data){
+    return {
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: property
+        },
+        xAxis: {
+            categories: f_data["xAxis"]["categories"]
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: null
+            },
+            stackLabels: {
+                enabled: true,
+                style: {
+                    fontWeight: 'bold',
+                    color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+                }
+            }
+        },
+        legend: {
+            align: 'center',
+            verticalAlign: 'bottom',
+            backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+            borderColor: '#CCC',
+            borderWidth: 1,
+            shadow: false
+        },
+        tooltip: {
+            headerFormat: '<b>{point.x}</b><br/>',
+            pointFormat: '{series.name}: {point.y}'
+        },
+    }
+}
 
-        d3.select("#kaist-department-chart")
-            .datum(f_data)
-            .transition().duration(350)
-            .call(chart);
+function get_t_chart_option(property, f_data){
+    var base_option = get_column_base_option(property, f_data)
+    base_option["plotOptions"] = {
+        column: {
+            stacking: 'normal',
+        }
+    }
+    base_option["series"] = f_data["series"]
+    return base_option
+}
+
+function get_r_chart_option(property, f_data){
+    // recent chart only need last data as array
+    var base_option = get_column_base_option(property, f_data)
+    
+    if(property != "kaist-department"){
         
-        return chart;
-    }); 
+        base_option["series"] = $.map(f_data["series"], function(v, i){
+            v = $.extend({}, v);
+            v_data = v["data"] // Array
+            v["data"] = [v_data[v_data.length - 1],];
+            return v
+        })
+        
+    } else{
+
+        base_option["chart"]["type"] = "pie"
+        base_option["series"] = [{
+            "name": "department",
+            "data": $.map(f_data["series"], function(v, i){
+                v = $.extend({}, v);
+                v_data = v["data"];
+                return {
+                    "name": v["name"],
+                    "y": v_data[v_data.length - 1]
+                }
+            })
+        }]
+        base_option["plotOptions"] = {
+            pie: {
+                dataLabels: {
+                    enabled: false,
+                }
+            }
+        },
+        base_option["tooltip"] = {
+            pointFormat: '<b>{point.percentage:.1f}%</b>'
+        },
+        delete base_option["xAxis"]
+        delete base_option["yAxis"]
+    }
+    return base_option
 }
 
 
@@ -329,95 +396,121 @@ function get_properties_kaist(s_data) {
         ...
     },
 }
-@returns {obj} - Data format
+
+@return {obj} - Data format
 {
-    property: {
-        label1: {
-            key: "label1",
-            values:[
-                { x1: val_x1, y1: val_y1},
-                { x2: val_x2, y2: val_y2},
-                ...
-                ]
-        }
+    <property>: {
+        series: [
+            {
+                name: "label1",
+                data: [y1, y2, y3]
+            },
+            {
+                name: "label2",
+                data: [y1, y2, y3]
+            }
+        ],
+        xAxis: {
+            categories: ['x1', 'x2', 'x3']
+        },
     },
     kaist: {
         2nd_property: {
-            label2: {
-                key: "label2",
-                ...
-            }
+            series: [...],
+            xAxis: {...}
         },
-        department: [
-            {label: "label", value: "value"},
-        ]
+        department: {
+            series: [
+                {
+                    name: <name>,
+                    y: <y>
+                },
+            ]
+        }
     }   
 }
 */
 
 function get_formatted_data(s_data){
     
-    var formatted_obj = {};
-    var date_arr = Object.keys(s_data).sort();
+    function get_date_arr(){
+        return Object.keys(s_data).sort();
+    }
+
+    function get_properties(){
+        var date_arr = Object.keys(s_data);
+        return Object.keys(s_data[date_arr[date_arr.length -1]]);
+    }
+
+    function get_properties_kaist() {
+        var date_arr = Object.keys(s_data);
+        return Object.keys(s_data[date_arr[date_arr.length -1]]["kaist"]);
+    }
+
+    function build_space(date_arr, properties_arr, properties_kaist_arr){
+        var formatted_obj = {};
+        for(var idx = 0; idx < properties_arr.length; idx++){
+            p = properties_arr[idx];
+            if(p != "kaist"){
+                formatted_obj = set_emt_to_obj(formatted_obj, [p, "series"], {});
+                formatted_obj = set_emt_to_obj(formatted_obj, [p, "xAxis", "categories"], date_arr);
+            }
+        }
+        for(var idx = 0; idx < properties_kaist_arr.length; idx++){
+            pk = properties_kaist_arr[idx];
+            formatted_obj = set_emt_to_obj(formatted_obj, ["kaist", pk, "series"], {});
+            formatted_obj = set_emt_to_obj(formatted_obj, ["kaist", pk, "xAxis", "categories"], date_arr);
+        }
+        return formatted_obj;
+    }
+
+    var date_arr = get_date_arr();
+    var properties_arr = get_properties();
+    var properties_kaist_arr = get_properties_kaist();
+    var formatted_obj = build_space(date_arr, properties_arr, properties_kaist_arr);
+    
     for(var idx = 0; idx < date_arr.length; idx++){
         var date_key = date_arr[idx];
         var attr_obj = s_data[date_key];
-        
+
         for(var property in attr_obj){
             if(property != "kaist"){
                 preprocess_data(attr_obj, property);
                 for(var label in attr_obj[property]){
-                    if(!is_valid_key_arr(formatted_obj, [property, label])){
-                        formatted_obj = set_emt_to_obj(formatted_obj, [property, label], {
-                            "key": label,
-                            "values": []
-                        })
+                    if(!is_valid_key_arr(formatted_obj, [property, "series", label])){
+                        formatted_obj[property]["series"][label] = {
+                            "name": label,
+                            "data": []
+                        }
                     }
-                    formatted_obj[property][label]["values"]
-                    .push({
-                        "x": date_key,
-                        "y": attr_obj[property][label]
-                    });
+                    formatted_obj[property]["series"][label]["data"].push(attr_obj[property][label]);
                 }
             } else{ /* kaist case */
                 for(var property_2nd in attr_obj[property]){
-                    var attr_2nd_obj = attr_obj[property][property_2nd];
+                    var attr_2nd_obj = attr_obj[property];
                     
                     preprocess_data(attr_obj, property, property_2nd);
                     
-                    if(property_2nd != "department"){
-                        for(var label in attr_2nd_obj){
-                            if(!is_valid_key_arr(formatted_obj, [property, property_2nd, label])){
-                                formatted_obj = set_emt_to_obj(formatted_obj,
-                                        [property, property_2nd, label], {
-                                    "key": label,
-                                    "values": []
-                                })
-                            }
-                            formatted_obj[property][property_2nd][label]["values"]
-                            .push({
-                                "x": date_key,
-                                "y": attr_2nd_obj[label]
-                            });
-                        }
-                    } else { /* most recent department case */
-                        if(idx == date_arr.length - 1){
-                            if(!is_valid_key_arr(formatted_obj, [property, property_2nd])){
-                                formatted_obj = set_emt_to_obj(formatted_obj,
-                                    [property, property_2nd], []);
-                            }
-                            for(var code in attr_2nd_obj){
-                                if(is_key(dept_data, code)){
-                                    formatted_obj[property][property_2nd]
-                                    .push({
-                                        "label": dept_data[code],
-                                        "value": attr_2nd_obj[code],
-                                    });
-                                }
+                    for(var label in attr_2nd_obj[property_2nd]){
+                        if(!is_valid_key_arr(formatted_obj, [property, property_2nd, "series", label])){
+                            formatted_obj[property][property_2nd]["series"][label] = {
+                                "name": label,
+                                "data": []
                             }
                         }
-                    }
+                        formatted_obj[property][property_2nd]["series"][label]["data"].push(attr_obj[property][property_2nd][label]);
+                    }           
                 }
+            }
+        }
+    }
+
+    for(var p in formatted_obj){
+        if(p != "kaist"){
+            formatted_obj[p]["series"] = make_formatted_to_arr(formatted_obj[p]["series"]);
+        } else {
+            for(var pk in formatted_obj[p]){
+                formatted_obj[p][pk]["series"] = make_formatted_to_arr(formatted_obj[p][pk]["series"]);
             }
         }
     }
@@ -435,16 +528,12 @@ function preprocess_data(attr_obj, property, property_2nd) {
     
     switch(property){
         case "account":
-            // delete p_attr_obj["all"];
-            // now, api does not provide "all" case;
+            delete p_attr_obj["all"];
             break;
         case "birth_year":
             p_attr_obj = preprocess_data_birth_year(p_attr_obj);
             break;
-        case "gender":
-            break;
         case "kaist":
-            /* 여기 구현 해야 함*/ 
             p_attr_obj = preprocess_data_kaist(p_attr_obj, property_2nd);
             break;
     }
@@ -454,7 +543,7 @@ function preprocess_data(attr_obj, property, property_2nd) {
 /**
 @param {obj} p_attr_obj - apijson["birth_year"]
 - append {year: 0} which api does not contain for spacing
-@return preprocessed p_attr_obj
+- compatible to preprocess_data_kaist
 */
 function preprocess_data_birth_year(p_attr_obj){
     date_arr = Object.keys(p_attr_obj);
@@ -481,21 +570,23 @@ function preprocess_data_kaist(p_attr_obj, property_2nd){
             preprocess_data_birth_year(p2nd_attr_obj);
             break;
         case "department":
-            break;
-        case "start_year":
-            break;
-        case "gender":
+            preprocess_data_dept(p2nd_attr_obj);
             break;
     }
 }
 
-/**
-- There can be too many bars in year graph.
-- sholud select column whose delta is huge
-@return select below 6 date to represent year graph
+/*
+@param {obj} p_attr_obj
+- change department code to name
 */
-function postprocess_data_year(formatted_data) {
-
+function preprocess_data_dept(p_attr_obj) {
+    for(var code in p_attr_obj){
+        if(is_key(dept_data, code)){
+            rename_key(p_attr_obj, code, dept_data[code]);
+        } else {
+            rename_key(p_attr_obj, code, "uk-"+code);
+        }
+    }
 }
 
 /**
@@ -531,7 +622,7 @@ function destroy_not_auth_chart(s_data){
 /*
 Help function
 */
-function min(x /*: Array<number> */)/*:number*/ {
+function min(x) {
     var value;
     for (var i = 0; i < x.length; i++) {
         if (value === undefined || x[i] < value) {
@@ -544,7 +635,7 @@ function min(x /*: Array<number> */)/*:number*/ {
     return value;
 }
 
-function max(x /*: Array<number> */) /*:number*/ {
+function max(x) {
     var value;
     for (var i = 0; i < x.length; i++) {
         if (value === undefined || x[i] > value) {
@@ -569,6 +660,13 @@ function is_valid_key_arr(obj, key_arr){
     return true;
 }
 
+/*
+@return obj = {
+    x: {
+        y: value
+    }
+} when key_arr is [x, y]
+*/
 function set_emt_to_obj(obj, key_arr, value){
     var copied_obj = JSON.parse(JSON.stringify(obj));  
     if(key_arr.length == 1){
@@ -587,6 +685,22 @@ function set_emt_to_obj(obj, key_arr, value){
 
 function is_key(obj, key){
     return (Object.keys(obj).indexOf(key+"") != -1);
+}
+
+function rename_key(obj, o_k, n_k) {
+    Object.defineProperty(
+        obj,
+        n_k,
+        Object.getOwnPropertyDescriptor(
+            obj,
+            o_k
+    ));
+    delete obj[o_k];
+}
+
+
+function is_emt_of_arr(arr, obj) {
+    return (arr.indexOf(obj) != -1);
 }
 
 function make_formatted_to_arr(formatted_obj){

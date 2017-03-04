@@ -6,36 +6,30 @@
 {% block header %}{% endblock %}
 
 {% block content %}
-<h1>{% trans "Deactivate" %}</h1>
-{% if ok %}
-<p>{% trans "Your account will be removed permanently 60 days after the deactivation" %}</p>
-<p class="text-danger">{% trans "If you login within the 60 days, your account will become ACTIVE again." %}</p>
-<p>{% trans "If you still would like to proceed, enter your password." %}</p>
-<form class="form" action="/account/deactivate/" method="post">
-    <fieldset>
+<div class="wrap-content-sm">
+    <h1>{% trans "Deactivate" %}</h1>
+    {% if ok %}
+    <p>{% trans "Your account will be removed permanently 60 days after the deactivation" %} {% trans "If you still would like to proceed, enter your password." %}</p>
+    <p class="text-danger">{% trans "If you login within the 60 days, your account will become ACTIVE again." %}</p>
+    <form class="row" action="/account/deactivate/" method="post">
         {% if fail %}
-        <div class="form-group">
-            <div class="col-xs-offset-3 col-xs-6">
-                <div class="alert alert-danger">
-                    <b>{% trans "WRONG current password!" %}</b>
-                </div>
+        <div class="form-group col-xs-12">
+            <div class="alert alert-danger">
+                <b>{% trans "WRONG current password!" %}</b>
             </div>
         </div>
         {% endif %}
         {% csrf_token %}
-        <div class="form-group col-sm-offset-3 col-sm-6">
+        <div class="form-group col-xs-12">
             <input type="password" class="form-control" name="password" placeholder="pAssw0rd!" required="required">
         </div>
-        <div class="form-group">
-            <div class="col-xs-12">
-                <button type="submit" class="btn btn-danger">{% trans "DEACTIVATE" %}</button>
-            </div>
+        <div class="form-group col-xs-12">
+            <button type="submit" class="btn btn-danger">{% trans "DEACTIVATE" %}</button>
         </div>
-    </fieldset>
-</form>
-{% else %}
-<p class="text-danger">{% trans "You CANNOT deactivate your account since you are registered to at least one SPARCS service yet." %}</p>
-<p>{% trans "Go to" %} <a href="/oauth/service/">{% trans "Manage Service" %}</a>{% trans "page first, and unregister all services." %}</p> 
-{% endif %}
+    </form>
+    {% else %}
+    <p class="text-danger">{% trans "You CANNOT deactivate your account since you are registered to at least one SPARCS service yet." %}</p>
+    <p>{% trans "Go to" %} <a href="/account/service/">{% trans "Manage Service" %}</a>{% trans "page first, and unregister all services." %}</p>
+    {% endif %}
+</div>
 {% endblock %}
-

@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block app-header %}
+<link rel="stylesheet" type="text/css" href="/static/css/main.css">
+<script src="/static/js/validator.min.js"></script>
+<script src='https://www.google.com/recaptcha/api.js'></script>
+{% endblock %}
+
+{% block content %}
+<div class="wrap-content">
+    <h1>{% trans "Contact Us" %}</h1>
+    <p>{% trans "We are here to answer any questions you may have about our SPARCS SSO." %} {% trans "Reach out to us and we'll respond as soon as you can." %}</p>
+    <p class="text-danger">{% trans "DO NOT send PASSWORD or other SENSITIVE DATA using this form" %}</p>
+
+    {% if submitted %}
+    <div class="alert alert-success">
+        {% trans "Your message is successfully sent! Thank you for your feedback!" %}
+    </div>
+    {% endif %}
+
+    <form class="row" action="/contact/" method="post" data-toggle="validator">
+        {% csrf_token %}
+
+        <div class="form-group col-xs-12 text-left">
+            <label class="control-label">{% trans "Name" %} / {% trans "Email" %}</label>
+            <div>
+                <div class="col-xs-4" style="padding:0">
+                    <input type="text" class="form-control" name="name" placeholder="{% trans "Name" %}" required/>
+                </div>
+                <div class="col-xs-8" style="padding:0">
+                    <input type="email" class="form-control" name="email" placeholder="{% trans "Email" %}" required/>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group col-xs-12 text-left">
+            <label class="control-label">{% trans "Topic" %} / {% trans "Title" %}</label>
+            <div>
+                <div class="col-xs-3" style="padding:0">
+                    <select class="form-control" name="topic" required>
+                        <option value="">{% trans "Select Topic" %}</option>
+                        <option value="bugs">{% trans "Bug Report" %}</option>
+                        <option value="suggestions">{% trans "Suggestions" %}</option>
+                        <option value="accounts">{% trans "Accounts" %}</option>
+                        <option value="etc">{% trans "etc" %}</option>
+                    </select>
+                </div>
+                <div class="col-xs-9" style="padding:0">
+                    <input type="text" class="form-control" name="title" placeholder="{% trans "Title" %}" required />
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group col-xs-12 text-left">
+            <label class="control-label">{% trans "Message" %}</label>
+            <textarea class="form-control" rows="6" name="message" style="resize:vertical;" required></textarea>
+        </div>
+
+        <div class="form-group col-xs-12" style="margin-top:10px">
+            <input type="text" name="captcha" value="" required class="input-hidden" style="display:block">
+            <div class="g-recaptcha" style="display:inline-block" data-callback="captcha_check" data-expired-callback="captcha_expired" data-sitekey="6LdKJiQTAAAAAE03DTaBYonGRVuGdurgcLmpnjA2"></div>
+        </div>
+
+        <div class="form-group col-xs-12">
+            <button type="submit" class="btn btn-default">{% trans "Send to SSO Team" %}</button>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript">
+var captcha_check = function(){
+    $('input[name=captcha]').val('captcha');
+};
+
+var captcha_expired = function() {
+    $('input[name=captcha]').val('');
+};
+</script>
+{% endblock %}

@@ -1,4 +1,3 @@
-# -* coding: utf-8 -*-
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
@@ -136,12 +135,12 @@ def signup_social_core(type, profile):
 
     email = profile.get('email', '')
     if not email:
-        email = 'random-%s@sso.sparcs.org'  % os.urandom(6).encode('hex')
+        email = 'random-%s@sso.sparcs.org' % os.urandom(6).encode('hex')
 
     while True:
         if not User.objects.filter(email=email).count():
             break
-        email = 'random-%s@sso.sparcs.org'  % os.urandom(6).encode('hex')
+        email = 'random-%s@sso.sparcs.org' % os.urandom(6).encode('hex')
 
     password = os.urandom(12).encode('hex')
     user = User.objects.create_user(username=username, first_name=first_name,

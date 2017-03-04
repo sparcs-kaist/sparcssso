@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth.decorators import login_required

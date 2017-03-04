@@ -6,76 +6,32 @@
 {% endblock %}
 
 {% block content %}
-<h1 class="doc-header">SPARCS SSO 개인정보취급방침 v1.1 <small>(REV2016-02-22T13:08+0900)</small></h1>
+<h1 class="doc-header">SPARCS SSO 개인정보취급방침 v{{privacy.version}} <small>(REV{{privacy.date_version|date:"c"}})</small></h1>
 <div class="doc">
-    <h3>[1. 개인정보취급방침의 의의 및 적용 범위]</h3>
-    <ol>
-        <li>본 개인정보취급방침(이하 "본 방침")은 KAIST 학부 동아리 SPARCS(이하 "SPARCS")가 서비스하는 SPARCS SSO(이하 "본 서비스")에서 수집하는 개인정보에 대해 안내함을 목적으로 합니다.</li>
-        <li>구체적으로, 본 방침은 수집하는 개인정보의 범위와 그 이용 및 위탁, 개인정보 파기, 회원의 권리와 행사 방법에 대해 안내합니다.</li>
-        <li>본 방침은 본 서비스에만 적용되며 SPARCS가 제공하는 다른 서비스에는 적용되지 않습니다.</li>
-    </ol>
-
-    <h3>[2. 수집하는 개인정보]</h3>
-    <ol>
-        <li>회원 가입 시 회원 식별 및 부정가입 방지를 위해 이메일 주소, 비밀번호, 이름을 필수 항목으로 수집합니다. 또한, 성별과 생일은 선택항목으로 수집합니다.</li>
-        <li>Facebook 계정을 사용하여 회원가입하거나 이를 연동할 경우 Facebook 계정의 고유 ID를 추가로 수집합니다.</li>
-        <li>Twitter 계정을 사용하여 회원가입하거나 이를 연동할 경우 Twitter 계정의 고유 ID를 추가로 수집합니다.</li>
-        <li>KAIST Portal 계정을 사용하여 회원가입하거나 이를 연동할 경우 다음의 항목을 추가로 수집합니다.
-            <ul>
-                <li>KAIST Portal 계정의 고유 ID</li>
-                <li>KAIST 이메일 주소</li>
-                <li>한글 및 영문 이름, 사용자 그룹</li>
-                <li>학생 상태, 학위과정코드, 학번, 학과</li>
-                <li>교직원타입</li>
-            </ul>
-        </li>
-        <li>본 서비스를 이용하는 과정에서 IP주소, 쿠키, 방문 일시 등의 서비스 이용 기록과 기기에 관련된 정보가 생성되어 자동으로 수집될 수 있습니다.</li>
-    </ol>
-
-    <h3>[3. 수집한 개인정보의 이용]</h3>
-    <ol>
-        <li>회원가입 및 탈퇴 의사의 확인, 회원 식별을 위해 이메일 주소와 비밀번호 등의 개인정보를 이용합니다.</li>
-        <li>부정 이용 행위 등을 탐지하고 이를 제재하기 위해 IP주소 등의 개인정보를 이용합니다.</li>
-        <li>본 서비스를 통해 계정을 관리하는 SPARCS 서비스 (이하 "지원 서비스")에서 제1항 및 제2항 등의 목적을 달성하기 위해 개인정보를 이용합니다.</li>
-        <li>회원이 본 서비스를 사용하여 지원 서비스에 로그인할 때 비밀번호와 자동으로 수집된 항목을 제외한 개인정보가 암호화되어 해당 지원 서비스로 전송됩니다.</li>
-        <li>지원 서비스로 전송된 개인정보의 이용에 대해서는 해당 지원 서비스의 개인정보취급방침을 따릅니다.</li>
-    </ol>
-
-    <h3>[4. 개인정보의 제공 및 위탁]</h3>
-    <ol>
-        <li>본 서비스는 수집된 개인정보를 SPARCS이외의 제 3자에게 제공하거나 위탁하지 않습니다.</li>
-        <li>다만, 지원 서비스에서는 별도로 제 3자에게 개인정보를 제공하거나 위탁할 수 있으며, 이는 해당 지원 서비스의 개인정보취급방침을 따릅니다.</li>
-        <li>또한 법률 등에 의해 수사기관의 적법한 요청이 있을 경우 개인정보를 제공합니다.</li>
-    </ol>
-
-    <h3>[5. 개인정보의 파기]</h3>
-    <ol>
-        <li>Facebook이나 Twitter 계정의 연동을 해제할 경우 저장된 Facebook 또는 Twitter 계정의 고유 ID는 즉시 삭제됩니다.</li>
-        <li>개인정보는 원칙적으로 계정 비활성화 뒤 60일 동안 로그인하지 않을 경우 삭제됩니다.</li>
-        <li>계정이 비활성화 되어 있는 기간에는 법령이 정하지 않는 한 수집된 개인정보를 사용하지 않습니다.</li>
-        <li>다만, 회원에게 개인정보 보관기간에 대해 별도의 동의를 얻은 경우나 법령에 의해 정보보관 의무를 부과 받은 경우에는 해당 기간 동안 개인 정보를 보관합니다.</li>
-        <li>지원 서비스로 전송된 개인정보의 파기에 대해서는 해당 지원 서비스의 개인정보취급방침을 따릅니다.</li>
-    </ol>
-    
-    <h3>[6. 회원 권리와 행사 방법]</h3>
-    <ol>
-        <li>회원은 언제든지 회원정보 페이지에서 자신의 개인정보를 조회하거나 수정할 수 있습니다.</li>
-        <li>회원은 지원 서비스의 약관이 허용하는 경우 서비스 페이지에서 지원 서비스를 해지할 수 있습니다.</li>
-        <li>회원은 언제든지 비활성화 페이지를 통해 계정을 비활성화 함으로써 개인정보의 수집 및 이용 동의를 철회할 수 있습니다.</li>
-        <li>지원 서비스로 전송된 개인정보의 권리와 행사 방법에 대해서는 해당 지원 서비스의 개인정보취급방침을 따릅니다.</li>
-    </ol>
-
-    <h3>[7. 개인정보 관리 담당자 안내]</h3>
-    <ol>
-        <li>개인정보에 대한 관리는 본 서비스의 관리자가 담당하며, 이에 대해 sso.sysop@sparcs.org를 통해 문의할 수 있습니다.</li>
-    </ol>
-
-    <h3>[8. 게시 및 개정]</h3>
-    <ol>
-        <li>SPARCS는 본 방침의 내용을 개인정보취급방침 페이지에 게시합니다.</li>
-        <li>본 방침을 개정하는 경우 적용일자, 개정 내용 및 사유를 명시하여 개정 방침의 적용일자 7일 전부터 적용일자 전일까지 공지합니다.</li>
-    </ol>
-    <br/>
-    <p>공고일자: 2016-02-22 / 시행 날짜: 2016-03-01</p>
+    {% if status == 'future' %}
+    <div class="alert alert-warning text-center" style="margin-bottom:10px;">
+        <b>주의!</b> 이 개인정보취급방침은 {{privacy.date_apply|date:"c"}}부터 적용됩니다.
+    </div>
+    {% elif status == 'current' %}
+    <div class="alert alert-success text-center" style="margin-bottom:10px;">
+        이 개인정보취급방침은 현재 적용 중입니다.
+    </div>
+    {% else %}
+    <div class="alert alert-danger text-center" style="margin-bottom:10px;">
+        <b>경고!</b> 이 개인정보취급방침은 더 이상 적용되지 않습니다.
+    </div>
+    {% endif %}
+    {% autoescape off %}
+    {{privacy.to_html}}
+    {% endautoescape %}
+    <div class="nav-doc">
+        <div style="float:left">
+            <a href="/privacy/{{prev_v}}" class="btn btn-default" {% if not prev_v %}disabled{% endif %}>이전 방침 보기</a>
+        </div>
+        <div style="float:right">
+            <a href="/privacy/{{next_v}}" class="btn btn-default" {% if not next_v %}disabled{% endif %}>다음 방침 보기</a>
+        </div>
+        <div style="clear:both"></div>
+    </div>
 </div>
 {% endblock %}

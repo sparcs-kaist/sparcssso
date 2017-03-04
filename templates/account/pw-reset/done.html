@@ -6,8 +6,10 @@
 {% block header %}{% endblock %}
 
 {% block content %}
-<h1>{% trans "Password Reset Success" %}</h1>
-<p>{% trans "Successfully reset your password! Redirecting to login page..." %}</p>
+<div class="wrap-content-xs">
+    <h1>{% trans "Reset Success" %}</h1>
+    <p>{% trans "Successfully reset your password! Redirecting to login page..." %}</p>
+</div>
 <script>
 setTimeout(function() {
     window.location.href="/account/login/";

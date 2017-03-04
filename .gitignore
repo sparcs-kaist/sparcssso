@@ -2,66 +2,15 @@
 __pycache__/
 *.py[cod]
 
-# C extensions
-*.so
-
-# Distribution / packaging
-.Python
-env/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*,cover
-
 # Translations
 *.mo
-*.pot
 
-# Django stuff:
+# Django stuff
 *.log
 migrations/
 
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-target/
-
 # SQLite Database File
-db.sqlite3
-
-# Test Scripts
-resetdb
+*.sqlite3
 
 # Media Files
 media/
@@ -69,14 +18,14 @@ media/
 # VIM Swap Files
 *.sw[op]
 
-# Passwords / Secret Keys
-keys/
+# Local Settings
+local_settings.py
 
-# SYSOP Documents
-doc.sysop.html
-
-# Envorinment Indicator
-deploy
+# Virtual Environment
+venv/
 
 # SPARCS SSO Test Server
 client/run
+
+# SPARCS SSO Letters
+letters/

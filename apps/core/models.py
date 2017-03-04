@@ -46,6 +46,40 @@ class Statistic(models.Model):
         return u'Statistic at %s' % self.time
 
 
+# Document:  denotes single documents that used by terms and privacy policy
+class Document(models.Model):
+    category = models.CharField(max_length=20)
+    version = models.CharField(max_length=20)
+    date_apply = models.DateTimeField()
+    date_version = models.DateTimeField()
+    text = models.TextField()
+
+    class Meta:
+        unique_together = ('category', 'version')
+
+    def to_html(self):
+        lines = map(lambda x: x.strip(), self.text.split('\n'))
+        depth = 1
+        result = []
+        for line in lines:
+            cur_depth = line.find(' ')
+            diff = cur_depth - depth
+            if diff > 0:
+                result.append('<ol>' * diff)
+            elif diff < 0:
+                result.append('</ol>' * abs(diff))
+            depth = cur_depth
+            if depth == 1:
+                result.append('<h3>%s</h3>' % line[depth:])
+            else:
+                result.append('<li>%s</li>' % line[depth:])
+        result.append('</ol>' * depth)
+        return '\n'.join(result)
+
+    def __unicode__(self):
+        return 'Document of cat:%s ver:%s' % (self.category, self.version)
+
+
 # == Service Related Objects ==
 # Service: denotes single sso client
 class Service(models.Model):

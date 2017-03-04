@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.utils import timezone
@@ -28,6 +28,9 @@ def main(request):
             if user.email != email:
                 user.email = email
                 user.profile.email_authed = False
+                tokens = EmailAuthToken.objects.filter(user=user).all()
+                for token in tokens:
+                    token.delete()
 
             user.first_name = user_f.cleaned_data['first_name']
             user.last_name = user_f.cleaned_data['last_name']
@@ -37,9 +40,14 @@ def main(request):
             result_prof = 1
             logger.info('modify', {'r': request})
 
-    return render(request, 'account/profile.html',
-                  {'user': user, 'profile': profile,
-                   'result_prof': result_prof, 'result_con': result_con})
+    context = {
+        'user': user,
+        'profile': profile,
+        'result_prof': result_prof,
+        'result_con': result_con,
+        'kaist_enabled': settings.KAIST_APP_ENABLED,
+    }
+    return render(request, 'account/profile.html', context)
 
 
 # /disconnect/{fb,tw}/
@@ -60,8 +68,8 @@ def disconnect(request, type):
         uid = profile.twitter_id
         profile.twitter_id = ''
 
-    if not profile.password_set and not (profile.facebook_id or
-            profile.twitter_id or profile.kaist_id):
+    if not profile.password_set and \
+            not (profile.facebook_id or profile.twitter_id or profile.kaist_id):
         request.session['result_con'] = 4
         return redirect('/account/profile/')
 

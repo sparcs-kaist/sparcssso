@@ -30,7 +30,7 @@ class NoticeAdmin(admin.ModelAdmin):
 
 class StatisticAdmin(admin.ModelAdmin):
     list_display = ('time', 'data')
-    readonly_fields = map(lambda x: x.name, Statistic._meta.fields)
+    readonly_fields = list(map(lambda x: x.name, Statistic._meta.fields))
 
     def has_add_permission(self, request, obj=None):
         return False
@@ -61,7 +61,7 @@ class ServiceMapAdmin(admin.ModelAdmin):
 class AccessTokenAdmin(admin.ModelAdmin):
     list_display = ('tokenid', 'user', 'service', 'expire_time')
     list_filter = (UserFilter, )
-    readonly_fields = map(lambda x: x.name, AccessToken._meta.fields)
+    readonly_fields = list(map(lambda x: x.name, AccessToken._meta.fields))
 
     def has_add_permission(self, request, obj=None):
         return False
@@ -124,7 +124,7 @@ class UserAdmin(uadmin.UserAdmin):
 
 class EmailAuthTokenAdmin(admin.ModelAdmin):
     list_display = ('tokenid', 'expire_time', 'user')
-    readonly_fields = map(lambda x: x.name, EmailAuthToken._meta.fields)
+    readonly_fields = list(map(lambda x: x.name, EmailAuthToken._meta.fields))
 
     def has_add_permission(self, request, obj=None):
         return False
@@ -132,7 +132,7 @@ class EmailAuthTokenAdmin(admin.ModelAdmin):
 
 class ResetPWTokenAdmin(admin.ModelAdmin):
     list_display = ('tokenid', 'expire_time', 'user')
-    readonly_fields = map(lambda x: x.name, ResetPWToken._meta.fields)
+    readonly_fields = list(map(lambda x: x.name, ResetPWToken._meta.fields))
 
     def has_add_permission(self, request, obj=None):
         return False
@@ -141,7 +141,7 @@ class ResetPWTokenAdmin(admin.ModelAdmin):
 class PointLogAdmin(admin.ModelAdmin):
     actions = None
     list_display = ('user', 'service', 'time', 'delta', 'action')
-    readonly_fields = map(lambda x: x.name, PointLog._meta.fields)
+    readonly_fields = list(map(lambda x: x.name, PointLog._meta.fields))
 
     def has_add_permission(self, request, obj=None):
         return False
@@ -153,7 +153,7 @@ class PointLogAdmin(admin.ModelAdmin):
 class UserLogAdmin(admin.ModelAdmin):
     actions = None
     list_display = ('user', 'level', 'time', 'ip', 'text')
-    readonly_fields = map(lambda x: x.name, UserLog._meta.fields)
+    readonly_fields = list(map(lambda x: x.name, UserLog._meta.fields))
 
     def has_add_permission(self, request, obj=None):
         return False

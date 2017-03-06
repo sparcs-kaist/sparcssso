@@ -292,13 +292,9 @@ def auth_kaist(token):
         <ser:verification>
             <cookieValue>%s</cookieValue>
             <publicKeyStr>%s</publicKeyStr>
-            <adminVO>
-                <adminId>%s</adminId>
-                <password>%s</password>
-            </adminVO>
         </ser:verification>
     </soapenv:Body>
-</soapenv:Envelope>""" % (token, settings.KAIST_APP_SECRET, settings.KAIST_APP_ADMIN_ID, settings.KAIST_APP_ADMIN_PW)
+</soapenv:Envelope>""" % (token, settings.KAIST_APP_SECRET)
 
     r = requests.post('https://iam.kaist.ac.kr/iamps/services/singlauth/',
                       data=data, verify=True)

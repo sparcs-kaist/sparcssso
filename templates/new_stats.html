@@ -344,6 +344,8 @@ function get_r_chart_option(property, f_data){
                     "name": v["name"],
                     "y": v_data[v_data.length - 1]
                 }
+            }).sort(function (a, b) {
+                return b.y - a.y
             })
         }]
         base_option["plotOptions"] = {

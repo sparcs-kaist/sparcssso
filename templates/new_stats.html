@@ -197,12 +197,12 @@ function success_stats(data, textStatus, jqXHR){
     var service_list = get_services(data);
     var s_data = get_data_of_s(data, service_list[0]);
     change_service(service_list[0]);
-    destroy_not_auth_chart(s_data);
     
     /* only first call, add services to dropdown */
     if(first_call_g){
         add_services(service_list);
         first_call_g = false;
+        destroy_not_auth_chart(s_data);
     }
     if(Object.keys(s_data).length != 0){
         var property_arr = get_properties(s_data);
@@ -223,7 +223,7 @@ function success_stats(data, textStatus, jqXHR){
             }
         }
     } else {
-        // alert("선택한 구간의 데이터가 없습니다!");
+        alert("선택한 구간의 데이터가 없습니다!");
     }
 }
 

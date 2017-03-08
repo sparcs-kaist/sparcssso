@@ -78,30 +78,26 @@ PUBLIC
     </div>
 </div>
 
-<div class="row">
-    <ul class="nav nav-tabs" role="tablist">        
-        <li>
-            <a href="#total-tab"
-                role="tab" data-toggle="tab"
-                arai-controls="total-tab" id="total-link">전체</a>
-        </li>
-        <li>
-            <a href="#recent-tab"
-                role="tab" data-toggle="tab"
-                aria-controls="recent-tab" id="recent-link">최신</a>
-        </li>                
-    </ul>
-</div>
+<div role="tabpanel">
 
-<div class="row" style="margin-top: 30px;">
-    <div class="tab-content"> 
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active">
+            <a href="#total-tab" aria-controls="total-tab"
+                role="tab" data-toggle="tab">전체</a>
+        </li>
+        <li role="presentation">
+            <a href="#recent-tab" aria-controls="recent-tab"
+                role="tab" data-toggle="tab">최신</a>
+        </li>
+    </ul>
+    <div class="tab-content">
         <div role="tabpanel" class="tab-pane active" id="total-tab">
-            <div class="chart-lv-1">
+            <div class="row chart-lv-1">
                 <div id="birth-year-t-chart" class="chart-body"></div>
                 <div id="gender-t-chart" class="chart-body"></div>
             </div>
     
-            <div class="chart-lv-2">
+            <div class="row chart-lv-2">
                 <div id="account-t-chart" class="chart-body"></div>
                 <hr />
                 <div id="kaist-gender-t-chart" class="chart-body"></div>
@@ -110,13 +106,13 @@ PUBLIC
                 <div id="kaist-department-t-chart" class="chart-body"></div>
             </div>
         </div>
-        <div role="tabpanel" class="tab-panel" id="recent-tab">
-            <div class="chart-lv-1">
+        <div role="tabpanel" class="tab-pane" id="recent-tab">
+            <div class="row chart-lv-1">
                 <div id="birth-year-r-chart" class="chart-body"></div>
                 <div id="gender-r-chart" class="chart-body"></div>
             </div>
     
-            <div class="chart-lv-2">
+            <div class="row chart-lv-2">
                 <div id="account-r-chart" class="chart-body"></div>
                 <hr />
                 <div id="kaist-gender-r-chart" class="chart-body"></div>
@@ -165,9 +161,15 @@ $("body").on("click", ".dropdown-service", function(){
 $(".btn-get-stat").click(function(){
     s_date_g = $(".s-date").val();
     e_date_g = $(".e-date").val();
+    chart_storage.length = 0
     get_stats(service_g, s_date_g, e_date_g);
 });
 
+$(".nav-tabs").click(function(){
+    setTimeout(function(){
+        reflow_chart();
+    }, 0);
+});
 
 /**
 jquery ajax call
@@ -233,6 +235,7 @@ function change_service(s_name){
 /**
 Graph drawing function
 */
+var chart_storage = []
 
 function draw_graph(f_data, property) {
 
@@ -244,17 +247,26 @@ function draw_graph(f_data, property) {
     var property = property.replace("_", "-");
     
     var t_chart_option = get_t_chart_option(property, f_data);
-    Highcharts.chart(property + "-t-chart", t_chart_option); 
+    var t_c = Highcharts.chart(property + "-t-chart", t_chart_option);
+    chart_storage.push(t_c)
 
     var r_chart_option = get_r_chart_option(property, f_data);
-    Highcharts.chart(property + "-r-chart", r_chart_option); 
-
+    var r_c = Highcharts.chart(property + "-r-chart", r_chart_option);
+    chart_storage.push(r_c)
+ 
 }
 
 function draw_graph_kaist(f_data, property, property_2nd){
     var property_class = [property, property_2nd].join("-");
     property_class = property_class.replace("_", "-")
     draw_graph(f_data, property_class);
+}
+
+function reflow_chart(){
+    for(var i = 0; i < chart_storage.length; i++){
+        var ch = chart_storage[i];
+        ch.reflow();
+    }
 }
 
 function get_column_base_option(property, f_data){

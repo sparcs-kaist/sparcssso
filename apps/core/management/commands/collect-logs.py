@@ -22,11 +22,6 @@ class Command(BaseCommand):
             f.write(str(timestamp))
 
     def handle(self, *args, **options):
-        # remove logs that exceed 30 days
-        last_month = (timezone.now() - timedelta(days=30)) \
-            .replace(hour=0, minute=0, second=0, microsecond=0)
-        UserLog.objects.filter(time__lt=last_month).delete()
-
         # cold archive logs from last backup time
         start_timestamp = self.get_timestamp()
         start_time = timezone.make_aware(
@@ -39,6 +34,11 @@ class Command(BaseCommand):
                 end_time = max(end_time, log.time)
                 f.write(log.pretty() + '\n')
         self.set_timestamp(end_time.timestamp())
+
+        # remove logs that exceed 30 days
+        last_month = (timezone.now() - timedelta(days=30)) \
+            .replace(hour=0, minute=0, second=0, microsecond=0)
+        UserLog.objects.filter(time__lt=last_month).delete()
 
         if settings.DEBUG:
             return

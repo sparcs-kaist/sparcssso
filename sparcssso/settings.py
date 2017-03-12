@@ -151,7 +151,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 TEAM_EMAILS = ['sso@sparcs.org', ]
 ADMINS = (('SSO SYSOP', 'sso.sysop@sparcs.org'),)
 
-LOG_FILE = os.path.join(BASE_DIR, 'log/info.log')
+LOG_FILE = os.path.join(BASE_DIR, 'archive/logs.txt')
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -173,6 +173,8 @@ LOGGING = {
         },
     },
 }
+
+STAT_FILE = os.path.join(BASE_DIR, 'archive/stats.txt')
 
 
 # Local Settings

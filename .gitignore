@@ -29,3 +29,6 @@ client/run
 
 # SPARCS SSO Letters
 letters/
+
+# Cold Archive
+archive/

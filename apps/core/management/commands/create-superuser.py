@@ -8,7 +8,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if User.objects.all().count() > 0:
-            self.stdout.write('Only use at first setup')
+            print('there are existing users - abort')
             return
 
         user = User.objects.create_user(username='sysop',
@@ -23,4 +23,4 @@ class Command(BaseCommand):
         user.profile = UserProfile(user=user, email_authed=True)
         user.profile.save()
 
-        self.stdout.write('Superuser created with admin@sso.sparcs.org/adminadmin')
+        print('superuser created as admin@sso.sparcs.org / adminadmin')

@@ -14,8 +14,9 @@ SERVICE_SCOPE = (
     (SERVICE_TEST, 'Test'),
 )
 
-User.__str__ = lambda self: u'%s %s <%s>' % \
-    (self.first_name, self.last_name, self.username)
+User.__str__ = lambda self: '{} {} <{}>'.format(
+    self.first_name, self.last_name, self.username
+)
 
 
 # == General Objects ==
@@ -43,11 +44,15 @@ class Statistic(models.Model):
     time = models.DateTimeField()  # timestamp
     data = models.TextField()      # raw json data
 
+    def pretty(self):
+        time_str = localtime(self.time).isoformat()
+        return '{} {}'.format(time_str, self.data)
+
     def __str__(self):
-        return u'Statistic at %s' % self.time
+        return '{}'.format(self.time)
 
 
-# Document:  denotes single documents that used by terms and privacy policy
+# Document: denotes single documents that used by terms and privacy policy
 class Document(models.Model):
     category = models.CharField(max_length=20)
     version = models.CharField(max_length=20)
@@ -78,7 +83,7 @@ class Document(models.Model):
         return '\n'.join(result)
 
     def __str__(self):
-        return 'Document of cat:%s ver:%s' % (self.category, self.version)
+        return '{} / {}'.format(self.category, self.version)
 
 
 # == Service Related Objects ==
@@ -116,7 +121,7 @@ class ServiceMap(models.Model):
     unregister_time = models.DateTimeField(null=True, blank=True)  # unregister time
 
     def __str__(self):
-        return u'%s - %s' % (self.service, self.user)
+        return '{} - {}'.format(self.user, self.service)
 
 
 # AccessToken: denotes single access token of (user, service) pair
@@ -127,7 +132,7 @@ class AccessToken(models.Model):
     expire_time = models.DateTimeField()                         # expire time
 
     def __str__(self):
-        return u'%s - %s' % (self.service, self.user)
+        return '{} - {}'.format(self.user, self.service)
 
 
 # == User Related Objects ==
@@ -185,7 +190,7 @@ class UserProfile(models.Model):
         self.save()
 
     def __str__(self):
-        return u'%s''s profile' % self.user
+        return '{}''s profile'.format(self.user)
 
 
 # EmailAuthToken: denotes single email auth token for an user
@@ -195,7 +200,7 @@ class EmailAuthToken(models.Model):
     expire_time = models.DateTimeField()                         # expire time
 
     def __str__(self):
-        return u'%s - %s' % (self.user, self.tokenid)
+        return '{} - {}'.format(self.user, self.tokenid)
 
 
 # ResetPWToken: denotes single password reset token for an user
@@ -205,7 +210,7 @@ class ResetPWToken(models.Model):
     expire_time = models.DateTimeField()                         # expire time
 
     def __str__(self):
-        return u'%s - %s' % (self.user, self.tokenid)
+        return '{} - {}'.format(self.user, self.tokenid)
 
 
 # PointLog: denotes single point log for a (user, service) pair
@@ -218,7 +223,7 @@ class PointLog(models.Model):
     action = models.CharField(max_length=200)                  # log message
 
     def __str__(self):
-        return u'%s - %d by %s' % (self.user, self.delta, self.service)
+        return '{} / {} - {}'.format(self.user, self.service, self.delta)
 
 
 # UserLog: denotes single user log for an user / (or global)
@@ -233,5 +238,10 @@ class UserLog(models.Model):
 
     def pretty(self):
         time_str = localtime(self.time).isoformat()
-        return u'{}/{} ({}, {}) {}'.format(self.level, time_str, self.ip,
-                                           self.user.username, self.text)
+        return '{}/{} ({}, {}) {}'.format(time_str, self.level, self.ip,
+                                          self.user.username, self.text)
+
+    def __str__(self):
+        time_str = localtime(self.time).isoformat()
+        return '{}/{} ({}) {}'.format(time_str, self.level,
+                                      self.user, self.text)

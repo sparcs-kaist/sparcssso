@@ -2,7 +2,6 @@ from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.contrib.auth.models import User
 import netaddr
-import os
 
 
 class Command(BaseCommand):
@@ -22,13 +21,13 @@ class Command(BaseCommand):
 
         if options['ip']:
             ip = options['ip']
-            print('> INSPECT LOG WHERE IP=%s' % ip)
+            print('> INSPECT LOG WHERE IP={}'.format(ip))
 
             if not netaddr.valid_ipv4(ip, netaddr.INET_PTON):
                 print('>> INVAILD IP')
                 return
 
-            target = '({})'.format(ip)
+            target = '({}'.format(ip)
         elif options['uid'] or options['sid'] or options['email']:
             if options['uid']:
                 print('> FIND USER WHERE uid=%s' % options['uid'])
@@ -55,20 +54,13 @@ class Command(BaseCommand):
                 return
 
             user = users[0]
-            print('> INSPECT LOG EXACT uid=%s' % user.username)
+            print('> INSPECT LOG EXACT uid={}'.format(user.username))
             target = user.username + ')'
         else:
             print('> NO TARGET SPECIFIED')
             return
 
-        log_base = settings.LOGGING['handlers']['file']['filename']
-        log_ext = ['5', '4', '3', '2', '1', '']
-        for ext in log_ext:
-            log_name = log_base + ext
-            if not os.path.isfile(log_name):
-                continue
-
-            with open(log_name, 'r') as f:
-                for line in f:
-                    if target in line:
-                        print(line.strip())
+        with open(settings.LOG_FILE, 'r') as f:
+            for line in f:
+                if target in line:
+                    print(line.strip())

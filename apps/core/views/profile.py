@@ -124,7 +124,6 @@ def email(request, tokenid):
 def service(request):
     user = request.user
     maps = ServiceMap.objects.filter(user=user, unregister_time=None)
-
     return render(request, 'account/service.html',
                   {'user': user, 'maps': maps})
 

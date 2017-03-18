@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.utils.timezone import localtime
 import json
 
 
@@ -13,8 +14,9 @@ SERVICE_SCOPE = (
     (SERVICE_TEST, 'Test'),
 )
 
-User.__unicode__ = lambda self: u'%s %s <%s>' % \
-    (self.first_name, self.last_name, self.username)
+User.__str__ = lambda self: '{} {} <{}>'.format(
+    self.first_name, self.last_name, self.username
+)
 
 
 # == General Objects ==
@@ -33,7 +35,7 @@ class Notice(models.Model):
             'text': self.text,
         }
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
 
@@ -42,11 +44,15 @@ class Statistic(models.Model):
     time = models.DateTimeField()  # timestamp
     data = models.TextField()      # raw json data
 
-    def __unicode__(self):
-        return u'Statistic at %s' % self.time
+    def pretty(self):
+        time_str = localtime(self.time).isoformat()
+        return '{} {}'.format(time_str, self.data)
+
+    def __str__(self):
+        return '{}'.format(self.time)
 
 
-# Document:  denotes single documents that used by terms and privacy policy
+# Document: denotes single documents that used by terms and privacy policy
 class Document(models.Model):
     category = models.CharField(max_length=20)
     version = models.CharField(max_length=20)
@@ -76,8 +82,8 @@ class Document(models.Model):
         result.append('</ol>' * depth)
         return '\n'.join(result)
 
-    def __unicode__(self):
-        return 'Document of cat:%s ver:%s' % (self.category, self.version)
+    def __str__(self):
+        return '{} / {}'.format(self.category, self.version)
 
 
 # == Service Related Objects ==
@@ -102,7 +108,7 @@ class Service(models.Model):
     def icon_url(self):
         return self.icon.url if self.icon else '/static/img/test-service.png'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.alias
 
 
@@ -114,8 +120,8 @@ class ServiceMap(models.Model):
     register_time = models.DateTimeField()                         # register time
     unregister_time = models.DateTimeField(null=True, blank=True)  # unregister time
 
-    def __unicode__(self):
-        return u'%s - %s' % (self.service, self.user)
+    def __str__(self):
+        return '{} - {}'.format(self.user, self.service)
 
 
 # AccessToken: denotes single access token of (user, service) pair
@@ -125,8 +131,8 @@ class AccessToken(models.Model):
     service = models.ForeignKey(Service, null=True, blank=True)  # service object
     expire_time = models.DateTimeField()                         # expire time
 
-    def __unicode__(self):
-        return u'%s - %s' % (self.service, self.user)
+    def __str__(self):
+        return '{} - {}'.format(self.user, self.service)
 
 
 # == User Related Objects ==
@@ -183,8 +189,8 @@ class UserProfile(models.Model):
         self.kaist_info_time = timezone.now()
         self.save()
 
-    def __unicode__(self):
-        return u'%s''s profile' % self.user
+    def __str__(self):
+        return '{}''s profile'.format(self.user)
 
 
 # EmailAuthToken: denotes single email auth token for an user
@@ -193,8 +199,8 @@ class EmailAuthToken(models.Model):
     user = models.ForeignKey(User)                               # user object
     expire_time = models.DateTimeField()                         # expire time
 
-    def __unicode__(self):
-        return u'%s - %s' % (self.user, self.tokenid)
+    def __str__(self):
+        return '{} - {}'.format(self.user, self.tokenid)
 
 
 # ResetPWToken: denotes single password reset token for an user
@@ -203,8 +209,8 @@ class ResetPWToken(models.Model):
     user = models.ForeignKey(User)                               # user object
     expire_time = models.DateTimeField()                         # expire time
 
-    def __unicode__(self):
-        return u'%s - %s' % (self.user, self.tokenid)
+    def __str__(self):
+        return '{} - {}'.format(self.user, self.tokenid)
 
 
 # PointLog: denotes single point log for a (user, service) pair
@@ -216,14 +222,26 @@ class PointLog(models.Model):
     point = models.IntegerField()                              # total point
     action = models.CharField(max_length=200)                  # log message
 
-    def __unicode__(self):
-        return u'%s - %d by %s' % (self.user, self.delta, self.service)
+    def __str__(self):
+        return '{} / {} - {}'.format(self.user, self.service, self.delta)
 
 
-# UserLog: denotes single user log for an user
+# UserLog: denotes single user log for an user / (or global)
 class UserLog(models.Model):
-    user = models.ForeignKey(User, related_name='user_logs')  # user object
+    user = models.ForeignKey(User, related_name='user_logs',  # user object
+                             blank=True, null=True)
     level = models.IntegerField()                             # level
     time = models.DateTimeField(auto_now=True)                # event time
     ip = models.GenericIPAddressField()                       # event ip
+    hide = models.BooleanField(default=False)                 # hide log to users
     text = models.CharField(max_length=500)                   # log message
+
+    def pretty(self):
+        time_str = localtime(self.time).isoformat()
+        return '{}/{} ({}, {}) {}'.format(time_str, self.level, self.ip,
+                                          self.user.username, self.text)
+
+    def __str__(self):
+        time_str = localtime(self.time).isoformat()
+        return '{}/{} ({}) {}'.format(time_str, self.level,
+                                      self.user, self.text)

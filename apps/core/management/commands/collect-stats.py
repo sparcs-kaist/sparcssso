@@ -121,7 +121,7 @@ class Command(BaseCommand):
         # collect statistics of all services and all users
         services = list(map(lambda x: x.name,
                             Service.objects.all())) + ['all']
-        users = User.objects.exclude(profile__expire_time__isnull=True) \
+        users = User.objects.exclude(profile__expire_time__isnull=False) \
                             .exclude(profile__test_only=True)
 
         self.build_template(services)

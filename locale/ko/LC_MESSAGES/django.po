@@ -67,8 +67,8 @@ msgid "Logs"
 msgstr "활동 로그"
 
 #: templates/account/log.html:10
-msgid "You can see your action log up to recent 30."
-msgstr "최근 30개의 활동 로그가 나타납니다."
+msgid "You can see your action log up to recent 30 days."
+msgstr "최근 30일 동안의 활동 로그가 나타납니다."
 
 #: templates/account/login.html:4 templates/account/login.html:18
 #: templates/base.html:58

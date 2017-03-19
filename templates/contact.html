@@ -4,7 +4,7 @@
 {% block app-header %}
 <link rel="stylesheet" type="text/css" href="/static/css/main.css">
 <script src="/static/js/validator.min.js"></script>
-<script src='https://www.google.com/recaptcha/api.js'></script>
+<script src="https://www.google.com/recaptcha/api.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -19,7 +19,7 @@
     </div>
     {% endif %}
 
-    <form class="row" action="/contact/" method="post" data-toggle="validator">
+    <form id="contact" class="row" action="/contact/" method="post">
         {% csrf_token %}
 
         <div class="form-group col-xs-12 text-left">
@@ -57,9 +57,10 @@
             <textarea class="form-control" rows="6" name="message" style="resize:vertical;" required></textarea>
         </div>
 
-        <div class="form-group col-xs-12" style="margin-top:10px">
-            <input type="text" name="captcha" value="" required class="input-hidden" style="display:block">
-            <div class="g-recaptcha" style="display:inline-block" data-callback="captcha_check" data-expired-callback="captcha_expired" data-sitekey="6LdKJiQTAAAAAE03DTaBYonGRVuGdurgcLmpnjA2"></div>
+        <div class="g-recaptcha"
+             data-sitekey="6LfljRkUAAAAADIRSKOygbAdtu4bVln0xbly2ucP"
+             data-callback="captchaSubmit"
+             data-size="invisible">
         </div>
 
         <div class="form-group col-xs-12">
@@ -68,13 +69,21 @@
     </form>
 </div>
 
-<script type="text/javascript">
-var captcha_check = function(){
-    $('input[name=captcha]').val('captcha');
-};
+<script>
+var captchaSuccess = 0;
 
-var captcha_expired = function() {
-    $('input[name=captcha]').val('');
-};
+var captchaSubmit = function (token) {
+  captchaSuccess = 1;
+  $('#contact').submit();
+}
+
+$('#contact').validator().on('submit', function (e) {
+  if (e.isDefaultPrevented()) {
+    return;
+  } else if (captchaSuccess !== 1) {
+    e.preventDefault();
+    grecaptcha.execute();
+  }
+});
 </script>
 {% endblock %}

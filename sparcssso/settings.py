@@ -25,7 +25,9 @@ SECRET_KEY = 'r#f-7qnrv40bl+(wkmin6)u7mez#s$7^+8zo%k^+_sm^vw+95p'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['sso.sparcs.org', ]
+ALLOWED_HOSTS = [
+    'ssodev.sparcs.org',
+]
 
 
 # Application definition

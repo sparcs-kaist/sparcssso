@@ -261,7 +261,7 @@ def init_tw(callback_url):
     body = 'oauth_callback=' + callback_url
     resp, content = tw_client.request('https://twitter.com/oauth/request_token', 'POST', body)
 
-    tokens = dict(parse_qsl(content))
+    tokens = dict(parse_qsl(content.decode('utf-8')))
     url = 'https://twitter.com/oauth/authenticate?oauth_token=%s' % tokens['oauth_token']
     return url, tokens
 
@@ -272,7 +272,7 @@ def auth_tw(tokens, verifier):
     client = oauth.Client(tw_consumer, token)
 
     resp, content = client.request('https://twitter.com/oauth/access_token', 'POST')
-    tw_info = dict(parse_qsl(content))
+    tw_info = dict(parse_qsl(content.decode('utf-8')))
 
     if 'user_id' not in tw_info:
         return None, None

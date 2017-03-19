@@ -45,7 +45,7 @@ class Command(BaseCommand):
 
         # send critical logs to admin
         logs_critical = logs.filter(level__gte=30)
-        content = map(lambda x: x.pretty() + '\n', logs_critical)
-        emails = map(lambda x: x[1], settings.ADMINS)
+        content = list(map(lambda x: x.pretty() + '\n', logs_critical))
+        emails = list(map(lambda x: x[1], settings.ADMINS))
         send_mail('[SPARCS SSO] Log Report', '', 'noreply@sso.sparcs.org',
                   emails, html_message=content)

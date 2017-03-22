@@ -447,6 +447,12 @@ function get_properties_kaist(s_data) {
 
 function get_formatted_data(s_data){
     
+    function simplify_date(s_data){
+        for(let d in s_data){
+           rename_key(s_data, d, d.split("+")[0]);
+        }
+    }
+
     function get_date_arr(){
         return Object.keys(s_data).sort();
     }
@@ -477,7 +483,24 @@ function get_formatted_data(s_data){
         }
         return formatted_obj;
     }
+    
+    simplify_date(s_data);
+    /*  TODO
+        There's bottle neck at drawing chart which has
+        many bars. And label of bar need enough space.
+        So, system should select part of data.
+        
+        Heuristic methodologically, one bar needs 25px.
+        #bar = (width of rect.highcharts-plot-background) / 25
+        
+        window_size = Math.ceil(#s_data /(#bar - 1))
 
+        e.g.) #bar = 4, #s_data = 10
+        window_size = ceil(10/(4-1)) = 3
+        0 1 2 3 4 5 6 7 8 9
+        s     s     s     s
+        
+     */
     var date_arr = get_date_arr();
     var properties_arr = get_properties();
     var properties_kaist_arr = get_properties_kaist();

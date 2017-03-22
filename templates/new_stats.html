@@ -606,9 +606,13 @@ function preprocess_data_dept(p_attr_obj) {
 /**
 DOM manipulation function with jquery
 */
-function add_services(service){
-    for(var idx = 0; idx < service.length; idx++){
-        $("#service-dropdown-menu").append('<li id=dropdown-'+service[idx]+' class="dropdown-service"  ><a href="#">'+service[idx]+'</a></li>');
+function add_services(services){
+    for(let s of services){
+        if(!s.startsWith("test")){
+            $("#service-dropdown-menu").append(
+                '<li id=dropdown-' + s + ' class="dropdown-service"  ><a href="#">' + s + '</a></li>'
+            );
+        }
     }
 }
 

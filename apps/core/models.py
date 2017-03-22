@@ -237,9 +237,10 @@ class UserLog(models.Model):
     text = models.CharField(max_length=500)                   # log message
 
     def pretty(self):
+        username = self.user.username if self.user else 'undefined'
         time_str = localtime(self.time).isoformat()
         return '{}/{} ({}, {}) {}'.format(time_str, self.level, self.ip,
-                                          self.user.username, self.text)
+                                          username, self.text)
 
     def __str__(self):
         time_str = localtime(self.time).isoformat()

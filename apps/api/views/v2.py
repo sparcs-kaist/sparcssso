@@ -349,7 +349,8 @@ def stats(request):
             level = 1
 
     client_ids = request.GET.get('client_ids', '').split(',')
-    client_list = filter(None, map(lambda x: Service.objects.filter(name=x).first(), client_ids))
+    client_list = list(filter(None, map(lambda x:
+        Service.objects.filter(name=x).first(), client_ids)))
     if not client_list:
         client_list = Service.objects.all()
 

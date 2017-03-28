@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.utils.crypto import constant_time_compare
 from django.utils.dateparse import parse_date
 from django.views.decorators.csrf import csrf_exempt
-from apps.core.backends import reg_service, unreg_service, validate_email
+from apps.core.backends import service_register, service_unregister, validate_email
 from apps.core.models import Notice, Service, ServiceMap, AccessToken, PointLog, Statistic
 from datetime import datetime, timedelta
 from secrets import token_hex
@@ -83,7 +83,7 @@ def token_require(request):
 
     m = ServiceMap.objects.filter(user=user, service=service).first()
     if not m or m.unregister_time:
-        result = reg_service(user, service)
+        result = service_register(user, service)
         if result:
             profile_logger.info('register.success: app=%s' % service.name, {'r': request})
         else:
@@ -235,7 +235,7 @@ def unregister(request):
     if not constant_time_compare(sign, sign_server):
         raise SuspiciousOperation()
 
-    result = unreg_service(m.user, service)
+    result = service_unregister(m.user, service)
     if result:
         profile_logger.info('unregister.success: name=%s' % service.name, {'r': request})
     else:

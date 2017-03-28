@@ -1,4 +1,4 @@
-Django==1.10.6
+Django==1.11rc1
 flake8==3.2.1
 httplib2==0.10.3
 mccabe==0.5.3
@@ -9,4 +9,5 @@ olefile==0.44
 Pillow==4.0.0
 pycodestyle==2.2.0
 pyflakes==1.3.0
+pytz==2016.10
 requests==2.13.0

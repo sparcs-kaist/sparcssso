@@ -56,6 +56,11 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.security.SecurityMiddleware',
 )
 
+AUTHENTICATION_BACKENDS = [
+    'apps.core.backends.EmailLoginBackend',
+    'apps.core.backends.PasswordlessLoginBackend',
+]
+
 ROOT_URLCONF = 'sparcssso.urls'
 
 TEMPLATES = [

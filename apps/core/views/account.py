@@ -4,7 +4,7 @@ from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.utils import timezone
-from apps.core.backends import signup_core, signup_social_core, validate_recaptcha
+from apps.core.backends import signup_email, signup_social, validate_recaptcha
 from apps.core.models import ServiceMap
 import datetime
 import logging
@@ -30,13 +30,13 @@ def signup(request, social=False):
 
     if request.method == 'POST':
         if social:
-            user = signup_social_core(type, profile)
+            user = signup_social(type, profile)
         else:
             result = validate_recaptcha(request.POST.get('g-recaptcha-response', ''))
             if not result:
                 return redirect('/')
 
-            user = signup_core(request.POST)
+            user = signup_email(request.POST)
 
         if user is None:
             return redirect('/')

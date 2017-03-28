@@ -2,13 +2,13 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.utils import timezone
-from apps.core.backends import give_email_auth_token
+from apps.core.backends import token_issue_email_auth, get_social_name
 from apps.core.models import ServiceMap, EmailAuthToken, PointLog, UserLog
 from apps.core.forms import UserForm, UserProfileForm
 import logging
 
 
-logger = logging.getLogger('sso.core.profile')
+logger = logging.getLogger('sso.profile')
 
 
 # /profile/
@@ -67,14 +67,17 @@ def disconnect(request, type):
         profile.twitter_id = ''
 
     if not profile.password_set and \
-            not (profile.facebook_id or profile.twitter_id or profile.kaist_id):
+       not (profile.facebook_id or profile.twitter_id or profile.kaist_id):
         request.session['result_con'] = 4
         return redirect('/account/profile/')
 
     profile.save()
 
+    type_str = get_social_name(type)
+    logger.warning('social.disconnect: type={},id={}'.format(
+        type_str, uid), {'r': request})
+
     request.session['result_con'] = 5
-    logger.info('disconnect: type=%s,id=%s' % (type.lower(), uid), {'r': request})
     return redirect('/account/profile/')
 
 
@@ -85,7 +88,7 @@ def email_resend(request):
     if user.profile.email_authed:
         return redirect('/account/profile/')
 
-    give_email_auth_token(user)
+    token_issue_email_auth(user)
     logger.info('email.try', {'r': request})
     request.session['result_prof'] = 2
 
@@ -120,22 +123,26 @@ def email(request, tokenid):
 # /service/
 @login_required
 def service(request):
-    user = request.user
-    maps = ServiceMap.objects.filter(user=user, unregister_time=None)
-    return render(request, 'account/service.html',
-                  {'user': user, 'maps': maps})
+    maps = ServiceMap.objects.filter(user=request.user, unregister_time=None)
+    return render(request, 'account/service.html', {
+        'user': request.user,
+        'maps': maps
+    })
 
 
 # /point/
 @login_required
 def point(request):
-    user = request.user
-    logs = PointLog.objects.filter(user=user).order_by('-time')
-    return render(request, 'account/point.html', {'user': user, 'logs': logs})
+    logs = PointLog.objects.filter(user=request.user).order_by('-time')
+    return render(request, 'account/point.html', {
+        'user': request.user,
+        'logs': logs,
+    })
 
 
 # /log/
 @login_required
 def log(request):
-    logs = UserLog.objects.filter(user=request.user).order_by('-time')
+    logs = UserLog.objects.filter(user=request.user,
+                                  hide=False).order_by('-time')
     return render(request, 'account/log.html', {'logs': logs})

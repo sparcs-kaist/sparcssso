@@ -273,7 +273,6 @@ function draw_graph(f_data, property) {
     var r_chart_option = get_r_chart_option(property, f_data);
     var r_c = Highcharts.chart(property + "-r-chart", r_chart_option);
     chart_storage.push(r_c)
- 
 }
 
 function draw_graph_kaist(f_data, property, property_2nd){
@@ -365,7 +364,8 @@ function get_r_chart_option(property, f_data){
     // recent chart only need last data as array
     var base_option = get_column_base_option(property, f_data)
     if(property != "kaist-department"){
-        base_option["xAxis"]["categories"] = [base_option["xAxis"]["categories"].pop()]
+        var categories = base_option["xAxis"]["categories"];
+        base_option["xAxis"]["categories"] = [categories[categories.length - 1]];
         base_option["series"] = $.map(f_data["series"], function(v, i){
             v = $.extend({}, v);
             v_data = v["data"] // Array
@@ -525,7 +525,7 @@ function get_formatted_data(s_data){
         return formatted_obj;
     }
     
-    var num_of_bar = Math.ceil($(".chart-body").width() / 40);
+    var num_of_bar = Math.ceil($(".chart-body").width() / 50);
     simplify_date(s_data);
     reduce_data(s_data, num_of_bar);
     var date_arr = get_date_arr();

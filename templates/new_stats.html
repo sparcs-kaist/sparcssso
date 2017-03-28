@@ -179,6 +179,15 @@ $(".nav-tabs").click(function(){
     }, 0);
 });
 
+$(window).resize(function(){
+    for(var i = 0; i < chart_storage.length; i++){
+        var ch = chart_storage[i];
+        if(ch.legend.options.borderColor == "#CCD"){
+            ch.legend.update(get_legend_option("kaist-department"))
+        }
+    }
+})
+
 /**
 jquery ajax call
 @param - read https://wiki.sparcs.org/w/index.php/SPARCS_SSO_API_%EB%AA%85%EC%84%B8
@@ -280,6 +289,35 @@ function reflow_chart(){
     }
 }
 
+function get_legend_option(property) {
+    var w = $(".chart-body").width();
+    if(property == "kaist-department"){
+        return {
+            borderColor: '#CCD',
+            borderWidth: 1,
+            itemWidth: w,
+            maxHeight: 150
+        }
+    } else if (w < 550){
+        return {
+            borderColor: '#CCC',
+            borderWidth: 1,
+            itemWidth: 100,
+            maxHeight: 100
+        }
+    } else {
+        return {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'top',
+            y: 30,
+            borderColor: '#CCC',
+            borderWidth: 1,
+        }
+    }
+
+}
+
 function get_column_base_option(property, f_data){
     return {
         chart: {
@@ -304,14 +342,7 @@ function get_column_base_option(property, f_data){
                 }
             }
         },
-        legend: {
-            align: 'center',
-            verticalAlign: 'bottom',
-            backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
-            borderColor: '#CCC',
-            borderWidth: 1,
-            shadow: false
-        },
+        legend: get_legend_option(property),
         tooltip: {
             headerFormat: '<b>{point.x}</b><br/>',
             pointFormat: '{series.name}: {point.y}'

@@ -198,12 +198,6 @@ function success_stats(data, textStatus, jqXHR){
     var s_data = get_data_of_s(data, service_list[0]);
     change_service(service_list[0]);
     
-    /* only first call, add services to dropdown */
-    if(first_call_g){
-        add_services(service_list);
-        first_call_g = false;
-        destroy_not_auth_chart(s_data);
-    }
     if(Object.keys(s_data).length != 0){
         var property_arr = get_properties(s_data);
         var property_kaist_arr = get_properties_kaist(s_data);
@@ -223,7 +217,16 @@ function success_stats(data, textStatus, jqXHR){
             }
         }
     } else {
-        alert("선택한 구간의 데이터가 없습니다!");
+        if(!first_call_g){
+            alert("선택한 구간의 데이터가 없습니다!");
+        }
+    }
+    
+    /* only first call, add services to dropdown */
+    if(first_call_g){
+        add_services(service_list);
+        first_call_g = false;
+        destroy_not_auth_chart(s_data);
     }
 }
 
@@ -322,9 +325,8 @@ function get_t_chart_option(property, f_data){
 function get_r_chart_option(property, f_data){
     // recent chart only need last data as array
     var base_option = get_column_base_option(property, f_data)
-    
     if(property != "kaist-department"){
-        
+        base_option["xAxis"]["categories"] = [base_option["xAxis"]["categories"].pop()]
         base_option["series"] = $.map(f_data["series"], function(v, i){
             v = $.extend({}, v);
             v_data = v["data"] // Array
@@ -484,23 +486,9 @@ function get_formatted_data(s_data){
         return formatted_obj;
     }
     
+    var num_of_bar = Math.ceil($(".chart-body").width() / 40);
     simplify_date(s_data);
-    /*  TODO
-        There's bottle neck at drawing chart which has
-        many bars. And label of bar need enough space.
-        So, system should select part of data.
-        
-        Heuristic methodologically, one bar needs 25px.
-        #bar = (width of rect.highcharts-plot-background) / 25
-        
-        window_size = Math.ceil(#s_data /(#bar - 1))
-
-        e.g.) #bar = 4, #s_data = 10
-        window_size = ceil(10/(4-1)) = 3
-        0 1 2 3 4 5 6 7 8 9
-        s     s     s     s
-        
-     */
+    reduce_data(s_data, num_of_bar);
     var date_arr = get_date_arr();
     var properties_arr = get_properties();
     var properties_kaist_arr = get_properties_kaist();
@@ -553,6 +541,30 @@ function get_formatted_data(s_data){
     }
     return formatted_obj;
 }
+
+/*
+There's bottle neck at drawing chart which has
+many bars. And label of bar need enough space.
+So, system should select part of data.
+
+Heuristic methodologically, #bar = (width of chart) / 40
+
+window_size = Math.ceil(#s_data /(#bar - 1))
+e.g.) #bar = 4, #s_data = 10
+window_size = ceil(10/(4-1)) = 3
+0 1 2 3 4 5 6 7 8 9
+s     s     s     s
+*/
+function reduce_data(s_data, num){
+    var key_arr = Object.keys(s_data);
+    var window_size = Math.ceil(key_arr.length/(num - 1));
+    for(var idx in key_arr){
+        if(idx % window_size != 0){
+            delete s_data[key_arr[idx]];
+        }
+    }
+}
+
 /*
 manipulate formatted_obj for purpose
 - birth_year: append {year: 0} which api does not contain for spacing

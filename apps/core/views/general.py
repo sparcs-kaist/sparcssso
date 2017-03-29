@@ -89,7 +89,7 @@ def privacy(request, version=''):
 # /stats/
 def stats(request):
     level = 0
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         if request.user.is_staff:
             level = 2
         elif request.user.profile.sparcs_id:

@@ -24,7 +24,7 @@ class DBHandler(Handler):
                 ip = '0.0.0.0'
             record.ip = ip
 
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 record.username = request.user.username
 
         hide = record.args.get('hide', False)

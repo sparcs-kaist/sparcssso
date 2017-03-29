@@ -44,7 +44,7 @@ INSTALLED_APPS = (
     'apps.api',
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -84,8 +84,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'sparcssso.wsgi.application'
 
 LOGIN_URL = '/account/login/'
-
-LOGOUT_URL = '/account/logout/'
 
 
 # Facebook, Twitter, KAIST API keys

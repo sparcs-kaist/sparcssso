@@ -197,7 +197,7 @@ def logout(request):
     if not constant_time_compare(sign, sign_server):
         raise SuspiciousOperation()
 
-    if request.user and request.user.is_authenticated():
+    if request.user and request.user.is_authenticated:
         logger.info('logout', {'r': request})
         auth.logout(request)
 
@@ -342,7 +342,7 @@ def email(request):
 # /stats/
 def stats(request):
     level = 0
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         if request.user.is_staff:
             level = 2
         elif request.user.profile.sparcs_id:

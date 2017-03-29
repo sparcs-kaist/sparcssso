@@ -15,7 +15,7 @@ logger = logging.getLogger('sso.core.account')
 
 # /signup/, # /signup/social/
 def signup(request, social=False):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         return redirect('/')
 
     if social and 'info_signup' not in request.session:

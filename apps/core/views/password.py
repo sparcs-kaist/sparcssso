@@ -23,12 +23,10 @@ def change(request):
         oldpw = request.POST.get('oldpassword', '')
         newpw = request.POST.get('password', 'P@55w0rd!#$')
 
-        if not user.profile.password_set or check_password(oldpw, user.password):
+        if not user.profile.has_usable_password() or \
+           check_password(oldpw, user.password):
             user.password = make_password(newpw)
             user.save()
-
-            user.profile.password_set = True
-            user.profile.save()
 
             logger.warning('change.success', {'r': request})
             return redirect('/account/login/')

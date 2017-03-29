@@ -66,7 +66,7 @@ def disconnect(request, type):
         uid = profile.twitter_id
         profile.twitter_id = ''
 
-    if not profile.password_set and \
+    if not profile.user.has_usable_password() and \
        not (profile.facebook_id or profile.twitter_id or profile.kaist_id):
         request.session['result_con'] = 4
         return redirect('/account/profile/')

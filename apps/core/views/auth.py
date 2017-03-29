@@ -19,7 +19,7 @@ profile_logger = logging.getLogger('sso.profile')
 
 # /login/
 def login(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         return redirect('/')
 
     current_time = timezone.now()
@@ -60,7 +60,7 @@ def login(request):
 
 # /logout/
 def logout(request):
-    if request.method != 'POST' or not request.user.is_authenticated():
+    if request.method != 'POST' or not request.user.is_authenticated:
         return redirect('/')
 
     auth.logout(request)
@@ -74,7 +74,7 @@ def init(request, mode, type):
 
     # disable login for authed user
     # disable connect / renew for non authed user
-    is_authed = request.user.is_authenticated()
+    is_authed = request.user.is_authenticated
     if (mode == 'LOGIN' and is_authed) or \
        (mode in ['CONN', 'RENEW'] and not is_authed):
         return redirect('/')

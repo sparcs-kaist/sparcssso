@@ -57,12 +57,10 @@ def signup_social(type, profile):
     user = User.objects.create_user(username=username,
                                     first_name=first_name,
                                     last_name=last_name,
-                                    email=email,
-                                    password=token_hex(12))
+                                    email=email)
     user.save()
 
-    user.profile = UserProfile(gender=profile.get('gender', '*H'),
-                               password_set=False)
+    user.profile = UserProfile(gender=profile.get('gender', '*H'))
     if 'birthday' in profile:
         user.profile.birthday = profile['birthday']
 

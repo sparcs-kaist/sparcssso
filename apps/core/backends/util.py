@@ -24,8 +24,7 @@ def parse_gender(gender):
 # make clean url; / for all external urls
 def get_clean_url(url):
     hostname = urlparse(url).hostname
-    print(hostname, settings.DOMAIN)
-    if hostname != settings.DOMAIN:
+    if hostname:
         return '/'
     return url
 

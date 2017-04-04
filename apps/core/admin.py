@@ -85,18 +85,18 @@ class UserAdmin(uadmin.UserAdmin):
         can_delete = False
         fieldsets = (
             ('General', {
-                'fields': (('gender', 'birthday'),
+                'fields': ('gender', 'birthday',
                            'email_authed', 'expire_time'),
             }),
             ('Points', {
-                'fields': (('point', 'point_test'), ),
+                'fields': ('point', 'point_test'),
             }),
             ('SNS', {
-                'fields': (('facebook_id', 'twitter_id'),
-                           ('kaist_id', 'kaist_info_time'), 'kaist_info'),
+                'fields': ('facebook_id', 'twitter_id',
+                           'kaist_id', 'kaist_info_time', 'kaist_info'),
             }),
-            ('Debug', {
-                'fields': (('sparcs_id', 'test_only', 'test_enabled'), ),
+            ('Dev / Debug', {
+                'fields': ('sparcs_id', 'test_only', 'test_enabled'),
             }),
         )
 

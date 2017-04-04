@@ -74,7 +74,9 @@ def deactivate(request):
             profile.save()
 
             logger.warning('deactivate.success', {'r': request})
-            return redirect('/account/logout/')
+
+            auth.logout(request)
+            return redirect('/')
 
         fail = True
         logger.warning('deactivate.fail', {'r': request})

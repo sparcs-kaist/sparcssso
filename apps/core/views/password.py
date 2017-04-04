@@ -23,7 +23,7 @@ def change(request):
         oldpw = request.POST.get('oldpassword', '')
         newpw = request.POST.get('password', 'P@55w0rd!#$')
 
-        if not user.profile.has_usable_password() or \
+        if not user.has_usable_password() or \
            check_password(oldpw, user.password):
             user.password = make_password(newpw)
             user.save()

@@ -13,7 +13,7 @@ from urllib.parse import urlparse, parse_qs
 import logging
 
 
-logger = logging.getLogger('sso.core.auth')
+logger = logging.getLogger('sso.auth')
 profile_logger = logging.getLogger('sso.profile')
 
 
@@ -49,13 +49,12 @@ def login(request):
 
         request.session['result_login'] = 1
 
-    context = {
+    return render(request, 'account/login.html', {
         'notice': notice,
         'service': service_alias,
         'fail': request.session.pop('result_login', ''),
         'kaist_enabled': settings.KAIST_APP_ENABLED,
-    }
-    return render(request, 'account/login.html', context)
+    })
 
 
 # /logout/

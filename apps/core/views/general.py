@@ -119,7 +119,7 @@ def stats(request):
         else:
             stat.append(s)
 
-    return render(request, 'new_stats.html', {'level': level, 'time': time, 'stat': stat})
+    return render(request, 'stats.html', {'level': level, 'time': time, 'stat': stat})
 
 
 # /help/

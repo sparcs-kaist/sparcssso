@@ -52,6 +52,8 @@ $(window).resize(function(){
     }
 })
 
+var atomic_list_g = ["kaist-professor", "kaist-employee"]
+
 /**
 jquery ajax call
 @param - read https://wiki.sparcs.org/w/index.php/SPARCS_SSO_API_%EB%AA%85%EC%84%B8
@@ -122,9 +124,12 @@ Graph drawing function
 var chart_storage = []
 
 function draw_graph(f_data, property) {
-
-    var black_list = ["kaist-professor", "kaist-employee"]
-    if(is_emt_of_arr(black_list, property)){
+    
+    /* professor, employee */
+    if(is_emt_of_arr(atomic_list_g, property)){
+        var x = f_data["series"][0]["data"].pop()
+        var property = property.replace("_", "-");
+        $("#"+property+"-cell").text(x);
         return 0;
     }
 
@@ -418,6 +423,11 @@ function get_formatted_data(s_data){
                     var attr_2nd_obj = attr_obj[property];
                     
                     preprocess_data(attr_obj, property, property_2nd);
+
+                    if(is_emt_of_arr(atomic_list_g, property+"-"+property_2nd)){
+                        var atom = attr_2nd_obj[property_2nd];
+                        attr_2nd_obj[property_2nd] = [atom];
+                    }
                     
                     for(var label in attr_2nd_obj[property_2nd]){
                         if(!is_valid_key_arr(formatted_obj, [property, property_2nd, "series", label])){
@@ -733,3 +743,4 @@ var dept_data = {
     3520: 'The Robotics Program',
     4: 'Undergraduate Research Participation',
 };
+

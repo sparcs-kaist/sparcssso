@@ -22,3 +22,18 @@
 .highcharts-credits {
     display: none;
 }
+
+thead {
+    text-align: center;
+}
+
+th {
+    text-align: inherit;
+}
+
+@media (max-width: 767px) {
+    .kaist-table {
+        width: 90%;
+        margin: auto;
+    }
+}

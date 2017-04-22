@@ -1,13 +1,13 @@
 # SPARCS SSO Korean Translations.
-# Copyright (C) 2015 SPARCS SSO Team
+# Copyright (C) 2017 SPARCS SSO Team
 # This file is distributed under the same license as the SPARCS SSO package.
-# Sam Jo <samjo@sparcs.org>, 2015.
+# Sam Jo <samjo@sparcs.org>, 2017.
 # Jae-Sung Kim <ashe@sparcs.org>, 2015.
 msgid ""
 msgstr ""
 "Project-Id-Version: v0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-09 18:33+0900\n"
+"POT-Creation-Date: 2017-04-22 20:50+0900\n"
 "PO-Revision-Date: 2016-01-01 19:21+0900\n"
 "Last-Translator: Jae-Sung Kim <wotjd1102@kaist.ac.kr>\n"
 "Language-Team: SPARCS SSO Team <sso@sparcs.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: templates/account/deactivate.html:4 templates/account/deactivate.html:10
-#: templates/base.html:50
+#: templates/base.html:51
 msgid "Deactivate"
 msgstr "비활성화"
 
@@ -61,10 +61,75 @@ msgstr "서비스 관리"
 msgid "page first, and unregister all services."
 msgstr "에서 모든 서비스를 해지해주세요."
 
+#: templates/account/email.html:4 templates/account/email.html:10
+#: templates/account/email.html:76 templates/base.html:49
+msgid "Change Email"
+msgstr "이메일 변경"
+
+#: templates/account/email.html:12
+msgid "Please enter your new email."
+msgstr "새 이메일을 입력해주세요."
+
+#: templates/account/email.html:14
+msgid "However, the email will be changed after email validation."
+msgstr "이메일 인증이 완료된 이후 이메일이 변경됩니다."
+
+#: templates/account/email.html:16
+msgid ""
+"Your new email will be applied directly. However, email will be remain as "
+"unverified"
+msgstr ""
+"이메일은 즉시 변경됩니다. 그러나, 이메일 인증을 하기 전까지는 인증되지 않은 "
+"상태로 남아있습니다."
+
+#: templates/account/email.html:24
+msgid "Your email has been verified."
+msgstr "이메일 주소가 인증되었습니다."
+
+#: templates/account/email.html:28
+msgid "Expired or invalid verification token."
+msgstr "만료되거나 올바르지 않은 링크입니다."
+
+#: templates/account/email.html:32
+msgid "This email address is already used."
+msgstr "다른 사람이 사용 중인 이메일 주소입니다."
+
+#: templates/account/email.html:36
+msgid "Email updated; check the inbox."
+msgstr "이메일이 변경되었습니다. 메일함을 확인해주세요."
+
+#: templates/account/email.html:40
+msgid "Verification email has been sent."
+msgstr "인증 이메일이 발송되었습니다."
+
+#: templates/account/email.html:47 templates/account/email.html:60
+msgid "Current (Login) Email"
+msgstr "현재 (로그인) 이메일"
+
+#: templates/account/email.html:51 templates/account/email.html:69
+msgid "Pending Verification"
+msgstr "인증 대기 중"
+
+#: templates/account/email.html:52 templates/account/email.html:70
+msgid "Resend Verification Email"
+msgstr "인증 메일 재전송"
+
+#: templates/account/email.html:54
+msgid "Invalid Email Address; Please Update!"
+msgstr "유효하지 않은 이메일 주소"
+
+#: templates/account/email.html:62 templates/account/profile.html:30
+msgid "Verified"
+msgstr "인증됨"
+
+#: templates/account/email.html:65
+msgid "New Email"
+msgstr "새 이메일"
+
 #: templates/account/log.html:4 templates/account/log.html:9
 #: templates/base.html:46
-msgid "Logs"
-msgstr "활동 로그"
+msgid "Account Logs"
+msgstr "계정 로그"
 
 #: templates/account/log.html:10
 msgid "You can see your action log up to recent 30 days."
@@ -83,13 +148,13 @@ msgstr "SPARCS SSO에 오신 것을 환영합니다!"
 msgid "Invalid email / password"
 msgstr "잘못된 이메일 / 비밀번호"
 
-#: templates/account/login.html:31 templates/account/profile.html:130
+#: templates/account/login.html:31 templates/account/profile.html:117
 msgid "Please grant all requested permission"
 msgstr "요청한 권한을 모두 승인해주세요."
 
-#: templates/account/login.html:38 templates/account/profile.html:36
+#: templates/account/login.html:38 templates/account/profile.html:23
 #: templates/account/signup/main.html:18 templates/account/signup/sns.html:26
-#: templates/contact.html:25 templates/contact.html:31
+#: templates/contact.html:26 templates/contact.html:32
 msgid "Email"
 msgstr "이메일"
 
@@ -126,7 +191,7 @@ msgstr "트위터로 로그인 / 가입"
 msgid "SPARCS SSO Logout"
 msgstr "SPARCS SSO 로그아웃"
 
-#: templates/account/logout.html:10 templates/base.html:54
+#: templates/account/logout.html:10 templates/base.html:55
 msgid "Logout"
 msgstr "로그아웃"
 
@@ -136,8 +201,8 @@ msgstr "로그아웃되었습니다."
 
 #: templates/account/point.html:4 templates/account/point.html:9
 #: templates/base.html:47
-msgid "Points"
-msgstr "포인트"
+msgid "Point Logs"
+msgstr "포인트 로그"
 
 #: templates/account/point.html:10
 msgid ""
@@ -165,92 +230,72 @@ msgstr "프로필 정보를 수정하거나 소셜 계정을 연결 및 연결 �
 msgid "Changed information may not be applied in other SPARCS services."
 msgstr "수정된 정보는 다른 SPARCS 서비스에 적용되지 않을 수 있습니다."
 
-#: templates/account/profile.html:12
-msgid "If you change your email, you need to verify it again."
-msgstr "이메일을 변경하면 다시 인증을 받아야 합니다."
-
-#: templates/account/profile.html:17
+#: templates/account/profile.html:16
 msgid "Your information has been updated."
 msgstr "프로필 정보가 업데이트 되었습니다."
 
-#: templates/account/profile.html:21
-msgid "Verification email has been sent."
-msgstr "인증 이메일이 발송되었습니다."
+#: templates/account/profile.html:32
+msgid "NOT Verified"
+msgstr "인증되지 않음"
 
-#: templates/account/profile.html:25
-msgid "Unable to verify the email address. Please try again."
-msgstr "이메일을 인증할 수 없습니다. 다시 시도하세요."
+#: templates/account/profile.html:34
+msgid "Verify / Change Email"
+msgstr "이메일 인증 / 수정"
 
-#: templates/account/profile.html:29
-msgid "Your email has been successfully verified."
-msgstr "이메일 주소가 인증되었습니다."
-
-#: templates/account/profile.html:39 templates/account/signup/main.html:19
-msgid "Not Valid or Duplicated Email"
-msgstr "잘못되었거나 이미 가입된 이메일입니다."
-
-#: templates/account/profile.html:44
-msgid "Verified"
-msgstr "인증됨"
-
-#: templates/account/profile.html:46
-msgid "Verify"
-msgstr "인증하기"
-
-#: templates/account/profile.html:53 templates/account/signup/main.html:34
-#: templates/account/signup/sns.html:32 templates/contact.html:25
-#: templates/contact.html:28 templates/dev/user.html:17
+#: templates/account/profile.html:40 templates/account/signup/main.html:34
+#: templates/account/signup/sns.html:32 templates/contact.html:26
+#: templates/contact.html:29 templates/dev/user.html:17
 msgid "Name"
 msgstr "이름"
 
-#: templates/account/profile.html:64 templates/account/signup/sns.html:43
+#: templates/account/profile.html:51 templates/account/signup/sns.html:43
 #: templates/dev/user.html:28
 msgid "Gender, Birthday"
 msgstr "성별 및 생일"
 
-#: templates/account/profile.html:68 templates/account/signup/sns.html:46
+#: templates/account/profile.html:55 templates/account/signup/sns.html:46
 msgid "Hide"
 msgstr "숨김"
 
-#: templates/account/profile.html:69 templates/account/signup/sns.html:46
+#: templates/account/profile.html:56 templates/account/signup/sns.html:46
 msgid "Male"
 msgstr "남자"
 
-#: templates/account/profile.html:70 templates/account/signup/sns.html:46
+#: templates/account/profile.html:57 templates/account/signup/sns.html:46
 msgid "Female"
 msgstr "여자"
 
-#: templates/account/profile.html:71 templates/account/profile.html:208
-#: templates/account/profile.html:235 templates/account/profile.html:240
-#: templates/account/profile.html:243 templates/contact.html:45
+#: templates/account/profile.html:58 templates/account/profile.html:195
+#: templates/account/profile.html:213 templates/account/profile.html:218
+#: templates/account/profile.html:221 templates/contact.html:46
 msgid "etc"
 msgstr "기타"
 
-#: templates/account/profile.html:79
+#: templates/account/profile.html:66
 msgid "Modify"
 msgstr "수정"
 
-#: templates/account/profile.html:80
+#: templates/account/profile.html:67
 msgid "Reset"
 msgstr "초기화"
 
-#: templates/account/profile.html:89
+#: templates/account/profile.html:76
 msgid "Type Your Gender"
 msgstr "성별 입력"
 
-#: templates/account/profile.html:95
+#: templates/account/profile.html:82
 msgid "Save"
 msgstr "저장"
 
-#: templates/account/profile.html:103
+#: templates/account/profile.html:90
 msgid "Social Accounts"
 msgstr "SNS 계정"
 
-#: templates/account/profile.html:108
+#: templates/account/profile.html:95
 msgid "You can renew your KAIST SSO information."
 msgstr "KAIST PORTAL 계정 정보를 갱신할 수 있습니다."
 
-#: templates/account/profile.html:110
+#: templates/account/profile.html:97
 msgid ""
 "You should connect to KAIST SSO if you want to verify your identity as a "
 "KAIST member."
@@ -258,23 +303,23 @@ msgstr ""
 "KAIST 구성원 인증을 하려면 Portal SSO를 사용하여 KAIST 계정과 연결해야 합니"
 "다."
 
-#: templates/account/profile.html:111
+#: templates/account/profile.html:98
 msgid "You CANNOT DISCONNECT KAIST SSO from SPARCS SSO once you connect."
 msgstr "한번 KAIST 계정과 연결하면, 해제 할 수 없습니다."
 
-#: templates/account/profile.html:118
+#: templates/account/profile.html:105
 msgid "Your social network account has been connected / renewed."
 msgstr "SNS 계정이 연결 / 갱신되었습니다."
 
-#: templates/account/profile.html:122
+#: templates/account/profile.html:109
 msgid "This social network account is already connected by other person."
 msgstr "이 SNS 계정은 이미 다른 사람이 사용중입니다."
 
-#: templates/account/profile.html:126
+#: templates/account/profile.html:113
 msgid "You cannot renew your information with the other KAIST portal account."
 msgstr "다른 사람의 KAIST PORTAL 계정으로 정보를 갱신할 수 없습니다."
 
-#: templates/account/profile.html:134
+#: templates/account/profile.html:121
 msgid ""
 "To disconnect SNS account, either password has been set or other SNS "
 "accounts should be connected"
@@ -282,29 +327,29 @@ msgstr ""
 "SNS 계정과 연결을 끊으려면 비밀번호를 설정하거나 다른 SNS 계정이 연동되어 있"
 "어야 합니다."
 
-#: templates/account/profile.html:138
+#: templates/account/profile.html:125
 msgid "Your social network account has been disconnected."
 msgstr "SNS 계정 연결이 해제되었습니다."
 
-#: templates/account/profile.html:152 templates/account/profile.html:168
-#: templates/account/profile.html:184
+#: templates/account/profile.html:139 templates/account/profile.html:155
+#: templates/account/profile.html:171
 msgid "Connect"
 msgstr "연결"
 
-#: templates/account/profile.html:157 templates/account/profile.html:173
+#: templates/account/profile.html:144 templates/account/profile.html:160
 msgid "Disconnect"
 msgstr "연결 해제"
 
-#: templates/account/profile.html:189
+#: templates/account/profile.html:176
 msgid "Renew"
 msgstr "갱신"
 
-#: templates/account/profile.html:190
+#: templates/account/profile.html:177
 msgid "Renewed at"
 msgstr "갱신 날짜: "
 
 #: templates/account/pw-change.html:4 templates/account/pw-change.html:10
-#: templates/account/pw-change.html:38 templates/base.html:49
+#: templates/account/pw-change.html:38 templates/base.html:50
 msgid "Change Password"
 msgstr "비밀번호 변경"
 
@@ -461,6 +506,10 @@ msgstr "다음 내용을 작성해주세요."
 msgid "You NEED to verify your email to use services."
 msgstr "서비스를 사용하기 위해서는 이메일을 인증해야 합니다."
 
+#: templates/account/signup/main.html:19
+msgid "Not Valid or Duplicated Email"
+msgstr "잘못되었거나 이미 가입된 이메일입니다."
+
 #: templates/account/signup/sns.html:11
 msgid "with Facebook Account"
 msgstr "(페이스북)"
@@ -581,39 +630,39 @@ msgstr "최대한 빨리 답변드리겠습니다."
 msgid "DO NOT send PASSWORD or other SENSITIVE DATA using this form"
 msgstr "절대 비빌번호나 민감한 정보를 전송하지 마세요."
 
-#: templates/contact.html:20
+#: templates/contact.html:18
 msgid "Your message is successfully sent! Thank you for your feedback!"
 msgstr "메시지가 잘 전송되었습니다! 피드백에 감사드립니다."
 
-#: templates/contact.html:37
+#: templates/contact.html:38
 msgid "Topic"
 msgstr "주제"
 
-#: templates/contact.html:37 templates/contact.html:49
+#: templates/contact.html:38 templates/contact.html:50
 msgid "Title"
 msgstr "제목"
 
-#: templates/contact.html:41
+#: templates/contact.html:42
 msgid "Select Topic"
 msgstr "주제 선택"
 
-#: templates/contact.html:42
+#: templates/contact.html:43
 msgid "Bug Report"
 msgstr "버그"
 
-#: templates/contact.html:43
+#: templates/contact.html:44
 msgid "Suggestions"
 msgstr "제안"
 
-#: templates/contact.html:44
+#: templates/contact.html:45
 msgid "Accounts"
 msgstr "계정"
 
-#: templates/contact.html:55
+#: templates/contact.html:56
 msgid "Message"
 msgstr "메시지"
 
-#: templates/contact.html:65
+#: templates/contact.html:67
 msgid "Send to SSO Team"
 msgstr "SSO Team에게 전송"
 
@@ -630,7 +679,6 @@ msgid "OR, you have sent data that violates forms."
 msgstr "또는, 전송하신 데이터가 형식에 맞지 않습니다."
 
 #: templates/error/403.html:4
-#: venv/lib/python2.7/site-packages/django/views/csrf.py:109
 msgid "Forbidden"
 msgstr "금지된 접근"
 

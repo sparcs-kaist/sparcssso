@@ -13,7 +13,7 @@ class DBHandler(Handler):
             self.model_loaded = True
 
         record.ip = '0.0.0.0'
-        record.username = 'undefined'
+        record.username = record.args.get('uid', 'undefined')
 
         request = record.args.get('r', None)
         if request:
@@ -24,11 +24,8 @@ class DBHandler(Handler):
                 ip = '0.0.0.0'
             record.ip = ip
 
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 record.username = request.user.username
-
-        if 'uid' in record.args:
-            record.username = record.args['uid']
 
         hide = record.args.get('hide', False)
         user = self.User.objects.filter(username=record.username).first()

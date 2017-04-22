@@ -33,8 +33,9 @@ urlpatterns = [
     url(r'^disconnect/fb/$', profile.disconnect, {'type': 'FB'}),
     url(r'^disconnect/tw/$', profile.disconnect, {'type': 'TW'}),
 
-    url(r'^email/$', profile.email_resend),
-    url(r'^email/(?P<tokenid>\w+)$', profile.email),
+    url(r'^email/change/$', profile.email),
+    url(r'^email/verify/$', profile.email_resend),
+    url(r'^email/verify/(?P<tokenid>\w+)$', profile.email_verify),
 
     url(r'^log/$', profile.log),
     url(r'^point/$', profile.point),

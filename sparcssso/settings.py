@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 """
 Django settings for sparcssso project.
 
@@ -29,6 +28,8 @@ ALLOWED_HOSTS = [
     'ssodev.sparcs.org',
 ]
 
+DOMAIN = 'http://ssodev.sparcs.org'
+
 
 # Application definition
 
@@ -43,7 +44,7 @@ INSTALLED_APPS = (
     'apps.api',
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -54,6 +55,11 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
 )
+
+AUTHENTICATION_BACKENDS = [
+    'apps.core.backends.EmailLoginBackend',
+    'apps.core.backends.PasswordlessLoginBackend',
+]
 
 ROOT_URLCONF = 'sparcssso.urls'
 
@@ -79,10 +85,8 @@ WSGI_APPLICATION = 'sparcssso.wsgi.application'
 
 LOGIN_URL = '/account/login/'
 
-LOGOUT_URL = '/account/logout/'
 
-
-# Facebook, Twitter, KAIST API Key
+# Facebook, Twitter, KAIST API keys
 
 FACEBOOK_APP_ID = ''
 
@@ -141,19 +145,23 @@ LOCALE_PATHS = (
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 
 MEDIA_URL = '/media/'
+
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # Admins & Logging
 TEAM_EMAILS = ['sso@sparcs.org', ]
+
 ADMINS = (('SSO SYSOP', 'sso.sysop@sparcs.org'),)
 
 LOG_FILE = os.path.join(BASE_DIR, 'archive/logs.txt')
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

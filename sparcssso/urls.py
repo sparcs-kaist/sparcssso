@@ -23,11 +23,12 @@ urlpatterns = [
     url(r'^api/', include('apps.api.urls')),
     url(r'^dev/', include('apps.dev.urls')),
 
-    url(r'^manage/', include(admin.site.urls)),
+    url(r'^manage/', admin.site.urls),
 ]
 
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)
 
 urls.handler400 = lambda r: render(r, 'error/400.html', status=400)
 urls.handler403 = lambda r: render(r, 'error/403.html', status=403)

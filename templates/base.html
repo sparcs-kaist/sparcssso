@@ -43,16 +43,16 @@
                         <ul class="dropdown-menu" role="menu">
                             <li><a href="/account/profile/">{% trans "Profile / Connections" %}</a></li>
                             <li><a href="/account/service/">{% trans "Manage Service" %}</a></li>
-                            <li><a href="/account/log/">{% trans "Logs" %}</a></li>
-                            <li><a href="/account/point/">{% trans "Points" %}</a></li>
+                            <li><a href="/account/log/">{% trans "Account Logs" %}</a></li>
+                            <li><a href="/account/point/">{% trans "Point Logs" %}</a></li>
                             {% if not user.profile.test_only %}
+                            <li><a href="/account/email/change/">{% trans "Change Email" %}</a></li>
                             <li><a href="/account/password/change/">{% trans "Change Password" %}</a></li>
                             <li><a href="/account/deactivate/">{% trans "Deactivate" %}</a></li>
                             {% endif %}
                         </ul>
                     </li>
                     <li><a href="#" id="logout-link">{% trans "Logout" %}</a></li>
-                    <form id="logout-form" action="/account/logout/" method="post" style="display:none">{% csrf_token %}</form>
                     {% else %}
                     <li><a href="/account/signup/">{% trans "Sign Up" %}</a></li>
                     <li><a href="/account/login/">{% trans "Login" %}</a></li>
@@ -102,7 +102,16 @@
         ga('send', 'pageview');
 
         $("#logout-link").click(function() {
-            $("#logout-form").submit();
+            var form = $(document.createElement('form')).attr({
+                method: 'post',
+                action: '/account/logout/',
+            });
+            $(document.createElement('input')).attr({
+                type: 'hidden',
+                name: 'csrfmiddlewaretoken',
+                value: '{{ csrf_token }}',
+            }).appendTo(form);
+            form.appendTo(document.body).submit();
         });
     </script>
 </body>

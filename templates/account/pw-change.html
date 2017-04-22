@@ -18,7 +18,7 @@
         </div>
         {% endif %}
         {% csrf_token %}
-        {% if user.profile.password_set %}
+        {% if user.has_usable_password %}
         <div class="form-group col-xs-12 text-left">
             <label class="control-label">{% trans "Current Password" %}</label>
             <input type="password" class="form-control" name="oldpassword" placeholder="CuRREnT pAss0wd" required="required">

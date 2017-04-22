@@ -65,17 +65,28 @@
 
 <script>
 $(function() {
-    $('.btn-kaist').click(function() {
-        location.href = '/account/login/kaist/';
-    });
+  var login = function (type) {
+    var form = $('<form method="post"></form>');
+    form.attr('action', '/account/login/' + type + '/');
 
-    $('.btn-facebook').click(function() {
-        location.href = '/account/login/fb/';
-    });
+    var csrf_field = $('<input type="hidden" name="csrfmiddlewaretoken" value="{{csrf_token}}"></input>');
+    form.append(csrf_field);
 
-    $('.btn-twitter').click(function() {
-        location.href = '/account/login/tw/';
-    });
+    $(document.body).append(form);
+    form.submit();
+  };
+
+  $('.btn-kaist').click(function() {
+    login('kaist');
+  });
+
+  $('.btn-facebook').click(function() {
+    login('fb');
+  });
+
+  $('.btn-twitter').click(function() {
+    login('tw');
+  });
 });
 </script>
 {% endblock %}

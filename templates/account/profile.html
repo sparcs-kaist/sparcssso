@@ -9,24 +9,11 @@
 <div class="wrap-content-sm">
     <h1>{% trans "Profile &amp; Social Network Accounts" %}</h1>
     <p>{% trans "You can change your information or connect / disconnect social accounts." %} {% trans "Changed information may not be applied in other SPARCS services." %}</p>
-    <p class="text-warning">{% trans "If you change your email, you need to verify it again." %}</p>
     <form id="profile" class="row" action="/account/profile/" method="post">
         <div class="form-group col-xs-12">
             {% if result_prof == 1 %}
             <div class="alert alert-success">
                <b>{% trans "Your information has been updated." %}</b>
-            </div>
-            {% elif result_prof == 2 %}
-            <div class="alert alert-success">
-               <b>{% trans "Verification email has been sent." %}</b>
-            </div>
-            {% elif result_prof == 3 %}
-            <div class="alert alert-danger">
-               <b>{% trans "Unable to verify the email address. Please try again." %}</b>
-            </div>
-            {% elif result_prof == 4 %}
-            <div class="alert alert-success">
-               <b>{% trans "Your email has been successfully verified." %}</b>
             </div>
             {% endif %}
         </div>
@@ -35,16 +22,16 @@
             <div>
                 <label class="control-label">{% trans "Email" %}</label>
             </div>
-            <div class="col-xs-9" style="padding: 0">
-                <input type="email" class="form-control" name="email" required="required" maxlength="50" data-remote="/api/v2/email/?exclude={{user.email}}" data-error="{% trans "Not Valid or Duplicated Email" %}" value="{{user.email}}">
-                <span class="help-block with-errors"></span>
+            <div class="col-xs-12" style="padding: 0">
+                <input type="email" class="form-control" name="email" required="required" readonly value="{{user.email}}">
             </div>
-            <div class="col-xs-3" style="padding: 0">
+            <div class="col-xs-12" style="padding: 2px">
                 {% if user.profile.email_authed %}
-                <button class="btn btn-success" disabled style="width:100%">{% trans "Verified" %}</a>
+                <span class="text text-success">{% trans "Verified" %}</span>
                 {% else %}
-                <button id="verify-email" class="btn btn-warning" type="button" style="width:100%">{% trans "Verify" %}</a>
+                <span class="text text-warning">{% trans "NOT Verified" %}</span>
                 {% endif %}
+                <span class="text pull-right"><a href="/account/email/change/">{% trans "Verify / Change Email" %}</a></span>
             </div>
         </div>
         <input type="hidden" name="password" value="qwerty1234">
@@ -216,15 +203,6 @@ $(function() {
     if (id == 'gender-E') {
         $("#gender-type").modal('show');
     }
-  });
-
-  $("input[name=email]").keyup(function() {
-    var email = $("input[name=email]").val();
-    $("#verify-email").attr("disabled", email != "{{user.email}}");
-  });
-
-  $("#verify-email").click(function() {
-     location.href = "/account/email/";
   });
 
   $("#gender-type").on('hide.bs.modal', function (e) {

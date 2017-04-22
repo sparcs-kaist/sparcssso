@@ -1,12 +1,12 @@
 {% extends "account/base.html" %}
 {% load i18n %}
 
-{% block htitle %}SPARCS SSO {% trans "Points" %}{% endblock %}
+{% block htitle %}SPARCS SSO {% trans "Point Logs" %}{% endblock %}
 
 {% block header %}{% endblock %}
 
 {% block content %}
-<h1>{% trans "Points" %}</h1>
+<h1>{% trans "Point Logs" %}</h1>
 <p>{% trans "You can see your current SPARCS points, and the points log up to recent 20." %}</p>
 <h3>{% trans "Current Point" %}: {{user.profile.point}}</h3>
 <div class="table-responsive">

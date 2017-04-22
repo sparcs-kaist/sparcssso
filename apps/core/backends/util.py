@@ -36,11 +36,13 @@ def get_social_name(type):
 
 # check given email is available or not
 def validate_email(email, exclude=''):
-    if not re.match(r'[^@]+@[^@]+\.[^@]+', email):
+    if email == exclude:
+        return True
+    elif not re.match(r'[^@]+@[^@]+', email):
         return False
-
-    return User.objects.filter(email=email) \
-        .exclude(email=exclude).count() == 0
+    elif email.endswith('@sso.sparcs.org'):
+        return False
+    return User.objects.filter(email=email).count() == 0
 
 
 # validate reCAPTCHA

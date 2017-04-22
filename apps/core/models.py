@@ -188,6 +188,7 @@ class UserProfile(models.Model):
     - birthday:        birthday
     - point:           point for public services
     - point_test:      point for test services
+    - email_new:       new email before auth
     - email_authed:    email authed state
     - test_only:       indicate test only account
     - test_enabled:    test mode state
@@ -205,6 +206,7 @@ class UserProfile(models.Model):
     birthday = models.DateField(blank=True, null=True)
     point = models.IntegerField(default=0)
     point_test = models.IntegerField(default=0)
+    email_new = models.EmailField(blank=True, null=True)
     email_authed = models.BooleanField(default=False)
     test_only = models.BooleanField(default=False)
     test_enabled = models.BooleanField(default=False)

@@ -2,7 +2,9 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.utils import timezone
-from apps.core.backends import token_issue_email_auth, get_social_name
+from apps.core.backends import (
+    token_issue_email_auth, get_social_name, validate_email
+)
 from apps.core.models import ServiceMap, EmailAuthToken, PointLog, UserLog
 from apps.core.forms import UserForm, UserProfileForm
 import logging
@@ -24,12 +26,6 @@ def main(request):
         profile_f = UserProfileForm(request.POST, instance=profile)
 
         if user_f.is_valid() and profile_f.is_valid():
-            email = user_f.cleaned_data['email']
-            if user.email != email:
-                user.email = email
-                user.profile.email_authed = False
-                EmailAuthToken.objects.filter(user=user).delete()
-
             user.first_name = user_f.cleaned_data['first_name']
             user.last_name = user_f.cleaned_data['last_name']
             user.save()
@@ -38,14 +34,13 @@ def main(request):
             result_prof = 1
             logger.info('modify', {'r': request})
 
-    context = {
+    return render(request, 'account/profile.html', {
         'user': user,
         'profile': profile,
         'result_prof': result_prof,
         'result_con': result_con,
         'kaist_enabled': settings.KAIST_APP_ENABLED,
-    }
-    return render(request, 'account/profile.html', context)
+    })
 
 
 # /disconnect/{fb,tw}/
@@ -81,43 +76,83 @@ def disconnect(request, type):
     return redirect('/account/profile/')
 
 
-# /email/
+# /email/change/
+@login_required
+def email(request):
+    user, profile = request.user, request.user.profile
+    if profile.test_only:
+        return redirect('/')
+
+    if request.method == 'POST':
+        email_new = request.POST.get('email', '').lower()
+        if validate_email(email_new):
+            if profile.email_authed:
+                profile.email_new = email_new
+                profile.save()
+            else:
+                user.email = email_new
+                user.save()
+            token_issue_email_auth(user)
+            request.session['result_email'] = 4
+        else:
+            request.session['result_email'] = 3
+
+    result_email = request.session.pop('result_email', -1)
+    return render(request, 'account/email.html', {
+        'user': request.user,
+        'result_email': result_email,
+    })
+
+
+# /email/verify/
 @login_required
 def email_resend(request):
-    user = request.user
-    if user.profile.email_authed:
-        return redirect('/account/profile/')
+    user, profile = request.user, request.user.profile
+    if request.method != 'POST':
+        return redirect('/account/email/change/')
+    elif profile.email_authed and not profile.email_new:
+        return redirect('/account/email/change/')
 
     token_issue_email_auth(user)
-    logger.info('email.try', {'r': request})
-    request.session['result_prof'] = 2
+    logger.info('email.resend', {'r': request})
+    request.session['result_email'] = 5
 
-    return redirect('/account/profile/')
+    return redirect('/account/email/change/')
 
 
-# /email/<tokenid>
+# /email/verify/<tokenid>
 @login_required
-def email(request, tokenid):
+def email_verify(request, tokenid):
+    user, profile = request.user, request.user.profile
+    if profile.test_only:
+        return redirect('/')
+
     token = EmailAuthToken.objects.filter(tokenid=tokenid).first()
     if not token:
-        request.session['result_prof'] = 3
-        return redirect('/account/profile/')
-
-    if token.expire_time < timezone.now():
+        request.session['result_email'] = 2
+        return redirect('/account/email/change/')
+    elif token.expire_time < timezone.now():
         token.delete()
-        request.session['result_prof'] = 3
-        return redirect('/account/profile/')
+        request.session['result_email'] = 2
+        return redirect('/account/email/change/')
+    elif token.user != user:
+        return redirect('/account/email/change/')
 
-    user = token.user
-    user.profile.email_authed = True
+    if profile.email_authed:
+        user.email = profile.email_new
+        profile.email_new = ''
+    else:
+        profile.email_authed = True
+
     if user.email.endswith('@sparcs.org'):
-        user.profile.sparcs_id = user.email.split('@')[0]
-    user.profile.save()
+        profile.sparcs_id = user.email.split('@')[0]
+    profile.save()
+    user.save()
     token.delete()
 
-    request.session['result_prof'] = 4
+    request.session['result_email'] = 1
     logger.info('email.done', {'r': request})
-    return redirect('/account/profile/')
+    return redirect('/account/email/change/')
 
 
 # /service/

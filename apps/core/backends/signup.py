@@ -31,11 +31,11 @@ def signup_email(post):
     user.save()
     UserProfile(user=user, gender='*H').save()
 
-    token_issue_email_auth(user)
+    token_issue_email_auth(user, newbie=True)
     return user
 
 
-# signup using sociale
+# signup using social
 def signup_social(type, profile):
     while True:
         username = token_hex(10)

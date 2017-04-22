@@ -17,8 +17,7 @@ logger = logging.getLogger('sso.core.account')
 def signup(request, social=False):
     if request.user.is_authenticated:
         return redirect('/')
-
-    if social and 'info_signup' not in request.session:
+    elif social and 'info_signup' not in request.session:
         return redirect('/')
 
     if social:
@@ -32,28 +31,32 @@ def signup(request, social=False):
         if social:
             user = signup_social(type, profile)
         else:
-            result = validate_recaptcha(request.POST.get('g-recaptcha-response', ''))
+            captcha_data = request.POST.get('g-recaptcha-response', '')
+            result = validate_recaptcha(captcha_data)
             if not result:
                 return redirect('/')
-
             user = signup_email(request.POST)
 
         if user is None:
             return redirect('/')
 
         logger.warning('create', {'r': request, 'uid': user.username})
-
-        user.backend = 'django.contrib.auth.backends.ModelBackend'
+        user = auth.authenticate(request=request, user=user)
         auth.login(request, user)
 
         nexturl = request.session.pop('next', '/')
-        return render(request, 'account/signup/done.html',
-                      {'type': 'SNS' if social else 'EMAIL', 'nexturl': nexturl})
+        return render(request, 'account/signup/done.html', {
+            'type': 'SNS' if social else 'EMAIL',
+            'nexturl': nexturl
+        })
 
     if not social:
         return render(request, 'account/signup/main.html')
-    return render(request, 'account/signup/sns.html', {'type': type, 'profile': profile,
-                                                       'email_warning': email_warning})
+    return render(request, 'account/signup/sns.html', {
+        'type': type,
+        'profile': profile,
+        'email_warning': email_warning
+    })
 
 
 # /deactivate/

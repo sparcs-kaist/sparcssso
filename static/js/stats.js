@@ -77,9 +77,13 @@ function get_stats(client_ids, date_from, date_to){
 jquery ajax success function
  */
 function success_stats(data, textStatus, jqXHR){
+    
+    /* Add up all fields to "all" key */
+    append_data_of_all(data);
+
     var service_list = get_services(data);
-    var s_data = get_data_of_s(data, service_list[0]);
-    change_service(service_list[0]);
+    var s_data = get_data_of_s(data, "all");
+    change_service("all");
     
     if(Object.keys(s_data).length != 0){
         var property_arr = get_properties(s_data);
@@ -111,6 +115,37 @@ function success_stats(data, textStatus, jqXHR){
         first_call_g = false;
         destroy_not_auth_chart(s_data);
     }
+}
+
+/* Append "all" as key to stats.
+   It is statstics of sum of all services*/
+function append_data_of_all(data) {
+    var stats = data["stats"]
+    stats_all = {
+        "alias": "all",
+        "data": {},
+    };
+    $.each(stats, function(service, s_obj){
+        sum_or_copy(s_obj["data"], stats_all["data"]);
+    })
+    stats["all"] = stats_all;
+}
+
+/* Copy object-tree from original_root to new_root.
+   If new_root has already have some number-leaf,
+   just add original_root's value . */
+function sum_or_copy(original_root, new_root) {
+    $.each(original_root, function(k, v){
+        if(typeof(v) == "number"){
+            new_root[k] = new_root[k] + v || v;
+            return;
+        }
+        if(!is_key(new_root, k)){
+            new_root[k] = {};
+        }
+        sum_or_copy(v, new_root[k]);
+    })
+    return new_root;
 }
 
 function change_service(s_name){

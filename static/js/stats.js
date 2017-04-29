@@ -82,8 +82,9 @@ function success_stats(data, textStatus, jqXHR){
     append_data_of_all(data);
 
     var service_list = get_services(data);
-    var s_data = get_data_of_s(data, "all");
-    change_service("all");
+    var service_to_show = service_list[service_list.length - 1];
+    var s_data = get_data_of_s(data, service_to_show);
+    change_service(service_to_show);
     
     if(Object.keys(s_data).length != 0){
         var property_arr = get_properties(s_data);

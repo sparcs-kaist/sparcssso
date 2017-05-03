@@ -675,8 +675,11 @@ function destroyNotAuthChart(sData) {
 jquery ajax success function
  */
 function successStats(data) {
-  /* Add up all fields to 'all' key */
-  appendDataOfAll(data);
+  /* Add up all fields to 'all' key
+     when there's more than one service */
+  if (Object.keys(data.stats).length > 1) {
+    appendDataOfAll(data);
+  }
 
   const serviceList = getServices(data);
   const serviceToShow = serviceList[serviceList.length - 1];

@@ -70,6 +70,6 @@ def signup_social(type, profile):
         user.profile.twitter_id = profile['userid']
     elif type == 'KAIST':
         user.profile.email_authed = email.endswith('@kaist.ac.kr')
-        user.profile.set_kaist_info(profile)
+        user.profile.save_kaist_info(profile)
     user.profile.save()
     return user

@@ -154,7 +154,7 @@ def callback_login(request, type, user, info):
     # normal login
     request.session.pop('info_signup', None)
     if type == 'KAIST':
-        user.profile.set_kaist_info(info)
+        user.profile.save_kaist_info(info)
 
     auth.login(request, user)
     nexturl = request.session.pop('next', '/')
@@ -174,7 +174,7 @@ def callback_conn(request, type, user, info):
     elif type == 'TW' and not profile.twitter_id:
         profile.twitter_id = info['userid']
     elif type == 'KAIST' and not profile.kaist_id:
-        profile.set_kaist_info(info)
+        profile.save_kaist_info(info)
     else:
         return redirect('/account/profile/')
 
@@ -203,7 +203,7 @@ def callback_renew(request, type, user, info):
     if profile.kaist_id != info['userid']:
         result_con = 2
     else:
-        user.profile.set_kaist_info(info)
+        user.profile.save_kaist_info(info)
 
     request.session['result_con'] = result_con
 

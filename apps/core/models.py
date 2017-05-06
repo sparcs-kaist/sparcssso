@@ -246,7 +246,7 @@ class UserProfile(models.Model):
             return True
         return False
 
-    def set_kaist_info(self, info):
+    def save_kaist_info(self, info):
         self.kaist_id = info['userid']
         self.kaist_info = json.dumps(info['kaist_info'])
         self.kaist_info_time = timezone.now()

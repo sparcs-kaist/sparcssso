@@ -152,7 +152,7 @@ def user(request, uid):
         profile.gender = gender
         profile.birthday = birthday
         profile.point_test = point_test
-        profile.set_kaist_info({'userid': kaist_id, 'kaist_info': kaist_info})
+        profile.save_kaist_info({'userid': kaist_id, 'kaist_info': kaist_info})
         profile.save()
 
         return redirect('/dev/main/')

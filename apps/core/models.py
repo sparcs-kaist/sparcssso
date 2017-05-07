@@ -127,7 +127,7 @@ class Service(models.Model):
                              default=SERVICE_TEST)
     main_url = models.CharField(max_length=200)
     login_callback_url = models.CharField(max_length=200)
-    unregister_url = models.CharField(max_length=200)
+    unregister_url = models.CharField(max_length=200, null=True, blank=True)
     secret_key = models.CharField(max_length=100)
     admin_user = models.ForeignKey(User, on_delete=models.CASCADE,
                                    related_name='managed_services')

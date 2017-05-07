@@ -7,8 +7,9 @@ import requests
 import json
 import sys
 
-# SPARCS SSO V2 Client Test Server Version 1.1
-# VALID ONLY AFTER 2017-08-08T14:55+09:00
+
+# SPARCS SSO V2 Client Test Server Version 1.2
+# VALID ONLY AFTER 2017-05-06
 # Made by SPARCS SSO Team
 
 
@@ -25,7 +26,6 @@ class TestHandler(BaseHTTPRequestHandler):
             'test-suites': {
                 'login': '/login',
                 'logout': '/logout',
-                'unregister': '/unregister',
                 'point-get': '/point-get',
                 'point-modify': '/point-modify',
             },
@@ -58,8 +58,6 @@ class TestHandler(BaseHTTPRequestHandler):
 
         login_url, old_state = client.get_login_params()
         r = session.get(login_url, allow_redirects=False)
-
-        print(r.text)
         url = r.headers['Location']
         dic = parse_qs(urlparse(url).query)
         state, code = dic['state'][0], dic['code'][0]
@@ -92,14 +90,12 @@ class TestHandler(BaseHTTPRequestHandler):
         global storage
         client = storage['client']
 
-        if not storage['loggedin']:
-            return {'success': False, 'reason': 'Not Logged In'}
-
-        result = client.do_unregister(storage['sid'])
-        if not result:
-            return {'success': False, 'reason': 'Unknown'}
-
-        return {'success': True}
+        length = int(self.headers['content-length'])
+        data_dict = parse_qs(self.rfile.read(length).decode('utf8'))
+        sid = client.parse_unregister_request(data_dict)
+        return client.get_unregister_response(
+            sid, True, 'test', 'https://naver.com'
+        )
 
     def _do_get_point(self):
         global storage
@@ -121,7 +117,7 @@ class TestHandler(BaseHTTPRequestHandler):
         dic = parse_qs(urlparse(path).query)
         delta = dic.get('delta', ['1000', ])[0].strip()
 
-        result = client.modify_point(storage['sid'], delta, 'SPARCS SSO Automatic Test')
+        result = client.modify_point(storage['sid'], delta, 'SPARCS SSO Test')
         return {'success': True, 'result': result}
 
     def do_GET(self):
@@ -136,8 +132,6 @@ class TestHandler(BaseHTTPRequestHandler):
             resp = self._do_login()
         elif path == '/logout':
             resp = self._do_logout()
-        elif path == '/unregister':
-            resp = self._do_unregister()
         elif path == '/point-get':
             resp = self._do_get_point()
         elif path.startswith('/point-modify'):
@@ -148,10 +142,24 @@ class TestHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(bytes(json.dumps(resp), 'utf-8'))
 
+    def do_POST(self):
+        path = self.path
+        if path[-1] == '/':
+            path = path[:-1]
+
+        resp = {'success': False, 'reason': 'Invalid URL'}
+        if path == '/unregister':
+            resp = self._do_unregister()
+
+        self.send_response(200)
+        self.send_header('Content-Type', 'text/json')
+        self.end_headers()
+        self.wfile.write(bytes(json.dumps(resp), 'utf-8'))
+
 
 def main(args):
     if len(args) < 5:
-        print('usage: python test.v2.py <binding_port> <server_addr> <client_id> <secret_key>')
+        print('usage: test.v2.py port server_addr client_id secret_key')
         exit(1)
 
     port = int(args[1])

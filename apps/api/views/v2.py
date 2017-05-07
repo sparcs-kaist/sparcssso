@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.utils.crypto import constant_time_compare
 from django.utils.dateparse import parse_date
 from django.views.decorators.csrf import csrf_exempt
-from apps.core.backends import service_register, service_unregister, validate_email
+from apps.core.backends import service_register, validate_email
 from apps.core.models import Notice, Service, ServiceMap, AccessToken, PointLog, Statistic
 from datetime import datetime, timedelta
 from secrets import token_hex
@@ -204,45 +204,6 @@ def logout(request):
     if not redirect_uri:
         redirect_uri = service.main_url
     return redirect(redirect_uri)
-
-
-# /unregister/
-@csrf_exempt
-def unregister(request):
-    if request.method != 'POST':
-        raise SuspiciousOperation()
-
-    client_id = request.POST.get('client_id', '')
-    sid = request.POST.get('sid', '')
-    timestamp = request.POST.get('timestamp', '0')
-    timestamp = int(timestamp) if timestamp.isdigit() else 0
-    sign = request.POST.get('sign', '')
-
-    service = Service.objects.filter(name=client_id).first()
-    if not service:
-        raise SuspiciousOperation()
-
-    m = ServiceMap.objects.filter(sid=sid, service=service).first()
-    if not m:
-        return redirect(service.main_url)
-
-    now = timezone.now()
-    date = datetime.fromtimestamp(timestamp, timezone.utc)
-    if abs((now - date).total_seconds()) >= 10:
-        raise SuspiciousOperation()
-
-    sign_server = get_hash(service.secret_key, '{}{}'.format(sid, timestamp))
-    if not constant_time_compare(sign, sign_server):
-        raise SuspiciousOperation()
-
-    result = service_unregister(m.user, service)
-    if result:
-        profile_logger.info('unregister.success: name=%s' % service.name, {'r': request})
-    else:
-        profile_logger.warning('unregister.fail: name=%s' % service.name, {'r': request})
-
-    resp = {'success': result}
-    return HttpResponse(json.dumps(resp), content_type='application/json')
 
 
 # /point/

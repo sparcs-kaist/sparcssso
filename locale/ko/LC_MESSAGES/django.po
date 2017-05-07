@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: v0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-22 20:50+0900\n"
+"POT-Creation-Date: 2017-05-07 22:34+0900\n"
 "PO-Revision-Date: 2016-01-01 19:21+0900\n"
 "Last-Translator: Jae-Sung Kim <wotjd1102@kaist.ac.kr>\n"
 "Language-Team: SPARCS SSO Team <sso@sparcs.org>\n"
@@ -450,18 +450,62 @@ msgstr "로그인 페이지로 되돌아갑니다..."
 msgid "You can see and unregister services that you use."
 msgstr "등록된 서비스 확인 및  해지가 가능합니다."
 
-#: templates/account/service.html:23
+#: templates/account/service.html:17
+msgid "The service is successfully unregistered."
+msgstr "서비스가 정상적으로 해지되었습니다."
+
+#: templates/account/service.html:21
+msgid "The service cannot be unregistered."
+msgstr "서비스를 해지할 수 없습니다."
+
+#: templates/account/service.html:24
+msgid "Need help? Click here!"
+msgstr "도움이 필요하신가요? 여기를 클릭하세요!"
+
+#: templates/account/service.html:40
 #, python-format
 msgid "from %(time)s"
 msgstr "등록일시: %(time)s"
 
-#: templates/account/service.html:24
+#: templates/account/service.html:46 templates/account/service.html:73
 msgid "Unregister"
 msgstr "서비스 해지"
 
-#: templates/account/service.html:28
+#: templates/account/service.html:52
 msgid "There are no services to show."
 msgstr "등록된 서비스가 없습니다."
+
+#: templates/account/service.html:62
+msgid "Unregister Service"
+msgstr "서비스 해지"
+
+#: templates/account/service.html:65
+msgid "Warning!"
+msgstr "걍고!"
+
+#: templates/account/service.html:65
+msgid "You are trying to unregister the following service:"
+msgstr "다음 서비스를 해지하려고 합니다: "
+
+#: templates/account/service.html:67
+msgid "You will permantly lose access to your account."
+msgstr "더 이상 계정에 접근할 수 없습니다."
+
+#: templates/account/service.html:68
+msgid "You CANNOT use this service again for followings:"
+msgstr "다음 기간 동안 이 서비스를 다시 사용할 수 없습니다:"
+
+#: templates/account/service.html:68
+msgid "days"
+msgstr "일"
+
+#: templates/account/service.html:69
+msgid "You CANNOT undo this action."
+msgstr "이 작업은 취소할 수 없습니다."
+
+#: templates/account/service.html:74
+msgid "Cancel"
+msgstr "취소"
 
 #: templates/account/signup/done.html:4 templates/account/signup/done.html:10
 msgid "Signup Complete"

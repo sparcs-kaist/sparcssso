@@ -40,8 +40,12 @@ def main(request):
         success = True
         logger.info('profile.modify', {'r': request})
 
-    return render(request, 'dev/main.html', {'profile': profile, 'services': services,
-                                             'users': users, 'success': success})
+    return render(request, 'dev/main.html', {
+        'profile': profile,
+        'services': services,
+        'users': users,
+        'success': success
+    })
 
 
 # /service/(name)/

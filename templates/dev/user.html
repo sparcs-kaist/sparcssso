@@ -5,50 +5,50 @@
 
 {% block content %}
 <div class="wrap-content">
-    <h1>Test User {% if tuser %}Edit{% else %}Add{% endif %}</h1>
-    <form id="user" class="row" action="/dev/user/{% if tuser %}{{tuser.username}}{% else %}add{% endif %}/" method="post">
-        {% csrf_token %}
-        <div class="form-group col-xs-12 text-left">
-            <label class="control-label">Email</label>
-            <input type="email" class="form-control" name="email" readonly value="{% if tuser %}{{tuser.email}}{% else %}test-xxxxxxxx@sso.sparcs.org{% endif %}">
+  <h1>Test User {% if tuser %}Edit{% else %}Add{% endif %}</h1>
+  <form id="user" class="row" action="/dev/user/{% if tuser %}{{tuser.username}}{% else %}add{% endif %}/" method="post">
+    {% csrf_token %}
+    <div class="form-group col-xs-12 text-left">
+      <label class="control-label">Email</label>
+      <input type="email" class="form-control" name="email" readonly value="{% if tuser %}{{tuser.email}}{% else %}test-xxxxxxxx@sso.sparcs.org{% endif %}">
+    </div>
+    <div class="form-group col-xs-12 text-left">
+      <div>
+        <label class="control-label">{% trans "Name" %}</label>
+      </div>
+      <div class="col-xs-8" style="padding: 0">
+        <input type="text" class="form-control" name="first_name" placeholder="First Name" required="required" maxlength="30" value="{{tuser.first_name}}">
+      </div>
+      <div class="col-xs-4" style="padding: 0">
+        <input type="text" class="form-control" name="last_name" placeholder="Last Name" required="required" maxlength="30" value="{{tuser.last_name}}">
+      </div>
+    </div>
+    <div class="form-group col-xs-12 text-left">
+      <div>
+        <label class="control-label">{% trans "Gender, Birthday" %}</label>
+      </div>
+      <div class="col-xs-4" style="padding: 0">
+        <input type="text" class="form-control" name="gender" required placeholder="*M, *F, *E, *H, or custom" value="{% if tuser %}{{tuser.profile.gender}}{% else %}*H{% endif %}">
         </div>
-        <div class="form-group col-xs-12 text-left">
-            <div>
-                <label class="control-label">{% trans "Name" %}</label>
-            </div>
-            <div class="col-xs-8" style="padding: 0">
-                <input type="text" class="form-control" name="first_name" placeholder="First Name" required="required" maxlength="30" value="{{tuser.first_name}}">
-            </div>
-            <div class="col-xs-4" style="padding: 0">
-                <input type="text" class="form-control" name="last_name" placeholder="Last Name" required="required" maxlength="30" value="{{tuser.last_name}}">
-            </div>
-        </div>
-        <div class="form-group col-xs-12 text-left">
-            <div>
-                <label class="control-label">{% trans "Gender, Birthday" %}</label>
-            </div>
-            <div class="col-xs-4" style="padding: 0">
-                <input type="text" class="form-control" name="gender" required placeholder="*M, *F, *E, *H, or custom" value="{% if tuser %}{{tuser.profile.gender}}{% else %}*H{% endif %}">
-            </div>
-            <div class="col-xs-8" style="padding: 0">
-                <input type="text" class="form-control" name="birthday" placeholder="Birthday (YYYY-MM-DD)" data-vbirth="vbirth" value="{{tuser.profile.birthday|date:'Y-m-d'}}">
-            </div>
-        </div>
-        <div class="form-group col-xs-12 text-left">
-            <label class="control-label">Test Point</label>
-            <input type="number" class="form-control" name="point_test" value="{% if tuser %}{{tuser.profile.point_test}}{% else %}0{% endif %}">
-        </div>
-        <div class="form-group col-xs-12 text-left">
-            <label class="control-label">KAIST Info - <span class="text-danger"><b>TAKE EXTRA CUTION</b></span></label>
-            <p class="text-danger">Login with KAIST Portal is impossible for Test Account. KAIST Info should be json encoded. Invalid input will be replaced as empty value.</p>
-            <textarea class="form-control" rows="6" name="kaist_info" style="resize:vertical">{{tuser.profile.kaist_info}}</textarea>
-        </div>
-        <div class="form-group col-xs-12 text-left">
-            <button type="submit" class="btn btn-warning">{% if tuser %}Modify{% else %}Add{% endif %}</button>
-            {% if tuser %}<button type="button" class="btn btn-remove btn-danger">REMOVE</button>{% endif %}
-            <a class="btn btn-default" href="/dev/main/">Dev Page</a>
-        </div>
-    </form>
+      <div class="col-xs-8" style="padding: 0">
+        <input type="text" class="form-control" name="birthday" placeholder="Birthday (YYYY-MM-DD)" data-vbirth="vbirth" value="{{tuser.profile.birthday|date:'Y-m-d'}}">
+      </div>
+    </div>
+    <div class="form-group col-xs-12 text-left">
+      <label class="control-label">Test Point</label>
+      <input type="number" class="form-control" name="point_test" value="{% if tuser %}{{tuser.profile.point_test}}{% else %}0{% endif %}">
+    </div>
+    <div class="form-group col-xs-12 text-left">
+      <label class="control-label">KAIST Info - <span class="text-danger"><b>TAKE EXTRA CUTION</b></span></label>
+      <p class="text-danger">Login with KAIST Portal is impossible for Test Account. KAIST Info should be json encoded. Invalid input will be replaced as empty value.</p>
+      <textarea class="form-control" rows="6" name="kaist_info" style="resize:vertical">{{tuser.profile.kaist_info}}</textarea>
+    </div>
+    <div class="form-group col-xs-12 text-left">
+      <button type="submit" class="btn btn-warning">{% if tuser %}Modify{% else %}Add{% endif %}</button>
+      {% if tuser %}<button type="button" class="btn btn-remove btn-danger">REMOVE</button>{% endif %}
+      <a class="btn btn-default" href="/dev/main/">Dev Page</a>
+    </div>
+  </form>
 </div>
 
 <script>
@@ -65,13 +65,12 @@ $(function() {
   $('#user').validator(option);
 
   $('.btn-remove').click(function() {
-    var data = {
-      csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
-    };
     $.ajax({
       url: '/dev/user/{{tuser.username}}/delete/',
       type: 'POST',
-      data: data,
+      data: {
+        csrfmiddlewaretoken: '{{csrf_token}}',
+      },
       success: function(result) {
         window.location.replace('/dev/main/');
       },

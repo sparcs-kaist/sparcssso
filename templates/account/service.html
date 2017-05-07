@@ -10,12 +10,13 @@
   <h1>{% trans "Manage Service" %}</h1>
   <p>{% trans "You can see and unregister services that you use." %}</p>
 
+  {% if result_service %}
   <div class="form-group col-xs-12">
-    {% if result_service and result_service.success %}
+    {% if result_service.success %}
     <div class="alert alert-success">
       <strong>{% trans "The service is successfully unregistered." %}</strong>
     </div>
-    {% elif result_service and not result_service.success %}
+    {% elif not result_service.success %}
     <div class="alert alert-danger">
       <strong>{% trans "The service cannot be unregistered." %}</strong>
       {{ result_service.reason }}
@@ -25,6 +26,7 @@
     </div>
     {% endif %}
   </div>
+  {% endif %}
   <div class="services-list">
     {% for m in maps %}
     <div class="media service">
@@ -60,10 +62,10 @@
         <h4 class="modal-title">{% trans "Unregister Service" %}</h4>
       </div>
       <div class="text-center modal-body">
-        <p><strong>{% trans "Warning!" %}</strong> {% trans "You are trying to unregister the following service: " %} <span id="service-alias"></span></p>
+        <p><strong>{% trans "Warning!" %}</strong> {% trans "You are trying to unregister the following service:" %} <span id="service-alias"></span></p>
         <ul class="list-unstyled">
           <li>&gt;&gt; {% trans "You will permantly lose access to your account." %} &lt;&lt;</li>
-          <li class="text-danger" id="cooltime-warning">&gt;&gt; {% trans "You CANNOT use this service again for following days:" %} <span id="service-cooltime"></span>. &lt;&lt;</li>
+          <li class="text-danger" id="cooltime-warning">&gt;&gt; {% trans "You CANNOT use this service again for followings:" %} <span id="service-cooltime"></span> {% trans "days" %}. &lt;&lt;</li>
           <li class="text-danger">&gt;&gt; {% trans "You CANNOT undo this action." %} &lt;&lt;</li>
         </ul>
       </div>

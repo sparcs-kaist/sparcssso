@@ -54,7 +54,7 @@ $(function() {
       data: {
         csrfmiddlewaretoken: '{{csrf_token}}',
       },
-      success: function(result) {
+      success: function() {
         window.location.replace('/dev/main/');
       },
     });

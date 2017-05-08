@@ -5,66 +5,66 @@
 
 {% block content %}
 <div class="wrap-content-sm">
-    <h1>{% trans "Signup" %}
-    <small> 
-        {% if type == 'FB' %}
-            {% trans "with Facebook Account" %}
-        {% elif type == 'TW' %}
-            {% trans "with Twitter Account" %}
-        {% elif type == 'KAIST' %}
-            {% trans "with KAIST SSO" %}
-        {% endif %}
-    </small></h1>
-    <p>{% trans "Almost done...! Your account will be created as follows." %} {% trans "You can modify your information in the profile page after sign up." %}
-    {% if email_warning %}
-    <p class="text-danger">{% trans "Warning! The email address is already exists. You will get random non-existing email address if you continue." %}</p>
+  <h1>{% trans "Signup" %}
+  <small> 
+    {% if type == 'FB' %}
+      {% trans "with Facebook Account" %}
+    {% elif type == 'TW' %}
+      {% trans "with Twitter Account" %}
+    {% elif type == 'KAIST' %}
+      {% trans "with KAIST SSO" %}
     {% endif %}
-    <form class="row" action="/account/signup/social/" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {% if profile.email %}
-        <div class="form-group col-xs-12 text-left">
-            <label class="control-label">{% trans "Email" %}</label>
-            <input type="email" class="form-control" readonly="readonly" value="{{profile.email}}">
-        </div>
-        {% endif %}
-        <div class="form-group col-xs-12 text-left">
-            <div>
-                <label class="control-label">{% trans "Name" %}</label>
-            </div>
-            <div class="col-xs-8" style="padding: 0">
-                <input type="text" class="form-control" readonly="readonly" value="{{profile.first_name}}">
-            </div>
-            <div class="col-xs-4" style="padding: 0">
-                <input type="text" class="form-control" readonly="readonly" value="{{profile.last_name}}">
-            </div>
-        </div>
-        <div class="form-group col-xs-12 text-left">
-            <div>
-                <label class="control-label">{% trans "Gender, Birthday" %}</label>
-            </div>
-            <div class="col-xs-4" style="padding: 0">
-                <input type="text" class="form-control" readonly="readonly" value="{% if not profile.gender %}{% trans "Hide" %}{% elif profile.gender == '*M' %}{% trans "Male" %}{% elif profile.gender == '*F' %}{% trans "Female" %}{% elif profile.gender == '*H' %}{% trans "Hide" %}{% else %}{{profile.gender}}{% endif %}">
-            </div>
-            <div class="col-xs-8" style="padding: 0">
-                <input type="text" class="form-control" readonly="readonly" value="{% if profile.birthday %}{{profile.birthday}}{% else %}????-??-??{% endif %}">
-            </div>
-        </div>
+  </small></h1>
+  <p>{% trans "Almost done...! Your account will be created as follows." %} {% trans "You can modify your information in the profile page after sign up." %}
+  {% if email_warning %}
+  <p class="text-danger">{% trans "Warning! The email address is already exists. You will get random non-existing email address if you continue." %}</p>
+  {% endif %}
+  <form class="row" action="/account/signup/social/" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% if profile.email %}
+    <div class="form-group col-xs-12 text-left">
+      <label class="control-label">{% trans "Email" %}</label>
+      <input type="email" class="form-control" readonly="readonly" value="{{profile.email}}">
+    </div>
+    {% endif %}
+    <div class="form-group col-xs-12 text-left">
+      <div>
+        <label class="control-label">{% trans "Name" %}</label>
+      </div>
+      <div class="col-xs-8" style="padding: 0">
+        <input type="text" class="form-control" readonly="readonly" value="{{profile.first_name}}">
+      </div>
+      <div class="col-xs-4" style="padding: 0">
+        <input type="text" class="form-control" readonly="readonly" value="{{profile.last_name}}">
+      </div>
+    </div>
+    <div class="form-group col-xs-12 text-left">
+      <div>
+        <label class="control-label">{% trans "Gender, Birthday" %}</label>
+      </div>
+      <div class="col-xs-4" style="padding: 0">
+        <input type="text" class="form-control" readonly="readonly" value="{% if not profile.gender %}{% trans "Hide" %}{% elif profile.gender == '*M' %}{% trans "Male" %}{% elif profile.gender == '*F' %}{% trans "Female" %}{% elif profile.gender == '*H' %}{% trans "Hide" %}{% else %}{{profile.gender}}{% endif %}">
+      </div>
+      <div class="col-xs-8" style="padding: 0">
+        <input type="text" class="form-control" readonly="readonly" value="{% if profile.birthday %}{{profile.birthday}}{% else %}????-??-??{% endif %}">
+      </div>
+    </div>
 
-        {% if profile.kaist_info.ku_std_no %}
-        <div class="form-group col-xs-12 text-left">
-            <label class="control-label">{% trans "Student ID" %}</label>
-            <input type="text" class="form-control" readonly="readonly" value="{{profile.kaist_info.ku_std_no}}">
-        </div>
-        {% endif %}
+    {% if profile.kaist_info.ku_std_no %}
+    <div class="form-group col-xs-12 text-left">
+      <label class="control-label">{% trans "Student ID" %}</label>
+      <input type="text" class="form-control" readonly="readonly" value="{{profile.kaist_info.ku_std_no}}">
+    </div>
+    {% endif %}
 
-        <div class="form-group col-xs-12">
-            <p>By clicking on the signup button, you agree to <a href="/terms/" target="_blank">SPARCS SSO's terms of use</a> and <a href="/privacy/" target="_blank">privacy policy</a></p>
-        </div>
+    <div class="form-group col-xs-12">
+      <p>By clicking on the signup button, you agree to <a href="/terms/" target="_blank">SPARCS SSO's terms of use</a> and <a href="/privacy/" target="_blank">privacy policy</a></p>
+    </div>
 
-        <div class="form-group">
-            <button type="submit" class="btn btn-warning">{% trans "Signup" %}</button>
-            <a class="btn btn-default" href="/account/login/">{% trans "Login Page" %}</a>
-        </div>
-    </form>
+    <div class="form-group">
+      <button type="submit" class="btn btn-warning">{% trans "Signup" %}</button>
+      <a class="btn btn-default" href="/account/login/">{% trans "Login Page" %}</a>
+    </div>
+  </form>
 </div>
 {% endblock %}

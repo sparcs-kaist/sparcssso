@@ -7,14 +7,14 @@
 
 {% block content %}
 <div class="wrap-content-xs">
-    <h1>{% trans "Signup Complete" %}</h1>
-    <p>{% trans "Welcome to join SPARCS SSO!" %}</p>
-    {% if type == 'EMAIL' %}
-    <p>{% trans "Verification email is sent. Please verify your email to use services." %}</p>
-    {% else %}
-    <p>{% trans "You can login using your social account. If you set your password, you can also login using email." %}</p>
-    {% endif %}
-    <a class="btn btn-primary" href="{{nexturl}}">{% trans "Continue" %}</a>
-    <a class="btn btn-default" href="/">{% trans "Main Page" %}</a>
+  <h1>{% trans "Signup Complete" %}</h1>
+  <p>{% trans "Welcome to join SPARCS SSO!" %}</p>
+  {% if type == 'EMAIL' %}
+  <p>{% trans "Verification email is sent. Please verify your email to use services." %}</p>
+  {% else %}
+  <p>{% trans "You can login using your social account. If you set your password, you can also login using email." %}</p>
+  {% endif %}
+  <a class="btn btn-primary" href="{{nexturl}}">{% trans "Continue" %}</a>
+  <a class="btn btn-default" href="/">{% trans "Main Page" %}</a>
 </div>
 {% endblock %}

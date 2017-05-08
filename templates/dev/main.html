@@ -108,35 +108,35 @@
 
 <script>
 $(function() {
-  if ('{{profile.flags.sysop}}' == 'True') {
+  if ('{{profile.flags.sysop}}' === 'True') {
     $('input[name=test]').prop('disabled', true);
   }
 
-  if ('{{profile.flags.test}}' == 'True') {
+  if ('{{profile.flags.test}}' === 'True') {
     $('#test-enabled').prop('checked', true);
   }
 
-  $('.btn-service-remove').click(function () {
+  $('.btn-service-remove').click(function() {
     $.ajax({
       url: '/dev/service/' + $(this).data('name') + '/delete/',
       type: 'POST',
       data: {
         csrfmiddlewaretoken: '{{csrf_token}}',
       },
-      success: function (result) {
+      success: function() {
         location.reload();
       },
     });
   });
 
-  $('.btn-user-remove').click(function () {
+  $('.btn-user-remove').click(function() {
     $.ajax({
       url: '/dev/user/' + $(this).data('uid') + '/delete/',
       type: 'POST',
       data: {
         csrfmiddlewaretoken: '{{csrf_token}}',
       },
-      success: function (result) {
+      success: function() {
         location.reload();
       },
     });

@@ -80,7 +80,7 @@
 <script>
 $(function() {
   var selectedName = '';
-  $('.btn-show-warning').click(function () {
+  $('.btn-show-warning').click(function() {
     var self = $(this);
     var cooltime = self.data('cooltime');
     selectedName = self.data('name');
@@ -94,7 +94,7 @@ $(function() {
     $('#unregister-warning').modal('show');
   });
 
-  $('.btn-unregister').click(function () {
+  $('.btn-unregister').click(function() {
     var form = $(document.createElement('form')).attr({
       method: 'post',
       action: '/account/service/',

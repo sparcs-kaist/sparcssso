@@ -56,11 +56,14 @@ $(function() {
   var option = {
     disable: true,
     custom: {
-      vbirth: function(el) { var re = /^\d{4}-\d{2}-\d{2}$/; return el.val().trim() != '' && !re.test(el.val()); }
+      vbirth: function(el) {
+        var re = /^\d{4}-\d{2}-\d{2}$/;
+        return el.val().trim() !== '' && !re.test(el.val());
+      },
     },
     errors: {
-      vbirth: 'Format should be YYYY-MM-DD'
-    }
+      vbirth: 'Format should be YYYY-MM-DD',
+    },
   };
   $('#user').validator(option);
 
@@ -71,7 +74,7 @@ $(function() {
       data: {
         csrfmiddlewaretoken: '{{csrf_token}}',
       },
-      success: function(result) {
+      success: function() {
         window.location.replace('/dev/main/');
       },
     });

@@ -28,6 +28,10 @@ def date2str(obj):
         return obj.isoformat()
     return ''
 
+def get_timestamp(request):
+	time = request.POST.get('timestamp','0')
+	time = int(timestamp) if timestamp.isdigit() else 0
+	return time
 
 def extract_flag(flags):
     result = []
@@ -113,8 +117,7 @@ def token_info(request):
 
     client_id = request.POST.get('client_id', '')
     code = request.POST.get('code', '')
-    timestamp = request.POST.get('timestamp', '0')
-    timestamp = int(timestamp) if timestamp.isdigit() else 0
+    timestamp = get_timestamp(request)
     sign = request.POST.get('sign', '')
 
     token = AccessToken.objects.filter(tokenid=code).first()
@@ -167,8 +170,7 @@ def token_info(request):
 def logout(request):
     client_id = request.GET.get('client_id', '')
     sid = request.GET.get('sid', '')
-    timestamp = request.GET.get('timestamp', '0')
-    timestamp = int(timestamp) if timestamp.isdigit() else 0
+    timestamp = get_timestamp(request)
     redirect_uri = request.GET.get('redirect_uri', '')
     sign = request.GET.get('sign', '')
 
@@ -214,8 +216,7 @@ def unregister(request):
 
     client_id = request.POST.get('client_id', '')
     sid = request.POST.get('sid', '')
-    timestamp = request.POST.get('timestamp', '0')
-    timestamp = int(timestamp) if timestamp.isdigit() else 0
+    timestamp = get_timestamp(request)
     sign = request.POST.get('sign', '')
 
     service = Service.objects.filter(name=client_id).first()
@@ -257,8 +258,7 @@ def point(request):
     delta = request.POST.get('delta', '0')
     message = request.POST.get('message', '')
     lower_bound = request.POST.get('lower_bound', '0')
-    timestamp = request.POST.get('timestamp', '0')
-    timestamp = int(timestamp) if timestamp.isdigit() else 0
+    timestamp = get_timestamp(request)
     sign = request.POST.get('sign', '')
 
     service = Service.objects.filter(name=client_id).first()

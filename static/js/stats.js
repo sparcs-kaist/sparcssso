@@ -542,16 +542,6 @@ function getFormattedData(sData) {
     return Object.keys(sData).sort();
   }
 
-  function getProperties() {
-    const dateArr = Object.keys(sData);
-    return Object.keys(sData[dateArr[dateArr.length - 1]]);
-  }
-
-  function getPropertiesKaist() {
-    const dateArr = Object.keys(sData);
-    return Object.keys(sData[dateArr[dateArr.length - 1]].kaist);
-  }
-
   function buildSpace(dateArr, propertiesArr, propertiesKaistArr) {
     let formattedObj = {};
     let idx;
@@ -574,8 +564,8 @@ function getFormattedData(sData) {
   simplifyDate(sData);
   reduceData(sData, numOfBar);
   const dateArr = getDateArr();
-  const propertiesArr = getProperties();
-  const propertiesKaistArr = getPropertiesKaist();
+  const propertiesArr = getProperties(sData);
+  const propertiesKaistArr = getPropertiesKaist(sData);
   const formattedObj = buildSpace(dateArr, propertiesArr, propertiesKaistArr);
 
   for (let idx = 0; idx < dateArr.length; idx += 1) {

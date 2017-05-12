@@ -1,0 +1,36 @@
+{
+    "env": {
+        "browser": true,
+        "es6": true
+    },
+    "extends": "airbnb",
+    "parserOptions": {
+        "sourceType": "module"
+    },
+    "rules": {
+        "indent": [
+            "error",
+            2
+        ],
+        "linebreak-style": [
+            "error",
+            "unix"
+        ],
+        "quotes": [
+            "error",
+            "single"
+        ],
+        "semi": [
+            "error",
+            "always"
+        ],
+        "no-alert": "off",
+        "guard-for-in": "off",
+        "no-param-reassign": "off",
+        "no-restricted-syntax": "off"
+    },
+    "globals": {
+        "$": true,
+        "Highcharts": true
+    }
+}

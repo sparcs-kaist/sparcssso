@@ -3,7 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from apps.core.backends import (
-    token_issue_email_auth, get_social_name, validate_email
+    token_issue_email_auth, get_social_name, validate_email,
+    service_unregister,
 )
 from apps.core.models import ServiceMap, EmailAuthToken, PointLog, UserLog
 from apps.core.forms import UserForm, UserProfileForm
@@ -159,9 +160,24 @@ def email_verify(request, tokenid):
 @login_required
 def service(request):
     maps = ServiceMap.objects.filter(user=request.user, unregister_time=None)
+    if request.method == 'POST':
+        name = request.POST.get('name', '')
+        map_obj = maps.filter(service__name=name).first()
+        if not map_obj:
+            return redirect('/account/service/')
+
+        result = service_unregister(map_obj)
+        if result.get('success', False):
+            logger.info('unregister.success: name=%s' % name, {'r': request})
+        else:
+            logger.warning('unregister.fail: name=%s' % name, {'r': request})
+        request.session['result_service'] = result
+
+    result_service = request.session.pop('result_service', {})
     return render(request, 'account/service.html', {
         'user': request.user,
-        'maps': maps
+        'maps': maps,
+        'result_service': result_service,
     })
 
 

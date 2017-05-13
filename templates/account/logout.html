@@ -7,11 +7,13 @@
 
 {% block content %}
 <div class="wrap-content-xs">
-    <h1>{% trans "Logout" %}</h1>
-    <p>{% trans "Successfully logged out." %}</p>
+  <h1>{% trans "Logout" %}</h1>
+  <p>{% trans "Successfully logged out." %}</p>
 </div>
 
 <script>
-setTimeout("location.href='/'", 1000);
+setTimeout(function() {
+  location.href = '/';
+}, 1000);
 </script>
 {% endblock %}

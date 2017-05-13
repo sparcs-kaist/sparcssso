@@ -1,7 +1,7 @@
 {% load i18n %}
 <!doctype html>
 <html lang="ko">
-<head>
+  <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
@@ -12,107 +12,118 @@
     <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     {% block app-header %} {% endblock %}
-</head>
-<body>
+  </head>
+  <body>
     <nav class="navbar navbar-default">
-        <div class="container-fluid container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="/">SPARCS SSO</a>
-            </div>
-
-            <div class="collapse navbar-collapse" id="navbar">
-                <ul class="nav navbar-nav">
-                    <li><a href="/stats/">{% trans "Stats" %}</a></li>
-                    <li><a href="/help/">{% trans "Help" %}</a></li>
-                    {% if user.profile.flags.dev %}
-                    <li><a href="/dev/main">Dev Center</a></li>
-                    {% endif %}
-                    {% if user.profile.flags.sysop %}
-                    <li><a href="/manage/">Manage</a></li>
-                    {% endif %}
-                </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    {% if user.is_authenticated %}
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ user.first_name }} <span class="caret"></span></a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a href="/account/profile/">{% trans "Profile / Connections" %}</a></li>
-                            <li><a href="/account/service/">{% trans "Manage Service" %}</a></li>
-                            <li><a href="/account/log/">{% trans "Account Logs" %}</a></li>
-                            <li><a href="/account/point/">{% trans "Point Logs" %}</a></li>
-                            {% if not user.profile.test_only %}
-                            <li><a href="/account/email/change/">{% trans "Change Email" %}</a></li>
-                            <li><a href="/account/password/change/">{% trans "Change Password" %}</a></li>
-                            <li><a href="/account/deactivate/">{% trans "Deactivate" %}</a></li>
-                            {% endif %}
-                        </ul>
-                    </li>
-                    <li><a href="#" id="logout-link">{% trans "Logout" %}</a></li>
-                    {% else %}
-                    <li><a href="/account/signup/">{% trans "Sign Up" %}</a></li>
-                    <li><a href="/account/login/">{% trans "Login" %}</a></li>
-                    <li><a href="/account/password/reset/">{% trans "Reset Password" %}</a></li>
-                    {% endif %}
-                    <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{request.LANGUAGE_CODE|language_name_local}} <span class="caret"></span></a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a href="/lang/ko/">한국어</a></li>
-                            <li><a href="/lang/en/">English</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
+      <div class="container-fluid container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">SPARCS SSO</a>
         </div>
+
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="nav navbar-nav">
+            <li><a href="/stats/">{% trans "Stats" %}</a></li>
+            <li><a href="/help/">{% trans "Help" %}</a></li>
+            {% if user.profile.flags.dev %}
+            <li><a href="/dev/main">Dev Center</a></li>
+            {% endif %}
+            {% if user.profile.flags.sysop %}
+            <li><a href="/manage/">Manage</a></li>
+            {% endif %}
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            {% if user.is_authenticated %}
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                {{ user.first_name }} <span class="caret"></span>
+              </a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="/account/profile/">{% trans "Profile / Connections" %}</a></li>
+                <li><a href="/account/service/">{% trans "Manage Service" %}</a></li>
+                <li><a href="/account/log/">{% trans "Account Logs" %}</a></li>
+                <li><a href="/account/point/">{% trans "Point Logs" %}</a></li>
+                {% if not user.profile.test_only %}
+                <li><a href="/account/email/change/">{% trans "Change Email" %}</a></li>
+                <li><a href="/account/password/change/">{% trans "Change Password" %}</a></li>
+                <li><a href="/account/deactivate/">{% trans "Deactivate" %}</a></li>
+                {% endif %}
+              </ul>
+            </li>
+            <li><a href="#" id="logout-link">{% trans "Logout" %}</a></li>
+            {% else %}
+            <li><a href="/account/signup/">{% trans "Sign Up" %}</a></li>
+            <li><a href="/account/login/">{% trans "Login" %}</a></li>
+            <li><a href="/account/password/reset/">{% trans "Reset Password" %}</a></li>
+            {% endif %}
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                {{request.LANGUAGE_CODE|language_name_local}} <span class="caret"></span>
+              </a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="/lang/ko/">한국어</a></li>
+                <li><a href="/lang/en/">English</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
     </nav>
     <section class="container">
-        {% block content %}
-        {% endblock %}
+      {% block content %}
+      {% endblock %}
     </section>
     <footer class="container">
-        <p class="info">
-            <a href="/credits/">{% trans "Credits" %}</a> |
-            <a href="/terms/">{% trans "Terms of Use" %}</a> |
-            <a href="/privacy/">{% trans "Privacy Policy" %}</a>
-        </p>
-        <p class="info">
-            <a href="/contact/">{% trans "Contact" %}</a> |
-            <a href="mailto:sso@sparcs.org">{% trans "Dev Team" %}</a> |
-            <a href="mailto:sso.sysop@sparcs.org">{% trans "SYSOP" %}</a>
-        </p>
-        <p class="copyright">
-            Copyright © 2017,
-            <a href="http://sparcs.org/">
-                <span style="color:#f39">S</span><span style="color:#3c6">P</span><span style="color:#0cf">A</span><span style="color:#f90">R</span><span style="color:#3cc">C</span><span style="color:#96f">S</span>
-            </a>
-            SSO Team</p>
+      <p class="info">
+        <a href="/credits/">{% trans "Credits" %}</a> |
+        <a href="/terms/">{% trans "Terms of Use" %}</a> |
+        <a href="/privacy/">{% trans "Privacy Policy" %}</a>
+      </p>
+      <p class="info">
+        <a href="/contact/">{% trans "Contact" %}</a> |
+        <a href="mailto:sso@sparcs.org">{% trans "Dev Team" %}</a> |
+        <a href="mailto:sso.sysop@sparcs.org">{% trans "SYSOP" %}</a>
+      </p>
+      <p class="copyright">
+        Copyright © 2017,
+        <a href="http://sparcs.org/">
+          <span style="color:#f39">S</span>
+          <span style="color:#3c6">P</span>
+          <span style="color:#0cf">A</span>
+          <span style="color:#f90">R</span>
+          <span style="color:#3cc">C</span>
+          <span style="color:#96f">S</span>
+        </a>
+        SSO Team</p>
     </footer>
 
     <script>
-        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    /* eslint-disable */
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-        ga('create', 'UA-71710431-1', 'auto');
-        ga('send', 'pageview');
+    ga('create', 'UA-71710431-1', 'auto');
+    ga('send', 'pageview');
+    /* eslint-enable */
 
-        $("#logout-link").click(function() {
-            var form = $(document.createElement('form')).attr({
-                method: 'post',
-                action: '/account/logout/',
-            });
-            $(document.createElement('input')).attr({
-                type: 'hidden',
-                name: 'csrfmiddlewaretoken',
-                value: '{{ csrf_token }}',
-            }).appendTo(form);
-            form.appendTo(document.body).submit();
-        });
+    $('#logout-link').click(function() {
+      var form = $(document.createElement('form')).attr({
+        method: 'post',
+        action: '/account/logout/',
+      });
+      $(document.createElement('input')).attr({
+        type: 'hidden',
+        name: 'csrfmiddlewaretoken',
+        value: '{{ csrf_token }}',
+      }).appendTo(form);
+      form.appendTo(document.body).submit();
+    });
     </script>
-</body>
+  </body>
 </html>

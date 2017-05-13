@@ -7,13 +7,13 @@
 
 {% block content %}
 <div class="wrap-content-xs">
-    <h1>{% trans "Email Sent" %}</h1>
-    <p>{% trans "Password reset email has been sent. Please check your email account." %}</p>
-    <p>{% trans "Redirecting to login page..." %}</p>
+  <h1>{% trans "Email Sent" %}</h1>
+  <p>{% trans "Password reset email has been sent. Please check your email account." %}</p>
+  <p>{% trans "Redirecting to login page..." %}</p>
 </div>
 <script>
 setTimeout(function() {
-    window.location.href="/account/login/";
+  window.location.href = '/account/login/';
 }, 3000);
 </script>
 {% endblock %}

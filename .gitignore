@@ -1,11 +1,11 @@
-# Byte-compiled / optimized / DLL files
+# Byte-Compiled / Optimized / DLL Files
 __pycache__/
 *.py[cod]
 
 # Translations
 *.mo
 
-# Django stuff
+# Django Stuff
 *.log
 migrations/
 
@@ -32,3 +32,6 @@ letters/
 
 # Cold Archive
 archive/
+
+# Node Modules
+node_modules/

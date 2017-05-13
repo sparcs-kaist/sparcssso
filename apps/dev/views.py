@@ -40,8 +40,12 @@ def main(request):
         success = True
         logger.info('profile.modify', {'r': request})
 
-    return render(request, 'dev/main.html', {'profile': profile, 'services': services,
-                                             'users': users, 'success': success})
+    return render(request, 'dev/main.html', {
+        'profile': profile,
+        'services': services,
+        'users': users,
+        'success': success
+    })
 
 
 # /service/(name)/
@@ -152,7 +156,7 @@ def user(request, uid):
         profile.gender = gender
         profile.birthday = birthday
         profile.point_test = point_test
-        profile.set_kaist_info({'userid': kaist_id, 'kaist_info': kaist_info})
+        profile.save_kaist_info({'userid': kaist_id, 'kaist_info': kaist_info})
         profile.save()
 
         return redirect('/dev/main/')

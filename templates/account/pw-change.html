@@ -7,36 +7,36 @@
 
 {% block content %}
 <div class="wrap-content-xs">
-    <h1>{% trans "Change Password" %}</h1>
-    <p>{% trans "You need to login again if you changed your password." %}</p>
-    <form class="row" action="/account/password/change/" method="post" data-toggle="validator">
-        {% if fail %}
-        <div class="form-group col-xs-12">
-            <div class="alert alert-danger">
-                <b>{% trans "WRONG current password!" %}</b>
-            </div>
-        </div>
-        {% endif %}
-        {% csrf_token %}
-        {% if user.has_usable_password %}
-        <div class="form-group col-xs-12 text-left">
-            <label class="control-label">{% trans "Current Password" %}</label>
-            <input type="password" class="form-control" name="oldpassword" placeholder="CuRREnT pAss0wd" required="required">
-        </div>
-        {% endif %}
-        <div class="form-group col-xs-12 text-left">
-            <label class="control-label">{% trans "New Password" %}</label>
-            <input type="password" class="form-control" name="password" placeholder="p@ss0wd!" id="password" required="required" maxlength="50" data-minlength="7">
-            <span class="help-block">{% trans "Password must be at least 7 characters" %}</span>
-        </div>
-        <div class="form-group col-xs-12 text-left">
-            <label class="control-label">{% trans "Re-type Password" %}</label>
-            <input type="password" class="form-control" name="password2" placeholder="p@ss0wd!" data-match="#password" data-match-error="{% trans "Not match!" %}" required="required" maxlength="50">
-            <div class="help-block with-errors"></div>
-        </div>
-        <div class="form-group col-xs-12">
-            <button type="submit" class="btn btn-warning">{% trans "Change Password" %}</button>
-        </div>
-    </fieldset>
-</form>
+  <h1>{% trans "Change Password" %}</h1>
+  <p>{% trans "You need to login again if you changed your password." %}</p>
+  <form class="row" action="/account/password/change/" method="post" data-toggle="validator">
+    {% if fail %}
+    <div class="form-group col-xs-12">
+      <div class="alert alert-danger">
+        <b>{% trans "WRONG current password!" %}</b>
+      </div>
+    </div>
+    {% endif %}
+    {% csrf_token %}
+    {% if user.has_usable_password %}
+    <div class="form-group col-xs-12 text-left">
+      <label class="control-label">{% trans "Current Password" %}</label>
+      <input type="password" class="form-control" name="oldpassword" placeholder="CuRREnT pAss0wd" required="required">
+    </div>
+    {% endif %}
+    <div class="form-group col-xs-12 text-left">
+      <label class="control-label">{% trans "New Password" %}</label>
+      <input type="password" class="form-control" name="password" placeholder="p@ss0wd!" id="password" required="required" maxlength="50" data-minlength="7">
+      <span class="help-block">{% trans "Password must be at least 7 characters" %}</span>
+    </div>
+    <div class="form-group col-xs-12 text-left">
+      <label class="control-label">{% trans "Re-type Password" %}</label>
+      <input type="password" class="form-control" name="password2" placeholder="p@ss0wd!" data-match="#password" data-match-error="{% trans "Not match!" %}" required="required" maxlength="50">
+      <div class="help-block with-errors"></div>
+    </div>
+    <div class="form-group col-xs-12">
+      <button type="submit" class="btn btn-warning">{% trans "Change Password" %}</button>
+    </div>
+  </form>
+</div>
 {% endblock %}

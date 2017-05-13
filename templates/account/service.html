@@ -21,7 +21,7 @@
       <strong>{% trans "The service cannot be unregistered." %}</strong>
       {{ result_service.reason }}
       {% if result_service.link %}
-      <a href="{{ result_service.link }}">{% trans "Need help? Click here!" %}</a>
+      <a href="{{ result_service.link }}" target="_blank">{% trans "Need help? Click here!" %}</a>
       {% endif %}
     </div>
     {% endif %}

@@ -65,23 +65,6 @@ def service_unregister(map_obj):
     except:
         return unknown_error
 
-    # TODO: code going crazy! should be refactored
-    sid = result.get('sid', '')
-    success = result.get('success', False)
-    reason = result.get('reason', '')
-    link = result.get('link', '')
-    timestamp = result.get('timestamp', '')
-    sign = result.get('sign', '')
-    msg = ''.join(list(map(str, [sid, success, reason, link, timestamp])))
-    sign_client = hmac.new(service.secret_key.encode(),
-                           msg.encode()).hexdigest()
-    if abs(time.time() - int(timestamp)) > 60:
-        return unknown_error
-    elif sid != map_obj.sid:
-        return unknown_error
-    elif not hmac.compare_digest(sign, sign_client):
-        return unknown_error
-
     if result.get('success', False):
         map_obj.unregister_time = timezone.now()
         map_obj.save()

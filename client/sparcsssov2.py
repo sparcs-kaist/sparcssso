@@ -184,22 +184,3 @@ class Client:
         elif not self._validate_sign([client_id, sid], timestamp, sign):
             raise RuntimeError('INVALID_REQUEST')
         return sid
-
-    def get_unregister_response(self, sid, success, reason='', link=''):
-        """
-        Get unregister response to send to SPARCS SSO server
-        :param sid: the user's service id
-        :param success: true / false
-        :param reason: the reason when fail to unregister
-        :param link: a link to help user when fail to register
-        :returns: a dictionary that contains all data and a sign
-        """
-        sign, timestamp = self._sign_payload([sid, success, reason, link])
-        return {
-            'sid': sid,
-            'success': success,
-            'reason': reason,
-            'link': link,
-            'timestamp': timestamp,
-            'sign': sign,
-        }

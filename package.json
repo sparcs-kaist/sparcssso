@@ -4,8 +4,7 @@
   "description": "Single Sign On for SPARCS Services",
   "main": "",
   "scripts": {
-    "test": "",
-    "lint": "eslint --ext .html,.js templates/**"
+    "lint-client": "eslint -c .eslintrc.client.js --ext .html,.js templates/**"
   },
   "repository": {
     "type": "git",

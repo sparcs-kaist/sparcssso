@@ -1,4 +1,7 @@
 module.exports = {
+  'env': {
+    'browser': true,
+  },
   'extends': 'es5',
   'plugins': [
     'html',
@@ -9,8 +12,6 @@ module.exports = {
     'no-constant-condition': 'off',
   },
   'globals': {
-    'window': true,
-    'document': true,
     '$': true,
     'grecaptcha': true,
   },

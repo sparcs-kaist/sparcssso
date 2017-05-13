@@ -1,13 +1,22 @@
 {% extends "base.html" %}
 {% load i18n %}
-
 {% block app-header %}
+
+<!-- own css -->
 <link rel="stylesheet" type="text/css" href="/static/css/main.css">
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.1.1/Chart.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/static/css/stats.css">
+
+<!-- cdn css/js -->
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.ko.min.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+
 {% endblock %}
 
 {% block content %}
-<h1 class="doc-header">SPARCS SSO Statistics <small>({% if time %}{{ time|date:"Y-m-d\TH:i:sT"}}{% else %}No Data{% endif %})</small></h1>
+
+<h1 class="doc-header">SPARCS SSO Statistics <small>({{ time|date:"Y-m-d\TH:i:sT"}})</small></h1>
 <p>Permission: 
 {% if level == 0 %}
 PUBLIC
@@ -18,251 +27,97 @@ PUBLIC
 {% endif %}
 </p>
 
-<div id="stat">
+<!-- Stat request bar -->
+<div class="row">
+<div class="col-xs-12 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
+  <div class="input-daterange input-group" id="datepicker">
+
+    <!-- Service  -->
+    <div class="input-group-btn btn-group" role="group">
+      <div class="btn-group" role="group">
+        <button class="btn btn-default dropdown-toggle" type="button" id="service-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+          <span class="s-name">서비스</span>
+          <span class="caret"></span>
+        </button>
+        <ul id="service-dropdown-menu" class="dropdown-menu" aria-labelledby="service-dropdown">
+        </ul>
+      </div>
+    </div>
+    
+    <!-- Date -->
+    <input type="text" class="form-control date-control s-date" name="start" value="" />
+    <span class="input-group-addon">~</span>
+    <input type="text" class="form-control date-control e-date" name="end" value="" />
+    
+    <!-- Go btn -->
+    <span class="input-group-btn">
+      <button class="btn btn-default btn-primary btn-get-stat" type="button">Go!</button>
+    </span>
+  </div>
+</div>
+</div>
+
+<div role="tabpanel">
+
   <ul class="nav nav-tabs" role="tablist">
-    {% for s in stat %}
-    <li><a href="#{{ s.name }}" role="tab" data-toggle="tab" id="{{ s.name }}-link">{{ s.alias }}</a></li>
-    {% endfor %}
+    <li role="presentation" class="active">
+      <a href="#total-tab" aria-controls="total-tab"
+        role="tab" data-toggle="tab">전체</a>
+    </li>
+    <li role="presentation">
+      <a href="#recent-tab" aria-controls="recent-tab"
+        role="tab" data-toggle="tab">최신</a>
+    </li>
   </ul>
   <div class="tab-content">
-    {% for s in stat %}
-    <div role="tabpanel" class="tab-pane" id="{{ s.name }}" style="padding-top:10px">
-      <p><b>Total Users:</b> {{ s.account.all }}</p>
-      {% if level >= 1 %}
-      <p><b>Email Authed:</b> {{ s.account.email }}</p>
-      <p><b>Facebook / Twitter / KAIST Connected:</b> {{ s.account.fb }} / {{ s.account.tw }} / {{ s.account.kaist }}</p>
-      <div class="row">
-        <div class="col-sm-6">
-          <p><b>Gender{% if level >= 2 %} / Real Gender{% endif %}</b></p>
-          <canvas id="{{ s.name }}-gender" width="400" height="400"></canvas>
-        </div>
-        <div class="col-sm-6">
-          <p><b>Birth Year{% if level >= 2 %} / Real Birth Year{% endif %}</b></p>
-          <canvas id="{{ s.name }}-birth-year" width="400" height="400"></canvas>
-        </div>
+    <div role="tabpanel" class="tab-pane active" id="total-tab">
+      <div class="row chart-lv-1">
+        <div id="birth-year-t-chart" class="chart-body"></div>
+        <div id="gender-t-chart" class="chart-body"></div>
       </div>
-      {% endif %}
-
-      {% if level >= 2 %}
-      <p><b>KAIST - Employee / Professor:</b> {{ s.kaist.employee }} / {{ s.kaist.professor }}</p>
-      <div class="row">
-        <div class="col-sm-6">
-          <p><b>Start Year</b></p>
-          <canvas id="{{ s.name }}-start-year" width="400" height="400"></canvas>
-        </div>
-        <div class="col-sm-6">
-          <p><b>Department</b></p>
-          <canvas id="{{ s.name }}-department" width="400" height="400"></canvas>
-        </div>
+  
+      <div class="row chart-lv-2">
+        <div id="account-t-chart" class="chart-body"></div>
+        <hr />
+        <div id="kaist-gender-t-chart" class="chart-body"></div>
+        <div id="kaist-start-year-t-chart" class="chart-body"></div>
+        <div id="kaist-birth-year-t-chart" class="chart-body"></div>
+        <div id="kaist-department-t-chart" class="chart-body"></div>
       </div>
-      {% endif %}
     </div>
-    {% endfor %}
+    <div role="tabpanel" class="tab-pane" id="recent-tab">
+      <div class="row chart-lv-1">
+        <div id="birth-year-r-chart" class="chart-body"></div>
+        <div id="gender-r-chart" class="chart-body"></div>
+      </div>
+  
+      <div class="row chart-lv-2">
+        <div id="account-r-chart" class="chart-body"></div>
+        <hr />
+        <div id="kaist-gender-r-chart" class="chart-body"></div>
+        <div id="kaist-start-year-r-chart" class="chart-body"></div>
+        <div id="kaist-birth-year-r-chart" class="chart-body"></div>
+        <div id="kaist-department-r-chart" class="chart-body"></div>
+        <h4>kaist-professor/employee</h4>
+        <table class="table table-bordered kaist-table">
+          <thead>
+            <tr>
+              <th>professor</th>
+              <th>employee</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td id="kaist-professor-cell"></td>
+              <td id="kaist-employee-cell"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
 
-<script>
-var deptData = {
-  0: 'Undecided',
-  3648: 'Bio and Brain Engineering',
-  132: 'Biological Sciences',
-  2222: 'Biomedical Science and Engineering Program',
-  936: 'Business',
-  33: 'Capstone Design',
-  451: 'Chemical and Biomolecular Engineering',
-  150: 'Chemistry',
-  441: 'Civil and Environmental Engineering',
-  4419: 'Departmemt of Aerospace Engineering',
-  4418: 'Departmemt of Mechanical Engineering',
-  331: 'Department of Industrial Systems Engineering',
-  151: 'Department of Mathematical Sciences',
-  3992: 'Division of Future Vehicle',
-  4201: 'Economics Program',
-  4431: 'Entrepreneurship Program',
-  4305: 'Executive MBA',
-  4398: 'Finance Executive MBA',
-  4303: 'Finance MBA',
-  3919: 'Financial Engineering Program',
-  4310: 'Financial Engineering Program',
-  973: 'General Required',
-  3941: 'Global Information &amp; Telecommunication Technology Program',
-  4200: 'Graduate Program for Future Strategy',
-  3539: 'Graduate School of Culture Technology',
-  4144: 'Graduate School of Information Security',
-  4438: 'Graduate School of Innovation & Technology Management',
-  4549: 'Graduate School of Knowledge Service Engineering',
-  3605: 'Graduate School of Medical Science and Engineering',
-  3990: 'Graduate School of Science and Technology Policy',
-  4422: 'Graduate School of Web Science Technology',
-  3799: 'Graduate school of EEWS',
-  3692: 'Graduate school of Nanoscience &amp; Technology',
-  4493: 'Green Business and Policy Program',
-  340: 'Industrial Design',
-  4312: 'Information Management Program',
-  3723: 'Information and Communications Engineering',
-  4306: 'Information and Media MBA',
-  3978: 'Intellectual Property Minor Program for Undergradu',
-  3920: 'Master of Science Journalism',
-  3882: 'Master of intellectual property',
-  421: 'Materials Science and Engineering',
-  4141: 'Minor Program in Culture Technology',
-  3993: 'Minor Program in Science and Technology Policy',
-  4425: 'Moon Soul Graduate School of Future Strategy',
-  221: 'Nuclear and Quantum Engineering',
-  110: 'Physics',
-  2410: 'Polymer Science and Engineering Program',
-  4182: 'Professional MBA',
-  4427: 'Program of Brain and Cognitive Engineering',
-  4547: 'School of Business and Technology Management',
-  4548: 'School of Business and Technology Management',
-  4421: 'School of Computing',
-  4423: 'School of Electrical Engineering',
-  4424: 'School of Humanities &amp; Social Sciences',
-  4301: 'School of Management Engineering',
-  4183: 'Social Entrepreneurship MBA',
-  3703: 'Software Graduate Program',
-  3701: 'Space Exploration Engineering Program',
-  4307: 'Techno-MBA',
-  3997: 'The Cho Chun Shik Graduate School for Green Transportation',
-  3520: 'The Robotics Program',
-  4: 'Undergraduate Research Participation',
-};
-var extractLineData = function(dataset) {
-  var keys = Object.keys(dataset); keys.sort();
-  var min = parseInt(keys[0]);
-  var max = parseInt(keys[keys.length-1]);
-
-  labels = []; data = [];
-  for (var i = min; i <= max; i += 1) {
-    labels.push(i);
-    var v = dataset[i];
-    v = (v === undefined) ? 0 : v;
-    data.push(v);
-  }
-  return [labels, data];
-};
-
-var mergeLineData = function(label1, data1, label2, data2) {
-  var min = Math.min(label1[0], label2[0]);
-  var max = Math.max(label1[label1.length-1], label2[label2.length-1]);
-
-  labels = []; d1 = []; d2 = [];
-  for (var i = min; i <= max; i += 1) {
-    labels.push(i);
-    var v1 = data1[i];
-    d1.push(((v1 === undefined) ? 0 : v1));
-    var v2 = data2[i];
-    d2.push(((v2 === undefined) ? 0 : v2));
-  }
-  return [labels, d1, d2];
-};
-
-{% for s in stat %}
-$('#{{ s.name }}-link').on('shown.bs.tab', function() {
-  {% if level >= 1 %}
-  var ctx_gender = $("#{{ s.name }}-gender").get(0).getContext("2d");
-  var data_gender = {
-    labels: ["Male", "Female", "Hide", "etc"],
-    datasets: [{
-      label: "Gender",
-      fillColor: "rgba(220,220,220,0.5)",
-      strokeColor: "rgba(220,220,220,0.8)",
-      highlightFill: "rgba(220,220,220,0.75)",
-      highlightStroke: "rgba(220,220,220,1)",
-      data: [{{ s.gender.male }}, {{ s.gender.female }}, {{ s.gender.hide }}, {{ s.gender.etc }}]
-    },
-    {% if level >= 2 %}
-    {
-      label: "Real Gender",
-      fillColor: "rgba(151,187,205,0.5)",
-      strokeColor: "rgba(151,187,205,0.8)",
-      highlightFill: "rgba(151,187,205,0.75)",
-      highlightStroke: "rgba(151,187,205,1)",
-      data: [{{ s.kaist.gender.male }}, {{ s.kaist.gender.female }}, 0, 0]
-    }
-    {% endif %}
-    ]
-  };
-  new Chart(ctx_gender).Bar(data_gender);
-
-  var ctx_birth_year = $("#{{ s.name }}-birth-year").get(0).getContext("2d");
-  var raw_birth_year = {
-    {% for key, value in s.birth_year.items %}
-    {{ key }}: {{ value }},
-    {% endfor %}
-  };
-  [label_birth_year, data_birth_year] = extractLineData(raw_birth_year);
-  {% if level >= 2 %}
-   var raw_birth_year_real = {
-    {% for key, value in s.kaist.birth_year.items %}
-    {{ key }}: {{ value }},
-    {% endfor %}
-  };
-  [label_birth_year_real, g] = extractLineData(raw_birth_year_real);
-  [label_birth_year, data_birth_year, data_birth_year_real] = mergeLineData(label_birth_year, raw_birth_year, label_birth_year_real, raw_birth_year_real);
-  {% endif %}
-  var data_birth_year = {
-    labels: label_birth_year,
-    datasets: [{
-      label: "Birth Year",
-      fillColor: "rgba(220,220,220,0.2)",
-      strokeColor: "rgba(220,220,220,1)",
-      pointColor: "rgba(220,220,220,1)",
-      pointStrokeColor: "#fff",
-      pointHighlightFill: "#fff",
-      pointHighlightStroke: "rgba(220,220,220,1)",
-      data: data_birth_year
-    },
-    {% if level >= 2 %}
-    {
-      label: "Real Birth Year",
-      fillColor: "rgba(151,187,205,0.2)",
-      strokeColor: "rgba(151,187,205,1)",
-      pointColor: "rgba(151,187,205,1)",
-      pointStrokeColor: "#fff",
-      pointHighlightFill: "#fff",
-      pointHighlightStroke: "rgba(151,187,205,1)",
-      data: data_birth_year_real
-    }
-    {% endif %}
-    ]
-  };
-  new Chart(ctx_birth_year).Line(data_birth_year);
-  {% endif %}
-
-  {% if level >= 2 %}
-  var ctx_start_year = $("#{{ s.name }}-start-year").get(0).getContext("2d");
-  var raw_start_year = {
-    {% for key, value in s.kaist.start_year.items %}
-    {{ key }}: {{ value }},
-    {% endfor %}
-  };
-  [label_start_year, data_start_year] = extractLineData(raw_start_year);
-  var data_start_year = {
-    labels: label_start_year,
-    datasets: [{
-      fillColor: "rgba(151,187,205,0.2)",
-      strokeColor: "rgba(151,187,205,1)",
-      pointColor: "rgba(151,187,205,1)",
-      pointStrokeColor: "#fff",
-      pointHighlightFill: "#fff",
-      pointHighlightStroke: "rgba(151,187,205,1)",
-      data: data_start_year,
-    }]
-  };
-  new Chart(ctx_start_year).Line(data_start_year);
-
-  var ctx_department = $("#{{ s.name }}-department").get(0).getContext("2d");
-  var data_department = [
-    {% for key, value in s.kaist.department.items %}
-    { value: {{ value }}, label: {{key}} in deptData ? deptData[{{key}}] : 'unknown' },
-    {% endfor %}
-  ];
-  new Chart(ctx_department).Doughnut(data_department);
-  {% endif %}
-});
-{% endfor %}
-
-$('#stat a:first').tab('show');
-</script>
+<!-- own js -->
+<script src="/static/js/stats.js"></script>
 {% endblock %}

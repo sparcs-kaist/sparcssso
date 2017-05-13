@@ -174,10 +174,10 @@ class Client:
         :returns: the user's service id
         :raises RuntimeError: raise iff the request is invalid
         """
-        client_id = data_dict.get('client_id', [])[0]
-        sid = data_dict.get('sid', [])[0]
-        timestamp = data_dict.get('timestamp', [])[0]
-        sign = data_dict.get('sign', [])[0]
+        client_id = data_dict.get('client_id', '')
+        sid = data_dict.get('sid', '')
+        timestamp = data_dict.get('timestamp', '')
+        sign = data_dict.get('sign', '')
 
         if client_id != self.client_id:
             raise RuntimeError('INVALID_REQUEST')

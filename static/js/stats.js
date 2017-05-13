@@ -425,14 +425,14 @@ parsing json.kaist to 2nd-depth
 function preprocessDataKaist(pAttrObj, property2nd) {
   const p2ndAttrObj = pAttrObj[property2nd];
   switch (property2nd) {
-  case 'birthYear':
-    preprocessDataBirthYear(p2ndAttrObj);
-    break;
-  case 'department':
-    preprocessDataDept(p2ndAttrObj);
-    break;
-  default:
-    break;
+    case 'birthYear':
+      preprocessDataBirthYear(p2ndAttrObj);
+      break;
+    case 'department':
+      preprocessDataDept(p2ndAttrObj);
+      break;
+    default:
+      break;
   }
 }
 
@@ -445,17 +445,17 @@ manipulate formattedObj for purpose
 function preprocessData(attrObj, property, property2nd) {
   let pAttrObj = attrObj[property];
   switch (property) {
-  case 'account':
-    delete pAttrObj.all;
-    break;
-  case 'birthYear':
-    pAttrObj = preprocessDataBirthYear(pAttrObj);
-    break;
-  case 'kaist':
-    pAttrObj = preprocessDataKaist(pAttrObj, property2nd);
-    break;
-  default:
-    break;
+    case 'account':
+      delete pAttrObj.all;
+      break;
+    case 'birthYear':
+      pAttrObj = preprocessDataBirthYear(pAttrObj);
+      break;
+    case 'kaist':
+      pAttrObj = preprocessDataKaist(pAttrObj, property2nd);
+      break;
+    default:
+      break;
   }
 }
 

@@ -7,75 +7,88 @@
 
 {% block content %}
 <div class="alert-wrap">
-    {% if notice %}
-    <div class="alert alert-warning">
-        <strong>{{ notice.title }}</strong> {% autoescape off %}{{ notice.text }}{% endautoescape %}
-    </div>
-    {% endif %}
+  {% if notice %}
+  <div class="alert alert-warning">
+    <strong>{{ notice.title }}</strong> {% autoescape off %}{{ notice.text }}{% endautoescape %}
+  </div>
+  {% endif %}
 </div>
 
 <div class="wrap-content-xs">
-    <h1>{% trans "Login" %}</h1>
-    <p>{% trans "Welcome to SPARCS SSO!" %}</p>
+  <h1>{% trans "Login" %}</h1>
+  <p>{% trans "Welcome to SPARCS SSO!" %}</p>
 
-    {% if service %}
-    <p>{{ service }}를 사용하기 위해서는 SPARCS SSO 계정이 필요합니다.</p>
-    {% endif %}
+  {% if service %}
+  <p>{{ service }}를 사용하기 위해서는 SPARCS SSO 계정이 필요합니다.</p>
+  {% endif %}
 
-    {% if fail == 1 %}
-    <div class="alert alert-danger alert-invalid-account">
-        <b>{% trans "Invalid email / password" %}</b>
+  {% if fail == 1 %}
+  <div class="alert alert-danger alert-invalid-account">
+    <b>{% trans "Invalid email / password" %}</b>
+  </div>
+  {% elif fail == 2 %}
+  <div class="alert alert-danger alert-invalid-account">
+    <b>{% trans "Please grant all requested permission" %}</b>
+  </div>
+  {% endif %}
+
+  <form class="row" action="/account/login/" method="post">
+    {% csrf_token %}
+    <div class="form-group col-xs-12">
+      <input type="email" class="form-control" name="email" placeholder="{% trans "Email" %}" required="required">
     </div>
-    {% elif fail == 2 %}
-    <div class="alert alert-danger alert-invalid-account">
-        <b>{% trans "Please grant all requested permission" %}</b>
+    <div class="form-group col-xs-12">
+      <input type="password" class="form-control" name="password" placeholder="{% trans "Password" %}" required="required">
     </div>
-    {% endif %}
-
-    <form class="row" action="/account/login/" method="post">
-        {% csrf_token %}
-        <div class="form-group col-xs-12">
-            <input type="email" class="form-control" name="email" placeholder="{% trans "Email" %}" required="required">
-        </div>
-        <div class="form-group col-xs-12">
-            <input type="password" class="form-control" name="password" placeholder="{% trans "Password" %}" required="required">
-        </div>
-        <div class="form-group col-xs-12">
-            <button type="submit" class="btn btn-default btn-block btn-login">{% trans "Email Login" %}</button>
-            <div class="login-email-links">
-                <a href="/account/signup/">{% trans "Sign Up" %}</a> / <a href="/account/password/reset">{% trans "Reset Password" %}</a>
-            </div>
-        </div>
-    </form>
-
-    <hr />
-
-    <div class="login-social-wrap">
-        <button class="btn btn-login btn-block btn-kaist" {% if not kaist_enabled %}disabled{% endif %}>
-            {% trans "KAIST SSO Login / Signup" %}
-        </button>
-        <button class="btn btn-login btn-block btn-facebook">
-            <img src="/static/img/fb.png" alt="Facebook Logo">{% trans "Facebook Login / Signup" %}
-        </button>
-        <button class="btn btn-login btn-block btn-twitter">
-            <img src="/static/img/tw-white.png" alt="Twitter Logo">{% trans "Twitter Login / Signup" %}
-        </button>
+    <div class="form-group col-xs-12">
+      <button type="submit" class="btn btn-default btn-block btn-login">{% trans "Email Login" %}</button>
+      <div class="login-email-links">
+        <a href="/account/signup/">{% trans "Sign Up" %}</a> / <a href="/account/password/reset">{% trans "Reset Password" %}</a>
+      </div>
     </div>
+  </form>
+
+  <hr/>
+
+  <div class="login-social-wrap">
+    <button class="btn btn-login btn-block btn-kaist" {% if not kaist_enabled %}disabled{% endif %}>
+      {% trans "KAIST SSO Login / Signup" %}
+    </button>
+    <button class="btn btn-login btn-block btn-facebook">
+      <img src="/static/img/fb.png" alt="Facebook Logo">{% trans "Facebook Login / Signup" %}
+    </button>
+    <button class="btn btn-login btn-block btn-twitter">
+      <img src="/static/img/tw-white.png" alt="Twitter Logo">{% trans "Twitter Login / Signup" %}
+    </button>
+  </div>
 </div>
 
 <script>
 $(function() {
-    $('.btn-kaist').click(function() {
-        location.href = '/account/login/kaist/';
+  var login = function(type) {
+    var form = $(document.createElement('form')).attr({
+      method: 'post',
+      action: '/account/login/' + type + '/',
     });
+    $(document.createElement('input')).attr({
+      type: 'hidden',
+      name: 'csrfmiddlewaretoken',
+      value: '{{ csrf_token }}',
+    }).appendTo(form);
+    form.appendTo(document.body).submit();
+  };
 
-    $('.btn-facebook').click(function() {
-        location.href = '/account/login/fb/';
-    });
+  $('.btn-kaist').click(function() {
+    login('kaist');
+  });
 
-    $('.btn-twitter').click(function() {
-        location.href = '/account/login/tw/';
-    });
+  $('.btn-facebook').click(function() {
+    login('fb');
+  });
+
+  $('.btn-twitter').click(function() {
+    login('tw');
+  });
 });
 </script>
 {% endblock %}

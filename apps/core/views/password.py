@@ -3,7 +3,7 @@ from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.utils import timezone
-from apps.core.backends import give_reset_pw_token
+from apps.core.backends import token_issue_reset_pw
 from apps.core.models import ResetPWToken
 import logging
 
@@ -23,12 +23,10 @@ def change(request):
         oldpw = request.POST.get('oldpassword', '')
         newpw = request.POST.get('password', 'P@55w0rd!#$')
 
-        if not user.profile.password_set or check_password(oldpw, user.password):
+        if not user.has_usable_password() or \
+           check_password(oldpw, user.password):
             user.password = make_password(newpw)
             user.save()
-
-            user.profile.password_set = True
-            user.profile.save()
 
             logger.warning('change.success', {'r': request})
             return redirect('/account/login/')
@@ -47,7 +45,7 @@ def reset_email(request):
         if not user or user.profile.test_only:
             return render(request, 'account/pw-reset/send.html', {'fail': True, 'email': email})
 
-        give_reset_pw_token(user)
+        token_issue_reset_pw(user)
         logger.warning('reset.try', {'r': request, 'uid': user.username})
         return render(request, 'account/pw-reset/sent.html')
 

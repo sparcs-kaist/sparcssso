@@ -1,0 +1,110 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+
+{% block htitle %}SPARCS SSO {% trans "Change Email" %}{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+<div class="wrap-content-xs">
+  <h1>{% trans "Change Email" %}</h1>
+  <p>
+  {% trans "Please enter your new email." %}
+  {% if user.profile.email_authed %}
+    {% trans "However, the email will be changed after email validation." %}
+  {% else %}
+    {% trans "Your new email will be applied directly. However, email will be remain as unverified" %}
+  {% endif %}
+  </p>
+
+  <form class="row" action="/account/email/change/" method="post">
+    <div class="form-group col-xs-12">
+      {% if result_email == 1 %}
+      <div class="alert alert-success">
+       <b>{% trans "Your email has been verified." %}</b>
+      </div>
+      {% elif result_email == 2 %}
+      <div class="alert alert-danger">
+        <b>{% trans "Expired or invalid verification token." %}</b>
+      </div>
+      {% elif result_email == 3 %}
+      <div class="alert alert-danger">
+        <b>{% trans "This email address is already used." %}</b>
+      </div>
+      {% elif result_email == 4 %}
+      <div class="alert alert-success">
+        <b>{% trans "Email updated; check the inbox." %}</b>
+      </div>
+      {% elif result_email == 5 %}
+      <div class="alert alert-success">
+        <b>{% trans "Verification email has been sent." %}</b>
+      </div>
+      {% endif %}
+    </div>
+    {% csrf_token %}
+    {% if not user.profile.email_authed %}
+    <div class="form-group col-xs-12 text-left">
+      <label class="control-label">{% trans "Current (Login) Email" %}</label>
+      <input type="email" class="form-control" name="email" value="{{user.email}}">
+      <p style="padding:2px">
+        {% if "@sso.sparcs.org" not in user.email %}
+        <span class="text text-warning">{% trans "Pending Verification" %}</span>
+        <button type="button" class="btn btn-xs btn-link pull-right resend-email">{% trans "Resend Verification Email" %}</button>
+        {% else %}
+        <span class="text text-danger">{% trans "Invalid Email Address; Please Update!" %}</span>
+        {% endif %}
+      </p>
+    </div>
+    {% else %}
+    <div class="form-group col-xs-12 text-left">
+      <label class="control-label">{% trans "Current (Login) Email" %}</label>
+      <input type="email" class="form-control" value="{{user.email}}" readonly="readonly">
+      <p class="text-success" style="padding:2px">{% trans "Verified" %}</p>
+    </div>
+    <div class="form-group col-xs-12 text-left">
+      <label class="control-label">{% trans "New Email" %}</label>
+      <input type="email" class="form-control" name="email" value="{{user.profile.email_new}}" placeholder="john@example.com">
+      {% if user.profile.email_new %}
+      <p style="padding:2px">
+        <span class="text text-warning">{% trans "Pending Verification" %}</span>
+        <button type="button" class="btn btn-xs btn-link pull-right resend-email">{% trans "Resend Verification Email" %}</button>
+      </p>
+      {% endif %}
+    </div>
+    {% endif %}
+    <div class="form-group col-xs-12">
+      <button type="submit" class="btn btn-warning" disabled>{% trans "Change Email" %}</button>
+    </div>
+  </form>
+</div>
+
+
+<script>
+$(function() {
+  var originalEmail = $('input[name=email]').val();
+
+  $('input[name=email]').keyup(function() {
+    var eq = $(this).val() === originalEmail;
+    if (!eq) {
+      $('.resend-email').hide();
+    } else {
+      $('.resend-email').show();
+    }
+    $('button[type=submit]').prop('disabled', eq);
+  });
+
+  $('.resend-email').click(function() {
+    var form = $(document.createElement('form')).attr({
+      method: 'post',
+      action: '/account/email/verify/',
+    });
+    $(document.createElement('input')).attr({
+      type: 'hidden',
+      name: 'csrfmiddlewaretoken',
+      value: '{{csrf_token}}',
+    }).appendTo(form);
+    form.appendTo(document.body).submit();
+  });
+});
+</script>
+{% endblock %}

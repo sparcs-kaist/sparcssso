@@ -157,20 +157,18 @@ def point_modify():
 
 @app.route('/unregister/accept', methods=['POST', ])
 def unregister_accept():
-    client = storage['client']
-    data_dict = request.form.to_dict()
-    sid = client.parse_unregister_request(data_dict)
-    return jsonify(client.get_unregister_response(sid, True))
+    return jsonify({
+        'success': True,
+    })
 
 
 @app.route('/unregister/deny', methods=['POST', ])
 def unregister_deny():
-    client = storage['client']
-    data_dict = request.form.to_dict()
-    sid = client.parse_unregister_request(data_dict)
-    return jsonify(client.get_unregister_response(
-        sid, False, 'Unregister denied.', 'https://example.com/help'
-    ))
+    return jsonify({
+        'success': False,
+        'reason': 'Unregister denied.',
+        'link': 'https://example.com/help',
+    })
 
 
 @click.command()

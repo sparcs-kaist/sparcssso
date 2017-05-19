@@ -1,0 +1,30 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+
+{% block htitle %}SPARCS SSO {% trans "Re-Verification" %}{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+<div class="wrap-content-sm">
+  <h1>{% trans "Re-Verification" %}</h1>
+  <p>{% trans "To continue, please enter your password for security. We will not ask you password again for 10 minutes." %}
+  <form class="row" action="{{request.get_full_path}}" method="post">
+    {% if fail %}
+    <div class="form-group col-xs-12">
+      <div class="alert alert-danger">
+        <b>{% trans "WRONG current password!" %}</b>
+      </div>
+    </div>
+    {% endif %}
+    {% csrf_token %}
+    <div class="form-group col-xs-12">
+      <input type="password" class="form-control" name="password" placeholder="pAssw0rd!" required="required">
+    </div>
+    <div class="form-group col-xs-12">
+      <button type="submit" class="btn btn-success">{% trans "Continue" %}</button>
+      <a href="javascript:history.back()" class="btn btn-default">{% trans "Go Back" %}</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

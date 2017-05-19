@@ -19,12 +19,13 @@ def user_signal_logged_in(sender, request, user, **kwargs):
 
     if not settings.DEBUG and user.is_staff:
         title = '[SPARCS SSO] Staff Login'
-        message = 'time:%s; id:%s; ip:%s;'
         emails = map(lambda x: x[1], settings.ADMINS)
         time = timezone.now()
         ip = request.META.get('REMOTE_ADDR', '0.0.0.0')
-        send_mail(title, '', 'noreply@sso.sparcs.org', emails,
-                  html_message=message % (time, user.username, ip))
+        send_mail(
+            title, '', 'noreply@sso.sparcs.org', emails,
+            html_message=f'time:{time}, id: {user.username}, ip: {ip}'
+        )
 
     if user.profile.activate():
         account_logger.warning('activate', {'r': request})
@@ -43,8 +44,8 @@ def user_signal_login_failed(sender, request, credentials, **kwargs):
     elif 'user' in credentials:
         user = credentials['user']
 
-    info = ': {}'.format(email) if not user else ''
-    logger.warning('login.fail{}'.format(info), {
+    info = f': {email}' if not user else ''
+    logger.warning(f'login.fail{info}', {
         'r': request,
         'uid': user.username if user else 'unknown',
     })

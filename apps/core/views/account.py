@@ -1,10 +1,12 @@
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.utils import timezone
-from apps.core.backends import signup_email, signup_social, validate_recaptcha
+from apps.core.backends import (
+    anon_required, real_user_required, sudo_required,
+    signup_email, signup_social, validate_recaptcha,
+)
 from apps.core.models import ServiceMap
 import datetime
 import logging
@@ -14,10 +16,9 @@ logger = logging.getLogger('sso.core.account')
 
 
 # /signup/, # /signup/social/
+@anon_required
 def signup(request, social=False):
-    if request.user.is_authenticated:
-        return redirect('/')
-    elif social and 'info_signup' not in request.session:
+    if social and 'info_signup' not in request.session:
         return redirect('/')
 
     if social:
@@ -61,27 +62,20 @@ def signup(request, social=False):
 
 # /deactivate/
 @login_required
+@real_user_required
+@sudo_required
 def deactivate(request):
-    if request.user.profile.test_only:
-        return redirect('/')
-
     maps = ServiceMap.objects.filter(user=request.user, unregister_time=None)
     ok = len(maps) == 0
-    fail = False
 
     if request.method == 'POST' and ok:
-        pw = request.POST.get('password', '')
-        if check_password(pw, request.user.password):
-            profile = request.user.profile
-            profile.expire_time = timezone.now() + datetime.timedelta(days=60)
-            profile.save()
+        profile = request.user.profile
+        profile.expire_time = timezone.now() + datetime.timedelta(days=60)
+        profile.save()
 
-            logger.warning('deactivate.success', {'r': request})
+        logger.warning('deactivate.success', {'r': request})
 
-            auth.logout(request)
-            return redirect('/')
+        auth.logout(request)
+        return redirect('/')
 
-        fail = True
-        logger.warning('deactivate.fail', {'r': request})
-
-    return render(request, 'account/deactivate.html', {'ok': ok, 'fail': fail})
+    return render(request, 'account/deactivate.html', {'ok': ok})

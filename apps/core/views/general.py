@@ -12,31 +12,28 @@ logger = logging.getLogger('sso')
 
 
 def _get_document(category, version=''):
-    docs = list(Document.objects.filter(category=category).order_by('-date_apply'))
-    if len(docs) == 0:
+    docs = Document.objects.filter(category=category).order_by('-date_apply')
+    if not len(docs):
         return None, '', '', ''
 
-    prev_i, next_i, cur_i = -1, -1, -1
+    index = 0
     if version:
-        for i in range(len(docs)):
-            if docs[i].version == version:
-                prev_i, next_i, cur_i = i + 1, i - 1, i
+        for i, doc in enumerate(docs):
+            if doc.version == version:
+                index = i
                 break
-
-        if cur_i == -1:
+        else:
             return None, '', '', ''
-    else:
-        prev_i, next_i, cur_i = 1, -1, 0
 
-    prev_v = docs[prev_i].version if prev_i < len(docs) else ''
-    next_v = docs[next_i].version if next_i > -1 else ''
+    v_prev = docs[index + 1].version if index + 1 < len(docs) else ''
+    v_next = docs[index - 1].version if index > 0 else ''
 
     status = 'old'
-    if docs[cur_i].date_apply > timezone.now():
+    if docs[index].date_apply > timezone.now():
         status = 'future'
-    elif next_i == -1 or (docs[next_i].date_apply > timezone.now() and cur_i == 1):
+    elif docs[0].date_apply >= timezone.now() and index <= 1:
         status = 'current'
-    return docs[cur_i], status, prev_v, next_v
+    return docs[index], status, v_prev, v_next
 
 
 # /main/
@@ -46,7 +43,10 @@ def main(request):
     notice = Notice.objects.filter(valid_from__lte=current_time,
                                    valid_to__gt=current_time).first()
 
-    return render(request, 'main.html', {'services': services, 'notice': notice})
+    return render(request, 'main.html', {
+        'services': services,
+        'notice': notice,
+    })
 
 
 # /lang/
@@ -70,9 +70,13 @@ def terms(request, version=''):
     if not term:
         return redirect('/')
 
-    return render(request, 'terms.html', {'term': term, 'status': status,
-                                          'prev_v': prev_v, 'next_v': next_v,
-                                          'now': timezone.now()})
+    return render(request, 'terms.html', {
+        'term': term,
+        'status': status,
+        'prev_v': prev_v,
+        'next_v': next_v,
+        'now': timezone.now(),
+    })
 
 
 # /privacy/{{version}}/
@@ -81,9 +85,13 @@ def privacy(request, version=''):
     if not privacy:
         return redirect('/')
 
-    return render(request, 'privacy.html', {'privacy': privacy, 'status': status,
-                                            'prev_v': prev_v, 'next_v': next_v,
-                                            'now': timezone.now()})
+    return render(request, 'privacy.html', {
+        'privacy': privacy,
+        'status': status,
+        'prev_v': prev_v,
+        'next_v': next_v,
+        'now': timezone.now()
+    })
 
 
 # /stats/
@@ -119,7 +127,11 @@ def stats(request):
         else:
             stat.append(s)
 
-    return render(request, 'stats.html', {'level': level, 'time': time, 'stat': stat})
+    return render(request, 'stats.html', {
+        'level': level,
+        'time': time,
+        'stat': stat
+    })
 
 
 # /help/
@@ -136,10 +148,12 @@ def contact(request):
         topic = request.POST.get('topic', '')
         title = request.POST.get('title', '')
         message = request.POST.get('message', '')
-        result = validate_recaptcha(request.POST.get('g-recaptcha-response', ''))
+        result = validate_recaptcha(
+            request.POST.get('g-recaptcha-response', '')
+        )
 
         if name and email and topic and title and message and result:
-            subject = "[SPARCS SSO Report - {}] {} (by {})".format(topic, title, name)
+            subject = f'[SPARCS SSO Report - {topic}] {title} (by {name})'
             send_mail(subject, message, email, settings.TEAM_EMAILS)
             submitted = True
 

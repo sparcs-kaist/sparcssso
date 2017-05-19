@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from apps.core.backends import (
+    real_user_required, sudo_required,
     token_issue_email_auth, get_social_name, validate_email,
     service_unregister,
 )
@@ -62,16 +63,22 @@ def disconnect(request, type):
         uid = profile.twitter_id
         profile.twitter_id = ''
 
-    if not profile.user.has_usable_password() and \
-       not (profile.facebook_id or profile.twitter_id or profile.kaist_id):
+    has_social = (
+        profile.facebook_id or
+        profile.twitter_id or
+        profile.kaist_id
+    )
+    if not profile.user.has_usable_password() and not has_social:
         request.session['result_con'] = 4
         return redirect('/account/profile/')
 
     profile.save()
 
     type_str = get_social_name(type)
-    logger.warning('social.disconnect: type={},id={}'.format(
-        type_str, uid), {'r': request})
+    logger.warning(
+        f'social.disconnect: type={type_str},id={uid}',
+        {'r': request},
+    )
 
     request.session['result_con'] = 5
     return redirect('/account/profile/')
@@ -79,11 +86,10 @@ def disconnect(request, type):
 
 # /email/change/
 @login_required
+@real_user_required
+@sudo_required
 def email(request):
     user, profile = request.user, request.user.profile
-    if profile.test_only:
-        return redirect('/')
-
     if request.method == 'POST':
         email_new = request.POST.get('email', '').lower()
         if validate_email(email_new):
@@ -123,11 +129,9 @@ def email_resend(request):
 
 # /email/verify/<tokenid>
 @login_required
+@real_user_required
 def email_verify(request, tokenid):
     user, profile = request.user, request.user.profile
-    if profile.test_only:
-        return redirect('/')
-
     token = EmailAuthToken.objects.filter(tokenid=tokenid).first()
     if not token:
         request.session['result_email'] = 2
@@ -158,6 +162,7 @@ def email_verify(request, tokenid):
 
 # /service/
 @login_required
+@sudo_required
 def service(request):
     maps = ServiceMap.objects.filter(user=request.user, unregister_time=None)
     if request.method == 'POST':
@@ -168,9 +173,9 @@ def service(request):
 
         result = service_unregister(map_obj)
         if result.get('success', False):
-            logger.info('unregister.success: name=%s' % name, {'r': request})
+            logger.info(f'unregister.success: name={name}', {'r': request})
         else:
-            logger.warning('unregister.fail: name=%s' % name, {'r': request})
+            logger.warning(f'unregister.fail: name={name}', {'r': request})
         request.session['result_service'] = result
 
     result_service = request.session.pop('result_service', {})
@@ -193,6 +198,7 @@ def point(request):
 
 # /log/
 @login_required
+@sudo_required
 def log(request):
     logs = UserLog.objects.filter(user=request.user,
                                   hide=False).order_by('-time')

@@ -21,23 +21,29 @@ class Command(BaseCommand):
 
         if options['ip']:
             ip = options['ip']
-            print('> INSPECT LOG WHERE IP={}'.format(ip))
+            print(f'> INSPECT LOG WHERE IP={ip}')
 
             if not netaddr.valid_ipv4(ip, netaddr.INET_PTON):
                 print('>> INVAILD IP')
                 return
 
-            target = '({}'.format(ip)
+            target = f'({ip}'
         elif options['uid'] or options['sid'] or options['email']:
             if options['uid']:
-                print('> FIND USER WHERE uid=%s' % options['uid'])
-                users = User.objects.filter(username__contains=options['uid'])
+                print(f'> FIND USER WHERE uid={options["uid"]}')
+                users = User.objects.filter(
+                    username__contains=options['uid']
+                )
             elif options['sid']:
-                print('> FIND USER WHERE sid=%s' % options['sid'])
-                users = User.objects.filter(services__sid__contains=options['sid'])
+                print(f'> FIND USER WHERE sid={options["sid"]}')
+                users = User.objects.filter(
+                    services__sid__contains=options['sid']
+                )
             elif options['email']:
-                print('> FIND USER WHERE email=%s' % options['email'])
-                users = User.objects.filter(email__contains=options['email'])
+                print(f'> FIND USER WHERE email={options["email"]}')
+                users = User.objects.filter(
+                    email__contains=options['email']
+                )
 
             if len(users) > 100:
                 print('>> TOO MANY USER')
@@ -47,14 +53,18 @@ class Command(BaseCommand):
                 return
 
             for user in users:
-                print('>> USER: uid={}, first_name={}, last_name={}, email={}'.format(
-                    user.username, user.first_name, user.last_name, user.email))
+                print(
+                    f'>> USER: uid={user.username}, ' +
+                    f'first_name={user.first_name}, ' +
+                    f'last_name={user.last_name}, ' +
+                    f'email={user.email}'
+                )
 
             if len(users) != 1:
                 return
 
             user = users[0]
-            print('> INSPECT LOG EXACT uid={}'.format(user.username))
+            print(f'> INSPECT LOG EXACT uid={user.username}')
             target = user.username + ')'
         else:
             print('> NO TARGET SPECIFIED')

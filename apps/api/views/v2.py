@@ -85,11 +85,20 @@ def token_require(request):
     if not m or m.unregister_time:
         result = service_register(user, service)
         if result:
-            profile_logger.info('register.success: app=%s' % service.name, {'r': request})
+            profile_logger.info(
+                f'register.success: app={service.name}',
+                {'r': request},
+            )
         else:
-            d = service.cooltime - (timezone.now() - m.unregister_time).days
-            profile_logger.warning('register.fail: app=%s' % service.name, {'r': request})
-            return render(request, 'api/cooltime.html', {'service': service, 'left': d})
+            left = service.cooltime - (timezone.now() - m.unregister_time).days
+            profile_logger.warning(
+                f'register.fail: app={service.name}',
+                {'r': request},
+            )
+            return render(request, 'api/cooltime.html', {
+                'service': service,
+                'left': left,
+            })
 
     while True:
         tokenid = token_hex(10)
@@ -99,7 +108,7 @@ def token_require(request):
     token = AccessToken(tokenid=tokenid, user=user, service=service,
                         expire_time=timezone.now() + timedelta(seconds=10))
     token.save()
-    logger.info('token.create: app=%s' % client_id, {'r': request})
+    logger.info(f'token.create: app={client_id}', {'r': request})
 
     args = {'code': token.tokenid, 'state': state}
     return redirect(service.login_callback_url + '?' + urlencode(args))
@@ -270,8 +279,10 @@ def point(request):
         PointLog(user=m.user, service=service, delta=delta,
                  point=profile.point, action=message).save()
 
-    return HttpResponse(json.dumps({'point': point, 'modified': modified}),
-                        content_type="application/json")
+    return HttpResponse(
+        json.dumps({'point': point, 'modified': modified}),
+        content_type='application/json',
+    )
 
 
 # /notice/
@@ -290,7 +301,10 @@ def notice(request):
 
     notices = Notice.objects.filter(valid_to__gt=date_after)[offset:offset + limit]
     notices_dict = list(map(lambda x: x.to_dict(), notices))
-    return HttpResponse(json.dumps({'notices': notices_dict}), content_type="application/json")
+    return HttpResponse(
+        json.dumps({'notices': notices_dict}),
+        content_type='application/json',
+    )
 
 
 # /email/
@@ -327,6 +341,7 @@ def stats(request):
         start_date = parse_date(request.GET.get('date_from', ''))
     except:
         pass
+
     if not start_date:
         start_date = today
 
@@ -334,10 +349,15 @@ def stats(request):
         end_date = parse_date(request.GET.get('date_to', ''))
     except:
         pass
-    if not end_date:
-        end_date = today.replace(hour=23, minute=59, second=59, microsecond=999999)
 
-    raw_stats = Statistic.objects.filter(time__gte=start_date, time__lte=end_date)
+    if not end_date:
+        end_date = today.replace(
+            hour=23, minute=59, second=59, microsecond=999999
+        )
+
+    raw_stats = Statistic.objects.filter(
+        time__gte=start_date, time__lte=end_date
+    )
 
     stats = {}
     for client in client_list:
@@ -364,4 +384,7 @@ def stats(request):
             stat['data'][raw_stat.time.isoformat()] = data
         stats[client.name] = stat
 
-    return HttpResponse(json.dumps({'stats': stats}), content_type='application/json')
+    return HttpResponse(
+        json.dumps({'stats': stats}),
+        content_type='application/json',
+    )

@@ -2,7 +2,9 @@ from django.conf import settings
 from django.contrib import auth
 from django.shortcuts import render, redirect
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 from apps.core.backends import (
+    anon_required,
     auth_fb_init, auth_fb_callback,
     auth_tw_init, auth_tw_callback,
     auth_kaist_init, auth_kaist_callback,
@@ -18,10 +20,8 @@ profile_logger = logging.getLogger('sso.profile')
 
 
 # /login/
+@anon_required
 def login(request):
-    if request.user.is_authenticated:
-        return redirect('/')
-
     current_time = timezone.now()
     notice = Notice.objects.filter(valid_from__lte=current_time,
                                    valid_to__gt=current_time).first()
@@ -58,8 +58,9 @@ def login(request):
 
 
 # /logout/
+@require_POST
 def logout(request):
-    if request.method != 'POST' or not request.user.is_authenticated:
+    if request.user.is_authenticated:
         return redirect('/')
 
     auth.logout(request)
@@ -67,6 +68,7 @@ def logout(request):
 
 
 # /login/{fb,tw,kaist}/, /connect/{fb,tw,kaist}/, /renew/kaist/
+@require_POST
 def init(request, mode, type):
     if request.method != 'POST':
         return redirect('/')
@@ -116,7 +118,7 @@ def callback(request):
 
     userid = info['userid'] if info else 'unknown'
     type_str = get_social_name(type)
-    logger.info('social.{}: id={}'.format(type_str, userid), {
+    logger.info(f'social.{type_str}: id={userid}', {
         'r': request,
         'hide': True,
     })
@@ -184,11 +186,15 @@ def callback_conn(request, type, user, info):
     userid = info['userid'] if info else 'unknown'
     type_str = get_social_name(type)
     if result_con == 0:
-        profile_logger.warning('social.connect.success: type={},id={}'.format(
-            type_str, userid), {'r': request})
+        profile_logger.warning(
+            f'social.connect.success: type={type_str},id={userid}',
+            {'r': request},
+        )
     else:
-        profile_logger.warning('social.connect.fail: type={},id={}'.format(
-            type_str, userid), {'r': request})
+        profile_logger.warning(
+            f'social.connect.fail: type={type_str},id={userid}',
+            {'r': request},
+        )
 
     return redirect('/account/profile/')
 
@@ -210,10 +216,14 @@ def callback_renew(request, type, user, info):
     userid = info['userid'] if info else 'unknown'
     type_str = get_social_name(type)
     if result_con == 0:
-        profile_logger.warning('social.update.success: type={},id={}'.format(
-            type_str, userid), {'r': request})
+        profile_logger.warning(
+            f'social.update.success: type={type_str},id={userid}',
+            {'r': request},
+        )
     else:
-        profile_logger.warning('social.fail.success: type={},id={}'.format(
-            type_str, userid), {'r': request})
+        profile_logger.warning(
+            f'social.fail.success: type={type_str},id={userid}',
+            {'r': request},
+        )
 
     return redirect('/account/profile/')

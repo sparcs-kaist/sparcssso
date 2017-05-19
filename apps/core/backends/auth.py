@@ -31,7 +31,7 @@ class EmailLoginBackend(ModelBackend):
         if not check_active_user(request, user):
             return
 
-        username = user.username if user else 'unknown:{}'.format(email)
+        username = user.username if user else f'unknown:{email}'
         return super().authenticate(request=request,
                                     username=username,
                                     password=password)
@@ -62,7 +62,7 @@ def auth_fb_init(callback_url):
         'scope': 'email',
         'redirect_uri': callback_url,
     }
-    return 'https://www.facebook.com/dialog/oauth?{}'.format(urlencode(args))
+    return f'https://www.facebook.com/dialog/oauth?{urlencode(args)}'
 
 
 def auth_fb_callback(code, callback_url):
@@ -117,13 +117,13 @@ tw_client = oauth.Client(tw_consumer)
 
 
 def auth_tw_init(callback_url):
-    body = 'oauth_callback={}'.format(callback_url)
+    body = f'oauth_callback={callback_url}'
     resp, content = tw_client.request(
         'https://twitter.com/oauth/request_token', 'POST', body)
 
     tokens = dict(parse_qsl(content.decode('utf-8')))
-    url = 'https://twitter.com/oauth/authenticate?oauth_token={}' \
-        .format(tokens['oauth_token'])
+    oauth_token = tokens['oauth_token']
+    url = f'https://twitter.com/oauth/authenticate?oauth_token={oauth_token}'
     return url, tokens
 
 
@@ -184,7 +184,7 @@ def auth_kaist_callback(token):
         'email': k_info.get('mail'),
         'first_name': k_info.get('givenname'),
         'last_name': k_info.get('sn'),
-        'gender': '*{}'.format(k_info.get('ku_sex')),
+        'gender': f'*{k_info.get("ku_sex")}',
         'birthday': k_info.get('ku_born_date').replace('/', '-'),
         'kaist_info': k_info
     }

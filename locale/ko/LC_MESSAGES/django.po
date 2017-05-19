@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: v0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-07 22:34+0900\n"
+"POT-Creation-Date: 2017-05-20 01:55+0900\n"
 "PO-Revision-Date: 2016-01-01 19:21+0900\n"
 "Last-Translator: Jae-Sung Kim <wotjd1102@kaist.ac.kr>\n"
 "Language-Team: SPARCS SSO Team <sso@sparcs.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: templates/account/deactivate.html:4 templates/account/deactivate.html:10
-#: templates/base.html:51
+#: templates/base.html:53
 msgid "Deactivate"
 msgstr "비활성화"
 
@@ -26,43 +26,35 @@ msgstr "비활성화"
 msgid "Your account will be removed permanently 60 days after the deactivation"
 msgstr "비활성화된 후 60일이 지난 계정은 영구히 삭제됩니다."
 
-#: templates/account/deactivate.html:12
-msgid "If you still would like to proceed, enter your password."
-msgstr "계속하길 원하시면, 비밀번호를 입력해주세요."
-
 #: templates/account/deactivate.html:13
 msgid "If you login within the 60 days, your account will become ACTIVE again."
 msgstr "60일 내에 로그인하면, 계정이 다시 활성화됩니다."
 
-#: templates/account/deactivate.html:18 templates/account/pw-change.html:16
-msgid "WRONG current password!"
-msgstr "비밀번호를 잘못 입력하셨습니다"
-
-#: templates/account/deactivate.html:27
+#: templates/account/deactivate.html:17
 msgid "DEACTIVATE"
 msgstr "비활성화"
 
-#: templates/account/deactivate.html:31
+#: templates/account/deactivate.html:21
 msgid ""
 "You CANNOT deactivate your account since you are registered to at least one "
 "SPARCS service yet."
 msgstr "사용 중인 서비스가 있어 비활성화 할 수 없습니다."
 
-#: templates/account/deactivate.html:32
+#: templates/account/deactivate.html:22
 msgid "Go to"
 msgstr "먼저 "
 
-#: templates/account/deactivate.html:32 templates/account/service.html:4
-#: templates/account/service.html:10 templates/base.html:45
+#: templates/account/deactivate.html:22 templates/account/service.html:4
+#: templates/account/service.html:10 templates/base.html:47
 msgid "Manage Service"
 msgstr "서비스 관리"
 
-#: templates/account/deactivate.html:32
+#: templates/account/deactivate.html:22
 msgid "page first, and unregister all services."
 msgstr "에서 모든 서비스를 해지해주세요."
 
 #: templates/account/email.html:4 templates/account/email.html:10
-#: templates/account/email.html:76 templates/base.html:49
+#: templates/account/email.html:76 templates/base.html:51
 msgid "Change Email"
 msgstr "이메일 변경"
 
@@ -127,7 +119,7 @@ msgid "New Email"
 msgstr "새 이메일"
 
 #: templates/account/log.html:4 templates/account/log.html:9
-#: templates/base.html:46
+#: templates/base.html:48
 msgid "Account Logs"
 msgstr "계정 로그"
 
@@ -136,7 +128,7 @@ msgid "You can see your action log up to recent 30 days."
 msgstr "최근 30일 동안의 활동 로그가 나타납니다."
 
 #: templates/account/login.html:4 templates/account/login.html:18
-#: templates/base.html:58
+#: templates/base.html:60
 msgid "Login"
 msgstr "로그인"
 
@@ -154,7 +146,7 @@ msgstr "요청한 권한을 모두 승인해주세요."
 
 #: templates/account/login.html:38 templates/account/profile.html:23
 #: templates/account/signup/main.html:18 templates/account/signup/sns.html:26
-#: templates/contact.html:26 templates/contact.html:32
+#: templates/contact.html:28 templates/contact.html:34
 msgid "Email"
 msgstr "이메일"
 
@@ -166,12 +158,12 @@ msgstr "비밀번호"
 msgid "Email Login"
 msgstr "이메일로 로그인"
 
-#: templates/account/login.html:46 templates/base.html:57
+#: templates/account/login.html:46 templates/base.html:59
 msgid "Sign Up"
 msgstr "회원가입"
 
 #: templates/account/login.html:46 templates/account/pw-reset/main.html:25
-#: templates/base.html:59
+#: templates/base.html:61
 msgid "Reset Password"
 msgstr "비밀번호 재설정"
 
@@ -191,7 +183,7 @@ msgstr "트위터로 로그인 / 가입"
 msgid "SPARCS SSO Logout"
 msgstr "SPARCS SSO 로그아웃"
 
-#: templates/account/logout.html:10 templates/base.html:55
+#: templates/account/logout.html:10 templates/base.html:57
 msgid "Logout"
 msgstr "로그아웃"
 
@@ -200,7 +192,7 @@ msgid "Successfully logged out."
 msgstr "로그아웃되었습니다."
 
 #: templates/account/point.html:4 templates/account/point.html:9
-#: templates/base.html:47
+#: templates/base.html:49
 msgid "Point Logs"
 msgstr "포인트 로그"
 
@@ -243,8 +235,8 @@ msgid "Verify / Change Email"
 msgstr "이메일 인증 / 수정"
 
 #: templates/account/profile.html:40 templates/account/signup/main.html:34
-#: templates/account/signup/sns.html:32 templates/contact.html:26
-#: templates/contact.html:29 templates/dev/user.html:17
+#: templates/account/signup/sns.html:32 templates/contact.html:28
+#: templates/contact.html:31 templates/dev/user.html:17
 msgid "Name"
 msgstr "이름"
 
@@ -266,8 +258,8 @@ msgid "Female"
 msgstr "여자"
 
 #: templates/account/profile.html:58 templates/account/profile.html:195
-#: templates/account/profile.html:213 templates/account/profile.html:218
-#: templates/account/profile.html:221 templates/contact.html:46
+#: templates/account/profile.html:215 templates/account/profile.html:220
+#: templates/account/profile.html:223 templates/contact.html:48
 msgid "etc"
 msgstr "기타"
 
@@ -349,7 +341,7 @@ msgid "Renewed at"
 msgstr "갱신 날짜: "
 
 #: templates/account/pw-change.html:4 templates/account/pw-change.html:10
-#: templates/account/pw-change.html:38 templates/base.html:50
+#: templates/account/pw-change.html:25 templates/base.html:52
 msgid "Change Password"
 msgstr "비밀번호 변경"
 
@@ -357,25 +349,21 @@ msgstr "비밀번호 변경"
 msgid "You need to login again if you changed your password."
 msgstr "비밀번호를 변경하면 다시 로그인해야 합니다."
 
-#: templates/account/pw-change.html:23
-msgid "Current Password"
-msgstr "현재 비밀번호"
-
-#: templates/account/pw-change.html:28 templates/account/pw-reset/main.html:15
+#: templates/account/pw-change.html:15 templates/account/pw-reset/main.html:15
 msgid "New Password"
 msgstr "새 비밀번호"
 
-#: templates/account/pw-change.html:30 templates/account/pw-reset/main.html:17
+#: templates/account/pw-change.html:17 templates/account/pw-reset/main.html:17
 #: templates/account/signup/main.html:25
 msgid "Password must be at least 7 characters"
 msgstr "비밀번호는 최소 7자리 이상이어야 합니다."
 
-#: templates/account/pw-change.html:33 templates/account/pw-reset/main.html:20
+#: templates/account/pw-change.html:20 templates/account/pw-reset/main.html:20
 #: templates/account/signup/main.html:28
 msgid "Re-type Password"
 msgstr "비밀번호 재입력"
 
-#: templates/account/pw-change.html:34 templates/account/signup/main.html:29
+#: templates/account/pw-change.html:21 templates/account/signup/main.html:29
 msgid "Not match!"
 msgstr "일치하지 않습니다"
 
@@ -528,7 +516,7 @@ msgstr ""
 "SNS 계정을 통해서 로그인하실 수 있습니다. 비밀번호를 설정하시면 이메일로도 로"
 "그인이 가능합니다."
 
-#: templates/account/signup/done.html:17
+#: templates/account/signup/done.html:17 templates/account/sudo.html:25
 msgid "Continue"
 msgstr "계속"
 
@@ -586,6 +574,24 @@ msgstr ""
 msgid "Student ID"
 msgstr "학번"
 
+#: templates/account/sudo.html:4 templates/account/sudo.html:10
+msgid "Re-Verification"
+msgstr "재인증"
+
+#: templates/account/sudo.html:11
+msgid ""
+"To continue, please enter your password for security. We will not ask you "
+"password again for 10 minutes."
+msgstr "보안을 위해 비밀번호를 다시 입력해주세요. 10분 동안은 다시 비밀번호를 입력하지 않으셔도 됩니다."
+
+#: templates/account/sudo.html:16
+msgid "WRONG current password!"
+msgstr "비밀번호를 잘못 입력하셨습니다"
+
+#: templates/account/sudo.html:26 templates/error/base.html:16
+msgid "Go Back"
+msgstr "뒤로"
+
 #: templates/api/cooltime.html:4 templates/api/cooltime.html:8
 msgid "In COOLTIME!"
 msgstr "서비스 이용 불가능 기간"
@@ -600,7 +606,7 @@ msgstr "당신의 계정은 %(alias)s 서비스에 대해 일시 정지 상태�
 msgid "You can use %(alias)s again after %(left)s days."
 msgstr "%(left)s 일이 지난 후 %(alias)s 서비스를 다시 이용하실 수 있습니다."
 
-#: templates/api/cooltime.html:12
+#: templates/api/cooltime.html:13
 #, python-format
 msgid "Back to %(alias)s"
 msgstr "%(alias)s로 돌아가기"
@@ -630,31 +636,31 @@ msgstr "통계"
 msgid "Help"
 msgstr "도움말"
 
-#: templates/base.html:44
+#: templates/base.html:46
 msgid "Profile / Connections"
 msgstr "프로필 / 연결"
 
-#: templates/base.html:78
+#: templates/base.html:82
 msgid "Credits"
 msgstr "만든 사람들"
 
-#: templates/base.html:79
+#: templates/base.html:83
 msgid "Terms of Use"
 msgstr "이용 약관"
 
-#: templates/base.html:80
+#: templates/base.html:84
 msgid "Privacy Policy"
 msgstr "개인정보취급방침"
 
-#: templates/base.html:83
+#: templates/base.html:87
 msgid "Contact"
 msgstr "연락하기"
 
-#: templates/base.html:84
+#: templates/base.html:88
 msgid "Dev Team"
 msgstr "개발팀"
 
-#: templates/base.html:85
+#: templates/base.html:89
 msgid "SYSOP"
 msgstr "관리자"
 
@@ -662,51 +668,51 @@ msgstr "관리자"
 msgid "Contact Us"
 msgstr "SSO Team에게 연락하기"
 
-#: templates/contact.html:13
+#: templates/contact.html:14
 msgid "We are here to answer any questions you may have about our SPARCS SSO."
 msgstr "SPARCS SSO Team은 언제든지 질문에 답변할 준비가 되어 있습니다."
 
-#: templates/contact.html:13
+#: templates/contact.html:15
 msgid "Reach out to us and we'll respond as soon as you can."
 msgstr "최대한 빨리 답변드리겠습니다."
 
-#: templates/contact.html:14
+#: templates/contact.html:17
 msgid "DO NOT send PASSWORD or other SENSITIVE DATA using this form"
 msgstr "절대 비빌번호나 민감한 정보를 전송하지 마세요."
 
-#: templates/contact.html:18
+#: templates/contact.html:21
 msgid "Your message is successfully sent! Thank you for your feedback!"
 msgstr "메시지가 잘 전송되었습니다! 피드백에 감사드립니다."
 
-#: templates/contact.html:38
+#: templates/contact.html:40
 msgid "Topic"
 msgstr "주제"
 
-#: templates/contact.html:38 templates/contact.html:50
+#: templates/contact.html:40 templates/contact.html:52
 msgid "Title"
 msgstr "제목"
 
-#: templates/contact.html:42
+#: templates/contact.html:44
 msgid "Select Topic"
 msgstr "주제 선택"
 
-#: templates/contact.html:43
+#: templates/contact.html:45
 msgid "Bug Report"
 msgstr "버그"
 
-#: templates/contact.html:44
+#: templates/contact.html:46
 msgid "Suggestions"
 msgstr "제안"
 
-#: templates/contact.html:45
+#: templates/contact.html:47
 msgid "Accounts"
 msgstr "계정"
 
-#: templates/contact.html:56
+#: templates/contact.html:58
 msgid "Message"
 msgstr "메시지"
 
-#: templates/contact.html:67
+#: templates/contact.html:69
 msgid "Send to SSO Team"
 msgstr "SSO Team에게 전송"
 
@@ -757,10 +763,6 @@ msgstr "서버가 요청을 처리할 수 없습니다."
 #: templates/error/500.html:10
 msgid "Please try again after few minutes."
 msgstr "잠시 후에 다시 시도해주세요."
-
-#: templates/error/base.html:16
-msgid "Go Back"
-msgstr "뒤로"
 
 #: templates/error/base.html:17
 msgid "Main"

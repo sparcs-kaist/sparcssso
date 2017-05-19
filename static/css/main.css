@@ -63,6 +63,12 @@ section.container {
 }
 
 
+/* Navbar */
+nav.navbar.navbar-default {
+    border-radius: 0;
+}
+
+
 /* Alerts */
 .alert-wrap {
     margin-top: -1px;

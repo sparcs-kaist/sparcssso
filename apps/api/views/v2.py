@@ -10,17 +10,21 @@ from django.utils.crypto import constant_time_compare
 from django.utils.dateparse import parse_date
 from django.views.decorators.csrf import csrf_exempt
 from apps.core.backends import service_register, validate_email
-from apps.core.models import Notice, Service, ServiceMap, AccessToken, PointLog, Statistic
+from apps.core.models import (
+    Notice, Service, ServiceMap, AccessToken, PointLog, Statistic,
+)
 from datetime import datetime, timedelta
 from secrets import token_hex
 from urllib.parse import urlencode
 import hmac
 import json
 import logging
+import time
 
 
 logger = logging.getLogger('sso.api')
 profile_logger = logging.getLogger('sso.core.profile')
+TIMEOUT = 60
 
 
 def date2str(obj):
@@ -38,8 +42,30 @@ def extract_flag(flags):
     return result
 
 
-def get_hash(key, msg):
-    return hmac.new(key.encode(), msg.encode()).hexdigest()
+def check_sign(data, keys):
+    extracted = list(map(lambda k: data.get(k, ''), keys))
+
+    client_id = data.get('client_id', '')
+    service = Service.objects.filter(name=client_id).first()
+    if not service:
+        raise SuspiciousOperation('INVALID_SERVICE')
+
+    timestamp = data.get('timestamp', '0')
+    timestamp = int(timestamp) if timestamp.isdigit() else 0
+
+    sign = data.get('sign', '')
+
+    if abs(time.time() - timestamp) >= TIMEOUT:
+        raise SuspiciousOperation('INALID_TIMESTAMP')
+
+    sign_server = hmac.new(
+        service.secret_key.encode(),
+        (''.join(extracted) + str(timestamp)).encode(),
+    ).hexdigest()
+    if not constant_time_compare(sign, sign_server):
+        raise SuspiciousOperation('INVALID_SIGN')
+
+    return service, extracted, timestamp
 
 
 # /token/require/
@@ -48,12 +74,12 @@ def token_require(request):
     client_id = request.GET.get('client_id', '')
     state = request.GET.get('state', '')
 
-    if len(state) < 8:
-        raise SuspiciousOperation()
-
     service = Service.objects.filter(name=client_id).first()
     if not service:
-        raise SuspiciousOperation()
+        raise SuspiciousOperation('INVALID_SERVICE')
+
+    if len(state) < 8:
+        raise SuspiciousOperation('INVALID_STATE')
 
     user = request.user
     profile = user.profile
@@ -73,13 +99,15 @@ def token_require(request):
         reason = 5
 
     if reason:
-        return render(request, 'api/denied.html',
-                      {'reason': reason, 'alias': service.alias})
+        return render(request, 'api/denied.html', {
+            'reason': reason,
+            'alias': service.alias,
+        })
 
-    token = AccessToken.objects.filter(user=user, service=service).first()
-    if token:
+    tokens = AccessToken.objects.filter(user=user, service=service)
+    if len(tokens):
         logger.info('token.delete', {'r': request, 'hide': True})
-        token.delete()
+        tokens.delete()
 
     m = ServiceMap.objects.filter(user=user, service=service).first()
     if not m or m.unregister_time:
@@ -102,48 +130,39 @@ def token_require(request):
 
     while True:
         tokenid = token_hex(10)
-        if not AccessToken.objects.filter(tokenid=tokenid, service=service).count():
+        if not AccessToken.objects.filter(tokenid=tokenid).count():
             break
 
-    token = AccessToken(tokenid=tokenid, user=user, service=service,
-                        expire_time=timezone.now() + timedelta(seconds=10))
+    token = AccessToken(
+        tokenid=tokenid, user=user, service=service,
+        expire_time=timezone.now() + timedelta(seconds=TIMEOUT),
+    )
     token.save()
     logger.info(f'token.create: app={client_id}', {'r': request})
 
-    args = {'code': token.tokenid, 'state': state}
-    return redirect(service.login_callback_url + '?' + urlencode(args))
+    return redirect(service.login_callback_url + '?' + urlencode({
+        'code': token.tokenid,
+        'state': state,
+    }))
 
 
 # /token/info/
 @csrf_exempt
 def token_info(request):
     if request.method != 'POST':
-        raise SuspiciousOperation()
+        raise SuspiciousOperation('INVALID_METHOD')
 
-    client_id = request.POST.get('client_id', '')
-    code = request.POST.get('code', '')
-    timestamp = request.POST.get('timestamp', '0')
-    timestamp = int(timestamp) if timestamp.isdigit() else 0
-    sign = request.POST.get('sign', '')
+    service, [code], timestamp = check_sign(
+        request.POST, ['code']
+    )
 
     token = AccessToken.objects.filter(tokenid=code).first()
     if not token:
-        raise SuspiciousOperation()
-
-    service = token.service
-    if service.name != client_id:
-        raise SuspiciousOperation()
+        raise SuspiciousOperation('INVALID_CODE')
+    elif token.service.name != service.name:
+        raise SuspiciousOperation('TOKEN_SERVICE_MISMATCH')
     elif token.expire_time < timezone.now():
-        raise SuspiciousOperation()
-
-    now = timezone.now()
-    date = datetime.fromtimestamp(timestamp, timezone.utc)
-    if abs((now - date).total_seconds()) >= 10:
-        raise SuspiciousOperation()
-
-    sign_server = get_hash(service.secret_key, '{}{}'.format(code, timestamp))
-    if not constant_time_compare(sign, sign_server):
-        raise SuspiciousOperation()
+        raise SuspiciousOperation('TOKEN_EXPIRED')
 
     logger.info('token.delete', {'r': request, 'hide': True})
     token.delete()
@@ -174,37 +193,20 @@ def token_info(request):
 
 # /logout/
 def logout(request):
-    client_id = request.GET.get('client_id', '')
-    sid = request.GET.get('sid', '')
-    timestamp = request.GET.get('timestamp', '0')
-    timestamp = int(timestamp) if timestamp.isdigit() else 0
-    redirect_uri = request.GET.get('redirect_uri', '')
-    sign = request.GET.get('sign', '')
-
-    service = Service.objects.filter(name=client_id).first()
-    if not service:
-        raise SuspiciousOperation()
+    service, [sid, redirect_uri], timestamp = check_sign(
+        request.GET, ['sid', 'redirect_uri']
+    )
 
     m = ServiceMap.objects.filter(sid=sid, service=service).first()
     if not m:
-        return redirect(service.main_url)
+        raise SuspiciousOperation('INVALID_CALL')
 
     if redirect_uri:
         validate = URLValidator()
         try:
             validate(redirect_uri)
         except:
-            raise SuspiciousOperation()
-
-    now = timezone.now()
-    date = datetime.fromtimestamp(timestamp, timezone.utc)
-    if abs((now - date).total_seconds()) >= 30:
-        raise SuspiciousOperation()
-
-    sign_server = get_hash(service.secret_key,
-                           '{}{}{}'.format(sid, redirect_uri, timestamp))
-    if not constant_time_compare(sign, sign_server):
-        raise SuspiciousOperation()
+            raise SuspiciousOperation('INVALID_URL')
 
     if request.user and request.user.is_authenticated:
         logger.info('logout', {'r': request})
@@ -220,45 +222,26 @@ def logout(request):
 @transaction.atomic
 def point(request):
     if request.method != 'POST':
-        raise SuspiciousOperation()
+        raise SuspiciousOperation('INVALID_METHOD')
 
-    client_id = request.POST.get('client_id', '')
-    sid = request.POST.get('sid', '')
-    delta = request.POST.get('delta', '0')
-    message = request.POST.get('message', '')
-    lower_bound = request.POST.get('lower_bound', '0')
-    timestamp = request.POST.get('timestamp', '0')
-    timestamp = int(timestamp) if timestamp.isdigit() else 0
-    sign = request.POST.get('sign', '')
-
-    service = Service.objects.filter(name=client_id).first()
-    if not service:
-        raise SuspiciousOperation()
+    service, [sid, delta, message, lower_bound], timestamp = check_sign(
+        request.POST, ['sid', 'delta', 'message', 'lower_bound']
+    )
 
     m = ServiceMap.objects.filter(sid=sid, service=service).first()
     if not m:
-        raise SuspiciousOperation()
+        raise SuspiciousOperation('INVALID_CALL')
 
     try:
-        delta = int(delta)
-        lower_bound = int(lower_bound)
+        delta = 0 if not delta else int(delta)
+        lower_bound = 0 if not lower_bound else int(lower_bound)
     except:
-        raise SuspiciousOperation()
+        raise SuspiciousOperation('INVALID_TYPE')
 
-    now = timezone.now()
-    profile = m.user.profile
     if delta != 0 and not message:
-        raise SuspiciousOperation()
+        raise SuspiciousOperation('INVALID_MESSAGE')
 
-    date = datetime.fromtimestamp(timestamp, timezone.utc)
-    if abs((now - date).total_seconds()) >= 5:
-        raise SuspiciousOperation()
-
-    sign_server = get_hash(service.secret_key,
-                           '{}{}{}{}'.format(sid, delta, lower_bound, timestamp))
-    if not constant_time_compare(sign, sign_server):
-        raise SuspiciousOperation()
-
+    profile = m.user.profile
     is_test_app = service.scope == 'TEST'
     point = profile.point_test if is_test_app else profile.point
     modified = False
@@ -299,7 +282,8 @@ def notice(request):
     else:
         date_after = datetime.fromtimestamp(date_after, timezone.utc)
 
-    notices = Notice.objects.filter(valid_to__gt=date_after)[offset:offset + limit]
+    notices = Notice.objects.filter(valid_to__gt=date_after)
+    notices = notices[offset:offset + limit]
     notices_dict = list(map(lambda x: x.to_dict(), notices))
     return HttpResponse(
         json.dumps({'notices': notices_dict}),
@@ -309,7 +293,9 @@ def notice(request):
 
 # /email/
 def email(request):
-    if validate_email(request.GET.get('email', ''), request.GET.get('exclude', '')):
+    email = request.GET.get('email', '')
+    exclude = request.GET.geT('exclude', '')
+    if validate_email(email, exclude):
         return HttpResponse(status=200)
     return HttpResponse(status=400)
 
@@ -324,8 +310,9 @@ def stats(request):
             level = 1
 
     client_ids = request.GET.get('client_ids', '').split(',')
-    client_list = list(filter(None, map(lambda x:
-        Service.objects.filter(name=x).first(), client_ids)))
+    client_list = list(filter(None, map(
+        lambda x: Service.objects.filter(name=x).first(), client_ids
+    )))
     if not client_list:
         client_list = Service.objects.all()
 
@@ -334,8 +321,9 @@ def stats(request):
     elif level == 0:
         client_list = filter(lambda x: x.scope == 'PUBLIC', client_list)
 
-    today = timezone.localtime(timezone.now())\
-        .replace(hour=0, minute=0, second=0, microsecond=0)
+    today = timezone.localtime(timezone.now()).replace(
+        hour=0, minute=0, second=0, microsecond=0
+    )
     start_date, end_date = None, None
     try:
         start_date = parse_date(request.GET.get('date_from', ''))

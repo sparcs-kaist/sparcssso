@@ -30,6 +30,8 @@ ALLOWED_HOSTS = [
 
 DOMAIN = 'http://ssodev.sparcs.org'
 
+VERSION = 'nightly-1.20170520'
+
 
 # Application definition
 
@@ -76,6 +78,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'apps.core.backends.context_processors.version',
             ],
         },
     },

@@ -48,12 +48,13 @@ def service_unregister(map_obj):
         else:
             return unknown_error
 
-    # TODO: code going crazy! should be refactored
     client_id = service.name
     sid = map_obj.sid
     timestamp = int(time.time())
-    msg = ''.join([client_id, sid, str(timestamp)])
-    sign = hmac.new(service.secret_key.encode(), msg.encode()).hexdigest()
+    sign = hmac.new(
+        service.secret_key.encode(),
+        ''.join([sid, str(timestamp)]).encode(),
+    ).hexdigest()
     try:
         r = requests.post(service.unregister_url, data={
             'client_id': client_id,

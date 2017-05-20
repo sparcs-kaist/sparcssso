@@ -22,7 +22,7 @@
     </thead>
     <tbody>
       {% for log in logs %}
-      <tr class="{% if log.delta > 0 %}success{% else %}warning{% endif %}">
+      <tr class="{% if log.delta < 0 %}warning{% endif %}">
         <td>{{log.time|date:'Y-m-d H:i:s'}}</td>
         <td>{{log.service.alias}}</td>
         <td class="text-left">{{log.action}}</td>

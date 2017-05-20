@@ -60,7 +60,7 @@ def login(request):
 # /logout/
 @require_POST
 def logout(request):
-    if request.user.is_authenticated:
+    if not request.user.is_authenticated:
         return redirect('/')
 
     auth.logout(request)

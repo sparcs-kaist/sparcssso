@@ -14,7 +14,7 @@
     {% block app-header %} {% endblock %}
   </head>
   <body>
-    <nav class="navbar navbar-default">
+    <nav class="navbar navbar-default {{VERSION_CLASS}}">
       <div class="container-fluid container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
@@ -91,14 +91,9 @@
       <p class="copyright">
         Copyright © 2017,
         <a href="http://sparcs.org/">
-          <span style="color:#f39">S</span>
-          <span style="color:#3c6">P</span>
-          <span style="color:#0cf">A</span>
-          <span style="color:#f90">R</span>
-          <span style="color:#3cc">C</span>
-          <span style="color:#96f">S</span>
+          <span style="color:#f39">S</span><span style="color:#3c6">P</span><span style="color:#0cf">A</span><span style="color:#f90">R</span><span style="color:#3cc">C</span><span style="color:#96f">S</span>
         </a>
-        SSO Team</p>
+        SSO Team; <span class="{{VERSION_CLASS}}">v{{VERSION_STRING}}</span></p>
     </footer>
 
     <script>

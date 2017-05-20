@@ -37,6 +37,34 @@ hr {
 }
 
 
+/* Version */
+.navbar-default.version-nightly .navbar-brand {
+    color: #e74c3c;
+}
+
+.navbar-default.version-nightly .navbar-brand:after {
+    font-size: 80%;
+    content: " (Nightly)";
+}
+
+.navbar-default.version-beta .navbar-brand {
+    color: #f39c12;
+}
+
+.navbar-default.version-beta .navbar-brand:after {
+    font-size: 80%;
+    content: " (Beta)";
+}
+
+.copyright .version-nightly {
+    color: #e74c3c;
+}
+
+.copyright .version-beta {
+    color: #f39c12;
+}
+
+
 /* Containers */
 .container {
     text-align: center;

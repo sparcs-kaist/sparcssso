@@ -1,8 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
 from django.http import Http404
+from apps.core.backends import dev_required
 from apps.core.models import Service, UserProfile
 from apps.core.forms import ServiceForm
 from secrets import token_hex
@@ -15,10 +15,8 @@ logger = logging.getLogger('sso.dev')
 
 # /main/
 @login_required
+@dev_required
 def main(request):
-    if not request.user.profile.flags['dev']:
-        raise PermissionDenied()
-
     success = False
     profile = request.user.profile
     services = request.user.managed_services.filter(scope='TEST')
@@ -50,10 +48,8 @@ def main(request):
 
 # /service/(name)/
 @login_required
+@dev_required
 def service(request, name):
-    if not request.user.profile.flags['dev']:
-        raise PermissionDenied()
-
     service = Service.objects.filter(name=name, scope='TEST').first()
     if (service and service.admin_user != request.user) or \
             (not service and name != 'add'):
@@ -65,7 +61,7 @@ def service(request, name):
 
         if not service:
             while True:
-                name = 'test{}'.format(token_hex(6))
+                name = f'test{token_hex(10)}'
                 if not Service.objects.filter(name=name).count():
                     break
 
@@ -74,9 +70,9 @@ def service(request, name):
             service_new.scope = 'TEST'
             service_new.secret_key = token_hex(10)
             service_new.admin_user = request.user
-            logger.warn('service.create: name=%s' % name, {'r': request})
+            logger.warn(f'service.create: name={name}', {'r': request})
         else:
-            logger.info('service.modify: name=%s' % name, {'r': request})
+            logger.info(f'service.modify: name={name}', {'r': request})
         service_new.save()
 
         return redirect('/dev/main/')
@@ -86,25 +82,21 @@ def service(request, name):
 
 # /service/(name)/delete/
 @login_required
+@dev_required
 def service_delete(request, name):
-    if not request.user.profile.flags['dev']:
-        raise PermissionDenied()
-
     service = Service.objects.filter(name=name, scope='TEST').first()
     if not service or service.admin_user != request.user:
         raise Http404
 
     service.delete()
-    logger.warn('service.delete: name=%s' % name, {'r': request})
+    logger.warn(f'service.delete: name={name}', {'r': request})
     return redirect('/dev/main/')
 
 
 # /user/(uid)/
 @login_required
+@dev_required
 def user(request, uid):
-    if not request.user.profile.flags['dev']:
-        raise PermissionDenied()
-
     user = User.objects.filter(username=uid, profile__test_only=True).first()
     if not user and uid != 'add':
         raise Http404
@@ -112,28 +104,16 @@ def user(request, uid):
     if request.method == 'POST':
         first_name = request.POST.get('first_name', 'TEST')
         last_name = request.POST.get('last_name', 'TEST')
-        gender = request.POST.get('gender', '*H')
-        birthday = request.POST.get('birthday', None)
-        if not birthday:
-            birthday = None
-        point_test = int(request.POST.get('point_test', '0'))
-
-        try:
-            kaist_info = json.loads(request.POST.get('kaist_info', ''))
-            kaist_id = kaist_info['kaist_uid']
-        except:
-            kaist_info = {}
-            kaist_id = ""
 
         if not user:
             while True:
                 seed = token_hex(4)
-                email = 'test-{}@sso.sparcs.org'.format(seed)
+                email = f'test-{seed}@sso.sparcs.org'
                 if not User.objects.filter(email=email).count():
                     break
 
             while True:
-                username = 'test{}'.format(token_hex(8))
+                username = f'test{token_hex(10)}'
                 if not User.objects.filter(username=username).count():
                     break
 
@@ -144,21 +124,31 @@ def user(request, uid):
                                             password=seed)
             profile = UserProfile(user=user, email_authed=True,
                                   test_enabled=True, test_only=True)
-            logger.warn('user.create: uid=%s' % username, {'r': request})
+            logger.warn(f'user.create: uid={username}', {'r': request})
         else:
             profile = user.profile
-            logger.info('user.modify: uid=%s' % uid, {'r': request})
+            logger.info(f'user.modify: uid={uid}', {'r': request})
 
         user.first_name = first_name
         user.last_name = last_name
         user.save()
 
-        profile.gender = gender
-        profile.birthday = birthday
-        profile.point_test = point_test
-        profile.save_kaist_info({'userid': kaist_id, 'kaist_info': kaist_info})
+        birthday = request.POST.get('birthday', None)
+        if not birthday:
+            birthday = None
+        profile.gender = request.POST.get('gender', '*H')
+        profile.birthday = request.POST.get('birthday', None)
+        profile.point_test = int(request.POST.get('point_test', '0'))
         profile.save()
 
+        try:
+            kaist_info = json.loads(request.POST.get('kaist_info', ''))
+            profile.save_kaist_info({
+                'userid': kaist_info['kaist_uid'],
+                'kaist_info': kaist_info,
+            })
+        except:
+            pass
         return redirect('/dev/main/')
 
     return render(request, 'dev/user.html', {'tuser': user})
@@ -166,14 +156,12 @@ def user(request, uid):
 
 # /user/(uid)/delete/
 @login_required
+@dev_required
 def user_delete(request, uid):
-    if not request.user.profile.flags['dev']:
-        raise PermissionDenied()
-
     user = User.objects.filter(username=uid, profile__test_only=True).first()
     if not user:
         raise Http404
 
     user.delete()
-    logger.warn('user.delete: uid=%s' % uid, {'r': request})
+    logger.warn(f'user.delete: uid={uid}', {'r': request})
     return redirect('/dev/main/')

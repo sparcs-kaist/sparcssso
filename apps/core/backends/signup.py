@@ -47,12 +47,12 @@ def signup_social(type, profile):
 
     email = profile.get('email', '')
     if not email:
-        email = 'random-{}@sso.sparcs.org'.format(token_hex(6))
+        email = f'random-{token_hex(6)}@sso.sparcs.org'
 
     while True:
         if not User.objects.filter(email=email).count():
             break
-        email = 'random-{}@sso.sparcs.org'.format(token_hex(6))
+        email = f'random-{token_hex(6)}@sso.sparcs.org'
 
     user = User.objects.create_user(username=username,
                                     first_name=first_name,

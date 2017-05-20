@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 
 class Command(BaseCommand):
     help = 'Collect DB logs to a file'
-    timestamp_file = '{}.last'.format(settings.LOG_FILE)
+    timestamp_file = f'{settings.LOG_FILE}.last'
 
     def get_timestamp(self):
         try:

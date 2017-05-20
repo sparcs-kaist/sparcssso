@@ -29,5 +29,7 @@ class DBHandler(Handler):
 
         hide = record.args.get('hide', False)
         user = self.User.objects.filter(username=record.username).first()
-        self.UserLog(user=user, level=record.levelno, ip=record.ip, hide=hide,
-                     text='%s.%s' % (record.name, record.getMessage())).save()
+        self.UserLog(
+            user=user, level=record.levelno, ip=record.ip, hide=hide,
+            text=f'{record.name}.{record.getMessage()}'
+        ).save()

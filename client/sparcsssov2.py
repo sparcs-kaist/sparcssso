@@ -139,7 +139,9 @@ class Client:
         :param lower_bound: a minimum point value that required
         :returns: a server response; check the full docs
         """
-        sign, timestamp = self._sign_payload([sid, delta, lower_bound])
+        sign, timestamp = self._sign_payload([
+            sid, delta, message, lower_bound
+        ])
         params = {
             'client_id': self.client_id,
             'sid': sid,
@@ -181,6 +183,6 @@ class Client:
 
         if client_id != self.client_id:
             raise RuntimeError('INVALID_REQUEST')
-        elif not self._validate_sign([client_id, sid], timestamp, sign):
+        elif not self._validate_sign([sid], timestamp, sign):
             raise RuntimeError('INVALID_REQUEST')
         return sid

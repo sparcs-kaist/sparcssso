@@ -163,7 +163,9 @@ TEAM_EMAILS = ['sso@sparcs.org', ]
 
 ADMINS = (('SSO SYSOP', 'sso.sysop@sparcs.org'),)
 
-LOG_FILE = os.path.join(BASE_DIR, 'archive/logs.txt')
+LOG_DIR = os.path.join(BASE_DIR, 'archive/logs/')
+
+LOG_BUFFER_DIR = os.path.join(LOG_DIR, 'buffer/')
 
 LOGGING = {
     'version': 1,
@@ -171,7 +173,7 @@ LOGGING = {
     'handlers': {
         'file': {
             'level': 'INFO',
-            'class': 'apps.logger.DBHandler',
+            'class': 'apps.logger.SSOLogHandler',
         },
         'mail': {
             'level': 'ERROR',

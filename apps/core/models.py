@@ -326,9 +326,10 @@ class UserLog(models.Model):
     text = models.CharField(max_length=500)
 
     def pretty(self):
-        username = self.user.username if self.user else 'undefined'
-        time_str = localtime(self.time).isoformat()
-        return f'{time_str}/{self.level} ({self.ip}, {username}) {self.text}'
+        time = localtime(self.time).isoformat()
+        username = self.user.username if self.user else 'unknown'
+        level, ip, text = self.level, self.ip, self.text
+        return f'{time}/{level} ({ip}, {username}) {text}'
 
     def __str__(self):
         time_str = localtime(self.time).isoformat()

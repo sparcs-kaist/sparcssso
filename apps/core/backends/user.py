@@ -44,8 +44,10 @@ def user_signal_login_failed(sender, request, credentials, **kwargs):
     elif 'user' in credentials:
         user = credentials['user']
 
-    info = f': {email}' if not user else ''
-    logger.warning(f'login.fail{info}', {
+    logger.warning('login.fail', {
         'r': request,
         'uid': user.username if user else 'unknown',
+        'extra': [
+            ('email', email if not user else ''),
+        ],
     })

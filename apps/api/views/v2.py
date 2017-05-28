@@ -22,8 +22,7 @@ import logging
 import time
 
 
-logger = logging.getLogger('sso.api')
-profile_logger = logging.getLogger('sso.core.profile')
+logger = logging.getLogger('sso.service')
 TIMEOUT = 60
 
 
@@ -104,25 +103,20 @@ def token_require(request):
             'alias': service.alias,
         })
 
-    tokens = AccessToken.objects.filter(user=user, service=service)
-    if len(tokens):
-        logger.info('token.delete', {'r': request, 'hide': True})
-        tokens.delete()
-
+    AccessToken.objects.filter(user=user, service=service).delete()
     m = ServiceMap.objects.filter(user=user, service=service).first()
     if not m or m.unregister_time:
-        result = service_register(user, service)
-        if result:
-            profile_logger.info(
-                f'register.success: app={service.name}',
-                {'r': request},
-            )
-        else:
+        m_new = service_register(user, service)
+        log_msg = 'success' if m_new else 'fail'
+        logger.warning(f'register.{log_msg}', {
+            'r': request,
+            'extra': [
+                ('app', service.name),
+                ('sid', m_new.sid if m_new else ''),
+            ],
+        })
+        if not m_new:
             left = service.cooltime - (timezone.now() - m.unregister_time).days
-            profile_logger.warning(
-                f'register.fail: app={service.name}',
-                {'r': request},
-            )
             return render(request, 'api/cooltime.html', {
                 'service': service,
                 'left': left,
@@ -138,7 +132,12 @@ def token_require(request):
         expire_time=timezone.now() + timedelta(seconds=TIMEOUT),
     )
     token.save()
-    logger.info(f'token.create: app={client_id}', {'r': request})
+    logger.info('login.try', {
+        'r': request,
+        'extra': [
+            ('app', client_id),
+        ],
+    })
 
     return redirect(service.login_callback_url + '?' + urlencode({
         'code': token.tokenid,
@@ -164,7 +163,12 @@ def token_info(request):
     elif token.expire_time < timezone.now():
         raise SuspiciousOperation('TOKEN_EXPIRED')
 
-    logger.info('token.delete', {'r': request, 'hide': True})
+    logger.info('login.done', {
+        'r': request,
+        'extra': [
+            ('app', service.name),
+        ],
+    })
     token.delete()
 
     user = token.user
@@ -209,7 +213,12 @@ def logout(request):
             raise SuspiciousOperation('INVALID_URL')
 
     if request.user and request.user.is_authenticated:
-        logger.info('logout', {'r': request})
+        logger.info('logout', {
+            'r': request,
+            'extra': [
+                ('app', service.name),
+            ],
+        })
         auth.logout(request)
 
     if not redirect_uri:

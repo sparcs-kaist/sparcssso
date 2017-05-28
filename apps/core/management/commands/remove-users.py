@@ -4,7 +4,7 @@ from apps.core.models import UserProfile
 import logging
 
 
-logger = logging.getLogger('sso.core.account')
+logger = logging.getLogger('sso.account')
 
 
 class Command(BaseCommand):

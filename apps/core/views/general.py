@@ -4,11 +4,7 @@ from django.utils import timezone, translation
 from django.core.mail import send_mail
 from apps.core.backends import validate_recaptcha
 from apps.core.models import Notice, Statistic, Document, Service
-import logging
 import json
-
-
-logger = logging.getLogger('sso')
 
 
 def _get_document(category, version=''):

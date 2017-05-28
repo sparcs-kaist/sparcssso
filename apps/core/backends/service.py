@@ -10,10 +10,10 @@ import requests
 def service_register(user, service):
     m = ServiceMap.objects.filter(user=user, service=service).first()
     if m and not m.unregister_time:
-        return False
+        return None
     elif m and m.unregister_time and \
             (timezone.now() - m.unregister_time).days < service.cooltime:
-        return False
+        return None
     elif m:
         m.delete()
 
@@ -22,9 +22,10 @@ def service_register(user, service):
         if not ServiceMap.objects.filter(sid=sid).count():
             break
 
-    ServiceMap(sid=sid, user=user, service=service,
-               register_time=timezone.now(), unregister_time=None).save()
-    return True
+    m = ServiceMap(sid=sid, user=user, service=service,
+                   register_time=timezone.now())
+    m.save()
+    return m
 
 
 # Unregister Service

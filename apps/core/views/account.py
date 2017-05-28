@@ -6,13 +6,14 @@ from django.utils import timezone
 from apps.core.backends import (
     anon_required, real_user_required, sudo_required,
     signup_email, signup_social, validate_recaptcha,
+    get_social_name,
 )
 from apps.core.models import ServiceMap
 import datetime
 import logging
 
 
-logger = logging.getLogger('sso.core.account')
+logger = logging.getLogger('sso.account')
 
 
 # /signup/, # /signup/social/
@@ -41,7 +42,18 @@ def signup(request, social=False):
         if user is None:
             return redirect('/')
 
-        logger.warning('create', {'r': request, 'uid': user.username})
+        type_str = get_social_name(type) if social else 'email'
+        social_uid = profile['userid'] if social else ''
+        logger.warning('create', {
+            'r': request,
+            'uid': user.username,
+            'extra': [
+                ('type', type_str),
+                ('email', user.email),
+                ('uid', social_uid),
+                ('name', f'{user.first_name} {user.last_name}'),
+            ],
+        })
         user = auth.authenticate(request=request, user=user)
         auth.login(request, user)
 
@@ -65,15 +77,16 @@ def signup(request, social=False):
 @real_user_required
 @sudo_required
 def deactivate(request):
-    maps = ServiceMap.objects.filter(user=request.user, unregister_time=None)
-    ok = len(maps) == 0
+    ok = ServiceMap.objects.filter(
+        user=request.user, unregister_time=None
+    ).count() == 0
 
     if request.method == 'POST' and ok:
         profile = request.user.profile
         profile.expire_time = timezone.now() + datetime.timedelta(days=60)
         profile.save()
 
-        logger.warning('deactivate.success', {'r': request})
+        logger.warning('deactivate', {'r': request})
 
         auth.logout(request)
         return redirect('/')

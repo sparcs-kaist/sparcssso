@@ -13,6 +13,7 @@ import logging
 
 
 logger = logging.getLogger('sso.profile')
+service_logger = logging.getLogger('sso.service')
 
 
 # /profile/
@@ -34,7 +35,19 @@ def main(request):
 
             profile = profile_f.save()
             result_prof = 1
-            logger.info('modify', {'r': request})
+
+            if profile.birthday:
+                birthday_str = profile.birthday.isoformat()
+            else:
+                birthday_str = ''
+            logger.info('update', {
+                'r': request,
+                'extra': [
+                    ('name', f'{user.first_name} {user.last_name}'),
+                    ('gender', profile.gender),
+                    ('birthday', birthday_str),
+                ],
+            })
 
     return render(request, 'account/profile.html', {
         'user': user,
@@ -74,11 +87,13 @@ def disconnect(request, type):
 
     profile.save()
 
-    type_str = get_social_name(type)
-    logger.warning(
-        f'social.disconnect: type={type_str},id={uid}',
-        {'r': request},
-    )
+    logger.warning(f'social.disconnect', {
+        'r': request,
+        'extra': [
+            ('type', get_social_name(type)),
+            ('uid', uid),
+        ],
+    })
 
     request.session['result_con'] = 5
     return redirect('/account/profile/')
@@ -99,6 +114,12 @@ def email(request):
             else:
                 user.email = email_new
                 user.save()
+
+            log_msg = 'try' if profile.email_authed else 'done'
+            logger.warning(f'email.update.{log_msg}', {
+                'r': request,
+                'extra': [('email', email_new)],
+            })
             token_issue_email_auth(user)
             request.session['result_email'] = 4
         else:
@@ -121,7 +142,6 @@ def email_resend(request):
         return redirect('/account/email/change/')
 
     token_issue_email_auth(user)
-    logger.info('email.resend', {'r': request})
     request.session['result_email'] = 5
 
     return redirect('/account/email/change/')
@@ -143,9 +163,18 @@ def email_verify(request, tokenid):
     elif token.user != user:
         return redirect('/account/email/change/')
 
+    email = profile.email_new if profile.email_authed else user.email
+    logger.warning('email.verify', {
+        'r': request,
+        'extra': [('email', email)],
+    })
     if profile.email_authed:
         user.email = profile.email_new
         profile.email_new = ''
+        logger.warning('email.update.done', {
+            'r': request,
+            'extra': [('email', user.email)],
+        })
     else:
         profile.email_authed = True
 
@@ -156,7 +185,6 @@ def email_verify(request, tokenid):
     token.delete()
 
     request.session['result_email'] = 1
-    logger.info('email.done', {'r': request})
     return redirect('/account/email/change/')
 
 
@@ -172,10 +200,14 @@ def service(request):
             return redirect('/account/service/')
 
         result = service_unregister(map_obj)
-        if result.get('success', False):
-            logger.info(f'unregister.success: name={name}', {'r': request})
-        else:
-            logger.warning(f'unregister.fail: name={name}', {'r': request})
+        log_msg = 'success' if result.get('success', False) else 'fail'
+        service_logger.warning(f'unregister.{log_msg}', {
+            'r': request,
+            'extra': [
+                ('app', name),
+                ('sid', map_obj.sid),
+            ],
+        })
         request.session['result_service'] = result
 
     result_service = request.session.pop('result_service', {})
@@ -200,6 +232,7 @@ def point(request):
 @login_required
 @sudo_required
 def log(request):
-    logs = UserLog.objects.filter(user=request.user,
-                                  hide=False).order_by('-time')
+    logs = UserLog.objects.filter(
+        user=request.user, hide=False
+    ).order_by('-time')
     return render(request, 'account/log.html', {'logs': logs})

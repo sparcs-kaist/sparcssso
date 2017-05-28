@@ -118,9 +118,12 @@ def callback(request):
 
     userid = info['userid'] if info else 'unknown'
     type_str = get_social_name(type)
-    logger.info(f'social.{type_str}: id={userid}', {
+    logger.info(f'social.{type_str}', {
         'r': request,
         'hide': True,
+        'extra': [
+            ('uid', userid),
+        ],
     })
     user = profile.user if profile else None
 
@@ -183,19 +186,14 @@ def callback_conn(request, type, user, info):
     profile.save()
     request.session['result_con'] = result_con
 
-    userid = info['userid'] if info else 'unknown'
-    type_str = get_social_name(type)
-    if result_con == 0:
-        profile_logger.warning(
-            f'social.connect.success: type={type_str},id={userid}',
-            {'r': request},
-        )
-    else:
-        profile_logger.warning(
-            f'social.connect.fail: type={type_str},id={userid}',
-            {'r': request},
-        )
-
+    log_msg = 'success' if result_con == 0 else 'fail'
+    profile_logger.warning(f'social.connect.{log_msg}', {
+        'r': request,
+        'extra': [
+            ('type', get_social_name(type)),
+            ('uid', info['userid'] if info else 'unknown'),
+        ],
+    })
     return redirect('/account/profile/')
 
 
@@ -213,17 +211,12 @@ def callback_renew(request, type, user, info):
 
     request.session['result_con'] = result_con
 
-    userid = info['userid'] if info else 'unknown'
-    type_str = get_social_name(type)
-    if result_con == 0:
-        profile_logger.warning(
-            f'social.update.success: type={type_str},id={userid}',
-            {'r': request},
-        )
-    else:
-        profile_logger.warning(
-            f'social.fail.success: type={type_str},id={userid}',
-            {'r': request},
-        )
-
+    log_msg = 'success' if result_con == 0 else 'fail'
+    profile_logger.warning(f'social.update.{log_msg}', {
+        'r': request,
+        'extra': [
+            ('type', get_social_name(type)),
+            ('uid', info['userid'] if info else 'unknown'),
+        ],
+    })
     return redirect('/account/profile/')

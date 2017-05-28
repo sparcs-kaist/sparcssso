@@ -54,11 +54,16 @@ class SSOLogHandler(Handler):
         if not self.initialized:
             self.initialize()
 
+        extra = ', '.join(list(map(lambda k, v: f'{k}={v}', filter(
+            lambda k, v: v, record.args.get('extra', [])
+        ))))
+        extra = ': ' + extra if extra else ''
+
         data = {
             'user': None,
             'username': record.args.get('uid', 'undefined'),
             'level': record.levelno,
-            'text': f'{record.name}.{record.getMessage()}',
+            'text': f'{record.name}.{record.msg}{extra}',
             'hide': record.args.get('hide', False),
         }
         request = record.args.get('r', None)

@@ -10,7 +10,7 @@ from apps.core.models import ResetPWToken
 import logging
 
 
-logger = logging.getLogger('sso.core.password')
+logger = logging.getLogger('sso.auth.password')
 
 
 # /password/change/
@@ -24,7 +24,7 @@ def change(request):
         user.password = make_password(newpw)
         user.save()
 
-        logger.warning('change', {'r': request})
+        logger.info('change', {'r': request})
         return redirect('/account/login/')
 
     return render(request, 'account/pw-change.html', {'user': user})

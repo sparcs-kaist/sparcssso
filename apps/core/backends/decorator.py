@@ -3,6 +3,7 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
 from django.utils.decorators import available_attrs
 from functools import wraps
+import logging
 import time
 
 
@@ -49,6 +50,7 @@ def real_user_required(view_func):
 def sudo_required(view_func):
     @wraps(view_func, assigned=available_attrs(view_func))
     def _wrapped_view(request, *args, **kwargs):
+        logger = logging.getLogger('sso.auth')
         user = request.user
         if not user.has_usable_password():
             return view_func(request, *args, **kwargs)
@@ -61,7 +63,15 @@ def sudo_required(view_func):
         fail = False
         if request.method == 'POST':
             password = request.POST.get('password', '')
-            if check_password(password, user.password):
+            success = check_password(password, user.password)
+
+            log_msg = 'success' if success else 'fail'
+            (logger.info if success else logger.warning)(f'sudo.{log_msg}', {
+                'r': request,
+                'extra': [('path', request.path)],
+            })
+
+            if success:
                 request.session['sudo_timestamp'] = time.time()
                 return redirect(request.get_full_path())
 

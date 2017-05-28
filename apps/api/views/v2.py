@@ -134,9 +134,7 @@ def token_require(request):
     token.save()
     logger.info('login.try', {
         'r': request,
-        'extra': [
-            ('app', client_id),
-        ],
+        'extra': [('app', client_id)],
     })
 
     return redirect(service.login_callback_url + '?' + urlencode({
@@ -165,9 +163,7 @@ def token_info(request):
 
     logger.info('login.done', {
         'r': request,
-        'extra': [
-            ('app', service.name),
-        ],
+        'extra': [('app', service.name)],
     })
     token.delete()
 
@@ -215,9 +211,7 @@ def logout(request):
     if request.user and request.user.is_authenticated:
         logger.info('logout', {
             'r': request,
-            'extra': [
-                ('app', service.name),
-            ],
+            'extra': [('app', service.name)],
         })
         auth.logout(request)
 

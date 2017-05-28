@@ -103,9 +103,7 @@ def service_delete(request, name):
     service.delete()
     logger.warning('service.delete', {
         'r': request,
-        'extra': [
-            ('name', name),
-        ],
+        'extra': [('name', name)],
     })
     return redirect('/dev/main/')
 
@@ -189,8 +187,6 @@ def user_delete(request, uid):
     user.delete()
     logger.warning('account.delete', {
         'r': request,
-        'extra': [
-            ('uid', uid),
-        ],
+        'extra': [('uid', uid)],
     })
     return redirect('/dev/main/')

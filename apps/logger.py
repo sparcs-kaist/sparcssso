@@ -54,8 +54,8 @@ class SSOLogHandler(Handler):
         if not self.initialized:
             self.initialize()
 
-        extra = ', '.join(list(map(lambda k, v: f'{k}={v}', filter(
-            lambda k, v: v, record.args.get('extra', [])
+        extra = ', '.join(list(map(lambda t: f'{t[0]}={t[1]}', filter(
+            lambda t: t[1], record.args.get('extra', [])
         ))))
         extra = ': ' + extra if extra else ''
 

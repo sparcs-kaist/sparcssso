@@ -30,7 +30,7 @@ ALLOWED_HOSTS = [
 
 DOMAIN = 'http://ssodev.sparcs.org'
 
-VERSION = 'nightly-1.20170520'
+VERSION = 'nightly-1.20170529'
 
 
 # Application definition
@@ -42,8 +42,9 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apps.core',
     'apps.api',
+    'apps.core',
+    'apps.dev',
 )
 
 MIDDLEWARE = (

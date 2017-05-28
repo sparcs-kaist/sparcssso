@@ -117,11 +117,11 @@ def callback(request):
         profile, info = auth_kaist_callback(token)
 
     userid = info['userid'] if info else 'unknown'
-    type_str = get_social_name(type)
-    logger.info(f'social.{type_str}', {
+    logger.info('social', {
         'r': request,
         'hide': True,
         'extra': [
+            ('type', get_social_name(type)),
             ('uid', userid),
         ],
     })

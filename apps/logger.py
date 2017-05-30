@@ -63,6 +63,7 @@ class SSOLogHandler(Handler):
             'user': None,
             'username': record.args.get('uid', 'undefined'),
             'level': record.levelno,
+            'ip': '0.0.0.0',
             'text': f'{record.name}.{record.msg}{extra}',
             'hide': record.args.get('hide', False),
         }

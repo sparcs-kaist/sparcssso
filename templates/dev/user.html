@@ -41,9 +41,9 @@
     <div class="form-group col-xs-12 text-left">
       <label class="control-label">KAIST Info - <span class="text-danger"><b>TAKE EXTRA CUTION</b></span></label>
       <p class="text-danger">Login with KAIST Portal is impossible for Test Account. KAIST Info should be json encoded. Invalid input will be replaced as empty value.</p>
-      <textarea class="form-control" rows="6" name="kaist_info" style="resize:vertical">{{tuser.profile.kaist_info}}</textarea>
+      <textarea class="form-control" rows="6" name="kaist_info" style="resize:vertical">{{tuser.profile.kaist_info|default_if_none:""}}</textarea>
     </div>
-    <div class="form-group col-xs-12 text-left">
+    <div class="form-group col-xs-12 text-center">
       <button type="submit" class="btn btn-warning">{% if tuser %}Modify{% else %}Add{% endif %}</button>
       {% if tuser %}<button type="button" class="btn btn-remove btn-danger">REMOVE</button>{% endif %}
       <a class="btn btn-default" href="/dev/main/">Dev Page</a>

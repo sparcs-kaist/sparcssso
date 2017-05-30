@@ -42,7 +42,11 @@ def reset_email(request):
             })
 
         token_issue_reset_pw(user)
-        logger.warning('reset.try', {'r': request, 'uid': user.username})
+        logger.warning('reset.try', {
+            'r': request,
+            'uid': user.username,
+            'extra': [('email', email)],
+        })
         return render(request, 'account/pw-reset/sent.html')
 
     return render(request, 'account/pw-reset/send.html')
@@ -65,7 +69,11 @@ def reset(request, tokenid):
         user.save()
         token.delete()
 
-        logger.warning('reset.done', {'r': request, 'uid': user.username})
+        logger.warning('reset.done', {
+            'r': request,
+            'uid': user.username,
+            'extra': [('email', user.email)],
+        })
         return render(request, 'account/pw-reset/done.html')
 
     return render(request, 'account/pw-reset/main.html', {'tokenid': tokenid})

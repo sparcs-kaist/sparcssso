@@ -134,6 +134,7 @@ def token_require(request):
     token.save()
     logger.info('login.try', {
         'r': request,
+        'hide': True,
         'extra': [('app', client_id)],
     })
 
@@ -163,6 +164,7 @@ def token_info(request):
 
     logger.info('login.done', {
         'r': request,
+        'uid': token.user.username,
         'extra': [('app', service.name)],
     })
     token.delete()
@@ -207,16 +209,18 @@ def logout(request):
             validate(redirect_uri)
         except:
             raise SuspiciousOperation('INVALID_URL')
+    else:
+        redirect_uri = service.main_url
 
     if request.user and request.user.is_authenticated:
         logger.info('logout', {
             'r': request,
-            'extra': [('app', service.name)],
+            'extra': [
+                ('app', service.name),
+                ('redirect', redirect_uri)
+            ],
         })
         auth.logout(request)
-
-    if not redirect_uri:
-        redirect_uri = service.main_url
     return redirect(redirect_uri)
 
 
@@ -262,6 +266,16 @@ def point(request):
         manager = m.user.point_logs
         if manager.count() >= 20:
             manager.order_by('time')[0].delete()
+
+        logger.info('point', {
+            'r': request,
+            'uid': m.user.username,
+            'hide': True,
+            'extra': [
+                ('app', service.name),
+                ('delta', delta),
+            ],
+        })
         PointLog(user=m.user, service=service, delta=delta,
                  point=profile.point, action=message).save()
 
@@ -297,7 +311,7 @@ def notice(request):
 # /email/
 def email(request):
     email = request.GET.get('email', '')
-    exclude = request.GET.geT('exclude', '')
+    exclude = request.GET.get('exclude', '')
     if validate_email(email, exclude):
         return HttpResponse(status=200)
     return HttpResponse(status=400)

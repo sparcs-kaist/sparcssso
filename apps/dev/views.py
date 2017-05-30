@@ -39,7 +39,7 @@ def main(request):
         logger.info('profile.update', {
             'r': request,
             'extra': [
-                ('test', profile.test_enabled),
+                ('test', str(profile.test_enabled).lower()),
                 ('point', profile.point_test),
             ],
         })
@@ -147,10 +147,8 @@ def user(request, uid):
         user.save()
 
         birthday = request.POST.get('birthday', None)
-        if not birthday:
-            birthday = None
         profile.gender = request.POST.get('gender', '*H')
-        profile.birthday = request.POST.get('birthday', None)
+        profile.birthday = birthday if birthday else None
         profile.point_test = int(request.POST.get('point_test', '0'))
         profile.save()
 
@@ -163,7 +161,7 @@ def user(request, uid):
         except:
             pass
 
-        log_msg = 'create' if not user else 'update'
+        log_msg = 'create' if uid == 'add' else 'update'
         logger.warning(f'account.{log_msg}', {
             'r': request,
             'extra': [

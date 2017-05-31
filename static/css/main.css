@@ -56,11 +56,16 @@ hr {
     content: " (Beta)";
 }
 
-.copyright .version-nightly {
+.version-detail {
+    font-size: 70%;
+    color: #aaa;
+}
+
+.version-detail .version-nightly {
     color: #e74c3c;
 }
 
-.copyright .version-beta {
+.version-detail .version-beta {
     color: #f39c12;
 }
 

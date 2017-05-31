@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+from .version import get_version_info
+
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -30,7 +32,7 @@ ALLOWED_HOSTS = [
 
 DOMAIN = 'http://ssodev.sparcs.org'
 
-VERSION = 'nightly-1.20170529'
+VERSION = get_version_info()
 
 
 # Application definition

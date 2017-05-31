@@ -1,15 +1,16 @@
+import logging
+
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
 from django.utils import timezone
-from apps.core.backends import (
-    real_user_required, sudo_required,
-    token_issue_email_auth, get_social_name, validate_email,
-    service_unregister,
+
+from ..backends import (
+    get_social_name, real_user_required, service_unregister,
+    sudo_required, token_issue_email_auth, validate_email,
 )
-from apps.core.models import ServiceMap, EmailAuthToken, PointLog, UserLog
-from apps.core.forms import UserForm, UserProfileForm
-import logging
+from ..forms import UserForm, UserProfileForm
+from ..models import EmailAuthToken, PointLog, ServiceMap, UserLog
 
 
 logger = logging.getLogger('sso.profile')
@@ -233,6 +234,6 @@ def point(request):
 @sudo_required
 def log(request):
     logs = UserLog.objects.filter(
-        user=request.user, hide=False
+        user=request.user, hide=False,
     ).order_by('-time')
     return render(request, 'account/log.html', {'logs': logs})

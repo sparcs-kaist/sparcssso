@@ -1,10 +1,11 @@
-from django.contrib.auth.hashers import check_password
-from django.core.exceptions import PermissionDenied
-from django.shortcuts import render, redirect
-from django.utils.decorators import available_attrs
-from functools import wraps
 import logging
 import time
+from functools import wraps
+
+from django.contrib.auth.hashers import check_password
+from django.core.exceptions import PermissionDenied
+from django.shortcuts import redirect, render
+from django.utils.decorators import available_attrs
 
 
 def _user_required(test_func, raise_error=False, redirect_to=''):

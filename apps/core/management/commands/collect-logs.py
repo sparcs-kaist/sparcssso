@@ -1,10 +1,12 @@
-from django.core.management.base import BaseCommand
-from django.conf import settings
-from django.utils import timezone
-from apps.core.models import UserLog
-from datetime import timedelta
 import os
 import re
+from datetime import timedelta
+
+from django.conf import settings
+from django.core.management.base import BaseCommand
+from django.utils import timezone
+
+from ...models import UserLog
 
 
 class Command(BaseCommand):
@@ -17,7 +19,7 @@ class Command(BaseCommand):
         # merge multiple log files into one file
         log_files = list(filter(
             lambda x: re.match(r'(\d{8})\.(\d+)\.log', x),
-            os.listdir(settings.LOG_BUFFER_DIR)
+            os.listdir(settings.LOG_BUFFER_DIR),
         ))
         log_entities = {}
         for log_file in log_files:
@@ -27,7 +29,7 @@ class Command(BaseCommand):
 
             with open(self.get_full_path(log_file), 'r') as f:
                 log_entities[date].extend(
-                    list(filter(None, f.readlines()))
+                    list(filter(None, f.readlines())),
                 )
 
         for date, log_entity in log_entities.items():

@@ -1,8 +1,9 @@
-from django.db import models
+import json
+
 from django.contrib.auth.models import User
+from django.db import models
 from django.utils import timezone
 from django.utils.timezone import localtime
-import json
 
 
 SERVICE_PUBLIC = 'PUBLIC'
@@ -223,7 +224,7 @@ class UserProfile(models.Model):
             'test-only': self.test_only,
             'dev': self.user.is_staff or bool(self.sparcs_id),
             'sparcs': bool(self.sparcs_id),
-            'sysop': self.user.is_staff
+            'sysop': self.user.is_staff,
         }
 
     def gender_display(self):

@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+
 from .version import get_version_info
 
 
@@ -120,7 +121,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    },
 }
 
 
@@ -197,6 +198,6 @@ STAT_FILE = os.path.join(BASE_DIR, 'archive/stats.txt')
 
 # Local Settings
 try:
-    from .local_settings import *
+    from .local_settings import * # noqa: F401, F403
 except ImportError:
     pass

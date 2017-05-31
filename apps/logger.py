@@ -1,10 +1,11 @@
+import os
+from logging import Handler
+from os import path
+
 from django.apps import apps
 from django.conf import settings
 from django.utils import timezone
 from django.utils.timezone import localtime
-from logging import Handler
-from os import path
-import os
 
 
 class SSOLogHandler(Handler):
@@ -27,7 +28,7 @@ class SSOLogHandler(Handler):
                 self.log_file.close()
             self.log_name = log_name
             self.log_file = open(path.join(
-                settings.LOG_BUFFER_DIR, self.log_name
+                settings.LOG_BUFFER_DIR, self.log_name,
             ), 'a+')
 
         time = localtime(timezone.now()).isoformat()
@@ -55,7 +56,7 @@ class SSOLogHandler(Handler):
             self.initialize()
 
         extra = ', '.join(list(map(lambda t: f'{t[0]}={t[1]}', filter(
-            lambda t: t[1], record.args.get('extra', [])
+            lambda t: t[1], record.args.get('extra', []),
         ))))
         extra = ': ' + extra if extra else ''
 

@@ -1,10 +1,12 @@
-from django.core.mail import send_mail
-from django.core.management.base import BaseCommand
-from django.conf import settings
-from django.utils import timezone
-from apps.core.models import UserLog
 from datetime import datetime
 from os import path
+
+from django.conf import settings
+from django.core.mail import send_mail
+from django.core.management.base import BaseCommand
+from django.utils import timezone
+
+from ...models import UserLog
 
 
 class Command(BaseCommand):
@@ -24,10 +26,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         start_time = timezone.make_aware(
-            datetime.fromtimestamp(self.get_timestamp())
+            datetime.fromtimestamp(self.get_timestamp()),
         )
         logs = UserLog.objects.filter(
-            time__gt=start_time, level__gte=30
+            time__gt=start_time, level__gte=30,
         ).all()
         if not logs:
             return

@@ -1,8 +1,10 @@
-from urllib.parse import urlencode
-from secrets import token_hex
 import hmac
-import requests
 import time
+
+from secrets import token_hex
+from urllib.parse import urlencode
+
+import requests
 
 
 # SPARCS SSO V2 Client Version 1.1
@@ -140,7 +142,7 @@ class Client:
         :returns: a server response; check the full docs
         """
         sign, timestamp = self._sign_payload([
-            sid, delta, message, lower_bound
+            sid, delta, message, lower_bound,
         ])
         params = {
             'client_id': self.client_id,

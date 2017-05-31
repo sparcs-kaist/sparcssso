@@ -1,13 +1,15 @@
+import json
+import logging
+from secrets import token_hex
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.shortcuts import render, redirect
 from django.http import Http404
-from apps.core.backends import dev_required
-from apps.core.models import Service, UserProfile
-from apps.core.forms import ServiceForm
-from secrets import token_hex
-import logging
-import json
+from django.shortcuts import redirect, render
+
+from ..core.backends import dev_required
+from ..core.forms import ServiceForm
+from ..core.models import Service, UserProfile
 
 
 logger = logging.getLogger('sso.dev')

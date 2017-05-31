@@ -1,12 +1,13 @@
+import logging
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth.signals import (
-    user_logged_in, user_logged_out, user_login_failed
+    user_logged_in, user_logged_out, user_login_failed,
 )
 from django.core.mail import send_mail
 from django.dispatch import receiver
 from django.utils import timezone
-import logging
 
 
 logger = logging.getLogger('sso.auth')
@@ -24,7 +25,7 @@ def user_signal_logged_in(sender, request, user, **kwargs):
         ip = request.META.get('REMOTE_ADDR', '0.0.0.0')
         send_mail(
             title, '', 'noreply@sso.sparcs.org', emails,
-            html_message=f'time:{time}, id: {user.username}, ip: {ip}'
+            html_message=f'time:{time}, id: {user.username}, ip: {ip}',
         )
 
     if user.profile.activate():

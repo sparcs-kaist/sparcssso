@@ -1,12 +1,12 @@
-from bs4 import BeautifulSoup
-from flask import Flask, jsonify, request
 from secrets import token_hex
-from sparcsssov2 import Client
 from urllib.parse import parse_qs, urlparse
+
 import click
 import requests
+from bs4 import BeautifulSoup
+from flask import Flask, jsonify, request
 
-
+from sparcsssov2 import Client
 # SPARCS SSO V2 Client Test Server Version 1.2
 # VALID ONLY AFTER 2017-05-06
 # Made by SPARCS SSO Team
@@ -59,7 +59,7 @@ def login():
     r = session.post(f'{client.DOMAIN}account/login/', data={
         'email': storage['account']['email'],
         'password': storage['account']['password'],
-        'csrfmiddlewaretoken': token
+        'csrfmiddlewaretoken': token,
     })
     if 'account/login' in r.url:
         return jsonify({
@@ -179,8 +179,8 @@ def unregister_deny():
 @click.option('-p', '--port', type=int, default=22224,
               help='port number to open server')
 def main(server_addr, client_id, secret_key, user_token, port):
-    print('SPARCS SSO Test Server has been Started on 0.0.0.0:{}'.format(port))
-    storage['account']['email'] = 'test-{}@sso.sparcs.org'.format(user_token)
+    click.echo(f'SPARCS SSO Test Server has been Started on 0.0.0.0:{port}')
+    storage['account']['email'] = f'test-{user_token}@sso.sparcs.org'
     storage['account']['password'] = user_token
     storage['client'] = Client(client_id, secret_key, server_addr=server_addr)
     app.run(host='0.0.0.0', port=port)

@@ -1,13 +1,15 @@
+import logging
+from urllib.parse import parse_qsl, urlencode
+from xml.etree import ElementTree
+
+import oauth2 as oauth
+import requests
 from django.conf import settings
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.models import User
-from apps.core.backends.util import parse_gender
-from apps.core.models import UserProfile
-from xml.etree import ElementTree
-from urllib.parse import parse_qsl, urlencode
-import logging
-import oauth2 as oauth
-import requests
+
+from .util import parse_gender
+from ..models import UserProfile
 
 
 logger = logging.getLogger('sso.auth')
@@ -82,7 +84,7 @@ def auth_fb_callback(code, callback_url):
     # get grant info
     access_token = token_info['access_token']
     args = {
-        'access_token': access_token
+        'access_token': access_token,
     }
     grant_info = requests.get('https://graph.facebook.com/v2.5/me/permissions',
                               params=args, verify=True).json()
@@ -93,7 +95,7 @@ def auth_fb_callback(code, callback_url):
     # get facebook profile
     args = {
         'fields': 'email,first_name,last_name,gender,birthday',
-        'access_token': access_token
+        'access_token': access_token,
     }
     fb_info = requests.get('https://graph.facebook.com/v2.5/me',
                            params=args, verify=True).json()
@@ -103,7 +105,7 @@ def auth_fb_callback(code, callback_url):
         'first_name': fb_info.get('first_name'),
         'last_name': fb_info.get('last_name'),
         'gender': parse_gender(fb_info.get('gender')),
-        'birthday': fb_info.get('birthday')
+        'birthday': fb_info.get('birthday'),
     }
     fb_profile = UserProfile.objects.filter(facebook_id=info['userid'],
                                             test_only=False).first()
@@ -143,7 +145,7 @@ def auth_tw_callback(tokens, verifier):
     info = {
         'userid': tw_info['user_id'],
         'first_name': tw_info['screen_name'],
-        'gender': '*H'
+        'gender': '*H',
     }
     tw_profile = UserProfile.objects.filter(twitter_id=info['userid'],
                                             test_only=False).first()
@@ -186,7 +188,7 @@ def auth_kaist_callback(token):
         'last_name': k_info.get('sn'),
         'gender': f'*{k_info.get("ku_sex")}',
         'birthday': k_info.get('ku_born_date').replace('/', '-'),
-        'kaist_info': k_info
+        'kaist_info': k_info,
     }
     kaist_profile = UserProfile.objects.filter(kaist_id=info['userid'],
                                                test_only=False).first()

@@ -1,16 +1,18 @@
+import datetime
+import logging
+
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
 from django.utils import timezone
-from apps.core.backends import (
-    anon_required, real_user_required, sudo_required,
-    signup_email, signup_social, validate_recaptcha,
-    get_social_name,
+
+from ..backends import (
+    anon_required, get_social_name, real_user_required,
+    signup_email, signup_social, sudo_required,
+    validate_recaptcha,
 )
-from apps.core.models import ServiceMap
-import datetime
-import logging
+from ..models import ServiceMap
 
 
 logger = logging.getLogger('sso.account')
@@ -60,7 +62,7 @@ def signup(request, social=False):
         nexturl = request.session.pop('next', '/')
         return render(request, 'account/signup/done.html', {
             'type': 'SNS' if social else 'EMAIL',
-            'nexturl': nexturl
+            'nexturl': nexturl,
         })
 
     if not social:
@@ -68,7 +70,7 @@ def signup(request, social=False):
     return render(request, 'account/signup/sns.html', {
         'type': type,
         'profile': profile,
-        'email_warning': email_warning
+        'email_warning': email_warning,
     })
 
 
@@ -78,7 +80,7 @@ def signup(request, social=False):
 @sudo_required
 def deactivate(request):
     ok = ServiceMap.objects.filter(
-        user=request.user, unregister_time=None
+        user=request.user, unregister_time=None,
     ).count() == 0
 
     if request.method == 'POST' and ok:

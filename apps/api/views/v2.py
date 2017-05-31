@@ -1,25 +1,27 @@
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import SuspiciousOperation
-from django.core.validators import URLValidator
-from django.contrib import auth
-from django.db import transaction
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
-from django.utils import timezone
-from django.utils.crypto import constant_time_compare
-from django.utils.dateparse import parse_date
-from django.views.decorators.csrf import csrf_exempt
-from apps.core.backends import service_register, validate_email
-from apps.core.models import (
-    Notice, Service, ServiceMap, AccessToken, PointLog, Statistic,
-)
-from datetime import datetime, timedelta
-from secrets import token_hex
-from urllib.parse import urlencode
 import hmac
 import json
 import logging
 import time
+from datetime import datetime, timedelta
+from secrets import token_hex
+from urllib.parse import urlencode
+
+from django.contrib import auth
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import SuspiciousOperation
+from django.core.validators import URLValidator
+from django.db import transaction
+from django.http import HttpResponse
+from django.shortcuts import redirect, render
+from django.utils import timezone
+from django.utils.crypto import constant_time_compare
+from django.utils.dateparse import parse_date
+from django.views.decorators.csrf import csrf_exempt
+
+from ...core.backends import service_register, validate_email
+from ...core.models import (
+    AccessToken, Notice, PointLog, Service, ServiceMap, Statistic,
+)
 
 
 logger = logging.getLogger('sso.service')
@@ -151,7 +153,7 @@ def token_info(request):
         raise SuspiciousOperation('INVALID_METHOD')
 
     service, [code], timestamp = check_sign(
-        request.POST, ['code']
+        request.POST, ['code'],
     )
 
     token = AccessToken.objects.filter(tokenid=code).first()
@@ -187,7 +189,7 @@ def token_info(request):
         'kaist_id': profile.kaist_id,
         'kaist_info': profile.kaist_info,
         'kaist_info_time': date2str(profile.kaist_info_time),
-        'sparcs_id': profile.sparcs_id
+        'sparcs_id': profile.sparcs_id,
     }
 
     return HttpResponse(json.dumps(resp), content_type='application/json')
@@ -196,7 +198,7 @@ def token_info(request):
 # /logout/
 def logout(request):
     service, [sid, redirect_uri], timestamp = check_sign(
-        request.GET, ['sid', 'redirect_uri']
+        request.GET, ['sid', 'redirect_uri'],
     )
 
     m = ServiceMap.objects.filter(sid=sid, service=service).first()
@@ -217,7 +219,7 @@ def logout(request):
             'r': request,
             'extra': [
                 ('app', service.name),
-                ('redirect', redirect_uri)
+                ('redirect', redirect_uri),
             ],
         })
         auth.logout(request)
@@ -232,7 +234,7 @@ def point(request):
         raise SuspiciousOperation('INVALID_METHOD')
 
     service, [sid, delta, message, lower_bound], timestamp = check_sign(
-        request.POST, ['sid', 'delta', 'message', 'lower_bound']
+        request.POST, ['sid', 'delta', 'message', 'lower_bound'],
     )
 
     m = ServiceMap.objects.filter(sid=sid, service=service).first()
@@ -328,7 +330,7 @@ def stats(request):
 
     client_ids = request.GET.get('client_ids', '').split(',')
     client_list = list(filter(None, map(
-        lambda x: Service.objects.filter(name=x).first(), client_ids
+        lambda x: Service.objects.filter(name=x).first(), client_ids,
     )))
     if not client_list:
         client_list = Service.objects.all()
@@ -339,7 +341,7 @@ def stats(request):
         client_list = filter(lambda x: x.scope == 'PUBLIC', client_list)
 
     today = timezone.localtime(timezone.now()).replace(
-        hour=0, minute=0, second=0, microsecond=0
+        hour=0, minute=0, second=0, microsecond=0,
     )
     start_date, end_date = None, None
     try:
@@ -357,11 +359,11 @@ def stats(request):
 
     if not end_date:
         end_date = today.replace(
-            hour=23, minute=59, second=59, microsecond=999999
+            hour=23, minute=59, second=59, microsecond=999999,
         )
 
     raw_stats = Statistic.objects.filter(
-        time__gte=start_date, time__lte=end_date
+        time__gte=start_date, time__lte=end_date,
     )
 
     stats = {}

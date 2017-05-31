@@ -41,8 +41,8 @@ class Client:
         self.DOMAIN = self.BETA_DOMAIN if is_beta else self.SERVER_DOMAIN
         self.DOMAIN = server_addr if server_addr else self.DOMAIN
 
-        BASE_URL = ''.join([self.DOMAIN, self.API_PREFIX, self.VERSION_PREFIX])
-        self.URLS = {k: ''.join([BASE_URL, v]) for k, v in self.URLS.items()}
+        base_url = ''.join([self.DOMAIN, self.API_PREFIX, self.VERSION_PREFIX])
+        self.URLS = {k: ''.join([base_url, v]) for k, v in self.URLS.items()}
 
         self.client_id = client_id
         self.secret_key = secret_key.encode()

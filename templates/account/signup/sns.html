@@ -24,7 +24,7 @@
     {% if profile.email %}
     <div class="form-group col-xs-12 text-left">
       <label class="control-label">{% trans "Email" %}</label>
-      <input type="email" class="form-control" readonly="readonly" value="{{profile.email}}">
+      <input type="email" class="form-control" readonly="readonly" value="{{ profile.email }}">
     </div>
     {% endif %}
     <div class="form-group col-xs-12 text-left">
@@ -32,10 +32,10 @@
         <label class="control-label">{% trans "Name" %}</label>
       </div>
       <div class="col-xs-8" style="padding: 0">
-        <input type="text" class="form-control" readonly="readonly" value="{{profile.first_name}}">
+        <input type="text" class="form-control" readonly="readonly" value="{{ profile.first_name }}">
       </div>
       <div class="col-xs-4" style="padding: 0">
-        <input type="text" class="form-control" readonly="readonly" value="{{profile.last_name}}">
+        <input type="text" class="form-control" readonly="readonly" value="{{ profile.last_name }}">
       </div>
     </div>
     <div class="form-group col-xs-12 text-left">
@@ -43,17 +43,17 @@
         <label class="control-label">{% trans "Gender, Birthday" %}</label>
       </div>
       <div class="col-xs-4" style="padding: 0">
-        <input type="text" class="form-control" readonly="readonly" value="{% if not profile.gender %}{% trans "Hide" %}{% elif profile.gender == '*M' %}{% trans "Male" %}{% elif profile.gender == '*F' %}{% trans "Female" %}{% elif profile.gender == '*H' %}{% trans "Hide" %}{% else %}{{profile.gender}}{% endif %}">
+        <input type="text" class="form-control" readonly="readonly" value="{% if not profile.gender %}{% trans "Hide" %}{% elif profile.gender == '*M' %}{% trans "Male" %}{% elif profile.gender == '*F' %}{% trans "Female" %}{% elif profile.gender == '*H' %}{% trans "Hide" %}{% else %}{{ profile.gender }}{% endif %}">
       </div>
       <div class="col-xs-8" style="padding: 0">
-        <input type="text" class="form-control" readonly="readonly" value="{% if profile.birthday %}{{profile.birthday}}{% else %}????-??-??{% endif %}">
+        <input type="text" class="form-control" readonly="readonly" value="{% if profile.birthday %}{{ profile.birthday }}{% else %}????-??-??{% endif %}">
       </div>
     </div>
 
     {% if profile.kaist_info.ku_std_no %}
     <div class="form-group col-xs-12 text-left">
       <label class="control-label">{% trans "Student ID" %}</label>
-      <input type="text" class="form-control" readonly="readonly" value="{{profile.kaist_info.ku_std_no}}">
+      <input type="text" class="form-control" readonly="readonly" value="{{ profile.kaist_info.ku_std_no }}">
     </div>
     {% endif %}
 

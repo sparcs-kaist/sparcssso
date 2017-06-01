@@ -14,7 +14,7 @@
     {% block app-header %} {% endblock %}
   </head>
   <body>
-    <nav class="navbar navbar-default {{VERSION_CLASS}}">
+    <nav class="navbar navbar-default {{ VERSION_CLASS }}">
       <div class="container-fluid container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
@@ -62,7 +62,7 @@
             {% endif %}
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                {{request.LANGUAGE_CODE|language_name_local}} <span class="caret"></span>
+                {{ request.LANGUAGE_CODE|language_name_local }} <span class="caret"></span>
               </a>
               <ul class="dropdown-menu" role="menu">
                 <li><a href="/lang/ko/">한국어</a></li>
@@ -96,7 +96,7 @@
         SSO Team
       </p>
       <p class="version-detail">
-        <span class="{{VERSION_CLASS}}">v{{VERSION_STRING}}</span>
+        <span class="{{ VERSION_CLASS }}">v{{ VERSION_STRING }}</span>
       </p>
     </footer>
 

@@ -20,9 +20,9 @@
     <tbody>
       {% for log in logs %}
       <tr class="{% if log.level > 20 %}warning{% endif %}">
-        <td>{{log.time|date:'Y-m-d H:i:s'}}</td>
-        <td>{{log.ip}}</td>
-        <td class="text-left">{{log.text}}</td>
+        <td>{{ log.time|date:'Y-m-d H:i:s' }}</td>
+        <td>{{ log.ip }}</td>
+        <td class="text-left">{{ log.text }}</td>
       </tr>
       {% endfor %}
     </tbody>

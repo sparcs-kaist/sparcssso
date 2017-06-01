@@ -8,7 +8,7 @@
 {% block content %}
 <h1>{% trans "Point Logs" %}</h1>
 <p>{% trans "You can see your current SPARCS points, and the points log up to recent 20." %}</p>
-<h3>{% trans "Current Point" %}: {{user.profile.point}}</h3>
+<h3>{% trans "Current Point" %}: {{ user.profile.point }}</h3>
 <div class="table-responsive">
   <table class="table table-hover">
     <thead>
@@ -23,11 +23,11 @@
     <tbody>
       {% for log in logs %}
       <tr class="{% if log.delta < 0 %}warning{% endif %}">
-        <td>{{log.time|date:'Y-m-d H:i:s'}}</td>
-        <td>{{log.service.alias}}</td>
-        <td class="text-left">{{log.action}}</td>
-        <td class="text-right">{{log.delta}}</td>
-        <td class="text-right">{{log.point}}</td>
+        <td>{{ log.time|date:'Y-m-d H:i:s' }}</td>
+        <td>{{ log.service.alias }}</td>
+        <td class="text-left">{{ log.action }}</td>
+        <td class="text-right">{{ log.delta }}</td>
+        <td class="text-right">{{ log.point }}</td>
       </tr>
       {% endfor %}
     </tbody>

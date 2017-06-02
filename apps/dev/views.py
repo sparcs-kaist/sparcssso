@@ -1,13 +1,15 @@
+import json
+import logging
+from secrets import token_hex
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.shortcuts import render, redirect
 from django.http import Http404
-from apps.core.backends import dev_required
-from apps.core.models import Service, UserProfile
-from apps.core.forms import ServiceForm
-from secrets import token_hex
-import logging
-import json
+from django.shortcuts import redirect, render
+
+from ..core.backends import dev_required
+from ..core.forms import ServiceForm
+from ..core.models import Service, UserProfile
 
 
 logger = logging.getLogger('sso.dev')
@@ -36,13 +38,19 @@ def main(request):
         profile.test_enabled = test_enabled
         profile.save()
         success = True
-        logger.info('profile.modify', {'r': request})
+        logger.info('profile.update', {
+            'r': request,
+            'extra': [
+                ('test', str(profile.test_enabled).lower()),
+                ('point', profile.point_test),
+            ],
+        })
 
     return render(request, 'dev/main.html', {
         'profile': profile,
         'services': services,
         'users': users,
-        'success': success
+        'success': success,
     })
 
 
@@ -70,11 +78,17 @@ def service(request, name):
             service_new.scope = 'TEST'
             service_new.secret_key = token_hex(10)
             service_new.admin_user = request.user
-            logger.warn(f'service.create: name={name}', {'r': request})
-        else:
-            logger.info(f'service.modify: name={name}', {'r': request})
+
         service_new.save()
 
+        log_msg = 'create' if not service else 'update'
+        logger.warning(f'service.{log_msg}', {
+            'r': request,
+            'extra': [
+                ('name', service_new.name),
+                ('alias', service_new.alias),
+            ],
+        })
         return redirect('/dev/main/')
 
     return render(request, 'dev/service.html', {'service': service})
@@ -89,7 +103,10 @@ def service_delete(request, name):
         raise Http404
 
     service.delete()
-    logger.warn(f'service.delete: name={name}', {'r': request})
+    logger.warning('service.delete', {
+        'r': request,
+        'extra': [('name', name)],
+    })
     return redirect('/dev/main/')
 
 
@@ -124,20 +141,16 @@ def user(request, uid):
                                             password=seed)
             profile = UserProfile(user=user, email_authed=True,
                                   test_enabled=True, test_only=True)
-            logger.warn(f'user.create: uid={username}', {'r': request})
         else:
             profile = user.profile
-            logger.info(f'user.modify: uid={uid}', {'r': request})
 
         user.first_name = first_name
         user.last_name = last_name
         user.save()
 
         birthday = request.POST.get('birthday', None)
-        if not birthday:
-            birthday = None
         profile.gender = request.POST.get('gender', '*H')
-        profile.birthday = request.POST.get('birthday', None)
+        profile.birthday = birthday if birthday else None
         profile.point_test = int(request.POST.get('point_test', '0'))
         profile.save()
 
@@ -149,6 +162,15 @@ def user(request, uid):
             })
         except:
             pass
+
+        log_msg = 'create' if uid == 'add' else 'update'
+        logger.warning(f'account.{log_msg}', {
+            'r': request,
+            'extra': [
+                ('uid', user.username),
+                ('email', user.email),
+            ],
+        })
         return redirect('/dev/main/')
 
     return render(request, 'dev/user.html', {'tuser': user})
@@ -163,5 +185,8 @@ def user_delete(request, uid):
         raise Http404
 
     user.delete()
-    logger.warn(f'user.delete: uid={uid}', {'r': request})
+    logger.warning('account.delete', {
+        'r': request,
+        'extra': [('uid', uid)],
+    })
     return redirect('/dev/main/')

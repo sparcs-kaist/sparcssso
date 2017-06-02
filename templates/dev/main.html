@@ -30,11 +30,11 @@
     </div>
     <div class="form-group col-xs-12 text-left">
       <label class="control-label">SPARCS ID</label>
-      <input type="text" class="form-control" value="{% if not profile.sparcs_id %}NOT SPARCS USER{% else %}{{profile.sparcs_id}}{% endif %}" readonly>
+      <input type="text" class="form-control" value="{% if not profile.sparcs_id %}NOT SPARCS USER{% else %}{{ profile.sparcs_id }}{% endif %}" readonly>
     </div>
     <div class="form-group col-xs-12 text-left">
       <label class="control-label">Test Point</label>
-      <input type="number" class="form-control" name="point" value="{{profile.point_test}}" required>
+      <input type="number" class="form-control" name="point" value="{{ profile.point_test }}" required>
     </div>
     <div class="form-group col-xs-12">
       <button type="submit" class="btn btn-primary">Modify</button>
@@ -57,10 +57,10 @@
       <tbody>
         {% for service in services %}
         <tr>
-          <td class="text-left">{{service.name}}</td>
-          <td class="text-left">{{service.alias}}</td>
-          <td class="text-left">{{service.main_url}}</td>
-          <td class="text-center"><a href="/dev/service/{{service.name}}/" class="btn btn-xs btn-warning">Modify</a> <button class="btn btn-xs btn-danger btn-service-remove" data-name="{{service.name}}">REMOVE</button></td>
+          <td class="text-left">{{ service.name }}</td>
+          <td class="text-left">{{ service.alias }}</td>
+          <td class="text-left">{{ service.main_url }}</td>
+          <td class="text-center"><a href="/dev/service/{{ service.name }}/" class="btn btn-xs btn-warning">Modify</a> <button class="btn btn-xs btn-danger btn-service-remove" data-name="{{ service.name }}">REMOVE</button></td>
         </tr>
         {% empty %}
         <tr>
@@ -89,10 +89,10 @@
       <tbody>
         {% for user in users %}
         <tr>
-          <td class="text-left">{{user.username}}</td>
-          <td class="text-left">{{user.email}}</td>
-          <td class="text-left">{{user.first_name}} {{user.last_name}}</td>
-          <td class="text-center"><a href="/dev/user/{{user.username}}/" class="btn btn-xs btn-warning">Modify</a> <button class="btn btn-xs btn-danger btn-user-remove" data-uid="{{user.username}}">REMOVE</button></td>
+          <td class="text-left">{{ user.username }}</td>
+          <td class="text-left">{{ user.email }}</td>
+          <td class="text-left">{{ user.first_name }} {{ user.last_name }}</td>
+          <td class="text-center"><a href="/dev/user/{{ user.username }}/" class="btn btn-xs btn-warning">Modify</a> <button class="btn btn-xs btn-danger btn-user-remove" data-uid="{{ user.username }}">REMOVE</button></td>
         </tr>
         {% empty %}
         <tr>
@@ -108,11 +108,11 @@
 
 <script>
 $(function() {
-  if ('{{profile.flags.sysop}}' === 'True') {
+  if ('{{ profile.flags.sysop }}' === 'True') {
     $('input[name=test]').prop('disabled', true);
   }
 
-  if ('{{profile.flags.test}}' === 'True') {
+  if ('{{ profile.flags.test }}' === 'True') {
     $('#test-enabled').prop('checked', true);
   }
 
@@ -121,7 +121,7 @@ $(function() {
       url: '/dev/service/' + $(this).data('name') + '/delete/',
       type: 'POST',
       data: {
-        csrfmiddlewaretoken: '{{csrf_token}}',
+        csrfmiddlewaretoken: '{{ csrf_token }}',
       },
       success: function() {
         location.reload();
@@ -134,7 +134,7 @@ $(function() {
       url: '/dev/user/' + $(this).data('uid') + '/delete/',
       type: 'POST',
       data: {
-        csrfmiddlewaretoken: '{{csrf_token}}',
+        csrfmiddlewaretoken: '{{ csrf_token }}',
       },
       success: function() {
         location.reload();

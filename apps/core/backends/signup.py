@@ -1,9 +1,11 @@
-from django.contrib.auth.models import User
-from apps.core.backends.token import token_issue_email_auth
-from apps.core.backends.util import validate_email
-from apps.core.models import UserProfile
-from apps.core.forms import UserForm
 from secrets import token_hex
+
+from django.contrib.auth.models import User
+
+from .token import token_issue_email_auth
+from .util import validate_email
+from ..forms import UserForm
+from ..models import UserProfile
 
 
 # signup using email

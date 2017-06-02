@@ -1,14 +1,12 @@
-from django.conf import settings
-from django.shortcuts import render, redirect
-from django.utils import timezone, translation
-from django.core.mail import send_mail
-from apps.core.backends import validate_recaptcha
-from apps.core.models import Notice, Statistic, Document, Service
-import logging
 import json
 
+from django.conf import settings
+from django.core.mail import send_mail
+from django.shortcuts import redirect, render
+from django.utils import timezone, translation
 
-logger = logging.getLogger('sso')
+from ..backends import validate_recaptcha
+from ..models import Document, Notice, Service, Statistic
 
 
 def _get_document(category, version=''):
@@ -90,7 +88,7 @@ def privacy(request, version=''):
         'status': status,
         'prev_v': prev_v,
         'next_v': next_v,
-        'now': timezone.now()
+        'now': timezone.now(),
     })
 
 
@@ -130,7 +128,7 @@ def stats(request):
     return render(request, 'stats.html', {
         'level': level,
         'time': time,
-        'stat': stat
+        'stat': stat,
     })
 
 
@@ -149,7 +147,7 @@ def contact(request):
         title = request.POST.get('title', '')
         message = request.POST.get('message', '')
         result = validate_recaptcha(
-            request.POST.get('g-recaptcha-response', '')
+            request.POST.get('g-recaptcha-response', ''),
         )
 
         if name and email and topic and title and message and result:

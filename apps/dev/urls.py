@@ -1,6 +1,8 @@
 from django.conf.urls import url
 from django.shortcuts import redirect
-from apps.dev import views
+
+from . import views
+
 
 urlpatterns = [
     url(r'^$', lambda x: redirect('/dev/main/')),

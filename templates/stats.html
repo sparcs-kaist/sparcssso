@@ -1,21 +1,17 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% block app-header %}
 
-<!-- own css -->
+{% block app-header %}
 <link rel="stylesheet" type="text/css" href="/static/css/main.css">
 <link rel="stylesheet" type="text/css" href="/static/css/stats.css">
 
-<!-- cdn css/js -->
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.ko.min.js"></script>
 <script src="https://code.highcharts.com/highcharts.js"></script>
-
 {% endblock %}
 
 {% block content %}
-
 <h1 class="doc-header">SPARCS SSO Statistics <small>({{ time|date:"Y-m-d\TH:i:sT"}})</small></h1>
 <p>Permission: 
 {% if level == 0 %}
@@ -43,12 +39,12 @@ PUBLIC
         </ul>
       </div>
     </div>
-    
+
     <!-- Date -->
     <input type="text" class="form-control date-control s-date" name="start" value="" />
     <span class="input-group-addon">~</span>
     <input type="text" class="form-control date-control e-date" name="end" value="" />
-    
+
     <!-- Go btn -->
     <span class="input-group-btn">
       <button class="btn btn-default btn-primary btn-get-stat" type="button">Go!</button>
@@ -58,7 +54,6 @@ PUBLIC
 </div>
 
 <div role="tabpanel">
-
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active">
       <a href="#total-tab" aria-controls="total-tab"
@@ -75,7 +70,7 @@ PUBLIC
         <div id="birth-year-t-chart" class="chart-body"></div>
         <div id="gender-t-chart" class="chart-body"></div>
       </div>
-  
+
       <div class="row chart-lv-2">
         <div id="account-t-chart" class="chart-body"></div>
         <hr />
@@ -90,7 +85,7 @@ PUBLIC
         <div id="birth-year-r-chart" class="chart-body"></div>
         <div id="gender-r-chart" class="chart-body"></div>
       </div>
-  
+
       <div class="row chart-lv-2">
         <div id="account-r-chart" class="chart-body"></div>
         <hr />
@@ -98,12 +93,12 @@ PUBLIC
         <div id="kaist-start-year-r-chart" class="chart-body"></div>
         <div id="kaist-birth-year-r-chart" class="chart-body"></div>
         <div id="kaist-department-r-chart" class="chart-body"></div>
-        <h4>kaist-professor/employee</h4>
+        <h4>KAIST Professor / Employee</h4>
         <table class="table table-bordered kaist-table">
           <thead>
             <tr>
-              <th>professor</th>
-              <th>employee</th>
+              <th>Professor</th>
+              <th>Employee</th>
             </tr>
           </thead>
           <tbody>

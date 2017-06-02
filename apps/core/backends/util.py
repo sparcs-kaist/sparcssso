@@ -1,8 +1,9 @@
+import re
+from urllib.parse import urlparse
+
+import requests
 from django.conf import settings
 from django.contrib.auth.models import User
-from urllib.parse import urlparse
-import requests
-import re
 
 
 social_name_map = {
@@ -49,7 +50,7 @@ def validate_email(email, exclude=''):
 def validate_recaptcha(response):
     data = {
         'secret': settings.RECAPTCHA_SECRET,
-        'response': response
+        'response': response,
     }
     resp = requests.post('https://www.google.com/recaptcha/api/siteverify',
                          data=data).json()

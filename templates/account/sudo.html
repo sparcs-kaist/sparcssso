@@ -9,7 +9,7 @@
 <div class="wrap-content-sm">
   <h1>{% trans "Re-Verification" %}</h1>
   <p>{% trans "To continue, please enter your password for security. We will not ask you password again for 10 minutes." %}
-  <form class="row" action="{{request.get_full_path}}" method="post">
+  <form class="row" action="{{ request.get_full_path }}" method="post">
     {% if fail %}
     <div class="form-group col-xs-12">
       <div class="alert alert-danger">

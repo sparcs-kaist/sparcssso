@@ -1,8 +1,10 @@
-from django.conf.urls import url
-from django.http import HttpResponse
-from apps.api.views import v2
 import json
 import time
+
+from django.conf.urls import url
+from django.http import HttpResponse
+
+from .views import v2
 
 
 # /versions/

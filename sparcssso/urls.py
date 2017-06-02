@@ -1,10 +1,11 @@
-from django.conf import settings
-from django.conf import urls
+from django.conf import settings, urls
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.shortcuts import render
+
 from apps.core.views import general
+
 
 urlpatterns = [
     url(r'^$', general.main),

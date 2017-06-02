@@ -1,29 +1,30 @@
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import SuspiciousOperation
-from django.core.validators import URLValidator
-from django.contrib import auth
-from django.db import transaction
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
-from django.utils import timezone
-from django.utils.crypto import constant_time_compare
-from django.utils.dateparse import parse_date
-from django.views.decorators.csrf import csrf_exempt
-from apps.core.backends import service_register, validate_email
-from apps.core.models import (
-    Notice, Service, ServiceMap, AccessToken, PointLog, Statistic,
-)
-from datetime import datetime, timedelta
-from secrets import token_hex
-from urllib.parse import urlencode
 import hmac
 import json
 import logging
 import time
+from datetime import datetime, timedelta
+from secrets import token_hex
+from urllib.parse import urlencode
+
+from django.contrib import auth
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import SuspiciousOperation
+from django.core.validators import URLValidator
+from django.db import transaction
+from django.http import HttpResponse
+from django.shortcuts import redirect, render
+from django.utils import timezone
+from django.utils.crypto import constant_time_compare
+from django.utils.dateparse import parse_date
+from django.views.decorators.csrf import csrf_exempt
+
+from ...core.backends import service_register, validate_email
+from ...core.models import (
+    AccessToken, Notice, PointLog, Service, ServiceMap, Statistic,
+)
 
 
-logger = logging.getLogger('sso.api')
-profile_logger = logging.getLogger('sso.core.profile')
+logger = logging.getLogger('sso.service')
 TIMEOUT = 60
 
 
@@ -104,25 +105,20 @@ def token_require(request):
             'alias': service.alias,
         })
 
-    tokens = AccessToken.objects.filter(user=user, service=service)
-    if len(tokens):
-        logger.info('token.delete', {'r': request, 'hide': True})
-        tokens.delete()
-
+    AccessToken.objects.filter(user=user, service=service).delete()
     m = ServiceMap.objects.filter(user=user, service=service).first()
     if not m or m.unregister_time:
-        result = service_register(user, service)
-        if result:
-            profile_logger.info(
-                f'register.success: app={service.name}',
-                {'r': request},
-            )
-        else:
+        m_new = service_register(user, service)
+        log_msg = 'success' if m_new else 'fail'
+        logger.warning(f'register.{log_msg}', {
+            'r': request,
+            'extra': [
+                ('app', service.name),
+                ('sid', m_new.sid if m_new else ''),
+            ],
+        })
+        if not m_new:
             left = service.cooltime - (timezone.now() - m.unregister_time).days
-            profile_logger.warning(
-                f'register.fail: app={service.name}',
-                {'r': request},
-            )
             return render(request, 'api/cooltime.html', {
                 'service': service,
                 'left': left,
@@ -138,7 +134,11 @@ def token_require(request):
         expire_time=timezone.now() + timedelta(seconds=TIMEOUT),
     )
     token.save()
-    logger.info(f'token.create: app={client_id}', {'r': request})
+    logger.info('login.try', {
+        'r': request,
+        'hide': True,
+        'extra': [('app', client_id)],
+    })
 
     return redirect(service.login_callback_url + '?' + urlencode({
         'code': token.tokenid,
@@ -153,7 +153,7 @@ def token_info(request):
         raise SuspiciousOperation('INVALID_METHOD')
 
     service, [code], timestamp = check_sign(
-        request.POST, ['code']
+        request.POST, ['code'],
     )
 
     token = AccessToken.objects.filter(tokenid=code).first()
@@ -164,7 +164,11 @@ def token_info(request):
     elif token.expire_time < timezone.now():
         raise SuspiciousOperation('TOKEN_EXPIRED')
 
-    logger.info('token.delete', {'r': request, 'hide': True})
+    logger.info('login.done', {
+        'r': request,
+        'uid': token.user.username,
+        'extra': [('app', service.name)],
+    })
     token.delete()
 
     user = token.user
@@ -185,7 +189,7 @@ def token_info(request):
         'kaist_id': profile.kaist_id,
         'kaist_info': profile.kaist_info,
         'kaist_info_time': date2str(profile.kaist_info_time),
-        'sparcs_id': profile.sparcs_id
+        'sparcs_id': profile.sparcs_id,
     }
 
     return HttpResponse(json.dumps(resp), content_type='application/json')
@@ -194,7 +198,7 @@ def token_info(request):
 # /logout/
 def logout(request):
     service, [sid, redirect_uri], timestamp = check_sign(
-        request.GET, ['sid', 'redirect_uri']
+        request.GET, ['sid', 'redirect_uri'],
     )
 
     m = ServiceMap.objects.filter(sid=sid, service=service).first()
@@ -207,13 +211,18 @@ def logout(request):
             validate(redirect_uri)
         except:
             raise SuspiciousOperation('INVALID_URL')
+    else:
+        redirect_uri = service.main_url
 
     if request.user and request.user.is_authenticated:
-        logger.info('logout', {'r': request})
+        logger.info('logout', {
+            'r': request,
+            'extra': [
+                ('app', service.name),
+                ('redirect', redirect_uri),
+            ],
+        })
         auth.logout(request)
-
-    if not redirect_uri:
-        redirect_uri = service.main_url
     return redirect(redirect_uri)
 
 
@@ -225,7 +234,7 @@ def point(request):
         raise SuspiciousOperation('INVALID_METHOD')
 
     service, [sid, delta, message, lower_bound], timestamp = check_sign(
-        request.POST, ['sid', 'delta', 'message', 'lower_bound']
+        request.POST, ['sid', 'delta', 'message', 'lower_bound'],
     )
 
     m = ServiceMap.objects.filter(sid=sid, service=service).first()
@@ -259,6 +268,16 @@ def point(request):
         manager = m.user.point_logs
         if manager.count() >= 20:
             manager.order_by('time')[0].delete()
+
+        logger.info('point', {
+            'r': request,
+            'uid': m.user.username,
+            'hide': True,
+            'extra': [
+                ('app', service.name),
+                ('delta', delta),
+            ],
+        })
         PointLog(user=m.user, service=service, delta=delta,
                  point=profile.point, action=message).save()
 
@@ -294,7 +313,7 @@ def notice(request):
 # /email/
 def email(request):
     email = request.GET.get('email', '')
-    exclude = request.GET.geT('exclude', '')
+    exclude = request.GET.get('exclude', '')
     if validate_email(email, exclude):
         return HttpResponse(status=200)
     return HttpResponse(status=400)
@@ -311,7 +330,7 @@ def stats(request):
 
     client_ids = request.GET.get('client_ids', '').split(',')
     client_list = list(filter(None, map(
-        lambda x: Service.objects.filter(name=x).first(), client_ids
+        lambda x: Service.objects.filter(name=x).first(), client_ids,
     )))
     if not client_list:
         client_list = Service.objects.all()
@@ -322,7 +341,7 @@ def stats(request):
         client_list = filter(lambda x: x.scope == 'PUBLIC', client_list)
 
     today = timezone.localtime(timezone.now()).replace(
-        hour=0, minute=0, second=0, microsecond=0
+        hour=0, minute=0, second=0, microsecond=0,
     )
     start_date, end_date = None, None
     try:
@@ -340,11 +359,11 @@ def stats(request):
 
     if not end_date:
         end_date = today.replace(
-            hour=23, minute=59, second=59, microsecond=999999
+            hour=23, minute=59, second=59, microsecond=999999,
         )
 
     raw_stats = Statistic.objects.filter(
-        time__gte=start_date, time__lte=end_date
+        time__gte=start_date, time__lte=end_date,
     )
 
     stats = {}

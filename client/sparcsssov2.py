@@ -1,8 +1,10 @@
-from urllib.parse import urlencode
-from secrets import token_hex
 import hmac
-import requests
 import time
+
+from secrets import token_hex
+from urllib.parse import urlencode
+
+import requests
 
 
 # SPARCS SSO V2 Client Version 1.1
@@ -39,8 +41,8 @@ class Client:
         self.DOMAIN = self.BETA_DOMAIN if is_beta else self.SERVER_DOMAIN
         self.DOMAIN = server_addr if server_addr else self.DOMAIN
 
-        BASE_URL = ''.join([self.DOMAIN, self.API_PREFIX, self.VERSION_PREFIX])
-        self.URLS = {k: ''.join([BASE_URL, v]) for k, v in self.URLS.items()}
+        base_url = ''.join([self.DOMAIN, self.API_PREFIX, self.VERSION_PREFIX])
+        self.URLS = {k: ''.join([base_url, v]) for k, v in self.URLS.items()}
 
         self.client_id = client_id
         self.secret_key = secret_key.encode()
@@ -140,7 +142,7 @@ class Client:
         :returns: a server response; check the full docs
         """
         sign, timestamp = self._sign_payload([
-            sid, delta, message, lower_bound
+            sid, delta, message, lower_bound,
         ])
         params = {
             'client_id': self.client_id,

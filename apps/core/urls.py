@@ -1,7 +1,9 @@
 from django.conf import settings
 from django.conf.urls import url
 from django.shortcuts import redirect
-from apps.core.views import auth, account, profile, password
+
+from .views import account, auth, password, profile
+
 
 urlpatterns = [
     url(r'^$', lambda x: redirect('/account/profile/')),

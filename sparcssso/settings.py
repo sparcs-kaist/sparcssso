@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
+from .version import get_version_info
+
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
@@ -30,7 +33,7 @@ ALLOWED_HOSTS = [
 
 DOMAIN = 'http://ssodev.sparcs.org'
 
-VERSION = 'nightly-1.20170520'
+VERSION = get_version_info()
 
 
 # Application definition
@@ -42,8 +45,9 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apps.core',
     'apps.api',
+    'apps.core',
+    'apps.dev',
 )
 
 MIDDLEWARE = (
@@ -117,7 +121,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    },
 }
 
 
@@ -163,7 +167,9 @@ TEAM_EMAILS = ['sso@sparcs.org', ]
 
 ADMINS = (('SSO SYSOP', 'sso.sysop@sparcs.org'),)
 
-LOG_FILE = os.path.join(BASE_DIR, 'archive/logs.txt')
+LOG_DIR = os.path.join(BASE_DIR, 'archive/logs/')
+
+LOG_BUFFER_DIR = os.path.join(LOG_DIR, 'buffer/')
 
 LOGGING = {
     'version': 1,
@@ -171,7 +177,7 @@ LOGGING = {
     'handlers': {
         'file': {
             'level': 'INFO',
-            'class': 'apps.logger.DBHandler',
+            'class': 'apps.logger.SSOLogHandler',
         },
         'mail': {
             'level': 'ERROR',
@@ -192,6 +198,6 @@ STAT_FILE = os.path.join(BASE_DIR, 'archive/stats.txt')
 
 # Local Settings
 try:
-    from .local_settings import *
+    from .local_settings import * # noqa: F401, F403
 except ImportError:
     pass

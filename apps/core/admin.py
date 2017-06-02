@@ -1,9 +1,12 @@
 from django.contrib import admin
 from django.contrib.auth import admin as uadmin
 from django.contrib.auth.models import User
-from apps.core.models import Notice, Statistic, Document, Service, \
-    ServiceMap, AccessToken, UserProfile, EmailAuthToken, ResetPWToken, \
-    PointLog, UserLog
+
+from .models import (
+    AccessToken, Document, EmailAuthToken, Notice,
+    PointLog, ResetPWToken, Service, ServiceMap,
+    Statistic, UserLog, UserProfile,
+)
 
 
 admin.site.unregister(User)

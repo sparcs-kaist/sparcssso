@@ -1,18 +1,18 @@
+import logging
+from urllib.parse import parse_qs, urlparse
+
 from django.conf import settings
 from django.contrib import auth
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
-from apps.core.backends import (
-    anon_required,
-    auth_fb_init, auth_fb_callback,
-    auth_tw_init, auth_tw_callback,
-    auth_kaist_init, auth_kaist_callback,
-    get_clean_url, get_social_name,
+
+from ..backends import (
+    anon_required, auth_fb_callback, auth_fb_init,
+    auth_kaist_callback, auth_kaist_init, auth_tw_callback,
+    auth_tw_init, get_clean_url, get_social_name,
 )
-from apps.core.models import Notice, Service
-from urllib.parse import urlparse, parse_qs
-import logging
+from ..models import Notice, Service
 
 
 logger = logging.getLogger('sso.auth')
@@ -117,10 +117,13 @@ def callback(request):
         profile, info = auth_kaist_callback(token)
 
     userid = info['userid'] if info else 'unknown'
-    type_str = get_social_name(type)
-    logger.info(f'social.{type_str}: id={userid}', {
+    logger.info('social', {
         'r': request,
         'hide': True,
+        'extra': [
+            ('type', get_social_name(type)),
+            ('uid', userid),
+        ],
     })
     user = profile.user if profile else None
 
@@ -183,19 +186,14 @@ def callback_conn(request, type, user, info):
     profile.save()
     request.session['result_con'] = result_con
 
-    userid = info['userid'] if info else 'unknown'
-    type_str = get_social_name(type)
-    if result_con == 0:
-        profile_logger.warning(
-            f'social.connect.success: type={type_str},id={userid}',
-            {'r': request},
-        )
-    else:
-        profile_logger.warning(
-            f'social.connect.fail: type={type_str},id={userid}',
-            {'r': request},
-        )
-
+    log_msg = 'success' if result_con == 0 else 'fail'
+    profile_logger.warning(f'social.connect.{log_msg}', {
+        'r': request,
+        'extra': [
+            ('type', get_social_name(type)),
+            ('uid', info['userid'] if info else 'unknown'),
+        ],
+    })
     return redirect('/account/profile/')
 
 
@@ -213,17 +211,12 @@ def callback_renew(request, type, user, info):
 
     request.session['result_con'] = result_con
 
-    userid = info['userid'] if info else 'unknown'
-    type_str = get_social_name(type)
-    if result_con == 0:
-        profile_logger.warning(
-            f'social.update.success: type={type_str},id={userid}',
-            {'r': request},
-        )
-    else:
-        profile_logger.warning(
-            f'social.fail.success: type={type_str},id={userid}',
-            {'r': request},
-        )
-
+    log_msg = 'success' if result_con == 0 else 'fail'
+    profile_logger.warning(f'social.update.{log_msg}', {
+        'r': request,
+        'extra': [
+            ('type', get_social_name(type)),
+            ('uid', info['userid'] if info else 'unknown'),
+        ],
+    })
     return redirect('/account/profile/')

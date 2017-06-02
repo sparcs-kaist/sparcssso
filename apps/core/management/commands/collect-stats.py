@@ -1,10 +1,12 @@
-from django.core.management.base import BaseCommand
-from django.contrib.auth.models import User
-from django.conf import settings
-from django.utils import timezone
-from apps.core.models import Statistic, Service
-from datetime import timedelta
 import json
+from datetime import timedelta
+
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.core.management.base import BaseCommand
+from django.utils import timezone
+
+from ...models import Service, Statistic
 
 
 class Command(BaseCommand):
@@ -39,7 +41,7 @@ class Command(BaseCommand):
                     'department': {},
                     'employee': 0,
                     'professor': 0,
-                }
+                },
             }
 
     def add_basic_stat(self, service, user):

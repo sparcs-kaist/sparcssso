@@ -1,16 +1,18 @@
-from django.contrib.auth.models import User
-from django.contrib.auth.hashers import make_password
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from django.utils import timezone
-from apps.core.backends import (
-    real_user_required, sudo_required, token_issue_reset_pw,
-)
-from apps.core.models import ResetPWToken
 import logging
 
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import User
+from django.shortcuts import redirect, render
+from django.utils import timezone
 
-logger = logging.getLogger('sso.core.password')
+from ..backends import (
+    real_user_required, sudo_required, token_issue_reset_pw,
+)
+from ..models import ResetPWToken
+
+
+logger = logging.getLogger('sso.auth.password')
 
 
 # /password/change/
@@ -24,7 +26,7 @@ def change(request):
         user.password = make_password(newpw)
         user.save()
 
-        logger.warning('change', {'r': request})
+        logger.info('change', {'r': request})
         return redirect('/account/login/')
 
     return render(request, 'account/pw-change.html', {'user': user})
@@ -42,7 +44,11 @@ def reset_email(request):
             })
 
         token_issue_reset_pw(user)
-        logger.warning('reset.try', {'r': request, 'uid': user.username})
+        logger.warning('reset.try', {
+            'r': request,
+            'uid': user.username,
+            'extra': [('email', email)],
+        })
         return render(request, 'account/pw-reset/sent.html')
 
     return render(request, 'account/pw-reset/send.html')
@@ -65,7 +71,11 @@ def reset(request, tokenid):
         user.save()
         token.delete()
 
-        logger.warning('reset.done', {'r': request, 'uid': user.username})
+        logger.warning('reset.done', {
+            'r': request,
+            'uid': user.username,
+            'extra': [('email', user.email)],
+        })
         return render(request, 'account/pw-reset/done.html')
 
     return render(request, 'account/pw-reset/main.html', {'tokenid': tokenid})

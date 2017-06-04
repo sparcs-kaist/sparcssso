@@ -53,9 +53,9 @@
       <div class="col-xs-4" style="padding: 0">
         <select class="form-control" name="gender">
           <option id="gender-H" value="*H">{% trans "Hide" %}</option>
-          <option id="gender-M" value="*M">{% trans "Male" %}</option>
           <option id="gender-F" value="*F">{% trans "Female" %}</option>
-          <option id="gender-E" value="*E">{% trans "etc" %}</option>
+          <option id="gender-M" value="*M">{% trans "Male" %}</option>
+          <option id="gender-E" value="*E">{% trans "Custom" %}</option>
         </select>
       </div>
       <div class="col-xs-8" style="padding: 0">
@@ -192,7 +192,7 @@ $(function() {
     if (isDefinedGender(g)) {
       $('select[name=gender]').val(g);
     } else if (g !== '') {
-      $('#gender-E').text('{% trans "etc" %} (' + g + ')');
+      $('#gender-E').text('{% trans "Custom" %} (' + g + ')');
       $('#gender-E').attr('value', g);
       $('#gender-E').attr('selected', true);
       $('input[name=custom-gender]').val(g);
@@ -212,15 +212,15 @@ $(function() {
     var customOption = $('#gender-E');
     if (isDefinedGender(g)) {
       customOption.attr('value', '*E');
-      customOption.text('{% trans "etc" %}');
+      customOption.text('{% trans "Custom" %}');
       $('select[name=gender]').val(g);
       $('input[name=custom-gender]').val('');
     } else if (g === '') {
       customOption.attr('value', '*E');
-      customOption.text('{% trans "etc" %}');
+      customOption.text('{% trans "Custom" %}');
     } else {
       customOption.attr('value', g);
-      customOption.text('{% trans "etc" %} (' + g + ')');
+      customOption.text('{% trans "Custom" %} (' + g + ')');
     }
   });
 

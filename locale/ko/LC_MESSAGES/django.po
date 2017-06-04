@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: v0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-20 01:55+0900\n"
+"POT-Creation-Date: 2017-06-04 17:48+0900\n"
 "PO-Revision-Date: 2016-01-01 19:21+0900\n"
 "Last-Translator: Jae-Sung Kim <wotjd1102@kaist.ac.kr>\n"
 "Language-Team: SPARCS SSO Team <sso@sparcs.org>\n"
@@ -259,9 +259,9 @@ msgstr "여자"
 
 #: templates/account/profile.html:58 templates/account/profile.html:195
 #: templates/account/profile.html:215 templates/account/profile.html:220
-#: templates/account/profile.html:223 templates/contact.html:48
-msgid "etc"
-msgstr "기타"
+#: templates/account/profile.html:223
+msgid "Custom"
+msgstr "사용자 지정"
 
 #: templates/account/profile.html:66
 msgid "Modify"
@@ -582,7 +582,9 @@ msgstr "재인증"
 msgid ""
 "To continue, please enter your password for security. We will not ask you "
 "password again for 10 minutes."
-msgstr "보안을 위해 비밀번호를 다시 입력해주세요. 10분 동안은 다시 비밀번호를 입력하지 않으셔도 됩니다."
+msgstr ""
+"보안을 위해 비밀번호를 다시 입력해주세요. 10분 동안은 다시 비밀번호를 입력하"
+"지 않으셔도 됩니다."
 
 #: templates/account/sudo.html:16
 msgid "WRONG current password!"
@@ -707,6 +709,10 @@ msgstr "제안"
 #: templates/contact.html:47
 msgid "Accounts"
 msgstr "계정"
+
+#: templates/contact.html:48
+msgid "etc"
+msgstr "기타"
 
 #: templates/contact.html:58
 msgid "Message"

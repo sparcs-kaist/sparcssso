@@ -169,7 +169,7 @@ ADMINS = (('SSO SYSOP', 'sso.sysop@sparcs.org'),)
 
 LOG_DIR = os.path.join(BASE_DIR, 'archive/logs/')
 
-LOG_BUFFER_DIR = os.path.join(LOG_DIR, 'buffer/')
+LOG_BUFFER_DIR = os.path.join(BASE_DIR, 'archive/buffer/')
 
 LOGGING = {
     'version': 1,

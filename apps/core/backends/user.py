@@ -39,14 +39,20 @@ def user_signal_logged_out(sender, request, user, **kwargs):
 
 @receiver(user_login_failed)
 def user_signal_login_failed(sender, request, credentials, **kwargs):
+    extra = []
     if 'email' in credentials:
         email = credentials['email']
+        extra.append(('email', credentials['email']))
         user = User.objects.filter(email=email).first()
+    elif 'ldap_id' in credentials:
+        ldap_id = credentials['ldap_id']
+        extra.append(('ldap_id', credentials['ldap_id']))
+        user = User.objects.filter(profile__sparcs_id=ldap_id).first()
     elif 'user' in credentials:
         user = credentials['user']
 
     logger.warning('login.fail', {
         'r': request,
         'uid': user.username if user else 'unknown',
-        'extra': [('email', email if not user else '')],
+        'extra': extra,
     })

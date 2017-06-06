@@ -62,10 +62,10 @@
         <h4 class="modal-title">{% trans "Unregister Service" %}</h4>
       </div>
       <div class="text-center modal-body">
-        <p><strong>{% trans "Warning!" %}</strong> {% trans "You are trying to unregister the following service:" %} <span id="service-alias"></span></p>
+        <p><strong>{% trans "Warning!" %}</strong> {% blocktrans %}You are trying to unregister <span id="service-alias"></span> service.{% endblocktrans %}</p>
         <ul class="list-unstyled">
           <li>&gt;&gt; {% trans "You will permantly lose access to your account." %} &lt;&lt;</li>
-          <li class="text-danger" id="cooltime-warning">&gt;&gt; {% trans "You CANNOT use this service again for followings:" %} <span id="service-cooltime"></span> {% trans "days" %}. &lt;&lt;</li>
+          <li class="text-danger" id="cooltime-warning">&gt;&gt; {% blocktrans %}You CANNOT use this service again for <span id="service-cooltime"></span> days.{% endblocktrans %} &lt;&lt;</li>
           <li class="text-danger">&gt;&gt; {% trans "You CANNOT undo this action." %} &lt;&lt;</li>
         </ul>
       </div>

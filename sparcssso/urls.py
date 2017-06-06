@@ -39,4 +39,4 @@ urls.handler500 = lambda r: render(r, 'error/500.html', status=500)
 admin.site.site_header = 'SPARCS SSO Administration'
 admin.site.site_title = 'SPARCS SSO Admin'
 admin.site.index_title = ''
-admin.site.login_template = 'account/login.dummy.html'
+admin.site.login_template = 'account/login/dummy.html'

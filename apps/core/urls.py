@@ -10,6 +10,7 @@ urlpatterns = [
 
     # package: auth
     url(r'^login/$', auth.login),
+    url(r'^login/internal/$', auth.login_internal),
     url(r'^logout/$', auth.logout),
 
     url(r'^login/fb/$', auth.init, {'mode': 'LOGIN', 'type': 'FB'}),

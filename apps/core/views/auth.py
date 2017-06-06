@@ -19,42 +19,79 @@ logger = logging.getLogger('sso.auth')
 profile_logger = logging.getLogger('sso.profile')
 
 
-# /login/
-@anon_required
-def login(request):
-    current_time = timezone.now()
-    notice = Notice.objects.filter(valid_from__lte=current_time,
-                                   valid_to__gt=current_time).first()
-
+def login_core(request, session_name, template_name, get_user_func):
     if 'next' in request.GET:
         request.session['next'] = request.GET['next']
 
-    query_dict = parse_qs(urlparse(request.session.get('next', '/')).query)
+    current_time = timezone.now()
+    notice = Notice.objects.filter(
+        valid_from__lte=current_time, valid_to__gt=current_time,
+    ).first()
+
+    query_dict = parse_qs(urlparse(
+        request.session.get('next', '/'),
+    ).query)
     service_name = query_dict.get('client_id', [''])[0]
     service = Service.objects.filter(name=service_name).first()
-    service_alias = service.alias if service else ''
+
+    ip = request.META.get('REMOTE_ADDR', '')
+    show_internal = (
+        ip.startswith('143.248.234.') or
+        (service and service.scope == 'SPARCS')
+    )
+    show_internal = True
 
     if request.method == 'POST':
-        email = request.POST.get('email', 'null@sso.sparcs.org')
-        password = request.POST.get('password', 'unknown')
-        user = auth.authenticate(request=request,
-                                 email=email,
-                                 password=password)
+        user = get_user_func(request.POST)
         if user:
             request.session.pop('info_signup', None)
             auth.login(request, user)
 
-            nexturl = request.session.pop('next', '/')
-            return redirect(get_clean_url(nexturl))
+            return redirect(get_clean_url(
+                request.session.pop('next', '/'),
+            ))
 
-        request.session['result_login'] = 1
+        request.session[session_name] = 1
 
-    return render(request, 'account/login.html', {
+    return render(request, template_name, {
         'notice': notice,
-        'service': service_alias,
-        'fail': request.session.pop('result_login', ''),
+        'service': service.alias if service else '',
+        'fail': request.session.pop(session_name, ''),
+        'show_internal': show_internal,
         'kaist_enabled': settings.KAIST_APP_ENABLED,
     })
+
+
+# /login/
+@anon_required
+def login(request):
+    def get_user_func(post_dict):
+        email = post_dict.get('email', 'null@sso.sparcs.org')
+        password = post_dict.get('password', 'unknown')
+        return auth.authenticate(
+            request=request, email=email, password=password,
+        )
+
+    return login_core(
+        request, 'result_login',
+        'account/login/main.html', get_user_func,
+    )
+
+
+# /login/internal/
+@anon_required
+def login_internal(request):
+    def get_user_func(post_dict):
+        ldap_id = post_dict.get('ldap-id', 'unknown')
+        ldap_pw = post_dict.get('ldap-pw', 'unknown')
+        return auth.authenticate(
+            request=request, ldap_id=ldap_id, ldap_pw=ldap_pw,
+        )
+
+    return login_core(
+        request, 'result_login_internal',
+        'account/login/internal.html', get_user_func,
+    )
 
 
 # /logout/

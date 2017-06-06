@@ -64,6 +64,7 @@ MIDDLEWARE = (
 
 AUTHENTICATION_BACKENDS = [
     'apps.core.backends.EmailLoginBackend',
+    'apps.core.backends.LDAPLoginBackend',
     'apps.core.backends.PasswordlessLoginBackend',
 ]
 

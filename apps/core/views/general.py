@@ -1,5 +1,3 @@
-import json
-
 from django.conf import settings
 from django.core.mail import send_mail
 from django.shortcuts import redirect, render
@@ -94,41 +92,19 @@ def privacy(request, version=''):
 
 # /stats/
 def stats(request):
-    level = 0
-    if request.user.is_authenticated:
-        if request.user.is_staff:
-            level = 2
-        elif request.user.profile.sparcs_id:
-            level = 1
+    if not request.user.is_authenticated:
+        level = 0
+    elif request.user.profile.sparcs_id:
+        level = 1
+    elif request.user.is_staff:
+        level = 2
 
-    time = None
-    raw_stat = {}
-    raw_stats = Statistic.objects.order_by('-time')
-    if len(raw_stats) > 0:
-        time = raw_stats[0].time
-        raw_stat = json.loads(raw_stats[0].data)
-
-    stat = []
-    for name, value in raw_stat.items():
-        if name != 'all':
-            service = Service.objects.filter(name=name).first()
-            if not service or (level < 1 and not service.is_shown):
-                continue
-
-        s = {}
-        s['name'] = name
-        s['alias'] = service.alias if name != 'all' else 'all'
-        s.update(value)
-
-        if name == 'all':
-            stat.insert(0, s)
-        else:
-            stat.append(s)
+    stat = Statistic.objects.order_by('-time').first()
+    time = stat.time if stat else None
 
     return render(request, 'stats.html', {
         'level': level,
         'time': time,
-        'stat': stat,
     })
 
 

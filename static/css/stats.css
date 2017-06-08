@@ -1,26 +1,19 @@
-.chart-header {
-    float: left;
-    font-weight: 600;
-    margin: 10px;
-}
-
-.top-panel {
-    width: 60%;
-    margin: 0 auto;
-}
-
-.input-daterange {
-    margin-bottom: 20px;
+h4 {
+    margin-top: 20px;
 }
 
 .chart-body {
     width: 100%;
-    height: 500px;
+    height: 400px;
     margin: 20px 0;
 }
 
-.highcharts-credits {
-    display: none;
+.chart-body-half {
+    display: inline-block;
+    float: left;
+    width: 50%;
+    height: 400px;
+    margin: 20px 0;
 }
 
 thead {
@@ -32,6 +25,10 @@ th {
 }
 
 @media (max-width: 767px) {
+    .chart-body-half {
+        width: 100%;
+    }
+
     .kaist-table {
         width: 90%;
         margin: auto;

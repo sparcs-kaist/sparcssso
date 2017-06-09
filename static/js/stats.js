@@ -1,68 +1,68 @@
 /* department data */
 const deptData = {
   0: 'Undecided',
-  3648: 'Bio and Brain Engineering',
-  132: 'Biological Sciences',
-  2222: 'Biomedical Science and Engineering Program',
-  936: 'Business',
+  4: 'Undergraduate Research Participation',
   33: 'Capstone Design',
-  451: 'Chemical and Biomolecular Engineering',
-  150: 'Chemistry',
-  441: 'Civil and Environmental Engineering',
-  4419: 'Departmemt of Aerospace Engineering',
-  4418: 'Departmemt of Mechanical Engineering',
-  331: 'Department of Industrial Systems Engineering',
-  151: 'Department of Mathematical Sciences',
-  3992: 'Division of Future Vehicle',
-  4201: 'Economics Program',
-  4431: 'Entrepreneurship Program',
-  4305: 'Executive MBA',
-  4398: 'Finance Executive MBA',
-  4303: 'Finance MBA',
-  3919: 'Financial Engineering Program',
-  4310: 'Financial Engineering Program',
-  973: 'General Required',
-  3941: 'Global Information &amp; Telecommunication Technology Program',
-  4200: 'Graduate Program for Future Strategy',
-  3539: 'Graduate School of Culture Technology',
-  4144: 'Graduate School of Information Security',
-  4438: 'Graduate School of Innovation & Technology Management',
-  4549: 'Graduate School of Knowledge Service Engineering',
-  3605: 'Graduate School of Medical Science and Engineering',
-  3990: 'Graduate School of Science and Technology Policy',
-  4422: 'Graduate School of Web Science Technology',
-  3799: 'Graduate school of EEWS',
-  3692: 'Graduate school of Nanoscience &amp; Technology',
-  4493: 'Green Business and Policy Program',
-  340: 'Industrial Design',
-  4312: 'Information Management Program',
-  3723: 'Information and Communications Engineering',
-  4306: 'Information and Media MBA',
-  3978: 'Intellectual Property Minor Program for Undergradu',
-  3920: 'Master of Science Journalism',
-  3882: 'Master of intellectual property',
-  421: 'Materials Science and Engineering',
-  4141: 'Minor Program in Culture Technology',
-  3993: 'Minor Program in Science and Technology Policy',
-  4425: 'Moon Soul Graduate School of Future Strategy',
-  221: 'Nuclear and Quantum Engineering',
   110: 'Physics',
+  132: 'Biological Sciences',
+  150: 'Chemistry',
+  151: 'Department of Mathematical Sciences',
+  221: 'Nuclear and Quantum Engineering',
+  331: 'Department of Industrial Systems Engineering',
+  340: 'Industrial Design',
+  421: 'Materials Science and Engineering',
+  441: 'Civil and Environmental Engineering',
+  451: 'Chemical and Biomolecular Engineering',
+  936: 'Business',
+  973: 'General Required',
+  2222: 'Biomedical Science and Engineering Program',
   2410: 'Polymer Science and Engineering Program',
+  3520: 'The Robotics Program',
+  3539: 'Graduate School of Culture Technology',
+  3605: 'Graduate School of Medical Science and Engineering',
+  3648: 'Bio and Brain Engineering',
+  3692: 'Graduate school of Nanoscience &amp; Technology',
+  3701: 'Space Exploration Engineering Program',
+  3703: 'Software Graduate Program',
+  3723: 'Information and Communications Engineering',
+  3799: 'Graduate school of EEWS',
+  3882: 'Master of intellectual property',
+  3919: 'Financial Engineering Program',
+  3920: 'Master of Science Journalism',
+  3941: 'Global Information &amp; Telecommunication Technology Program',
+  3978: 'Intellectual Property Minor Program for Undergradu',
+  3990: 'Graduate School of Science and Technology Policy',
+  3992: 'Division of Future Vehicle',
+  3993: 'Minor Program in Science and Technology Policy',
+  3997: 'The Cho Chun Shik Graduate School for Green Transportation',
+  4141: 'Minor Program in Culture Technology',
+  4144: 'Graduate School of Information Security',
   4182: 'Professional MBA',
-  4427: 'Program of Brain and Cognitive Engineering',
-  4547: 'School of Business and Technology Management',
-  4548: 'School of Business and Technology Management',
+  4183: 'Social Entrepreneurship MBA',
+  4200: 'Graduate Program for Future Strategy',
+  4201: 'Economics Program',
+  4301: 'School of Management Engineering',
+  4303: 'Finance MBA',
+  4305: 'Executive MBA',
+  4306: 'Information and Media MBA',
+  4307: 'Techno-MBA',
+  4310: 'Financial Engineering Program',
+  4312: 'Information Management Program',
+  4398: 'Finance Executive MBA',
+  4418: 'Departmemt of Mechanical Engineering',
+  4419: 'Departmemt of Aerospace Engineering',
   4421: 'School of Computing',
+  4422: 'Graduate School of Web Science Technology',
   4423: 'School of Electrical Engineering',
   4424: 'School of Humanities &amp; Social Sciences',
-  4301: 'School of Management Engineering',
-  4183: 'Social Entrepreneurship MBA',
-  3703: 'Software Graduate Program',
-  3701: 'Space Exploration Engineering Program',
-  4307: 'Techno-MBA',
-  3997: 'The Cho Chun Shik Graduate School for Green Transportation',
-  3520: 'The Robotics Program',
-  4: 'Undergraduate Research Participation',
+  4425: 'Moon Soul Graduate School of Future Strategy',
+  4427: 'Program of Brain and Cognitive Engineering',
+  4431: 'Entrepreneurship Program',
+  4438: 'Graduate School of Innovation & Technology Management',
+  4493: 'Green Business and Policy Program',
+  4547: 'School of Business and Technology Management',
+  4548: 'School of Business and Technology Management',
+  4549: 'Graduate School of Knowledge Service Engineering',
 };
 
 const getExtreme = (list, compare) => {
@@ -70,15 +70,18 @@ const getExtreme = (list, compare) => {
     return undefined;
   }
   let m;
-  for (const item of list) {
+  list.forEach((item) => {
     if (m === undefined || compare(m, item)) {
       m = item;
     }
-  }
+  });
   return m;
 };
 const getMin = list => getExtreme(list, (x, y) => x > y);
 const getMax = list => getExtreme(list, (x, y) => x < y);
+const getMinMax = list => [getMin(list), getMax(list)];
+const toInt = list => list.map(x => parseInt(x, 10));
+const range = (a, b) => Array.from({ length: (b - a) + 1 }, (x, i) => i + a);
 
 const toISODate = x => x.format('YYYY-MM-DD');
 const today = toISODate(moment());
@@ -100,22 +103,6 @@ const getRecentChartOptions = ({
   chart: {
     type,
   },
-  title: {
-    text: title,
-  },
-  xAxis: {
-    categories,
-  },
-  yAxis: {
-    min: 0,
-    title: {
-      text: 'Number of Users',
-    },
-  },
-  tooltip: {
-    headerFormat: '{point.key}: ',
-    pointFormat: '<b>{point.y}</b>',
-  },
   plotOptions: {
     pie: {
       allowPointSelect: true,
@@ -126,40 +113,51 @@ const getRecentChartOptions = ({
     },
   },
   series,
+  title: {
+    text: title,
+  },
+  tooltip: {
+    headerFormat: '{point.key}: ',
+    pointFormat: '<b>{point.y}</b>',
+  },
+  xAxis: {
+    categories,
+  },
+  yAxis: {
+    min: 0,
+    title: {
+      text: 'Number of Users',
+    },
+  },
 });
 
 const renderRecentAccount = () => {
   const accountStat = recentStat.account;
-  const types = ['all', 'email', 'fb', 'tw', 'kaist', 'test'];
-  for (const type of types) {
+  ['all', 'email', 'fb', 'tw', 'kaist', 'test'].forEach((type) => {
     $(`#account-${type}-r`).text(accountStat[type]);
-  }
+  });
 };
 
 const renderRecentKAISTMember = () => {
   const kaistStat = recentStat.kaist;
-  for (const type of ['employee', 'professor']) {
+  ['professor', 'employee'].forEach((type) => {
     $(`#member-${type}-r`).text(kaistStat[type]);
-  }
+  });
 };
 
 const renderRecentGender = () => {
   const kaistStat = recentStat.kaist;
   const genderStat = recentStat.gender;
   const genderKStat = kaistStat ? kaistStat.gender : {};
-  const categories = ['female', 'male', 'etc', 'hide'];
-  const seriesDataLocal = [];
-  const seriesDataKAIST = [];
-
-  for (const type of categories) {
-    seriesDataLocal.push(genderStat[type] || 0);
-    seriesDataKAIST.push(genderKStat[type] || 0);
-  }
+  const genders = ['female', 'male', 'etc', 'hide'];
+  const [seriesDataLocal, seriesDataKAIST] = [genderStat, genderKStat].map(
+    list => genders.map(gender => list[gender] || 0),
+  );
 
   Highcharts.chart('gender-r-chart', getRecentChartOptions({
     type: 'column',
     title: 'Gender',
-    categories,
+    categories: genders,
     series: [{
       name: 'local',
       data: seriesDataLocal,
@@ -176,26 +174,19 @@ const renderRecentBirth = () => {
   const kaistStat = recentStat.kaist;
   const birthStat = recentStat.birth_year;
   const birthKStat = kaistStat ? kaistStat.birth_year : {};
-
-  const getExtremeYear = f => parseInt(f([
-    f(Object.keys(birthStat)),
-    f(Object.keys(birthKStat)),
-  ]), 10);
-  const minYear = getExtremeYear(getMin);
-  const maxYear = getExtremeYear(getMax);
-  const categories = [];
-  const seriesDataLocal = [];
-  const seriesDataKAIST = [];
-  for (let year = minYear; year <= maxYear; year += 1) {
-    categories.push(year);
-    seriesDataLocal.push(birthStat[year] || 0);
-    seriesDataKAIST.push(birthKStat[year] || 0);
-  }
+  const [minYear, maxYear] = toInt(getMinMax([
+    ...Object.keys(birthStat),
+    ...Object.keys(birthKStat),
+  ]));
+  const years = range(minYear, maxYear);
+  const [seriesDataLocal, seriesDataKAIST] = [birthStat, birthKStat].map(
+    list => years.map(year => list[year] || 0),
+  );
 
   Highcharts.chart('birth-r-chart', getRecentChartOptions({
     type: 'column',
     title: 'Birth Year',
-    categories,
+    categories: years,
     series: [{
       name: 'local',
       data: seriesDataLocal,
@@ -210,21 +201,15 @@ const renderRecentBirth = () => {
 
 const renderRecentClassOf = () => {
   const classOfStat = recentStat.kaist.start_year;
-
-  const minYear = parseInt(getMin(Object.keys(classOfStat)), 10);
-  const maxYear = parseInt(getMax(Object.keys(classOfStat)), 10);
-  const categories = [];
-  const seriesData = [];
-  for (let year = minYear; year <= maxYear; year += 1) {
-    categories.push(year);
-    seriesData.push(classOfStat[year] || 0);
-  }
+  const [minYear, maxYear] = toInt(getMinMax(Object.keys(classOfStat)));
+  const years = range(minYear, maxYear);
+  const seriesData = years.map(year => classOfStat[year] || 0);
 
   Highcharts.chart('class-of-r-chart', getRecentChartOptions({
     type: 'column',
     title: 'Class Of',
     yAxisTitle: 'Number of Users',
-    categories,
+    categories: years,
     series: [{
       name: 'default',
       data: seriesData,
@@ -235,22 +220,17 @@ const renderRecentClassOf = () => {
 
 const renderRecentDept = () => {
   const deptStat = recentStat.kaist.department;
-
-  const categories = Object.keys(deptStat);
-  const seriesData = [];
-  for (const deptId of categories) {
-    const deptName = deptData[deptId] || `Unknown ${deptId}`;
-    seriesData.push({
-      name: deptName,
-      y: deptStat[deptId],
-      showInLegend: false,
-    });
-  }
+  const deptIds = Object.keys(deptStat);
+  const seriesData = deptIds.map(deptId => ({
+    name: deptData[deptId] || `Unknown ${deptId}`,
+    y: deptStat[deptId],
+    showInLegend: false,
+  }));
 
   Highcharts.chart('dept-r-chart', getRecentChartOptions({
     type: 'pie',
     title: 'Department',
-    categories,
+    categories: deptIds,
     series: [{
       name: 'default',
       data: seriesData,
@@ -274,12 +254,25 @@ const renderRecentStats = () => {
 const getTotalChartOptions = ({
   title,
   series,
+  stacking,
 }) => ({
   chart: {
     zoomType: 'x',
   },
+  legend: {
+    enabled: series.length < 10,
+  },
+  plotOptions: {
+    area: {
+      stacking: stacking === false ? undefined : 'normal',
+    },
+  },
+  series,
   title: {
     text: title,
+  },
+  tooltip: {
+    xDateFormat: '%Y-%m-%d',
   },
   xAxis: {
     type: 'datetime',
@@ -295,87 +288,83 @@ const getTotalChartOptions = ({
       text: 'Number of Users',
     },
   },
-  legend: {
-    enabled: (series.length < 10),
-  },
-  tooltip: {
-    xDateFormat: '%Y-%m-%d',
-  },
-  plotOptions: {
-    area: {
-      stacking: 'normal',
-    },
-  },
-  series,
 });
 
 const renderTotalStats = () => {
   const transformToDateValue = (valueFunc) => {
-    const results = [];
     const dates = Object.keys(allStats).sort();
-    for (const date of dates) {
-      results.push([moment(date).unix() * 1000, valueFunc(allStats[date])]);
-    }
+    const results = dates.map(date => (
+      [moment(date).unix() * 1000, valueFunc(allStats[date])]
+    ));
     return results;
   };
 
   const chartMap = [{
     html: 'account-t-chart',
     title: 'Account Type',
-    types: Object.keys(recentStat.account),
+    types: () => Object.keys(recentStat.account),
     valueFunc: t => s => s.account[t],
+    stacking: false,
   }, {
     html: 'gender-t-chart',
     title: 'Gender',
-    types: Object.keys(recentStat.gender),
+    types: () => Object.keys(recentStat.gender),
     valueFunc: t => s => s.gender[t],
+    level: 1,
   }, {
     html: 'birth-t-chart',
     title: 'Birth Year',
-    types: Object.keys(recentStat.birth_year),
+    types: () => Object.keys(recentStat.birth_year),
     valueFunc: t => s => s.birth_year[t],
+    level: 1,
   }, {
     html: 'kaist-gender-t-chart',
     title: 'Gender (KAIST)',
-    types: Object.keys(recentStat.kaist.gender),
+    types: () => Object.keys(recentStat.kaist.gender),
     valueFunc: t => s => s.kaist.gender[t],
+    level: 2,
   }, {
     html: 'kaist-birth-t-chart',
     title: 'Birth Year (KAIST)',
-    types: Object.keys(recentStat.kaist.birth_year),
+    types: () => Object.keys(recentStat.kaist.birth_year),
     valueFunc: t => s => s.kaist.birth_year[t],
+    level: 2,
   }, {
     html: 'dept-t-chart',
     title: 'Department',
-    types: Object.keys(recentStat.kaist.department),
+    types: () => Object.keys(recentStat.kaist.department),
     nameFunc: k => deptData[k] || `Unknown ${k}`,
     valueFunc: t => s => s.kaist.department[t],
+    level: 2,
   }, {
     html: 'class-of-t-chart',
     title: 'Class Of',
-    types: Object.keys(recentStat.kaist.start_year),
+    types: () => Object.keys(recentStat.kaist.start_year),
     valueFunc: t => s => s.kaist.start_year[t],
+    level: 2,
   }, {
     html: 'kaist-member-t-chart',
     title: 'Professor / Employee',
-    types: ['professor', 'employee'],
+    types: () => ['professor', 'employee'],
     valueFunc: t => s => s.kaist[t],
+    level: 2,
   }];
 
-  for (const chart of chartMap) {
-    const series = [];
-    for (const type of chart.types) {
-      series.push({
-        type: 'area',
-        name: chart.nameFunc ? chart.nameFunc(type) : type,
-        data: transformToDateValue(chart.valueFunc(type)),
-      });
+  chartMap.forEach((chart) => {
+    if ((chart.level || 0) > level) {
+      return;
     }
+    const series = chart.types().map(type => ({
+      type: 'area',
+      name: chart.nameFunc ? chart.nameFunc(type) : type,
+      data: transformToDateValue(chart.valueFunc(type)),
+    }));
     Highcharts.chart(chart.html, getTotalChartOptions({
       title: chart.title,
       series,
+      stacking: chart.stacking,
     }));
-  }
+  });
 };
 
 const renderStats = () => {
@@ -391,12 +380,12 @@ const resetServiceList = () => {
     ...rawIdList.filter(x => !x.startsWith('sparcs') && x !== 'all').sort(),
     ...rawIdList.filter(x => x.startsWith('sparcs')).sort(),
   ];
-  for (const serviceId of serviceIdList) {
+  serviceIdList.forEach((serviceId) => {
     const serviceName = serviceList[serviceId];
     $('#service-list').append(
       `<li class="dropdown-service"><a href="#" data-id="${serviceId}">${serviceName}</a></li>`,
     );
-  }
+  });
 
   $('#service-list a').click((e) => {
     const newSelectedId = $(e.target).data('id');

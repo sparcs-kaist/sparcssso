@@ -89,8 +89,9 @@ let startDate = toISODate(moment().subtract(90, 'days'));
 let endDate = today;
 let selectedServiceId = 'all';
 
-let level = 0;
 const serviceList = {};
+let level = 0;
+let rawStats;
 let allStats;
 let recentStat;
 
@@ -369,6 +370,12 @@ const renderTotalStats = () => {
 
 const renderStats = () => {
   $('#service-name').text(serviceList[selectedServiceId]);
+  const getLastStat = (stats) => {
+    const maxDate = getMax(Object.keys(stats));
+    return maxDate ? stats[maxDate] : undefined;
+  };
+  allStats = rawStats[selectedServiceId].data;
+  recentStat = getLastStat(allStats);
   renderRecentStats();
   renderTotalStats();
 };
@@ -380,6 +387,7 @@ const resetServiceList = () => {
     ...rawIdList.filter(x => !x.startsWith('sparcs') && x !== 'all').sort(),
     ...rawIdList.filter(x => x.startsWith('sparcs')).sort(),
   ];
+  $('#service-list').html('');
   serviceIdList.forEach((serviceId) => {
     const serviceName = serviceList[serviceId];
     $('#service-list').append(
@@ -416,16 +424,11 @@ const fetchStats = () => (
     date_to: endDate,
   }).done((result) => {
     level = result.level;
+    rawStats = result.stats;
 
-    const getLastStat = (stats) => {
-      const maxDate = getMax(Object.keys(stats));
-      return maxDate ? stats[maxDate] : undefined;
-    };
     Object.keys(result.stats).forEach((k) => {
       serviceList[k] = result.stats[k].alias;
     });
-    allStats = result.stats[selectedServiceId].data;
-    recentStat = getLastStat(allStats);
     resetServiceList();
     killForbidStats();
     renderStats();
@@ -451,5 +454,11 @@ $(() => {
     fetchStats();
   });
 
+  $('a[data-toggle="tab"]').on('shown.bs.tab', () => {
+    [
+      ...$('.chart-body').toArray(),
+      ...$('.chart-body-half').toArray(),
+    ].forEach((c) => { $(c).highcharts().reflow(); });
+  });
   fetchStats();
 });

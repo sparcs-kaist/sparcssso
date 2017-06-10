@@ -1,748 +1,473 @@
-// Helper Functions
-const min = (x) => {
-  let value;
-  for (let i = 0; i < x.length; i += 1) {
-    if (value === undefined || x[i] < value) {
-      value = x[i];
-    }
-  }
-  return value === undefined ? NaN : value;
-};
-
-const max = (x) => {
-  let value;
-  for (let i = 0; i < x.length; i += 1) {
-    if (value === undefined || x[i] > value) {
-      value = x[i];
-    }
-  }
-  return value === undefined ? NaN : value;
-};
-
-const isValidKeyArr = (obj, keyArr) => {
-  for (const idx in keyArr) {
-    const key = keyArr[idx];
-    if (Object.keys(obj).contains(key)) {
-      obj = obj[key];
-    } else {
-      return false;
-    }
-  }
-  return true;
-};
-
-const isKey = (obj, key) => (
-  Object.keys(obj).contains(key.toString())
-);
-
-/*
-@return obj = {
-  x: {
-    y: value
-  }
-} when keyArr is [x, y]
-*/
-function setEmtToObj(obj, keyArr, value) {
-  const copiedObj = JSON.parse(JSON.stringify(obj));
-  let key;
-  if (keyArr.length === 1) {
-    key = keyArr[0];
-    copiedObj[key] = value;
-  } else {
-    key = keyArr.shift();
-    if (!isKey(copiedObj, key)) {
-      copiedObj[key] = {};
-    }
-    const newObj = copiedObj[key];
-    copiedObj[key] = setEmtToObj(newObj, keyArr, value);
-  }
-  return copiedObj;
-}
-
-function renameKey(obj, oKey, nKey) {
-  Object.defineProperty(
-    obj,
-    nKey,
-    Object.getOwnPropertyDescriptor(
-      obj,
-      oKey,
-  ));
-  delete obj[oKey];
-}
-
-function isEmtOfArr(arr, obj) {
-  return (arr.indexOf(obj) !== -1);
-}
-
-function makeFormattedToArr(formattedObj) {
-  const rArr = [];
-  for (const label in formattedObj) {
-    rArr.push(formattedObj[label]);
-  }
-  return rArr;
-}
-
-
-// Global Variables
-let firstCallGlobal = true;
-
-/*
- * sDateGlobal: start date, manually
- * eDateGlobal: date of today
- */
-let sDateGlobal = '2016-08-16';
-let eDateGlobal = (new Date()).toISOString().substring(0, 10);
-let serviceGlobal = 'all';
-const atomicListGlobal = ['kaist-professor', 'kaist-employee'];
-
-// Department Data
+/* department data */
 const deptData = {
   0: 'Undecided',
-  3648: 'Bio and Brain Engineering',
-  132: 'Biological Sciences',
-  2222: 'Biomedical Science and Engineering Program',
-  936: 'Business',
+  4: 'Undergraduate Research Participation',
   33: 'Capstone Design',
-  451: 'Chemical and Biomolecular Engineering',
-  150: 'Chemistry',
-  441: 'Civil and Environmental Engineering',
-  4419: 'Departmemt of Aerospace Engineering',
-  4418: 'Departmemt of Mechanical Engineering',
-  331: 'Department of Industrial Systems Engineering',
-  151: 'Department of Mathematical Sciences',
-  3992: 'Division of Future Vehicle',
-  4201: 'Economics Program',
-  4431: 'Entrepreneurship Program',
-  4305: 'Executive MBA',
-  4398: 'Finance Executive MBA',
-  4303: 'Finance MBA',
-  3919: 'Financial Engineering Program',
-  4310: 'Financial Engineering Program',
-  973: 'General Required',
-  3941: 'Global Information &amp; Telecommunication Technology Program',
-  4200: 'Graduate Program for Future Strategy',
-  3539: 'Graduate School of Culture Technology',
-  4144: 'Graduate School of Information Security',
-  4438: 'Graduate School of Innovation & Technology Management',
-  4549: 'Graduate School of Knowledge Service Engineering',
-  3605: 'Graduate School of Medical Science and Engineering',
-  3990: 'Graduate School of Science and Technology Policy',
-  4422: 'Graduate School of Web Science Technology',
-  3799: 'Graduate school of EEWS',
-  3692: 'Graduate school of Nanoscience &amp; Technology',
-  4493: 'Green Business and Policy Program',
-  340: 'Industrial Design',
-  4312: 'Information Management Program',
-  3723: 'Information and Communications Engineering',
-  4306: 'Information and Media MBA',
-  3978: 'Intellectual Property Minor Program for Undergradu',
-  3920: 'Master of Science Journalism',
-  3882: 'Master of intellectual property',
-  421: 'Materials Science and Engineering',
-  4141: 'Minor Program in Culture Technology',
-  3993: 'Minor Program in Science and Technology Policy',
-  4425: 'Moon Soul Graduate School of Future Strategy',
-  221: 'Nuclear and Quantum Engineering',
   110: 'Physics',
+  132: 'Biological Sciences',
+  150: 'Chemistry',
+  151: 'Department of Mathematical Sciences',
+  221: 'Nuclear and Quantum Engineering',
+  331: 'Department of Industrial Systems Engineering',
+  340: 'Industrial Design',
+  421: 'Materials Science and Engineering',
+  441: 'Civil and Environmental Engineering',
+  451: 'Chemical and Biomolecular Engineering',
+  936: 'Business',
+  973: 'General Required',
+  2222: 'Biomedical Science and Engineering Program',
   2410: 'Polymer Science and Engineering Program',
+  3520: 'The Robotics Program',
+  3539: 'Graduate School of Culture Technology',
+  3605: 'Graduate School of Medical Science and Engineering',
+  3648: 'Bio and Brain Engineering',
+  3692: 'Graduate school of Nanoscience &amp; Technology',
+  3701: 'Space Exploration Engineering Program',
+  3703: 'Software Graduate Program',
+  3723: 'Information and Communications Engineering',
+  3799: 'Graduate school of EEWS',
+  3882: 'Master of intellectual property',
+  3919: 'Financial Engineering Program',
+  3920: 'Master of Science Journalism',
+  3941: 'Global Information &amp; Telecommunication Technology Program',
+  3978: 'Intellectual Property Minor Program for Undergradu',
+  3990: 'Graduate School of Science and Technology Policy',
+  3992: 'Division of Future Vehicle',
+  3993: 'Minor Program in Science and Technology Policy',
+  3997: 'The Cho Chun Shik Graduate School for Green Transportation',
+  4141: 'Minor Program in Culture Technology',
+  4144: 'Graduate School of Information Security',
   4182: 'Professional MBA',
-  4427: 'Program of Brain and Cognitive Engineering',
-  4547: 'School of Business and Technology Management',
-  4548: 'School of Business and Technology Management',
+  4183: 'Social Entrepreneurship MBA',
+  4200: 'Graduate Program for Future Strategy',
+  4201: 'Economics Program',
+  4301: 'School of Management Engineering',
+  4303: 'Finance MBA',
+  4305: 'Executive MBA',
+  4306: 'Information and Media MBA',
+  4307: 'Techno-MBA',
+  4310: 'Financial Engineering Program',
+  4312: 'Information Management Program',
+  4398: 'Finance Executive MBA',
+  4418: 'Departmemt of Mechanical Engineering',
+  4419: 'Departmemt of Aerospace Engineering',
   4421: 'School of Computing',
+  4422: 'Graduate School of Web Science Technology',
   4423: 'School of Electrical Engineering',
   4424: 'School of Humanities &amp; Social Sciences',
-  4301: 'School of Management Engineering',
-  4183: 'Social Entrepreneurship MBA',
-  3703: 'Software Graduate Program',
-  3701: 'Space Exploration Engineering Program',
-  4307: 'Techno-MBA',
-  3997: 'The Cho Chun Shik Graduate School for Green Transportation',
-  3520: 'The Robotics Program',
-  4: 'Undergraduate Research Participation',
+  4425: 'Moon Soul Graduate School of Future Strategy',
+  4427: 'Program of Brain and Cognitive Engineering',
+  4431: 'Entrepreneurship Program',
+  4438: 'Graduate School of Innovation & Technology Management',
+  4493: 'Green Business and Policy Program',
+  4547: 'School of Business and Technology Management',
+  4548: 'School of Business and Technology Management',
+  4549: 'Graduate School of Knowledge Service Engineering',
 };
 
-// Graph Drawing Functions
-const chartStorage = [];
-
-const getLegendOption = (property) => {
-  const w = $('.chart-body').width();
-  if (property === 'kaist-department') {
-    return {
-      borderColor: '#CCD',
-      borderWidth: 1,
-      itemWidth: w,
-      maxHeight: 150,
-    };
-  } else if (w < 550) {
-    return {
-      borderColor: '#CCC',
-      borderWidth: 1,
-      itemWidth: 100,
-      maxHeight: 100,
-    };
+const getExtreme = (list, compare) => {
+  if (!list) {
+    return undefined;
   }
-  return {
-    layout: 'vertical',
-    align: 'right',
-    verticalAlign: 'top',
-    y: 30,
-    borderColor: '#CCC',
-    borderWidth: 1,
-  };
+  let m;
+  list.forEach((item) => {
+    if (m === undefined || compare(m, item)) {
+      m = item;
+    }
+  });
+  return m;
 };
+const getMin = list => getExtreme(list, (x, y) => x > y);
+const getMax = list => getExtreme(list, (x, y) => x < y);
+const getMinMax = list => [getMin(list), getMax(list)];
+const toInt = list => list.map(x => parseInt(x, 10));
+const range = (a, b) => Array.from({ length: (b - a) + 1 }, (x, i) => i + a);
 
-const getColumnBaseOption = (property, fData) => ({
+const toISODate = x => x.format('YYYY-MM-DD');
+const today = toISODate(moment());
+let startDate = toISODate(moment().subtract(60, 'days'));
+let endDate = today;
+let selectedServiceId = 'all';
+
+const serviceList = {};
+let level = 0;
+let rawStats;
+let allStats;
+let recentStat;
+
+const getRecentChartOptions = ({
+  type,
+  title,
+  categories,
+  series,
+}) => ({
   chart: {
-    type: 'column',
+    type,
   },
+  plotOptions: {
+    pie: {
+      allowPointSelect: true,
+      cursor: 'pointer',
+      dataLabels: {
+        enabled: false,
+      },
+    },
+  },
+  series,
   title: {
-    text: property,
+    text: title,
+  },
+  tooltip: {
+    headerFormat: '{point.key}: ',
+    pointFormat: '<b>{point.y}</b>',
   },
   xAxis: {
-    categories: fData.xAxis.categories,
+    categories,
   },
   yAxis: {
     min: 0,
     title: {
-      text: null,
+      text: 'Number of Users',
     },
-    stackLabels: {
-      enabled: true,
-      style: {
-        fontWeight: 'bold',
-        color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray',
-      },
-    },
-  },
-  legend: getLegendOption(property),
-  tooltip: {
-    headerFormat: '<b>{point.x}</b><br/>',
-    pointFormat: '{series.name}: {point.y}',
   },
 });
 
-const gettChartOption = (property, fData) => {
-  const baseOption = getColumnBaseOption(property, fData);
-  baseOption.plotOptions = {
-    column: {
-      stacking: 'normal',
+const renderRecentAccount = () => {
+  const accountStat = recentStat.account;
+  ['all', 'email', 'fb', 'tw', 'kaist', 'test'].forEach((type) => {
+    $(`#account-${type}-r`).text(accountStat[type]);
+  });
+};
+
+const renderRecentKAISTMember = () => {
+  const kaistStat = recentStat.kaist;
+  ['professor', 'employee'].forEach((type) => {
+    $(`#member-${type}-r`).text(kaistStat[type]);
+  });
+};
+
+const renderRecentGender = () => {
+  const kaistStat = recentStat.kaist;
+  const genderStat = recentStat.gender;
+  const genderKStat = kaistStat ? kaistStat.gender : {};
+  const genders = ['female', 'male', 'etc', 'hide'];
+  const [seriesDataLocal, seriesDataKAIST] = [genderStat, genderKStat].map(
+    list => genders.map(gender => list[gender] || 0),
+  );
+
+  Highcharts.chart('gender-r-chart', getRecentChartOptions({
+    type: 'column',
+    title: 'Gender',
+    categories: genders,
+    series: [{
+      name: 'local',
+      data: seriesDataLocal,
+      showInLegend: !!kaistStat,
+    }, {
+      name: 'kaist',
+      data: seriesDataKAIST,
+      showInLegend: !!kaistStat,
+    }],
+  }));
+};
+
+const renderRecentBirth = () => {
+  const kaistStat = recentStat.kaist;
+  const birthStat = recentStat.birth_year;
+  const birthKStat = kaistStat ? kaistStat.birth_year : {};
+  const [minYear, maxYear] = toInt(getMinMax([
+    ...Object.keys(birthStat),
+    ...Object.keys(birthKStat),
+  ]));
+  const years = range(minYear, maxYear);
+  const [seriesDataLocal, seriesDataKAIST] = [birthStat, birthKStat].map(
+    list => years.map(year => list[year] || 0),
+  );
+
+  Highcharts.chart('birth-r-chart', getRecentChartOptions({
+    type: 'column',
+    title: 'Birth Year',
+    categories: years,
+    series: [{
+      name: 'local',
+      data: seriesDataLocal,
+      showInLegend: !!kaistStat,
+    }, {
+      name: 'kaist',
+      data: seriesDataKAIST,
+      showInLegend: !!kaistStat,
+    }],
+  }));
+};
+
+const renderRecentClassOf = () => {
+  const classOfStat = recentStat.kaist.start_year;
+  const [minYear, maxYear] = toInt(getMinMax(Object.keys(classOfStat)));
+  const years = range(minYear, maxYear);
+  const seriesData = years.map(year => classOfStat[year] || 0);
+
+  Highcharts.chart('class-of-r-chart', getRecentChartOptions({
+    type: 'column',
+    title: 'Class Of',
+    yAxisTitle: 'Number of Users',
+    categories: years,
+    series: [{
+      name: 'default',
+      data: seriesData,
+      showInLegend: false,
+    }],
+  }));
+};
+
+const renderRecentDept = () => {
+  const deptStat = recentStat.kaist.department;
+  const deptIds = Object.keys(deptStat);
+  const seriesData = deptIds.map(deptId => ({
+    name: deptData[deptId] || `Unknown ${deptId}`,
+    y: deptStat[deptId],
+    showInLegend: false,
+  }));
+
+  Highcharts.chart('dept-r-chart', getRecentChartOptions({
+    type: 'pie',
+    title: 'Department',
+    categories: deptIds,
+    series: [{
+      name: 'default',
+      data: seriesData,
+    }],
+  }));
+};
+
+const renderRecentStats = () => {
+  renderRecentAccount();
+  if (level >= 1) {
+    renderRecentGender();
+    renderRecentBirth();
+  }
+  if (level >= 2) {
+    renderRecentKAISTMember();
+    renderRecentClassOf();
+    renderRecentDept();
+  }
+};
+
+const getTotalChartOptions = ({
+  title,
+  series,
+  stacking,
+}) => ({
+  chart: {
+    zoomType: 'x',
+  },
+  legend: {
+    enabled: series.length < 10,
+  },
+  plotOptions: {
+    area: {
+      stacking: stacking === false ? undefined : 'normal',
     },
+  },
+  series,
+  title: {
+    text: title,
+  },
+  tooltip: {
+    xDateFormat: '%Y-%m-%d',
+  },
+  xAxis: {
+    type: 'datetime',
+    dateTimeLabelFormats: {
+      day: '%Y-%m-%d',
+      week: '%Y-%m-%d',
+      month: '%Y-%m',
+      year: '%Y',
+    },
+  },
+  yAxis: {
+    title: {
+      text: 'Number of Users',
+    },
+  },
+});
+
+const renderTotalStats = () => {
+  const transformToDateValue = (valueFunc) => {
+    const dates = Object.keys(allStats).sort();
+    const results = dates.map(date => (
+      [moment(date).unix() * 1000, valueFunc(allStats[date])]
+    ));
+    return results;
   };
-  baseOption.series = fData.series;
-  return baseOption;
-};
 
-const getrChartOption = (property, fData) => {
-  // recent chart only need last data as array
-  const baseOption = getColumnBaseOption(property, fData);
-  if (property !== 'kaist-department') {
-    const categories = baseOption.xAxis.categories;
-    baseOption.xAxis.categories = [categories[categories.length - 1]];
-    baseOption.series = $.map(fData.series, (v) => {
-      v = $.extend({}, v);
-      const vData = v.data;
-      v.data = [vData[vData.length - 1]];
-      return v;
-    });
-  } else {
-    baseOption.chart.type = 'pie';
-    baseOption.series = [{
-      name: 'department',
-      data: $.map(fData.series, (v) => {
-        v = $.extend({}, v);
-        const vData = v.data;
-        return {
-          name: v.name,
-          y: vData[vData.length - 1],
-        };
-      }).sort((a, b) => b.y - a.y),
-    }];
-    baseOption.plotOptions = {
-      pie: {
-        dataLabels: {
-          enabled: false,
-        },
-      },
-    };
-    baseOption.tooltip = {
-      pointFormat: '<b>{point.percentage:.1f}%</b>',
-    };
-    delete baseOption.xAxis;
-    delete baseOption.yAxis;
-  }
-  return baseOption;
-};
+  const chartMap = [{
+    html: 'account-t-chart',
+    title: 'Account Type',
+    types: () => Object.keys(recentStat.account),
+    valueFunc: t => s => s.account[t],
+    stacking: false,
+  }, {
+    html: 'gender-t-chart',
+    title: 'Gender',
+    types: () => Object.keys(recentStat.gender),
+    valueFunc: t => s => s.gender[t],
+    level: 1,
+  }, {
+    html: 'birth-t-chart',
+    title: 'Birth Year',
+    types: () => Object.keys(recentStat.birth_year),
+    valueFunc: t => s => s.birth_year[t],
+    level: 1,
+  }, {
+    html: 'kaist-gender-t-chart',
+    title: 'Gender (KAIST)',
+    types: () => Object.keys(recentStat.kaist.gender),
+    valueFunc: t => s => s.kaist.gender[t],
+    level: 2,
+  }, {
+    html: 'kaist-birth-t-chart',
+    title: 'Birth Year (KAIST)',
+    types: () => Object.keys(recentStat.kaist.birth_year),
+    valueFunc: t => s => s.kaist.birth_year[t],
+    level: 2,
+  }, {
+    html: 'dept-t-chart',
+    title: 'Department',
+    types: () => Object.keys(recentStat.kaist.department),
+    nameFunc: k => deptData[k] || `Unknown ${k}`,
+    valueFunc: t => s => s.kaist.department[t],
+    level: 2,
+  }, {
+    html: 'class-of-t-chart',
+    title: 'Class Of',
+    types: () => Object.keys(recentStat.kaist.start_year),
+    valueFunc: t => s => s.kaist.start_year[t],
+    level: 2,
+  }, {
+    html: 'kaist-member-t-chart',
+    title: 'Professor / Employee',
+    types: () => ['professor', 'employee'],
+    valueFunc: t => s => s.kaist[t],
+    level: 2,
+  }];
 
-const drawGraph = (fData, property) => {
-  /* professor, employee */
-  if (isEmtOfArr(atomicListGlobal, property)) {
-    const x = fData.series[0].data.pop();
-    property = property.replace('_', '-');
-    $(`#${property}-cell`).text(x);
-    return 0;
-  }
-
-  property = property.replace('_', '-');
-
-  const tChartOption = gettChartOption(property, fData);
-  const tChart = Highcharts.chart(`${property}-t-chart`, tChartOption);
-  chartStorage.push(tChart);
-
-  const rChartOption = getrChartOption(property, fData);
-  const rChart = Highcharts.chart(`${property}-r-chart`, rChartOption);
-  chartStorage.push(rChart);
-
-  return 0;
-};
-
-const drawGraphKaist = (fData, property, property2nd) => {
-  let propertyClass = [property, property2nd].join('-');
-  propertyClass = propertyClass.replace('_', '-');
-  drawGraph(fData, propertyClass);
-};
-
-const reflowChart = () => {
-  for (let i = 0; i < chartStorage.length; i += 1) {
-    const ch = chartStorage[i];
-    ch.reflow();
-  }
-};
-
-
-// Stats object manipulation function
-/*
- * Copy object-tree from originalRoot to newRoot.
- * If newRoot has already have some number-leaf,
- * just add originalRoot's value.
- */
-const sumOrCopy = (originalRoot, newRoot) => {
-  $.each(originalRoot, (k, v) => {
-    if (typeof (v) === 'number') {
-      newRoot[k] = newRoot[k] + v || v;
+  chartMap.forEach((chart) => {
+    if ((chart.level || 0) > level) {
       return;
     }
-    if (!isKey(newRoot, k)) {
-      newRoot[k] = {};
-    }
-    sumOrCopy(v, newRoot[k]);
-  });
-  return newRoot;
-};
-
-/*
- * Append 'all' as key to stats.
- * It is statstics of sum of all services
- */
-const appendDataOfAll = (data) => {
-  const stats = data.stats;
-  const statsAll = {
-    alias: 'all',
-    data: {},
-  };
-  $.each(stats, (service, sObj) => {
-    sumOrCopy(sObj.data, statsAll.data);
-  });
-  stats.all = statsAll;
-};
-
-/*
- * @param {obj} data - json object from stats api
- * @returns {array} - array of services
- */
-const getServices = (data) => {
-  const stats = data.stats;
-  return Object.keys(stats);
-};
-
-const getDataOfService = (data, sName) => {
-  if (typeof (sName) === 'undefined') {
-    return {};
-  }
-  return data.stats[sName].data;
-};
-
-const getProperties = (sData) => {
-  const dateArr = Object.keys(sData);
-  return Object.keys(sData[dateArr[dateArr.length - 1]]);
-};
-
-const getPropertiesKaist = (sData) => {
-  const dateArr = Object.keys(sData);
-  return Object.keys(sData[dateArr[dateArr.length - 1]].kaist);
-};
-
-/*
- * @param {obj} pAttrObj - apijson.birthYear
- * - append {year: 0} which api does not contain for spacing
- * - compatible to preprocessDataKaist
- */
-const preprocessDataBirthYear = (pAttrObj) => {
-  const dateArr = Object.keys(pAttrObj);
-  const minDate = min(dateArr);
-  const maxDate = max(dateArr);
-  for (let d = minDate; d <= maxDate; d += 1) {
-    if (dateArr.indexOf(d.toString()) === -1) {
-      pAttrObj[d] = 0;
-    }
-  }
-  return pAttrObj;
-};
-
-/*
- * @param {obj} pAttrObj
- * - change department code to name
- */
-const preprocessDataDept = (pAttrObj) => {
-  for (const code in pAttrObj) {
-    if (isKey(deptData, code)) {
-      renameKey(pAttrObj, code, deptData[code]);
-    } else {
-      renameKey(pAttrObj, code, `uk-${code}`);
-    }
-  }
-};
-
-/*
- * parsing json.kaist to 2nd-depth
- * @param {obj} pAttrObj - apijson.kaist
- * @param {string} property2nd - birthYear, department, employee, gender, professor, startYear
- * @return preprocessed pAttrObj;
- */
-const preprocessDataKaist = (pAttrObj, property2nd) => {
-  const p2ndAttrObj = pAttrObj[property2nd];
-  switch (property2nd) {
-    case 'birthYear':
-      preprocessDataBirthYear(p2ndAttrObj);
-      break;
-    case 'department':
-      preprocessDataDept(p2ndAttrObj);
-      break;
-    default:
-      break;
-  }
-};
-
-/*
- * manipulate formattedObj for purpose
- * - birthYear: append {year: 0} which api does not contain for spacing
- * @return: rValues
- */
-const preprocessData = (attrObj, property, property2nd) => {
-  let pAttrObj = attrObj[property];
-  switch (property) {
-    case 'account':
-      delete pAttrObj.all;
-      break;
-    case 'birthYear':
-      pAttrObj = preprocessDataBirthYear(pAttrObj);
-      break;
-    case 'kaist':
-      pAttrObj = preprocessDataKaist(pAttrObj, property2nd);
-      break;
-    default:
-      break;
-  }
-};
-
-/*
- * There's bottle neck at drawing chart which has
- * many bars. And label of bar need enough space.
- * So, system should select part of data.
- *
- * Heuristic methodologically, #bar = (width of chart) / 40
- *
- * windowSize = Math.ceil(#sData /(#bar - 1))
- * e.g.) #bar = 4, #sData = 10
- * windowSize = ceil(10/(4-1)) = 3
- * 0 1 2 3 4 5 6 7 8 9
- * s   s   s   s
- */
-const reduceData = (sData, num) => {
-  const keyArr = Object.keys(sData);
-  const windowSize = Math.ceil(keyArr.length / (num - 1));
-  for (const idx in keyArr) {
-    if (idx % windowSize !== 0) {
-      delete sData[keyArr[idx]];
-    }
-  }
-};
-
-/*
- * @param {obj} sData - Data format
- * {
- *   2016-08-17T12:46:56+00:00: {
- *     account: {
- *       all: intAll,
- *       email: intEmail,
- *       ...
- *     },
- *   },
- *   2016-08-18T12:55:35+00:00: {
- *     ...
- *   },
- * }
- *
- * @return {obj} - Data format
- * {
- *   <property>: {
- *     series: [{
- *       name: 'label1',
- *       data: [y1, y2, y3],
- *     }, {
- *       name: 'label2',
- *       data: [y1, y2, y3],
- *     }],
- *     xAxis: {
- *       categories: ['x1', 'x2', 'x3'],
- *     },
- *   },
- *   kaist: {
- *     2ndProperty: {
- *       series: [...],
- *       xAxis: {...},
- *     },
- *     department: {
- *       series: [{
- *         name: <name>,
- *         y: <y>,
- *       }],
- *     }
- *   }
- * }
- */
-const getFormattedData = (sData) => {
-  const simplifyDate = (_sData) => {
-    for (const d in _sData) {
-      renameKey(_sData, d, d.split('+')[0]);
-    }
-  };
-
-  const getDateArr = () => Object.keys(sData).sort();
-
-  const buildSpace = (dateArr, propertiesArr, propertiesKaistArr) => {
-    let formattedObj = {};
-    let idx;
-    for (idx = 0; idx < propertiesArr.length; idx += 1) {
-      const p = propertiesArr[idx];
-      if (p !== 'kaist') {
-        formattedObj = setEmtToObj(formattedObj, [p, 'series'], {});
-        formattedObj = setEmtToObj(formattedObj, [p, 'xAxis', 'categories'], dateArr);
-      }
-    }
-    for (idx = 0; idx < propertiesKaistArr.length; idx += 1) {
-      const pk = propertiesKaistArr[idx];
-      formattedObj = setEmtToObj(formattedObj, ['kaist', pk, 'series'], {});
-      formattedObj = setEmtToObj(formattedObj, ['kaist', pk, 'xAxis', 'categories'], dateArr);
-    }
-    return formattedObj;
-  };
-
-  const numOfBar = Math.ceil($('.chart-body').width() / 50);
-  simplifyDate(sData);
-  reduceData(sData, numOfBar);
-  const dateArr = getDateArr();
-  const propertiesArr = getProperties(sData);
-  const propertiesKaistArr = getPropertiesKaist(sData);
-  const formattedObj = buildSpace(dateArr, propertiesArr, propertiesKaistArr);
-
-  for (let idx = 0; idx < dateArr.length; idx += 1) {
-    const dateKey = dateArr[idx];
-    const attrObj = sData[dateKey];
-
-    for (const property in attrObj) {
-      if (property !== 'kaist') {
-        preprocessData(attrObj, property);
-        for (const label in attrObj[property]) {
-          if (!isValidKeyArr(formattedObj, [property, 'series', label])) {
-            formattedObj[property].series[label] = {
-              name: label,
-              data: [],
-            };
-          }
-          formattedObj[property].series[label].data.push(attrObj[property][label]);
-        }
-      } else { /* kaist case */
-        for (const property2nd in attrObj[property]) {
-          const attr2ndObj = attrObj[property];
-
-          preprocessData(attrObj, property, property2nd);
-
-          if (isEmtOfArr(atomicListGlobal, `${property}-${property2nd}`)) {
-            const atom = attr2ndObj[property2nd];
-            attr2ndObj[property2nd] = [atom];
-          }
-
-          for (const label in attr2ndObj[property2nd]) {
-            if (!isValidKeyArr(formattedObj, [property, property2nd, 'series', label])) {
-              formattedObj[property][property2nd].series[label] = {
-                name: label,
-                data: [],
-              };
-            }
-            formattedObj[property][property2nd].series[label].data
-              .push(attrObj[property][property2nd][label]);
-          }
-        }
-      }
-    }
-  }
-
-  for (const p in formattedObj) {
-    if (p !== 'kaist') {
-      formattedObj[p].series = makeFormattedToArr(formattedObj[p].series);
-    } else {
-      for (const pk in formattedObj[p]) {
-        formattedObj[p][pk].series = makeFormattedToArr(formattedObj[p][pk].series);
-      }
-    }
-  }
-  return formattedObj;
-};
-
-
-// DOM manipulation function with jQuery
-const addServices = (services) => {
-  for (const s of services) {
-    if (!s.startsWith('test')) {
-      $('#service-dropdown-menu').append(
-        `<li id=dropdown-${s} class="dropdown-service"  ><a href="#">${s}</a></li>`,
-      );
-    }
-  }
-};
-
-const changeService = (sName) => {
-  $('.s-name').text(sName);
-};
-
-const findDropdownMenuPos = () => {
-  const $dmLeft = $('#service-dropdown').position();
-  $('#service-dropdown-menu').css('left', $dmLeft.left);
-};
-
-const setDateToCalendar = (sDate, eDate) => {
-  $('.s-date').val(sDate);
-  $('.e-date').val(eDate);
-};
-
-const destroyNotAuthChart = (sData) => {
-  const len = sData.length;
-  if (len === 0) {
-    $('.chart-lv-1').remove();
-    $('.chart-lv-2').remove();
-  } else if (len < 3) {
-    $('.chart-lv-2').remove();
-  }
-};
-
-
-// Process when API call is succeed
-const successStats = (data) => {
-  /*
-   * add up all fields to 'all' key
-   * when there's more than one service
-   */
-  if (data.stats.length > 1) {
-    appendDataOfAll(data);
-  }
-
-  const serviceList = getServices(data);
-  const serviceToShow = serviceList[serviceList.length - 1];
-  const sData = getDataOfService(data, serviceToShow);
-  changeService(serviceToShow);
-
-  if (sData.length !== 0) {
-    const propertyArr = getProperties(sData);
-    const propertyKaistArr = getPropertiesKaist(sData);
-    const formattedData = getFormattedData(sData);
-    for (let idx = 0; idx < propertyArr.length; idx += 1) {
-      const property = propertyArr[idx];
-
-      if (property !== 'kaist') {
-        const fData = formattedData[property];
-        drawGraph(fData, property);
-      } else {
-        for (const kaidx in propertyKaistArr) {
-          const propertyKaist = propertyKaistArr[kaidx];
-          const fData = formattedData[property][propertyKaist];
-          drawGraphKaist(fData, property, propertyKaist);
-        }
-      }
-    }
-  } else if (!firstCallGlobal) {
-    alert('선택한 구간의 데이터가 없습니다!');
-  }
-
-  // only first call, add services to dropdown
-  if (firstCallGlobal) {
-    addServices(serviceList);
-    firstCallGlobal = false;
-    destroyNotAuthChart(sData);
-  }
-};
-
-
-/*
- * Fetch data from SSO
- * @param - read https://wiki.sparcs.org/w/index.php/SPARCS_SSO_API_%EB%AA%85%EC%84%B8
- */
-const getStats = (...args) => {
-  const argNames = ['client_ids', 'date_from', 'date_to'];
-  const param = {};
-  for (let idx = 0; idx < args.length; idx += 1) {
-    param[argNames[idx]] = args[idx];
-  }
-  $.ajax({
-    url: '/api/v2/stats/',
-    data: param,
-    success: successStats,
-    dataType: 'json',
+    const series = chart.types().map(type => ({
+      type: 'area',
+      name: chart.nameFunc ? chart.nameFunc(type) : type,
+      data: transformToDateValue(chart.valueFunc(type)),
+    }));
+    Highcharts.chart(chart.html, getTotalChartOptions({
+      title: chart.title,
+      series,
+      stacking: chart.stacking,
+    }));
   });
 };
 
+const renderStats = () => {
+  $('#service-name').text(serviceList[selectedServiceId]);
+  const getLastStat = (stats) => {
+    const maxDate = getMax(Object.keys(stats));
+    return maxDate ? stats[maxDate] : undefined;
+  };
+  allStats = rawStats[selectedServiceId].data;
+  recentStat = getLastStat(allStats);
+  renderRecentStats();
+  renderTotalStats();
+};
 
-// Event Handler
-$('.input-daterange').datepicker({
-  autoclose: true,
-  todayHighlight: true,
-  format: 'yyyy-mm-dd',
-});
+const resetServiceList = () => {
+  const rawIdList = Object.keys(serviceList);
+  const serviceIdList = [
+    'all',
+    ...rawIdList.filter(x => !x.startsWith('sparcs') && x !== 'all').sort(),
+    ...rawIdList.filter(x => x.startsWith('sparcs')).sort(),
+  ];
+  $('#service-list').html('');
+  serviceIdList.forEach((serviceId) => {
+    const serviceName = serviceList[serviceId];
+    $('#service-list').append(
+      `<li class="dropdown-service"><a href="#" data-id="${serviceId}">${serviceName}</a></li>`,
+    );
+  });
 
-$(document).ready(() => {
-  $('.nav-tabs a:first').tab('show');
-  setDateToCalendar(sDateGlobal, eDateGlobal);
-  getStats(serviceGlobal, sDateGlobal, eDateGlobal);
-  findDropdownMenuPos();
-});
-
-$(window).resize(() => {
-  findDropdownMenuPos();
-});
-
-$('body').on('click', '.dropdown-service', (x) => {
-  serviceGlobal = x.currentTarget.innerText.trim();
-  changeService(serviceGlobal);
-});
-
-$('.btn-get-stat').click(() => {
-  sDateGlobal = $('.s-date').val();
-  eDateGlobal = $('.e-date').val();
-  chartStorage.length = 0;
-  getStats(serviceGlobal, sDateGlobal, eDateGlobal);
-});
-
-$('.nav-tabs').click(() => {
-  setTimeout(() => {
-    reflowChart();
-  }, 0);
-});
-
-$(window).resize(() => {
-  for (let i = 0; i < chartStorage.length; i += 1) {
-    const ch = chartStorage[i];
-    if (ch.legend.options.borderColor === '#CCD') {
-      ch.legend.update(getLegendOption('kaist-department'));
+  $('#service-list a').click((e) => {
+    const newSelectedId = $(e.target).data('id');
+    if (selectedServiceId === newSelectedId) {
+      return;
     }
+    selectedServiceId = newSelectedId;
+    renderStats();
+  });
+
+  if (!serviceIdList.includes(selectedServiceId)) {
+    selectedServiceId = 'all';
   }
+};
+
+const killForbidStats = () => {
+  if (level < 1) {
+    $('.lv-1').hide();
+  }
+  if (level < 2) {
+    $('.lv-2').hide();
+  }
+};
+
+const fetchStats = () => (
+  $.getJSON('/api/v2/stats/', {
+    date_from: startDate,
+    date_to: endDate,
+  }).done((result) => {
+    level = result.level;
+    rawStats = result.stats;
+    if (Object.keys(rawStats).length === 0) {
+      $('#stats-display').css('filter', 'blur(5px)');
+      $('#stats-display > ul > li').addClass('disabled');
+      alert('No Data!');
+      return;
+    }
+    $('#stats-display').css('filter', 'initial');
+    $('#stats-display > ul > li').removeClass('disabled');
+
+    Object.keys(result.stats).forEach((k) => {
+      serviceList[k] = result.stats[k].alias;
+    });
+    resetServiceList();
+    killForbidStats();
+    renderStats();
+  })
+);
+
+$(() => {
+  $('.date-range').daterangepicker({
+    linkedCalendars: false,
+    startDate,
+    endDate,
+    maxDate: today,
+    locale: {
+      format: 'YYYY-MM-DD',
+    },
+  }, (start, end) => {
+    $('.date-range span').html(`${start} ~ ${end}`);
+  });
+
+  $('.date-range').on('apply.daterangepicker', (ev, picker) => {
+    startDate = picker.startDate.format('YYYY-MM-DD');
+    endDate = picker.endDate.format('YYYY-MM-DD');
+    fetchStats();
+  });
+
+  $('a[data-toggle="tab"]').on('shown.bs.tab', () => {
+    [
+      ...$('.chart-body').toArray(),
+      ...$('.chart-body-half').toArray(),
+    ].forEach((c) => { $(c).highcharts().reflow(); });
+  });
+
+  fetchStats();
 });

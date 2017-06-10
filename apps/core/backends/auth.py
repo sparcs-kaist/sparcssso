@@ -1,7 +1,9 @@
 import logging
+import re
 from urllib.parse import parse_qsl, urlencode
 from xml.etree import ElementTree
 
+import ldap3
 import oauth2 as oauth
 import requests
 from django.conf import settings
@@ -34,9 +36,34 @@ class EmailLoginBackend(ModelBackend):
             return
 
         username = user.username if user else f'unknown:{email}'
-        return super().authenticate(request=request,
-                                    username=username,
-                                    password=password)
+        return super().authenticate(
+            request=request, username=username, password=password,
+        )
+
+
+# login backends that uses LDAP id and password
+class LDAPLoginBackend(ModelBackend):
+    def authenticate(self, request=None, ldap_id=None, ldap_pw=None):
+        user = User.objects.filter(profile__sparcs_id=ldap_id).first()
+        if not check_active_user(request, user):
+            return
+
+        # prevent LDAP injection attack
+        # the regex is taken from NAME_REGEX in adduser
+        if not re.match(r'^[a-z][-a-z0-9]*$', ldap_id):
+            return
+
+        ldap_server = ldap3.Server(
+            'ldap://sparcs.org', use_ssl=True, get_info=ldap3.ALL,
+        )
+        ldap_connection = ldap3.Connection(
+            ldap_server,
+            user=f'uid={ldap_id},ou=People,dc=sparcs,dc=org',
+            password=ldap_pw,
+        )
+        if not ldap_connection.bind():
+            return
+        return user
 
 
 # login backends that uses user object itself
@@ -50,7 +77,6 @@ class PasswordlessLoginBackend(ModelBackend):
             logger.error('login.error', {
                 'r': request,
                 'uid': user.username,
-                'hide': True,
             })
             return None
         return user

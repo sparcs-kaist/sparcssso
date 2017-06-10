@@ -12,6 +12,7 @@ module.exports = {
   },
   'globals': {
     '$': true,
+    'moment': true,
     'Highcharts': true,
   },
 };

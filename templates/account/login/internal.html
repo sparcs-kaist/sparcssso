@@ -1,0 +1,48 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+
+{% block htitle %}SPARCS SSO {% trans "Login" %}{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+<div class="alert-wrap">
+  {% if notice %}
+  <div class="alert alert-warning">
+    <strong>{{ notice.title }}</strong> {% autoescape off %}{{ notice.text }}{% endautoescape %}
+  </div>
+  {% endif %}
+</div>
+
+<div class="wrap-content-xs">
+  <h1>{% trans "Login" %}</h1>
+
+  <p class="text-danger">{% trans "Warning!" %} {% trans "This LDAP login feature is for SPARCS members. If you are not, please use the normal login dialog." %}</p>
+
+  {% if service %}
+  <p>{% blocktrans %}You need to login using SPARCS SSO account to use {{ service }} service.{% endblocktrans %}</p>
+  {% endif %}
+
+  {% if fail == 1 %}
+  <div class="alert alert-danger alert-invalid-account">
+    <b>{% trans "Invalid LDAP Credential or No Matching User" %}</b>
+  </div>
+  {% endif %}
+
+  <form class="row" action="/account/login/internal/" method="post">
+    {% csrf_token %}
+    <div class="form-group col-xs-12">
+      <input type="text" class="form-control" name="ldap-id" placeholder="{% trans "ID" %}" required="required">
+    </div>
+    <div class="form-group col-xs-12">
+      <input type="password" class="form-control" name="ldap-pw" placeholder="{% trans "Password" %}" required="required">
+    </div>
+    <div class="form-group col-xs-12">
+      <button type="submit" class="btn btn-default btn-block btn-login">{% trans "LDAP Login" %}</button>
+      <div class="login-extra-links">
+        <a href="/account/login/">{% trans "Back to Normal Login" %}</a>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

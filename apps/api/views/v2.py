@@ -1,6 +1,7 @@
 import hmac
 import json
 import logging
+import re
 import time
 from datetime import datetime, timedelta
 from secrets import token_hex
@@ -15,7 +16,6 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.utils.crypto import constant_time_compare
-from django.utils.dateparse import parse_date
 from django.views.decorators.csrf import csrf_exempt
 
 from ...core.backends import service_register, validate_email
@@ -32,6 +32,16 @@ def date2str(obj):
     if obj:
         return obj.isoformat()
     return ''
+
+
+def str2date(string, default):
+    m = re.match(r'(\d{4})-(\d{2})-(\d{2})', string)
+    if not m:
+        return default
+    return datetime(
+        int(m.group(1)), int(m.group(2)), int(m.group(3)),
+        0, 0, 0, tzinfo=timezone.get_current_timezone(),
+    )
 
 
 def extract_flag(flags):
@@ -321,77 +331,80 @@ def email(request):
 
 # /stats/
 def stats(request):
-    level = 0
-    if request.user.is_authenticated:
-        if request.user.is_staff:
-            level = 2
-        elif request.user.profile.sparcs_id:
-            level = 1
+    def filter_data(raw_data, level):
+        if level == 0:
+            return {
+                'account': {
+                    'all': raw_data['account']['all'],
+                },
+            }
+        elif level == 1:
+            return {
+                'account': raw_data['account'],
+                'gender': raw_data['gender'],
+                'birth_year': raw_data['birth_year'],
+            }
+        elif level == 2:
+            return raw_data
+        return {}
 
-    client_ids = request.GET.get('client_ids', '').split(',')
-    client_list = list(filter(None, map(
-        lambda x: Service.objects.filter(name=x).first(), client_ids,
-    )))
-    if not client_list:
-        client_list = Service.objects.all()
+    if not request.user.is_authenticated:
+        level = 0
+    elif request.user.profile.sparcs_id:
+        level = 1
+    elif request.user.is_staff:
+        level = 2
 
-    if level > 0:
-        client_list = filter(lambda x: x.scope != 'TEST', client_list)
-    elif level == 0:
-        client_list = filter(lambda x: x.scope == 'PUBLIC', client_list)
+    client_ids = list(filter(
+        None, request.GET.get('client_ids', '').split(','),
+    ))
 
-    today = timezone.localtime(timezone.now()).replace(
+    today = timezone.now().replace(
         hour=0, minute=0, second=0, microsecond=0,
     )
-    start_date, end_date = None, None
-    try:
-        start_date = parse_date(request.GET.get('date_from', ''))
-    except:
-        pass
-
-    if not start_date:
-        start_date = today
-
-    try:
-        end_date = parse_date(request.GET.get('date_to', ''))
-    except:
-        pass
-
-    if not end_date:
-        end_date = today.replace(
-            hour=23, minute=59, second=59, microsecond=999999,
-        )
-
-    raw_stats = Statistic.objects.filter(
-        time__gte=start_date, time__lte=end_date,
+    start_date = str2date(request.GET.get('date_from', ''), today)
+    end_date = str2date(request.GET.get('date_to', ''), today).replace(
+        hour=23, minute=59, second=59, microsecond=999999,
     )
+    day_diff = (end_date - start_date).days
+    if level < 2 and day_diff > 60:
+        start_date += timedelta(days=day_diff - 60)
+
+    raw_stats = list(map(
+        lambda x: (json.loads(x.data), x.time),
+        Statistic.objects.filter(
+            time__gte=start_date, time__lte=end_date,
+        ),
+    ))
 
     stats = {}
-    for client in client_list:
-        stat = {'alias': client.alias, 'data': {}}
-        for raw_stat in raw_stats:
-            raw_data = json.loads(raw_stat.data)
+    if len(client_ids) == 0 or client_ids:
+        client_ids = set()
+        for raw_stat_data, _ in raw_stats:
+            client_ids.update(raw_stat_data.keys())
+        client_ids = list(client_ids)
 
-            if client.name not in raw_data:
+    for client_id in client_ids:
+        if not client_id:
+            continue
+        elif client_id.startswith('test'):
+            continue
+        elif level == 0 and client_id.startswith('sparcs'):
+            continue
+
+        client = Service.objects.filter(name=client_id).first()
+        alias = client.alias if client else client_id
+        stat = {'alias': alias, 'data': {}}
+        for raw_stat_data, stat_time in raw_stats:
+            if client_id not in raw_stat_data:
                 continue
 
-            data = {}
-            raw_data = raw_data[client.name]
-            if level == 0:
-                data['account'] = {}
-                data['account']['all'] = raw_data['account']['all']
-                data['account']['kaist'] = raw_data['account']['kaist']
-            elif level == 1:
-                data['account'] = raw_data['account']
-                data['gender'] = raw_data['gender']
-                data['birth_year'] = raw_data['birth_year']
-            elif level == 2:
-                data = raw_data
-
-            stat['data'][raw_stat.time.isoformat()] = data
-        stats[client.name] = stat
+            stat['data'][stat_time.isoformat()] = filter_data(
+                raw_stat_data[client_id], level,
+            )
+        stats[client_id] = stat
 
     return HttpResponse(
-        json.dumps({'stats': stats}),
+        json.dumps({'level': level, 'stats': stats}),
         content_type='application/json',
     )

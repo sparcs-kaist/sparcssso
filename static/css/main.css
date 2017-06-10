@@ -118,12 +118,12 @@ nav.navbar.navbar-default {
 
 
 /* Login */
-.login-email-links {
+.login-extra-links {
     margin-top: 5px;
     text-align: right;
 }
 
-.login-email-links a {
+.login-extra-links a {
     color: #666;
 }
 

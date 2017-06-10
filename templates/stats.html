@@ -5,9 +5,9 @@
 <link rel="stylesheet" type="text/css" href="/static/css/main.css">
 <link rel="stylesheet" type="text/css" href="/static/css/stats.css">
 
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.ko.min.js"></script>
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
 <script src="https://code.highcharts.com/highcharts.js"></script>
 {% endblock %}
 
@@ -23,96 +23,76 @@ PUBLIC
 {% endif %}
 </p>
 
-<!-- Stat request bar -->
 <div class="row">
-<div class="col-xs-12 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
-  <div class="input-daterange input-group" id="datepicker">
-
-    <!-- Service  -->
-    <div class="input-group-btn btn-group" role="group">
-      <div class="btn-group" role="group">
-        <button class="btn btn-default dropdown-toggle" type="button" id="service-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-          <span class="s-name">서비스</span>
-          <span class="caret"></span>
-        </button>
-        <ul id="service-dropdown-menu" class="dropdown-menu" aria-labelledby="service-dropdown">
-        </ul>
+  <div class="col-xs-12 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4">
+    <div class="input-group">
+      <div class="input-group-btn btn-group">
+        <div class="btn-group">
+          <button class="btn btn-default dropdown-toggle" type="button" id="service-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            <span id="service-name">all</span>
+            <span class="caret"></span>
+          </button>
+          <ul id="service-list" class="dropdown-menu" aria-labelledby="service-dropdown">
+          </ul>
+        </div>
       </div>
+      <input type="text" class="form-control date-range text-center" name="start" value="" />
     </div>
-
-    <!-- Date -->
-    <input type="text" class="form-control date-control s-date" name="start" value="" />
-    <span class="input-group-addon">~</span>
-    <input type="text" class="form-control date-control e-date" name="end" value="" />
-
-    <!-- Go btn -->
-    <span class="input-group-btn">
-      <button class="btn btn-default btn-primary btn-get-stat" type="button">Go!</button>
-    </span>
+    {% if level < 2 %}
+    <p class="text-warning">You cannot query more than 60 days</p>
+    {% endif %}
+    {% if level > 0 %}
+    <p class="text-danger">CONFIDENTIAL - DO NOT COPY</p>
+    {% endif %}
   </div>
 </div>
-</div>
 
-<div role="tabpanel">
+<div id="stats-display" role="tabpanel">
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active">
-      <a href="#total-tab" aria-controls="total-tab"
-        role="tab" data-toggle="tab">전체</a>
-    </li>
-    <li role="presentation">
       <a href="#recent-tab" aria-controls="recent-tab"
         role="tab" data-toggle="tab">최신</a>
     </li>
+    <li role="presentation">
+      <a href="#total-tab" aria-controls="total-tab"
+        role="tab" data-toggle="tab">전체</a>
+    </li>
   </ul>
   <div class="tab-content">
-    <div role="tabpanel" class="tab-pane active" id="total-tab">
-      <div class="row chart-lv-1">
-        <div id="birth-year-t-chart" class="chart-body"></div>
-        <div id="gender-t-chart" class="chart-body"></div>
-      </div>
-
-      <div class="row chart-lv-2">
-        <div id="account-t-chart" class="chart-body"></div>
-        <hr />
-        <div id="kaist-gender-t-chart" class="chart-body"></div>
-        <div id="kaist-start-year-t-chart" class="chart-body"></div>
-        <div id="kaist-birth-year-t-chart" class="chart-body"></div>
-        <div id="kaist-department-t-chart" class="chart-body"></div>
-      </div>
+    <div role="tabpanel" class="tab-pane active" id="recent-tab">
+      <h4>Account Type</h4>
+      <p><b>Total</b>: <span id="account-all-r">0</span></p>
+      <p class="lv-1">
+        <b>Email Authed</b>: <span id="account-email-r">0</span> / 
+        <b>Test</b>: <span id="account-test-r">0</span>
+      </p>
+      <p class="lv-1">
+        <b>Facebook</b>: <span id="account-fb-r">0</span> /
+        <b>Twitter</b>: <span id="account-tw-r">0</span> /
+        <b>KAIST</b>: <span id="account-kaist-r">0</span>
+      </p>
+      <h4 class="lv-2">KAIST Professor / Employee</h4>
+      <p class="lv-2">
+        <b>Professor</b>: <span id="member-professor-r">0</span> /
+        <b>Employee</b>: <span id="member-employee-r">0</span>
+      </p>
+      <div id="gender-r-chart" class="chart-body-half lv-1"></div>
+      <div id="birth-r-chart" class="chart-body-half lv-1"></div>
+      <div id="class-of-r-chart" class="chart-body-half lv-2"></div>
+      <div id="dept-r-chart" class="chart-body-half lv-2"></div>
     </div>
-    <div role="tabpanel" class="tab-pane" id="recent-tab">
-      <div class="row chart-lv-1">
-        <div id="birth-year-r-chart" class="chart-body"></div>
-        <div id="gender-r-chart" class="chart-body"></div>
-      </div>
-
-      <div class="row chart-lv-2">
-        <div id="account-r-chart" class="chart-body"></div>
-        <hr />
-        <div id="kaist-gender-r-chart" class="chart-body"></div>
-        <div id="kaist-start-year-r-chart" class="chart-body"></div>
-        <div id="kaist-birth-year-r-chart" class="chart-body"></div>
-        <div id="kaist-department-r-chart" class="chart-body"></div>
-        <h4>KAIST Professor / Employee</h4>
-        <table class="table table-bordered kaist-table">
-          <thead>
-            <tr>
-              <th>Professor</th>
-              <th>Employee</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td id="kaist-professor-cell"></td>
-              <td id="kaist-employee-cell"></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <div role="tabpanel" class="tab-pane" id="total-tab">
+      <div id="account-t-chart" class="chart-body"></div>
+      <div id="gender-t-chart" class="chart-body lv-1"></div>
+      <div id="birth-t-chart" class="chart-body lv-1"></div>
+      <div id="kaist-gender-t-chart" class="chart-body lv-2"></div>
+      <div id="kaist-birth-t-chart" class="chart-body lv-2"></div>
+      <div id="class-of-t-chart" class="chart-body lv-2"></div>
+      <div id="dept-t-chart" class="chart-body lv-2"></div>
+      <div id="kaist-member-t-chart" class="chart-body lv-2"></div>
     </div>
   </div>
 </div>
 
-<!-- own js -->
 <script src="/static/js/stats.js"></script>
 {% endblock %}

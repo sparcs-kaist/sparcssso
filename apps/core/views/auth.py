@@ -39,7 +39,6 @@ def login_core(request, session_name, template_name, get_user_func):
         ip.startswith('143.248.234.') or
         (service and service.scope == 'SPARCS')
     )
-    show_internal = True
 
     if request.method == 'POST':
         user = get_user_func(request.POST)

@@ -466,7 +466,10 @@ $(() => {
     [
       ...$('.chart-body').toArray(),
       ...$('.chart-body-half').toArray(),
-    ].forEach((c) => { $(c).highcharts().reflow(); });
+    ].forEach((c) => {
+      const chart = $(c).highcharts();
+      chart && chart.reflow();
+    });
   });
 
   fetchStats();

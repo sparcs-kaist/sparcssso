@@ -25,7 +25,7 @@ PUBLIC
 
 <div class="row">
   <div class="col-xs-12 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4">
-    <div class="input-group" style="margin-bottom: 10px">
+    <div class="input-group">
       <div class="input-group-btn btn-group">
         <div class="btn-group">
           <button class="btn btn-default dropdown-toggle" type="button" id="service-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
@@ -37,14 +37,17 @@ PUBLIC
         </div>
       </div>
       <input type="text" class="form-control date-range text-center" name="start" value="" />
-      <span class="input-group-btn">
-        <button class="btn btn-default btn-primary btn-get-stat" type="button">Go!</button>
-      </span>
     </div>
+    {% if level < 2 %}
+    <p class="text-warning">You cannot query more than 60 days</p>
+    {% endif %}
+    {% if level > 0 %}
+    <p class="text-danger">CONFIDENTIAL - DO NOT COPY</p>
+    {% endif %}
   </div>
 </div>
 
-<div role="tabpanel">
+<div id="stats-display" role="tabpanel">
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active">
       <a href="#recent-tab" aria-controls="recent-tab"

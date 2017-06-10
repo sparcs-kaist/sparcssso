@@ -1,6 +1,7 @@
 import hmac
 import json
 import logging
+import re
 import time
 from datetime import datetime, timedelta
 from secrets import token_hex
@@ -15,7 +16,6 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.utils.crypto import constant_time_compare
-from django.utils.dateparse import parse_date
 from django.views.decorators.csrf import csrf_exempt
 
 from ...core.backends import service_register, validate_email
@@ -32,6 +32,16 @@ def date2str(obj):
     if obj:
         return obj.isoformat()
     return ''
+
+
+def str2date(string, default):
+    m = re.match(r'(\d{4})-(\d{2})-(\d{2})', string)
+    if not m:
+        return default
+    return datetime(
+        int(m.group(1)), int(m.group(2)), int(m.group(3)),
+        0, 0, 0, tzinfo=timezone.get_current_timezone(),
+    )
 
 
 def extract_flag(flags):
@@ -326,7 +336,6 @@ def stats(request):
             return {
                 'account': {
                     'all': raw_data['account']['all'],
-                    'kaist': raw_data['account']['kaist'],
                 },
             }
         elif level == 1:
@@ -349,21 +358,17 @@ def stats(request):
     client_ids = list(filter(
         None, request.GET.get('client_ids', '').split(','),
     ))
+
     today = timezone.now().replace(
         hour=0, minute=0, second=0, microsecond=0,
     )
-
-    try:
-        start_date = parse_date(request.GET.get('date_from', ''))
-    except:
-        start_date = today
-
-    try:
-        end_date = parse_date(request.GET.get('date_to', ''))
-    except:
-        end_date = today.replace(
-            hour=23, minute=59, second=59, microsecond=999999,
-        )
+    start_date = str2date(request.GET.get('date_from', ''), today)
+    end_date = str2date(request.GET.get('date_to', ''), today).replace(
+        hour=23, minute=59, second=59, microsecond=999999,
+    )
+    day_diff = (end_date - start_date).days
+    if level < 2 and day_diff > 60:
+        start_date += timedelta(days=day_diff - 60)
 
     raw_stats = list(map(
         lambda x: (json.loads(x.data), x.time),

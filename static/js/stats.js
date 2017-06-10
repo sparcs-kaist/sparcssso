@@ -85,7 +85,7 @@ const range = (a, b) => Array.from({ length: (b - a) + 1 }, (x, i) => i + a);
 
 const toISODate = x => x.format('YYYY-MM-DD');
 const today = toISODate(moment());
-let startDate = toISODate(moment().subtract(90, 'days'));
+let startDate = toISODate(moment().subtract(60, 'days'));
 let endDate = today;
 let selectedServiceId = 'all';
 
@@ -425,6 +425,14 @@ const fetchStats = () => (
   }).done((result) => {
     level = result.level;
     rawStats = result.stats;
+    if (Object.keys(rawStats).length === 0) {
+      $('#stats-display').css('filter', 'blur(5px)');
+      $('#stats-display > ul > li').addClass('disabled');
+      alert('No Data!');
+      return;
+    }
+    $('#stats-display').css('filter', 'initial');
+    $('#stats-display > ul > li').removeClass('disabled');
 
     Object.keys(result.stats).forEach((k) => {
       serviceList[k] = result.stats[k].alias;
@@ -460,5 +468,6 @@ $(() => {
       ...$('.chart-body-half').toArray(),
     ].forEach((c) => { $(c).highcharts().reflow(); });
   });
+
   fetchStats();
 });

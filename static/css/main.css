@@ -37,6 +37,39 @@ hr {
 }
 
 
+/* Version */
+.navbar-default.version-nightly .navbar-brand {
+    color: #e74c3c;
+}
+
+.navbar-default.version-nightly .navbar-brand:after {
+    font-size: 80%;
+    content: " (Nightly)";
+}
+
+.navbar-default.version-beta .navbar-brand {
+    color: #f39c12;
+}
+
+.navbar-default.version-beta .navbar-brand:after {
+    font-size: 80%;
+    content: " (Beta)";
+}
+
+.version-detail {
+    font-size: 70%;
+    color: #aaa;
+}
+
+.version-detail .version-nightly {
+    color: #e74c3c;
+}
+
+.version-detail .version-beta {
+    color: #f39c12;
+}
+
+
 /* Containers */
 .container {
     text-align: center;
@@ -63,6 +96,12 @@ section.container {
 }
 
 
+/* Navbar */
+nav.navbar.navbar-default {
+    border-radius: 0;
+}
+
+
 /* Alerts */
 .alert-wrap {
     margin-top: -1px;
@@ -79,12 +118,12 @@ section.container {
 
 
 /* Login */
-.login-email-links {
+.login-extra-links {
     margin-top: 5px;
     text-align: right;
 }
 
-.login-email-links a {
+.login-extra-links a {
     color: #666;
 }
 

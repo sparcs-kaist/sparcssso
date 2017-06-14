@@ -6,32 +6,32 @@
 {% endblock %}
 
 {% block content %}
-<h1 class="doc-header">SPARCS SSO 이용약관 v{{term.version}} <small>(REV{{term.date_version|date:"c"}})</small></h1>
+<h1 class="doc-header">SPARCS SSO 이용약관 v{{ term.version }} <small>(REV{{ term.date_version|date:"c" }})</small></h1>
 <div class="doc">
-    {% if status == 'future' %}
-    <div class="alert alert-warning text-center" style="margin-bottom:10px;">
-        <b>주의!</b> 이 약관은 {{term.date_apply|date:"c"}}부터 적용됩니다.
+  {% if status == 'future' %}
+  <div class="alert alert-warning text-center" style="margin-bottom:10px;">
+    <b>주의!</b> 이 약관은 {{ term.date_apply|date:"c" }}부터 적용됩니다.
+  </div>
+  {% elif status == 'current' %}
+  <div class="alert alert-success text-center" style="margin-bottom:10px;">
+    이 약관은 현재 적용 중입니다.
+  </div>
+  {% else %}
+  <div class="alert alert-danger text-center" style="margin-bottom:10px;">
+    <b>경고!</b> 이 약관은 더 이상 적용되지 않습니다.
+  </div>
+  {% endif %}
+  {% autoescape off %}
+  {{ term.to_html }}
+  {% endautoescape %}
+  <div class="nav-doc">
+    <div style="float:left">
+      <a href="/terms/{{ prev_v }}" class="btn btn-default" {% if not prev_v %}disabled{% endif %}>이전 약관 보기</a>
     </div>
-    {% elif status == 'current' %}
-    <div class="alert alert-success text-center" style="margin-bottom:10px;">
-        이 약관은 현재 적용 중입니다.
+    <div style="float:right">
+      <a href="/terms/{{ next_v }}" class="btn btn-default" {% if not next_v %}disabled{% endif %}>다음 약관 보기</a>
     </div>
-    {% else %}
-    <div class="alert alert-danger text-center" style="margin-bottom:10px;">
-        <b>경고!</b> 이 약관은 더 이상 적용되지 않습니다.
-    </div>
-    {% endif %}
-    {% autoescape off %}
-    {{term.to_html}}
-    {% endautoescape %}
-    <div class="nav-doc">
-        <div style="float:left">
-            <a href="/terms/{{prev_v}}" class="btn btn-default" {% if not prev_v %}disabled{% endif %}>이전 약관 보기</a>
-        </div>
-        <div style="float:right">
-            <a href="/terms/{{next_v}}" class="btn btn-default" {% if not next_v %}disabled{% endif %}>다음 약관 보기</a>
-        </div>
-        <div style="clear:both"></div>
-    </div>
+    <div style="clear:both"></div>
+  </div>
 </div>
 {% endblock %}

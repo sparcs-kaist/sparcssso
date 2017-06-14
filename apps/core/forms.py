@@ -1,6 +1,7 @@
-from django.forms import ModelForm
 from django.contrib.auth.models import User
-from apps.core.models import UserProfile, Service
+from django.forms import ModelForm
+
+from .models import Service, UserProfile
 
 
 class UserForm(ModelForm):
@@ -29,4 +30,7 @@ class ServiceForm(ModelForm):
 
     class Meta:
         model = Service
-        fields = ('alias', 'main_url', 'login_callback_url', 'unregister_url', 'cooltime')
+        fields = (
+            'alias', 'main_url', 'login_callback_url',
+            'unregister_url', 'cooltime',
+        )

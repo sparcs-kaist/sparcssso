@@ -1,13 +1,16 @@
 from django.conf import settings
 from django.conf.urls import url
 from django.shortcuts import redirect
-from apps.core.views import auth, account, profile, password
+
+from .views import account, auth, password, profile
+
 
 urlpatterns = [
     url(r'^$', lambda x: redirect('/account/profile/')),
 
     # package: auth
     url(r'^login/$', auth.login),
+    url(r'^login/internal/$', auth.login_internal),
     url(r'^logout/$', auth.logout),
 
     url(r'^login/fb/$', auth.init, {'mode': 'LOGIN', 'type': 'FB'}),
@@ -33,8 +36,9 @@ urlpatterns = [
     url(r'^disconnect/fb/$', profile.disconnect, {'type': 'FB'}),
     url(r'^disconnect/tw/$', profile.disconnect, {'type': 'TW'}),
 
-    url(r'^email/$', profile.email_resend),
-    url(r'^email/(?P<tokenid>\w+)$', profile.email),
+    url(r'^email/change/$', profile.email),
+    url(r'^email/verify/$', profile.email_resend),
+    url(r'^email/verify/(?P<tokenid>\w+)$', profile.email_verify),
 
     url(r'^log/$', profile.log),
     url(r'^point/$', profile.point),

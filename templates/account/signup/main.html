@@ -9,61 +9,62 @@
 
 {% block content %}
 <div class="wrap-content-sm">
-    <h1>{% trans "Signup" %} <small>{% trans "with Email" %}</small></h1>
-    <p>{% trans "Please fill up the following contents." %}</p>
-    <p>{% trans "You NEED to verify your email to use services." %}</p>
-    <form id="signup" class="row" action="/account/signup/" method="post">
-        {% csrf_token %}
-        <div class="form-group col-xs-12 text-left">
-            <label class="control-label">{% trans "Email" %}</label>
-            <input type="email" class="form-control" name="email" placeholder="asdf@example.com" required="required" maxlength="50" data-remote="/api/v2/email/" data-error="{% trans "Not Valid or Duplicated Email" %}">
-            <div class="help-block with-errors"></div>
-        </div>
-        <div class="form-group col-xs-12 text-left">
-            <label class="control-label">{% trans "Password" %}</label>
-            <input type="password" class="form-control" name="password" placeholder="p@ss0wd!" id="password" required="required" maxlength="50" data-minlength="7">
-            <span class="help-block">{% trans "Password must be at least 7 characters" %}</span>
-        </div>
-        <div class="form-group col-xs-12 text-left">
-            <label class="control-label">{% trans "Re-type Password" %}</label>
-            <input type="password" class="form-control" name="password2" placeholder="p@ssw0rd!" data-match="#password" data-match-error="{% trans "Not match!" %}" required="required" maxlength="50">
-            <div class="help-block with-errors"></div>
-        </div>
-        <div class="form-group col-xs-12 text-left">
-            <div>
-                <label class="control-label">{% trans "Name" %}</label>
-            </div>
-            <div class="col-xs-8" style="padding: 0">
-                <input type="text" class="form-control" name="first_name" placeholder="First Name" required="required" maxlength="30">
-            </div>
-            <div class="col-xs-4" style="padding: 0">
-                <input type="text" class="form-control" name="last_name" placeholder="Last Name" required="required" maxlength="30">
-            </div>
-        </div>
-        <div class="form-group col-xs-12">
-            <p>By clicking on the signup button, you agree to <a href="/terms/" target="_blank">SPARCS SSO's terms of use</a> and <a href="/privacy/" target="_blank">privacy policy</a></p>
-        </div>
-        <div class="g-recaptcha"
-             data-sitekey="6LfljRkUAAAAADIRSKOygbAdtu4bVln0xbly2ucP"
-             data-callback="captchaSubmit"
-             data-size="invisible">
-        </div>
-        <div class="form-group col-xs-12">
-            <button type="submit" class="btn btn-warning">{% trans "Signup" %}</button>
-            <a class="btn btn-default" href="/account/login/">{% trans "Login Page" %}</a>
-        </div>
-    </form>
+  <h1>{% trans "Signup" %} <small>{% trans "with Email" %}</small></h1>
+  <p>{% trans "Please fill up the following contents." %}</p>
+  <p>{% trans "You NEED to verify your email to use services." %}</p>
+  <form id="signup" class="row" action="/account/signup/" method="post">
+    {% csrf_token %}
+    <div class="form-group col-xs-12 text-left">
+      <label class="control-label">{% trans "Email" %}</label>
+      <input type="email" class="form-control" name="email" placeholder="asdf@example.com" required="required" maxlength="50" data-remote="/api/v2/email/" data-error="{% trans "Not Valid or Duplicated Email" %}">
+      <div class="help-block with-errors"></div>
+    </div>
+    <div class="form-group col-xs-12 text-left">
+      <label class="control-label">{% trans "Password" %}</label>
+      <input type="password" class="form-control" name="password" placeholder="p@ss0wd!" id="password" required="required" maxlength="50" data-minlength="7">
+      <span class="help-block">{% trans "Password must be at least 7 characters" %}</span>
+    </div>
+    <div class="form-group col-xs-12 text-left">
+      <label class="control-label">{% trans "Re-type Password" %}</label>
+      <input type="password" class="form-control" name="password2" placeholder="p@ssw0rd!" data-match="#password" data-match-error="{% trans "Not match!" %}" required="required" maxlength="50">
+      <div class="help-block with-errors"></div>
+    </div>
+    <div class="form-group col-xs-12 text-left">
+      <div>
+        <label class="control-label">{% trans "Name" %}</label>
+      </div>
+      <div class="col-xs-8" style="padding: 0">
+        <input type="text" class="form-control" name="first_name" placeholder="First Name" required="required" maxlength="30">
+      </div>
+      <div class="col-xs-4" style="padding: 0">
+        <input type="text" class="form-control" name="last_name" placeholder="Last Name" required="required" maxlength="30">
+      </div>
+    </div>
+    <div class="form-group col-xs-12">
+      <p>By clicking on the signup button, you agree to <a href="/terms/" target="_blank">SPARCS SSO's terms of use</a> and <a href="/privacy/" target="_blank">privacy policy</a></p>
+    </div>
+    <div class="g-recaptcha"
+         data-sitekey="6LfljRkUAAAAADIRSKOygbAdtu4bVln0xbly2ucP"
+         data-callback="captchaSubmit"
+         data-size="invisible">
+    </div>
+    <div class="form-group col-xs-12">
+      <button type="submit" class="btn btn-warning">{% trans "Signup" %}</button>
+      <a class="btn btn-default" href="/account/login/">{% trans "Login Page" %}</a>
+    </div>
+  </form>
 </div>
 
 <script>
 var captchaSuccess = 0;
 
-var captchaSubmit = function (token) {
+// eslint-disable-next-line no-unused-vars
+var captchaSubmit = function() {
   captchaSuccess = 1;
   $('#signup').submit();
-}
+};
 
-$('#signup').validator().on('submit', function (e) {
+$('#signup').validator().on('submit', function(e) {
   if (e.isDefaultPrevented()) {
     return;
   } else if (captchaSuccess !== 1) {

@@ -1,115 +1,135 @@
+import logging
+from urllib.parse import parse_qs, urlparse
+
 from django.conf import settings
 from django.contrib import auth
-from django.core.exceptions import PermissionDenied
-from django.core.mail import send_mail
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
 from django.utils import timezone
-from apps.core.backends import get_username, \
-    init_fb, init_tw, auth_fb, auth_tw, auth_kaist
-from apps.core.models import Notice, Service
-from urllib.parse import urlparse, parse_qs
-import logging
+from django.views.decorators.http import require_POST
+
+from ..backends import (
+    anon_required, auth_fb_callback, auth_fb_init,
+    auth_kaist_callback, auth_kaist_init, auth_tw_callback,
+    auth_tw_init, get_clean_url, get_social_name,
+)
+from ..models import Notice, Service
 
 
-logger = logging.getLogger('sso.core.auth')
-account_logger = logging.getLogger('sso.core.account')
-profile_logger = logging.getLogger('sso.core.profile')
+logger = logging.getLogger('sso.auth')
+profile_logger = logging.getLogger('sso.profile')
 
 
-# /login/
-def login(request):
-    if request.user.is_authenticated():
-        return redirect('/')
-
-    current_time = timezone.now()
-    notice = Notice.objects.filter(valid_from__lte=current_time,
-                                   valid_to__gt=current_time).first()
-
+def login_core(request, session_name, template_name, get_user_func):
     if 'next' in request.GET:
         request.session['next'] = request.GET['next']
 
-    query_dict = parse_qs(urlparse(request.session.get('next', '/')).query)
-    service = Service.objects.filter(name=query_dict.get('client_id', [''])[0]).first()
-    srv_name = service.alias if service else ''
+    current_time = timezone.now()
+    notice = Notice.objects.filter(
+        valid_from__lte=current_time, valid_to__gt=current_time,
+    ).first()
+
+    query_dict = parse_qs(urlparse(
+        request.session.get('next', '/'),
+    ).query)
+    service_name = query_dict.get('client_id', [''])[0]
+    service = Service.objects.filter(name=service_name).first()
+
+    ip = request.META.get('REMOTE_ADDR', '')
+    show_internal = (
+        ip.startswith('143.248.234.') or
+        (service and service.scope == 'SPARCS')
+    )
 
     if request.method == 'POST':
-        email = request.POST.get('email', 'none')
-        password = request.POST.get('password', 'asdf')
-
-        username = get_username(email)
-        user = auth.authenticate(username=username, password=password)
-        if user and not user.is_active:
-            logger.info('login.reject', {'r': request, 'uid': username})
-            raise PermissionDenied()
-        elif user:
+        user = get_user_func(request.POST)
+        if user:
             request.session.pop('info_signup', None)
             auth.login(request, user)
-            logger.info('login.success', {'r': request})
 
-            if not settings.DEBUG and user.is_staff:
-                title = '[SPARCS SSO] Staff Login'
-                message = 'time:%s; id:%s; ip:%s;'
-                emails = map(lambda x: x[1], settings.ADMINS)
-                time = timezone.now()
-                ip = request.META.get('REMOTE_ADDR', '0.0.0.0')
-                send_mail(title, '', 'noreply@sso.sparcs.org', emails,
-                          html_message=message % (time, username, ip))
+            return redirect(get_clean_url(
+                request.session.pop('next', '/'),
+            ))
 
-            if user.profile.activate():
-                account_logger.warning('activate', {'r': request})
+        request.session[session_name] = 1
 
-            nexturl = request.session.pop('next', '/')
-            return redirect(nexturl)
-        else:
-            logger.info('login.fail', {'r': request, 'uid': username})
-            request.session['result_login'] = 1
-
-    context = {
+    return render(request, template_name, {
         'notice': notice,
-        'service': srv_name,
-        'fail': request.session.pop('result_login', ''),
+        'service': service.alias if service else '',
+        'fail': request.session.pop(session_name, ''),
+        'show_internal': show_internal,
         'kaist_enabled': settings.KAIST_APP_ENABLED,
-    }
-    return render(request, 'account/login.html', context)
+    })
+
+
+# /login/
+@anon_required
+def login(request):
+    def get_user_func(post_dict):
+        email = post_dict.get('email', 'null@sso.sparcs.org')
+        password = post_dict.get('password', 'unknown')
+        return auth.authenticate(
+            request=request, email=email, password=password,
+        )
+
+    return login_core(
+        request, 'result_login',
+        'account/login/main.html', get_user_func,
+    )
+
+
+# /login/internal/
+@anon_required
+def login_internal(request):
+    def get_user_func(post_dict):
+        ldap_id = post_dict.get('ldap-id', 'unknown')
+        ldap_pw = post_dict.get('ldap-pw', 'unknown')
+        return auth.authenticate(
+            request=request, ldap_id=ldap_id, ldap_pw=ldap_pw,
+        )
+
+    return login_core(
+        request, 'result_login_internal',
+        'account/login/internal.html', get_user_func,
+    )
 
 
 # /logout/
+@require_POST
 def logout(request):
-    if request.method != 'POST' or not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return redirect('/')
 
-    logger.info('logout', {'r': request})
     auth.logout(request)
     return render(request, 'account/logout.html')
 
 
 # /login/{fb,tw,kaist}/, /connect/{fb,tw,kaist}/, /renew/kaist/
+@require_POST
 def init(request, mode, type):
-    is_authed = request.user.is_authenticated()
-    if (mode == 'LOGIN' and is_authed) or \
-       (mode == 'CONN' and not is_authed) or \
-       (mode == 'RENEW' and not is_authed):
+    if request.method != 'POST':
         return redirect('/')
 
-    method = request.method
-    if (mode == 'CONN' and method != 'POST') or \
-       (mode == 'RENEW' and method != 'POST'):
-        return redirect('/account/profile/')
+    # disable login for authed user
+    # disable connect / renew for non authed user
+    is_authed = request.user.is_authenticated
+    if (mode == 'LOGIN' and is_authed) or \
+       (mode in ['CONN', 'RENEW'] and not is_authed):
+        return redirect('/')
 
-    if is_authed and request.user.profile.test_only and \
-            (mode == 'CONN' or mode == 'RENEW'):
+    # disable manual connect / renew for test user
+    if mode in ['CONN', 'RENEW'] and request.user.profile.test_only:
         return redirect('/account/profile/')
 
     request.session['info_auth'] = {'mode': mode, 'type': type}
     callback_url = request.build_absolute_uri('/account/callback/')
 
-    url = ''
     if type == 'FB':
-        url = init_fb(callback_url)
+        url = auth_fb_init(callback_url)
     elif type == 'TW':
-        url, request.session['request_token'] = init_tw(callback_url)
+        url, token = auth_tw_init(callback_url)
+        request.session['request_token'] = token
     elif type == 'KAIST':
-        url = 'https://ksso.kaist.ac.kr/iamps/requestLogin.do'
+        url = auth_kaist_init()
     return redirect(url)
 
 
@@ -120,21 +140,27 @@ def callback(request):
         return redirect('/')
 
     mode, type = auth['mode'], auth['type']
-    user, profile = None, None
     if type == 'FB':
         code = request.GET.get('code')
         callback_url = request.build_absolute_uri('/account/callback/')
-        profile, info = auth_fb(code, callback_url)
+        profile, info = auth_fb_callback(code, callback_url)
     elif type == 'TW':
         tokens = request.session.get('request_token')
         verifier = request.GET.get('oauth_verifier')
-        profile, info = auth_tw(tokens, verifier)
+        profile, info = auth_tw_callback(tokens, verifier)
     elif type == 'KAIST':
         token = request.COOKIES.get('SATHTOKEN')
-        profile, info = auth_kaist(token)
+        profile, info = auth_kaist_callback(token)
 
-    userid = info['userid'] if info else 'none'
-    logger.info('%s: id=%s' % (type.lower(), userid), {'r': request, 'hide': True})
+    userid = info['userid'] if info else 'unknown'
+    logger.info('social', {
+        'r': request,
+        'hide': True,
+        'extra': [
+            ('type', get_social_name(type)),
+            ('uid', userid),
+        ],
+    })
     user = profile.user if profile else None
 
     if mode == 'LOGIN':
@@ -154,25 +180,26 @@ def callback_login(request, type, user, info):
         request.session['result_login'] = 2
         return redirect('/account/login/')
 
+    # no such user; go to signup page
     if not user:
         request.session['info_signup'] = {'type': type, 'profile': info}
         response = redirect('/account/signup/social/')
-        response.delete_cookie('SATHTOKEN')
         return response
 
+    user = auth.authenticate(request=request, user=user)
+    # critical logic fail
+    if not user:
+        request.session['result_login'] = 2
+        return redirect('/account/login/')
+
+    # normal login
     request.session.pop('info_signup', None)
     if type == 'KAIST':
-        user.profile.set_kaist_info(info)
+        user.profile.save_kaist_info(info)
 
-    user.backend = 'django.contrib.auth.backends.ModelBackend'
     auth.login(request, user)
-    logger.info('login.success', {'r': request})
-
-    if user.profile.activate():
-        account_logger.warning('activate', {'r': request})
-
     nexturl = request.session.pop('next', '/')
-    return redirect(nexturl)
+    return redirect(get_clean_url(nexturl))
 
 
 # from /callback/
@@ -188,21 +215,21 @@ def callback_conn(request, type, user, info):
     elif type == 'TW' and not profile.twitter_id:
         profile.twitter_id = info['userid']
     elif type == 'KAIST' and not profile.kaist_id:
-        profile.set_kaist_info(info)
+        profile.save_kaist_info(info)
     else:
         return redirect('/account/profile/')
 
     profile.save()
     request.session['result_con'] = result_con
 
-    userid = info['userid'] if info else 'none'
-    if result_con == 0:
-        profile_logger.warning('connect.success: type=%s,id=%s'
-                               % (type.lower(), userid), {'r': request})
-    else:
-        profile_logger.warning('connect.fail: type=%s,id=%s'
-                               % (type.lower(), userid), {'r': request})
-
+    log_msg = 'success' if result_con == 0 else 'fail'
+    profile_logger.warning(f'social.connect.{log_msg}', {
+        'r': request,
+        'extra': [
+            ('type', get_social_name(type)),
+            ('uid', info['userid'] if info else 'unknown'),
+        ],
+    })
     return redirect('/account/profile/')
 
 
@@ -216,14 +243,16 @@ def callback_renew(request, type, user, info):
     if profile.kaist_id != info['userid']:
         result_con = 2
     else:
-        user.profile.set_kaist_info(info)
+        user.profile.save_kaist_info(info)
 
     request.session['result_con'] = result_con
-    if result_con == 0:
-        profile_logger.warning('renew.success: type=%s,id=%s'
-                               % (type.lower(), info['userid']), {'r': request})
-    else:
-        profile_logger.warning('renew.fail: type=%s,id=%s'
-                               % (type.lower(), info['userid']), {'r': request})
 
+    log_msg = 'success' if result_con == 0 else 'fail'
+    profile_logger.warning(f'social.update.{log_msg}', {
+        'r': request,
+        'extra': [
+            ('type', get_social_name(type)),
+            ('uid', info['userid'] if info else 'unknown'),
+        ],
+    })
     return redirect('/account/profile/')

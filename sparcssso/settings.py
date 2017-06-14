@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 """
 Django settings for sparcssso project.
 
@@ -13,6 +12,9 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+
+from .version import get_version_info
+
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -29,6 +31,10 @@ ALLOWED_HOSTS = [
     'ssodev.sparcs.org',
 ]
 
+DOMAIN = 'http://ssodev.sparcs.org'
+
+VERSION = get_version_info()
+
 
 # Application definition
 
@@ -39,11 +45,12 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apps.core',
     'apps.api',
+    'apps.core',
+    'apps.dev',
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -54,6 +61,12 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
 )
+
+AUTHENTICATION_BACKENDS = [
+    'apps.core.backends.EmailLoginBackend',
+    'apps.core.backends.LDAPLoginBackend',
+    'apps.core.backends.PasswordlessLoginBackend',
+]
 
 ROOT_URLCONF = 'sparcssso.urls'
 
@@ -70,6 +83,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'apps.core.backends.context_processors.version',
             ],
         },
     },
@@ -79,10 +93,8 @@ WSGI_APPLICATION = 'sparcssso.wsgi.application'
 
 LOGIN_URL = '/account/login/'
 
-LOGOUT_URL = '/account/logout/'
 
-
-# Facebook, Twitter, KAIST API Key
+# Facebook, Twitter, KAIST API keys
 
 FACEBOOK_APP_ID = ''
 
@@ -110,7 +122,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    },
 }
 
 
@@ -141,26 +153,32 @@ LOCALE_PATHS = (
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 
 MEDIA_URL = '/media/'
+
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # Admins & Logging
 TEAM_EMAILS = ['sso@sparcs.org', ]
+
 ADMINS = (('SSO SYSOP', 'sso.sysop@sparcs.org'),)
 
-LOG_FILE = os.path.join(BASE_DIR, 'archive/logs.txt')
+LOG_DIR = os.path.join(BASE_DIR, 'archive/logs/')
+
+LOG_BUFFER_DIR = os.path.join(BASE_DIR, 'archive/buffer/')
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
         'file': {
             'level': 'INFO',
-            'class': 'apps.logger.DBHandler',
+            'class': 'apps.logger.SSOLogHandler',
         },
         'mail': {
             'level': 'ERROR',
@@ -181,6 +199,6 @@ STAT_FILE = os.path.join(BASE_DIR, 'archive/stats.txt')
 
 # Local Settings
 try:
-    from .local_settings import *
+    from .local_settings import * # noqa: F401, F403
 except ImportError:
     pass

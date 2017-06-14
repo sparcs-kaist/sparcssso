@@ -1,0 +1,9 @@
+[flake8]
+exclude =
+    .git,
+    __pycache__,
+    apps/core/migrations,
+    node_modules,
+    venv,
+application-import-names = apps
+import-order-style = edited

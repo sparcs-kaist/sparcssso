@@ -1,10 +1,12 @@
-from django.core.management.base import BaseCommand
-from django.utils import timezone
-from apps.core.models import UserProfile
 import logging
 
+from django.core.management.base import BaseCommand
+from django.utils import timezone
 
-logger = logging.getLogger('sso.core.account')
+from ...models import UserProfile
+
+
+logger = logging.getLogger('sso.account')
 
 
 class Command(BaseCommand):

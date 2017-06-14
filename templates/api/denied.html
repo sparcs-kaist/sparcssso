@@ -5,24 +5,24 @@
 
 {% block content %}
 <div class="wrap-content-xs">
-    <h1>{% trans "Login Request Rejected" %}</h1>
-    <p class="text-danger">{% blocktrans %}Your login request for the service {{alias}} has been rejected.{% endblocktrans %}</p>
+  <h1>{% trans "Login Request Rejected" %}</h1>
+  <p class="text-danger">{% blocktrans %}Your login request for the service {{ alias }} has been rejected.{% endblocktrans %}</p>
 
-    {% if reason == 1 %}
-    <p>SYSOP account cannot register to any service, including {{alias}}.</p>
-    <p><a class="btn btn-primary" href="/">Back to Main</a></p>
-    {% elif reason == 2 %}
-    <p>Only SPARCS members can access to {{alias}}. Please contact to SYSOP.</p>
-    <p><a class="btn btn-primary" href="{{dest}}">Back to {{alias}}</a></p>
-    {% elif reason == 3 %}
-    <p>Only TEST account can access to {{alias}}. Enable TEST settings on the <a href="/dev/main/">developer center</a>.</p>
-    <p><a class="btn btn-primary" href="/dev/main/">Dev Center</a></p>
-    {% elif reason == 4 %}
-    <p>TEST ONLY account cannot access to any non-test services.</p>
-    <p><a class="btn btn-primary" href="{{dest}}">Back to {{alias}}</a></p>
-    {% elif reason == 5 %}
-    <p>{% trans "You need to verify your email or connect to at least one SNS account." %}</p>
-    <p><a class="btn btn-primary" href="/account/profile/">{% trans "Verify Email / Connect to SNS" %}</a></p>
-    {% endif %}
+  {% if reason == 1 %}
+  <p>SYSOP account cannot register to any service, including {{ alias }}.</p>
+  <p><a class="btn btn-primary" href="/">Back to Main</a></p>
+  {% elif reason == 2 %}
+  <p>Only SPARCS members can access to {{ alias }}. Please contact to SYSOP.</p>
+  <p><a class="btn btn-primary" href="{{ dest }}">Back to {{ alias }}</a></p>
+  {% elif reason == 3 %}
+  <p>Only TEST account can access to {{ alias }}. Enable TEST settings on the <a href="/dev/main/">developer center</a>.</p>
+  <p><a class="btn btn-primary" href="/dev/main/">Dev Center</a></p>
+  {% elif reason == 4 %}
+  <p>TEST ONLY account cannot access to any non-test services.</p>
+  <p><a class="btn btn-primary" href="{{ dest }}">Back to {{ alias }}</a></p>
+  {% elif reason == 5 %}
+  <p>{% trans "You need to verify your email or connect to at least one SNS account." %}</p>
+  <p><a class="btn btn-primary" href="/account/profile/">{% trans "Verify Email / Connect to SNS" %}</a></p>
+  {% endif %}
 </div>
 {% endblock %}

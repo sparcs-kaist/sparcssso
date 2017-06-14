@@ -1,9 +1,15 @@
 from django.contrib import admin
 from django.contrib.auth import admin as uadmin
 from django.contrib.auth.models import User
-from apps.core.models import Notice, Statistic, Document, Service, \
-    ServiceMap, AccessToken, UserProfile, EmailAuthToken, ResetPWToken, \
-    PointLog, UserLog
+
+from .models import (
+    AccessToken, Document, EmailAuthToken, Notice,
+    PointLog, ResetPWToken, Service, ServiceMap,
+    Statistic, UserLog, UserProfile,
+)
+
+
+admin.site.unregister(User)
 
 
 # Filters
@@ -24,10 +30,12 @@ class UserFilter(admin.SimpleListFilter):
 
 
 # Admin for General Objects
+@admin.register(Notice)
 class NoticeAdmin(admin.ModelAdmin):
     list_display = ('title', 'valid_from', 'valid_to', 'text')
 
 
+@admin.register(Statistic)
 class StatisticAdmin(admin.ModelAdmin):
     list_display = ('time', 'data')
     readonly_fields = list(map(lambda x: x.name, Statistic._meta.fields))
@@ -36,16 +44,20 @@ class StatisticAdmin(admin.ModelAdmin):
         return False
 
 
+@admin.register(Document)
 class DocumentAdmin(admin.ModelAdmin):
     list_display = ('category', 'version', 'date_apply', 'date_version')
 
 
 # Admin for Service Related Objects
+@admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'is_shown', 'alias', 'scope', 'admin_user',
-                    'main_url', 'login_callback_url', 'unregister_url', 'cooltime')
+    list_display = ('name', 'is_shown', 'alias', 'scope',
+                    'admin_user', 'main_url', 'login_callback_url',
+                    'unregister_url', 'cooltime')
 
 
+@admin.register(ServiceMap)
 class ServiceMapAdmin(admin.ModelAdmin):
     actions = None
     list_display = ('sid', 'user', 'service',
@@ -58,6 +70,7 @@ class ServiceMapAdmin(admin.ModelAdmin):
         return False
 
 
+@admin.register(AccessToken)
 class AccessTokenAdmin(admin.ModelAdmin):
     list_display = ('tokenid', 'user', 'service', 'expire_time')
     list_filter = (UserFilter, )
@@ -68,24 +81,25 @@ class AccessTokenAdmin(admin.ModelAdmin):
 
 
 # Admin for User Related Objects
+@admin.register(User)
 class UserAdmin(uadmin.UserAdmin):
     class UserProfileInline(admin.StackedInline):
         model = UserProfile
         can_delete = False
         fieldsets = (
             ('General', {
-                'fields': (('gender', 'birthday'),
-                           ('email_authed', 'password_set'), 'expire_time'),
+                'fields': ('gender', 'birthday',
+                           'email_authed', 'expire_time'),
             }),
             ('Points', {
-                'fields': (('point', 'point_test'), ),
+                'fields': ('point', 'point_test'),
             }),
             ('SNS', {
-                'fields': (('facebook_id', 'twitter_id'),
-                           ('kaist_id', 'kaist_info_time'), 'kaist_info'),
+                'fields': ('facebook_id', 'twitter_id',
+                           'kaist_id', 'kaist_info_time', 'kaist_info'),
             }),
-            ('Debug', {
-                'fields': (('sparcs_id', 'test_only', 'test_enabled'), ),
+            ('Dev / Debug', {
+                'fields': ('sparcs_id', 'test_only', 'test_enabled'),
             }),
         )
 
@@ -122,6 +136,7 @@ class UserAdmin(uadmin.UserAdmin):
     ordering = ()
 
 
+@admin.register(EmailAuthToken)
 class EmailAuthTokenAdmin(admin.ModelAdmin):
     list_display = ('tokenid', 'expire_time', 'user')
     readonly_fields = list(map(lambda x: x.name, EmailAuthToken._meta.fields))
@@ -130,6 +145,7 @@ class EmailAuthTokenAdmin(admin.ModelAdmin):
         return False
 
 
+@admin.register(ResetPWToken)
 class ResetPWTokenAdmin(admin.ModelAdmin):
     list_display = ('tokenid', 'expire_time', 'user')
     readonly_fields = list(map(lambda x: x.name, ResetPWToken._meta.fields))
@@ -138,6 +154,7 @@ class ResetPWTokenAdmin(admin.ModelAdmin):
         return False
 
 
+@admin.register(PointLog)
 class PointLogAdmin(admin.ModelAdmin):
     actions = None
     list_display = ('user', 'service', 'time', 'delta', 'action')
@@ -150,6 +167,7 @@ class PointLogAdmin(admin.ModelAdmin):
         return False
 
 
+@admin.register(UserLog)
 class UserLogAdmin(admin.ModelAdmin):
     actions = None
     list_display = ('user', 'level', 'time', 'ip', 'text')
@@ -160,17 +178,3 @@ class UserLogAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
-
-
-admin.site.unregister(User)
-admin.site.register(Notice, NoticeAdmin)
-admin.site.register(Statistic, StatisticAdmin)
-admin.site.register(Document, DocumentAdmin)
-admin.site.register(Service, ServiceAdmin)
-admin.site.register(ServiceMap, ServiceMapAdmin)
-admin.site.register(AccessToken, AccessTokenAdmin)
-admin.site.register(User, UserAdmin)
-admin.site.register(EmailAuthToken, EmailAuthTokenAdmin)
-admin.site.register(ResetPWToken, ResetPWTokenAdmin)
-admin.site.register(PointLog, PointLogAdmin)
-admin.site.register(UserLog, UserLogAdmin)

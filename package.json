@@ -1,0 +1,29 @@
+{
+  "name": "sparcssso",
+  "version": "1.0.0+2017050801",
+  "description": "Single Sign On for SPARCS Services",
+  "main": "",
+  "scripts": {
+    "lint-client": "eslint -c .eslintrc.client.js --ext .html,.js templates/**",
+    "lint-stat": "eslint -c .eslintrc.stat.js static/js/stats.js",
+    "lint": "npm run lint-client && npm run lint-stat"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sparcs-kaist/sparcssso.git"
+  },
+  "keywords": [],
+  "author": "SPARCS SSO Team",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sparcs-kaist/sparcssso/issues"
+  },
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb": "^15.0.1",
+    "eslint-config-es5": "^0.5.0",
+    "eslint-plugin-html": "^2.0.3",
+    "eslint-plugin-jsx-a11y": "^5.0.3",
+    "eslint-plugin-react": "^7.0.1"
+  }
+}

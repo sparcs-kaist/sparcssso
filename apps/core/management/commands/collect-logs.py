@@ -1,51 +1,48 @@
-from django.core.management.base import BaseCommand
-from django.core.mail import send_mail
+import os
+import re
+from datetime import timedelta
+
 from django.conf import settings
+from django.core.management.base import BaseCommand
 from django.utils import timezone
-from apps.core.models import UserLog
-from datetime import datetime, timedelta
+
+from ...models import UserLog
 
 
 class Command(BaseCommand):
-    help = 'Collect DB logs to a file'
-    timestamp_file = '{}.last'.format(settings.LOG_FILE)
+    help = 'Merge log files into one file'
 
-    def get_timestamp(self):
-        try:
-            with open(self.timestamp_file, 'r') as f:
-                return float(f.read().strip())
-        except:
-            return 0.0
-
-    def set_timestamp(self, timestamp):
-        with open(self.timestamp_file, 'w') as f:
-            f.write(str(timestamp))
+    def get_full_path(self, log_file):
+        return os.path.join(settings.LOG_BUFFER_DIR, log_file)
 
     def handle(self, *args, **options):
-        # cold archive logs from last backup time
-        start_timestamp = self.get_timestamp()
-        start_time = timezone.make_aware(
-            datetime.fromtimestamp(start_timestamp))
-        logs = UserLog.objects.filter(time__gt=start_time)
+        # merge multiple log files into one file
+        log_files = list(filter(
+            lambda x: re.match(r'(\d{8})\.(\d+)\.log', x),
+            os.listdir(settings.LOG_BUFFER_DIR),
+        ))
+        log_entities = {}
+        for log_file in log_files:
+            date = log_file[:8]
+            if date not in log_entities:
+                log_entities[date] = []
 
-        end_time = start_time
-        with open(settings.LOG_FILE, 'a') as f:
-            for log in logs:
-                end_time = max(end_time, log.time)
-                f.write(log.pretty() + '\n')
-        self.set_timestamp(end_time.timestamp())
+            with open(self.get_full_path(log_file), 'r') as f:
+                log_entities[date].extend(
+                    list(filter(None, f.readlines())),
+                )
+
+        for date, log_entity in log_entities.items():
+            log_entity.sort()
+            log_file = os.path.join(settings.LOG_DIR, f'{date}.log')
+            with open(log_file, 'a+') as f:
+                for log in log_entity:
+                    f.write(log)
+
+        for log_file in log_files:
+            os.remove(self.get_full_path(log_file))
 
         # remove logs that exceed 30 days
         last_month = (timezone.now() - timedelta(days=30)) \
             .replace(hour=0, minute=0, second=0, microsecond=0)
         UserLog.objects.filter(time__lt=last_month).delete()
-
-        if settings.DEBUG:
-            return
-
-        # send critical logs to admin
-        logs_critical = logs.filter(level__gte=30)
-        content = list(map(lambda x: x.pretty() + '\n', logs_critical))
-        emails = list(map(lambda x: x[1], settings.ADMINS))
-        send_mail('[SPARCS SSO] Log Report', '', 'noreply@sso.sparcs.org',
-                  emails, html_message=content)

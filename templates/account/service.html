@@ -7,26 +7,110 @@
 
 {% block content %}
 <div class="wrap-content-xs">
-    <h1>{% trans "Manage Service" %}</h1>
-    <p>{% trans "You can see and unregister services that you use." %}</p>
+  <h1>{% trans "Manage Service" %}</h1>
+  <p>{% trans "You can see and unregister services that you use." %}</p>
 
-    <div class="services-list">
-        {% for m in maps %}
-        <div class="media service">
-            <div class="media-left">
-                <a href="{{m.service.main_url}}">
-                    <img class="media-object" src="{{m.service.icon_url}}" alt="{{m.service.name}}">
-                </a>
-            </div>
-            <div class="media-body">
-                <h4 class="media-heading">{{m.service.alias}} <small>(Scope: {{m.service.get_scope_display}})</small></h4>
-                <p class="date">{% blocktrans with time=m.register_time|date:'Y-m-d' %}from {{time}}{% endblocktrans %}</p>
-                <p class="action"><a class="btn btn-xs btn-danger" href="{{m.service.unregister_url}}">{% trans "Unregister" %}</a></p>
-            </div>
-        </div>
-        {% empty %}
-        <p class="text-info">{% trans "There are no services to show." %}</p>
-        {% endfor %}
+  {% if result_service %}
+  <div class="form-group col-xs-12">
+    {% if result_service.success %}
+    <div class="alert alert-success">
+      <strong>{% trans "The service is successfully unregistered." %}</strong>
     </div>
+    {% elif not result_service.success %}
+    <div class="alert alert-danger">
+      <strong>{% trans "The service cannot be unregistered." %}</strong>
+      {{ result_service.reason }}
+      {% if result_service.link %}
+      <a href="{{ result_service.link }}" target="_blank">{% trans "Need help? Click here!" %}</a>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+  <div class="services-list">
+    {% for m in maps %}
+    <div class="media service">
+      <div class="media-left">
+        <a href="{{ m.service.main_url }}">
+          <img class="media-object" src="{{ m.service.icon_url }}" alt="{{ m.service.name }}">
+        </a>
+      </div>
+      <div class="media-body">
+        <h4 class="media-heading">{{ m.service.alias }} <small>(Scope: {{ m.service.get_scope_display }})</small></h4>
+        <p class="date">{% blocktrans with time=m.register_time|date:'Y-m-d' %}from {{ time }}{% endblocktrans %}</p>
+        <p class="action">
+          <button class="btn btn-xs btn-danger btn-show-warning"
+                  data-name="{{ m.service.name }}"
+                  data-alias="{{ m.service.alias }}"
+                  data-cooltime="{{ m.service.cooltime }}">
+            {% trans "Unregister" %}
+          </button>
+        </p>
+      </div>
+    </div>
+    {% empty %}
+    <p class="text-info">{% trans "There are no services to show." %}</p>
+    {% endfor %}
+  </div>
 </div>
+
+<div class="modal fade" tabindex="-1" id="unregister-warning" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">{% trans "Unregister Service" %}</h4>
+      </div>
+      <div class="text-center modal-body">
+        <p><strong>{% trans "Warning!" %}</strong> {% blocktrans %}You are trying to unregister <span id="service-alias"></span> service.{% endblocktrans %}</p>
+        <ul class="list-unstyled">
+          <li>&gt;&gt; {% trans "You will permantly lose access to your account." %} &lt;&lt;</li>
+          <li class="text-danger" id="cooltime-warning">&gt;&gt; {% blocktrans %}You CANNOT use this service again for <span id="service-cooltime"></span> days.{% endblocktrans %} &lt;&lt;</li>
+          <li class="text-danger">&gt;&gt; {% trans "You CANNOT undo this action." %} &lt;&lt;</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger btn-unregister">{% trans "Unregister" %}</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+$(function() {
+  var selectedName = '';
+  $('.btn-show-warning').click(function() {
+    var self = $(this);
+    var cooltime = self.data('cooltime');
+    selectedName = self.data('name');
+    $('#service-alias').text(self.data('alias'));
+    if (cooltime === 0) {
+      $('#cooltime-warning').hide();
+    } else {
+      $('#service-cooltime').text(cooltime);
+      $('#cooltime-warning').show();
+    }
+    $('#unregister-warning').modal('show');
+  });
+
+  $('.btn-unregister').click(function() {
+    var form = $(document.createElement('form')).attr({
+      method: 'post',
+      action: '/account/service/',
+    });
+    $(document.createElement('input')).attr({
+      type: 'hidden',
+      name: 'csrfmiddlewaretoken',
+      value: '{{ csrf_token }}',
+    }).appendTo(form);
+    $(document.createElement('input')).attr({
+      type: 'hidden',
+      name: 'name',
+      value: selectedName,
+    }).appendTo(form);
+    form.appendTo(document.body).submit();
+  });
+});
+</script>
 {% endblock %}

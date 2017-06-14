@@ -1,175 +1,190 @@
-from bs4 import BeautifulSoup
-from http.server import BaseHTTPRequestHandler, HTTPServer
 from secrets import token_hex
-from sparcsssov2 import Client
 from urllib.parse import parse_qs, urlparse
-import requests
-import json
-import sys
 
-# SPARCS SSO V2 Client Test Server Version 1.1
-# VALID ONLY AFTER 2017-08-08T14:55+09:00
+import click
+import requests
+from bs4 import BeautifulSoup
+from flask import Flask, jsonify, request
+
+from sparcsssov2 import Client
+# SPARCS SSO V2 Client Test Server Version 1.2
+# VALID ONLY AFTER 2017-05-06
 # Made by SPARCS SSO Team
 
 
+app = Flask(__name__)
 storage = {
+    'account': {
+        'email': '',
+        'password': '',
+        'sid': 'unknown',
+    },
     'client': None,
-    'session': requests.Session(),
     'loggedin': False,
+    'session': requests.Session(),
 }
 
 
-class TestHandler(BaseHTTPRequestHandler):
-    def _do_root(self):
-        return {
-            'test-suites': {
-                'login': '/login',
-                'logout': '/logout',
-                'unregister': '/unregister',
-                'point-get': '/point-get',
-                'point-modify': '/point-modify',
-            },
-            'target': {
-                'user': 'email: test@sso.sparcs.org, pw: asdfasdf',
-            },
-        }
-
-    def _do_login(self):
-        global storage
-        client, session = storage['client'], storage['session']
-
-        if storage['loggedin']:
-            return {'success': False, 'reason': 'Already Logged In'}
-
-        r = session.get('%saccount/login/' % client.DOMAIN)
-        soup = BeautifulSoup(r.text, "html.parser")
-        token = soup.select("input[name=csrfmiddlewaretoken]")[0]['value']
-
-        data = {
-            'email': 'test@sso.sparcs.org',
-            'password': 'asdfasdf',
-            'csrfmiddlewaretoken': token
-        }
-
-        r = session.post('%saccount/login/' % client.DOMAIN, data=data)
-        storage['loggedin'] = 'account/login' not in r.url
-        if not storage['loggedin']:
-            return {'success': False, 'reason': 'Invalid Account'}
-
-        login_url, old_state = client.get_login_params()
-        r = session.get(login_url, allow_redirects=False)
-
-        print(r.text)
-        url = r.headers['Location']
-        dic = parse_qs(urlparse(url).query)
-        state, code = dic['state'][0], dic['code'][0]
-        if state != old_state:
-            return {'success': False, 'reason': 'Invalid State'}
-
-        r = client.get_user_info(code)
-        storage['sid'] = r['sid']
-        return {'user': r, 'success': True}
-
-    def _do_logout(self):
-        global storage
-        client, session = storage['client'], storage['session']
-
-        if not storage['loggedin']:
-            return {'success': False, 'reason': 'Not Logged In'}
-
-        redirect_uri = 'https://example.com/?args={}'.format(token_hex(10))
-        logout_url = client.get_logout_url(storage['sid'], redirect_uri)
-        r = session.get(logout_url, allow_redirects=False)
-        url = r.headers['Location']
-
-        if redirect_uri != url:
-            return {'success': False, 'reason': 'Unknown'}
-
-        storage['loggedin'] = False
-        return {'success': True}
-
-    def _do_unregister(self):
-        global storage
-        client = storage['client']
-
-        if not storage['loggedin']:
-            return {'success': False, 'reason': 'Not Logged In'}
-
-        result = client.do_unregister(storage['sid'])
-        if not result:
-            return {'success': False, 'reason': 'Unknown'}
-
-        return {'success': True}
-
-    def _do_get_point(self):
-        global storage
-        client = storage['client']
-
-        if not storage['loggedin']:
-            return {'success': False, 'reason': 'Not Logged In'}
-
-        point = client.get_point(storage['sid'])
-        return {'success': True, 'point': point}
-
-    def _do_modify_point(self, path):
-        global storage
-        client = storage['client']
-
-        if not storage['loggedin']:
-            return {'success': False, 'reason': 'Not Logged In'}
-
-        dic = parse_qs(urlparse(path).query)
-        delta = dic.get('delta', ['1000', ])[0].strip()
-
-        result = client.modify_point(storage['sid'], delta, 'SPARCS SSO Automatic Test')
-        return {'success': True, 'result': result}
-
-    def do_GET(self):
-        path = self.path
-        if path[-1] == '/':
-            path = path[:-1]
-
-        resp = {'success': False, 'reason': 'Invalid URL'}
-        if path == '':
-            resp = self._do_root()
-        elif path == '/login':
-            resp = self._do_login()
-        elif path == '/logout':
-            resp = self._do_logout()
-        elif path == '/unregister':
-            resp = self._do_unregister()
-        elif path == '/point-get':
-            resp = self._do_get_point()
-        elif path.startswith('/point-modify'):
-            resp = self._do_modify_point(path)
-
-        self.send_response(200)
-        self.send_header('Content-Type', 'text/json')
-        self.end_headers()
-        self.wfile.write(bytes(json.dumps(resp), 'utf-8'))
+@app.route('/')
+def home():
+    return jsonify({
+        'account': storage['account'],
+        'loggedin': storage['loggedin'],
+        'unregister': {
+            'accept': '/unregister/accept',
+            'deny': '/unregister/deny',
+        },
+        'urls': {
+            'login': '/login',
+            'logout': '/logout',
+            'point-get': '/point/get',
+            'point-modify': '/point/modify?delta=1000',
+        },
+    })
 
 
-def main(args):
-    if len(args) < 5:
-        print('usage: python test.v2.py <binding_port> <server_addr> <client_id> <secret_key>')
-        exit(1)
+@app.route('/login')
+def login():
+    client, session = storage['client'], storage['session']
+    if storage['loggedin']:
+        return jsonify({
+            'success': False,
+            'reason': 'already-logged-in',
+        })
 
-    port = int(args[1])
-    server_addr = 'http://{}/'.format(args[2])
-    client_id = args[3]
-    secret_key = args[4]
+    r = session.get(f'{client.DOMAIN}account/login/')
+    soup = BeautifulSoup(r.text, 'html.parser')
+    token = soup.select('input[name=csrfmiddlewaretoken]')[0]['value']
 
-    global storage
+    r = session.post(f'{client.DOMAIN}account/login/', data={
+        'email': storage['account']['email'],
+        'password': storage['account']['password'],
+        'csrfmiddlewaretoken': token,
+    })
+    if 'account/login' in r.url:
+        return jsonify({
+            'success': False,
+            'reason': 'no-such-account',
+        })
+
+    login_url, old_state = client.get_login_params()
+    r = session.get(login_url, allow_redirects=False)
+    if 'Location' not in r.headers:
+        return jsonify({
+            'success': False,
+            'reason': 'no-redirect-maybe-cooltime',
+        })
+
+    url = r.headers['Location']
+    query_dict = parse_qs(urlparse(url).query)
+    state, code = query_dict['state'][0], query_dict['code'][0]
+    if state != old_state:
+        return jsonify({
+            'success': False,
+            'reason': 'invalid-state',
+        })
+
+    r = client.get_user_info(code)
+    storage['account']['sid'] = r['sid']
+    storage['loggedin'] = True
+    return jsonify({
+        'success': True,
+        'user': r,
+    })
+
+
+@app.route('/logout')
+def logout():
+    client, session = storage['client'], storage['session']
+    if not storage['loggedin']:
+        return jsonify({
+            'success': False,
+            'reason': 'not-logged-in',
+        })
+
+    redirect_uri = f'https://example.com/?args={token_hex(10)}'
+    logout_url = client.get_logout_url(storage['account']['sid'], redirect_uri)
+    r = session.get(logout_url, allow_redirects=False)
+    url = r.headers['Location']
+    if redirect_uri != url:
+        return jsonify({
+            'success': False,
+            'reason': 'unknown',
+        })
+
+    storage['account']['sid'] = 'unknown'
+    storage['loggedin'] = False
+    return jsonify({
+        'success': True,
+    })
+
+
+@app.route('/point/get')
+def point_get():
+    client = storage['client']
+    if not storage['loggedin']:
+        return jsonify({
+            'success': False,
+            'reason': 'not-logged-in',
+        })
+
+    point = client.get_point(storage['account']['sid'])
+    return jsonify({
+        'success': True,
+        'point': point,
+    })
+
+
+@app.route('/point/modify')
+def point_modify():
+    client = storage['client']
+    if not storage['loggedin']:
+        return jsonify({
+            'success': False,
+            'reason': 'not-logged-in',
+        })
+
+    delta = request.args.get('delta', 1000)
+    result = client.modify_point(
+        storage['account']['sid'],
+        delta, 'SPARCS SSO Test',
+    )
+    return jsonify({
+        'success': True,
+        'result': result,
+    })
+
+
+@app.route('/unregister/accept', methods=['POST', ])
+def unregister_accept():
+    return jsonify({
+        'success': True,
+    })
+
+
+@app.route('/unregister/deny', methods=['POST', ])
+def unregister_deny():
+    return jsonify({
+        'success': False,
+        'reason': 'Unregister denied.',
+        'link': 'https://example.com/help',
+    })
+
+
+@click.command()
+@click.argument('server_addr')
+@click.argument('client_id')
+@click.argument('secret_key')
+@click.argument('user_token')
+@click.option('-p', '--port', type=int, default=22224,
+              help='port number to open server')
+def main(server_addr, client_id, secret_key, user_token, port):
+    click.echo(f'SPARCS SSO Test Server has been Started on 0.0.0.0:{port}')
+    storage['account']['email'] = f'test-{user_token}@sso.sparcs.org'
+    storage['account']['password'] = user_token
     storage['client'] = Client(client_id, secret_key, server_addr=server_addr)
-
-    try:
-        server = HTTPServer(('0.0.0.0', port), TestHandler)
-        print('Start SPARCS SSO Test HTTP Server on 0.0.0.0:{}'.format(port))
-        server.serve_forever()
-    except KeyboardInterrupt:
-        print('Stop Test HTTP Server')
-        server.socket.close()
+    app.run(host='0.0.0.0', port=port)
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+    main()

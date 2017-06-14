@@ -1,42 +1,35 @@
-from django.contrib.auth.models import User
-from django.contrib.auth.hashers import check_password, make_password
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from django.utils import timezone
-from apps.core.backends import give_reset_pw_token
-from apps.core.models import ResetPWToken
 import logging
 
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import User
+from django.shortcuts import redirect, render
+from django.utils import timezone
 
-logger = logging.getLogger('sso.core.password')
+from ..backends import (
+    real_user_required, sudo_required, token_issue_reset_pw,
+)
+from ..models import ResetPWToken
+
+
+logger = logging.getLogger('sso.auth.password')
 
 
 # /password/change/
 @login_required
+@real_user_required
+@sudo_required
 def change(request):
     user = request.user
-    if user.profile.test_only:
-        return redirect('/account/profile/')
-
-    fail = False
     if request.method == 'POST':
-        oldpw = request.POST.get('oldpassword', '')
         newpw = request.POST.get('password', 'P@55w0rd!#$')
+        user.password = make_password(newpw)
+        user.save()
 
-        if not user.profile.password_set or check_password(oldpw, user.password):
-            user.password = make_password(newpw)
-            user.save()
+        logger.info('change', {'r': request})
+        return redirect('/account/login/')
 
-            user.profile.password_set = True
-            user.profile.save()
-
-            logger.warning('change.success', {'r': request})
-            return redirect('/account/login/')
-
-        fail = True
-        logger.warning('change.fail', {'r': request})
-
-    return render(request, 'account/pw-change.html', {'user': user, 'fail': fail})
+    return render(request, 'account/pw-change.html', {'user': user})
 
 
 # /password/reset/
@@ -45,10 +38,17 @@ def reset_email(request):
         email = request.POST.get('email', '')
         user = User.objects.filter(email=email).first()
         if not user or user.profile.test_only:
-            return render(request, 'account/pw-reset/send.html', {'fail': True, 'email': email})
+            return render(request, 'account/pw-reset/send.html', {
+                'fail': True,
+                'email': email,
+            })
 
-        give_reset_pw_token(user)
-        logger.warning('reset.try', {'r': request, 'uid': user.username})
+        token_issue_reset_pw(user)
+        logger.warning('reset.try', {
+            'r': request,
+            'uid': user.username,
+            'extra': [('email', email)],
+        })
         return render(request, 'account/pw-reset/sent.html')
 
     return render(request, 'account/pw-reset/send.html')
@@ -71,7 +71,11 @@ def reset(request, tokenid):
         user.save()
         token.delete()
 
-        logger.warning('reset.done', {'r': request, 'uid': user.username})
+        logger.warning('reset.done', {
+            'r': request,
+            'uid': user.username,
+            'extra': [('email', user.email)],
+        })
         return render(request, 'account/pw-reset/done.html')
 
     return render(request, 'account/pw-reset/main.html', {'tokenid': tokenid})

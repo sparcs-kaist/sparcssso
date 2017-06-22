@@ -1,0 +1,12 @@
+{% extends "error/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "CSRF Failed" %}{% endblock %}
+
+{% block code %}403{% endblock %}
+
+{% block try %}
+<li>{% trans "Your request has been rejected to protect you." %}</li>
+<li>{% trans "Refreshing this page will not work." %}</li>
+<li>{% trans "Please go the previous page and try again." %}</li>
+{% endblock %}

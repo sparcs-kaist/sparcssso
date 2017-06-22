@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: v0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-06 15:31+0900\n"
+"POT-Creation-Date: 2017-06-22 21:57+0900\n"
 "PO-Revision-Date: 2016-01-01 19:21+0900\n"
 "Last-Translator: Jae-Sung Kim <wotjd1102@kaist.ac.kr>\n"
 "Language-Team: SPARCS SSO Team <sso@sparcs.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: templates/account/deactivate.html:4 templates/account/deactivate.html:10
-#: templates/base.html:53
+#: templates/base.html:52
 msgid "Deactivate"
 msgstr "비활성화"
 
@@ -45,7 +45,7 @@ msgid "Go to"
 msgstr "먼저 "
 
 #: templates/account/deactivate.html:22 templates/account/service.html:4
-#: templates/account/service.html:10 templates/base.html:47
+#: templates/account/service.html:10 templates/base.html:46
 msgid "Manage Service"
 msgstr "서비스 관리"
 
@@ -54,7 +54,7 @@ msgid "page first, and unregister all services."
 msgstr "에서 모든 서비스를 해지해주세요."
 
 #: templates/account/email.html:4 templates/account/email.html:10
-#: templates/account/email.html:76 templates/base.html:51
+#: templates/account/email.html:76 templates/base.html:50
 msgid "Change Email"
 msgstr "이메일 변경"
 
@@ -119,7 +119,7 @@ msgid "New Email"
 msgstr "새 이메일"
 
 #: templates/account/log.html:4 templates/account/log.html:9
-#: templates/base.html:48
+#: templates/base.html:47
 msgid "Account Logs"
 msgstr "계정 로그"
 
@@ -130,7 +130,7 @@ msgstr "최근 30일 동안의 활동 로그가 나타납니다."
 #: templates/account/login/internal.html:4
 #: templates/account/login/internal.html:18
 #: templates/account/login/main.html:4 templates/account/login/main.html:18
-#: templates/base.html:60
+#: templates/base.html:59
 msgid "Login"
 msgstr "로그인"
 
@@ -147,36 +147,35 @@ msgstr ""
 "로그인 창을 이용하세요."
 
 #: templates/account/login/internal.html:23
-#: templates/account/login/main.html:21
-msgid "Welcome to SPARCS SSO!"
-msgstr "SPARCS SSO에 오신 것을 환영합니다!"
-
-#: templates/account/login/internal.html:25
 #: templates/account/login/main.html:23
 #, python-format
 msgid "You need to login using SPARCS SSO account to use %(service)s service."
 msgstr "%(service)s 서비스를 사용하려면 SPARCS SSO 계정이 필요합니다."
 
-#: templates/account/login/internal.html:30
+#: templates/account/login/internal.html:28
 msgid "Invalid LDAP Credential or No Matching User"
 msgstr "LDAP 정보가 잘못되었거나 일치하는 사용자가 없습니다."
 
-#: templates/account/login/internal.html:37
+#: templates/account/login/internal.html:35
 msgid "ID"
 msgstr "아이디"
 
-#: templates/account/login/internal.html:40
+#: templates/account/login/internal.html:38
 #: templates/account/login/main.html:42 templates/account/signup/main.html:23
 msgid "Password"
 msgstr "비밀번호"
 
-#: templates/account/login/internal.html:43
+#: templates/account/login/internal.html:41
 msgid "LDAP Login"
 msgstr "LDAP 로그인"
 
-#: templates/account/login/internal.html:45
+#: templates/account/login/internal.html:43
 msgid "Back to Normal Login"
 msgstr "일반 로그인"
+
+#: templates/account/login/main.html:21
+msgid "Welcome to SPARCS SSO!"
+msgstr "SPARCS SSO에 오신 것을 환영합니다!"
 
 #: templates/account/login/main.html:28
 msgid "Invalid email / password"
@@ -196,12 +195,12 @@ msgstr "이메일"
 msgid "Email Login"
 msgstr "이메일로 로그인"
 
-#: templates/account/login/main.html:47 templates/base.html:59
+#: templates/account/login/main.html:47 templates/base.html:58
 msgid "Sign Up"
 msgstr "회원가입"
 
 #: templates/account/login/main.html:48
-#: templates/account/pw-reset/main.html:25 templates/base.html:61
+#: templates/account/pw-reset/main.html:25 templates/base.html:60
 msgid "Reset Password"
 msgstr "비밀번호 재설정"
 
@@ -225,7 +224,7 @@ msgstr "트위터로 로그인 / 가입"
 msgid "SPARCS SSO Logout"
 msgstr "SPARCS SSO 로그아웃"
 
-#: templates/account/logout.html:10 templates/base.html:57
+#: templates/account/logout.html:10 templates/base.html:56
 msgid "Logout"
 msgstr "로그아웃"
 
@@ -234,7 +233,7 @@ msgid "Successfully logged out."
 msgstr "로그아웃되었습니다."
 
 #: templates/account/point.html:4 templates/account/point.html:9
-#: templates/base.html:49
+#: templates/base.html:48
 msgid "Point Logs"
 msgstr "포인트 로그"
 
@@ -383,7 +382,7 @@ msgid "Renewed at"
 msgstr "갱신 날짜: "
 
 #: templates/account/pw-change.html:4 templates/account/pw-change.html:10
-#: templates/account/pw-change.html:25 templates/base.html:52
+#: templates/account/pw-change.html:25 templates/base.html:51
 msgid "Change Password"
 msgstr "비밀번호 변경"
 
@@ -669,39 +668,39 @@ msgstr "적어도 한개의 SNS 계정과 연동하거나 이메일 인증을 �
 msgid "Verify Email / Connect to SNS"
 msgstr "이메일 인증 / SNS 연동"
 
-#: templates/base.html:30
+#: templates/base.html:29
 msgid "Stats"
 msgstr "통계"
 
-#: templates/base.html:31
+#: templates/base.html:30
 msgid "Help"
 msgstr "도움말"
 
-#: templates/base.html:46
+#: templates/base.html:45
 msgid "Profile / Connections"
 msgstr "프로필 / 연결"
 
-#: templates/base.html:82
+#: templates/base.html:81
 msgid "Credits"
 msgstr "만든 사람들"
 
-#: templates/base.html:83
+#: templates/base.html:82
 msgid "Terms of Use"
 msgstr "이용 약관"
 
-#: templates/base.html:84
+#: templates/base.html:83
 msgid "Privacy Policy"
 msgstr "개인정보취급방침"
 
-#: templates/base.html:87
+#: templates/base.html:86
 msgid "Contact"
 msgstr "연락하기"
 
-#: templates/base.html:88
+#: templates/base.html:87
 msgid "Dev Team"
 msgstr "개발팀"
 
-#: templates/base.html:89
+#: templates/base.html:88
 msgid "SYSOP"
 msgstr "관리자"
 
@@ -812,6 +811,23 @@ msgstr "잠시 후에 다시 시도해주세요."
 #: templates/error/base.html:17
 msgid "Main"
 msgstr "메인"
+
+#: templates/error/csrf.html:4
+msgid "CSRF Failed"
+msgstr "CSRF 실패"
+
+#: templates/error/csrf.html:9
+#| msgid "Your request has been rejected."
+msgid "Your request has been rejected to protect you."
+msgstr "사용자를 보호하기 위해 요청이 거부되었습니다."
+
+#: templates/error/csrf.html:10
+msgid "Refreshing this page will not work."
+msgstr "페이지를 새로고침하지 마세요."
+
+#: templates/error/csrf.html:11
+msgid "Please go the previous page and try again."
+msgstr "이전 페이지로 돌아가서 다시 시도해주세요."
 
 #: templates/main.html:20
 msgid "Welcome to SPARCS Single Sign On!"

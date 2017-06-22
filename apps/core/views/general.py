@@ -92,12 +92,12 @@ def privacy(request, version=''):
 
 # /stats/
 def stats(request):
-    if not request.user.is_authenticated:
-        level = 0
-    elif request.user.profile.sparcs_id:
-        level = 1
-    elif request.user.is_staff:
-        level = 2
+    level = 0
+    if request.user.is_authenticated:
+        if request.user.is_staff:
+            level = 2
+        elif request.user.profile.sparcs_id:
+            level = 1
 
     stat = Statistic.objects.order_by('-time').first()
     time = stat.time if stat else None
@@ -132,3 +132,8 @@ def contact(request):
             submitted = True
 
     return render(request, 'contact.html', {'submitted': submitted})
+
+
+# csrf failure view
+def csrf_failure(request, reason=''):
+    return render(request, 'error/csrf.html')

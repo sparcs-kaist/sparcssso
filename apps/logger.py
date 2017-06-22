@@ -23,7 +23,7 @@ class SSOLogHandler(Handler):
 
     def emit_file(self, data):
         log_name = self.get_log_name()
-        if self.log_name != log_name:
+        if not self.log_file or self.log_name != log_name:
             if self.log_file:
                 self.log_file.close()
             self.log_name = log_name

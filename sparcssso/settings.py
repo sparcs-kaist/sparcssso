@@ -94,6 +94,12 @@ WSGI_APPLICATION = 'sparcssso.wsgi.application'
 LOGIN_URL = '/account/login/'
 
 
+# Security
+CSRF_USE_SESSIONS = True
+
+CSRF_FAILURE_VIEW = 'apps.core.views.general.csrf_failure'
+
+
 # Facebook, Twitter, KAIST API keys
 
 FACEBOOK_APP_ID = ''

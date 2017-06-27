@@ -29,7 +29,7 @@ class SSOLogHandler(Handler):
             self.log_name = log_name
             self.log_file = open(path.join(
                 settings.LOG_BUFFER_DIR, self.log_name,
-            ), 'a+')
+            ), 'a+', encoding='utf8')
 
         time = localtime(timezone.now()).isoformat()
         if data['user']:
@@ -74,5 +74,5 @@ class SSOLogHandler(Handler):
             if request.user.is_authenticated:
                 data['user'] = request.user
 
-        self.emit_file(data)
         self.emit_db(data)
+        self.emit_file(data)

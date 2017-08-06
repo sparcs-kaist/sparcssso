@@ -348,12 +348,12 @@ def stats(request):
             return raw_data
         return {}
 
-    if not request.user.is_authenticated:
-        level = 0
-    elif request.user.profile.sparcs_id:
-        level = 1
-    elif request.user.is_staff:
-        level = 2
+    level = 0
+    if request.user.is_authenticated:
+        if request.user.is_staff:
+            level = 2
+        elif request.user.profile.sparcs_id:
+            level = 1
 
     client_ids = list(filter(
         None, request.GET.get('client_ids', '').split(','),

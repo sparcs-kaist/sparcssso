@@ -1,4 +1,5 @@
 import logging
+import datetime
 from urllib.parse import parse_qs, urlparse
 
 from django.conf import settings
@@ -12,7 +13,7 @@ from ..backends import (
     auth_kaist_callback, auth_kaist_init, auth_tw_callback,
     auth_tw_init, get_clean_url, get_social_name,
 )
-from ..models import Notice, Service
+from ..models import Notice, Service, LoginFailureLog
 
 
 logger = logging.getLogger('sso.auth')
@@ -41,7 +42,7 @@ def login_core(request, session_name, template_name, get_user_func):
     )
 
     if request.method == 'POST':
-        user = get_user_func(request.POST)
+        user, attempted_username = get_user_func(request.POST)
         if user:
             request.session.pop('info_signup', None)
             auth.login(request, user)
@@ -52,12 +53,31 @@ def login_core(request, session_name, template_name, get_user_func):
 
         request.session[session_name] = 1
 
+        # Assumption: there will ALWAYS BE valid IP address.
+        # Do not log failure when there is no IP address.
+        if len(ip) != 0:
+            log_failure = LoginFailureLog()
+            log_failure.ip = ip
+            log_failure.username = attempted_username
+            log_failure.save()
+
+    last_failures = LoginFailureLog.objects.filter(
+            ip=ip,
+            time__gte=(current_time - datetime.timedelta(minutes=30))
+    )
+    if last_failures.count() >= 5:
+        show_recaptcha = True
+    else:
+        show_recaptcha = False
+
+
     return render(request, template_name, {
         'notice': notice,
         'service': service.alias if service else '',
         'fail': request.session.pop(session_name, ''),
         'show_internal': show_internal,
         'kaist_enabled': settings.KAIST_APP_ENABLED,
+        'show_recaptcha': show_recaptcha,
     })
 
 
@@ -67,8 +87,10 @@ def login(request):
     def get_user_func(post_dict):
         email = post_dict.get('email', 'null@sso.sparcs.org')
         password = post_dict.get('password', 'unknown')
-        return auth.authenticate(
-            request=request, email=email, password=password,
+        return (
+            auth.authenticate(
+                request=request, email=email, password=password
+            ), email
         )
 
     return login_core(
@@ -83,8 +105,10 @@ def login_internal(request):
     def get_user_func(post_dict):
         ldap_id = post_dict.get('ldap-id', 'unknown')
         ldap_pw = post_dict.get('ldap-pw', 'unknown')
-        return auth.authenticate(
-            request=request, ldap_id=ldap_id, ldap_pw=ldap_pw,
+        return (
+            auth.authenticate(
+                request=request, ldap_id=ldap_id, ldap_pw=ldap_pw,
+            ), ldap_id
         )
 
     return login_core(

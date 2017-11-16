@@ -95,6 +95,11 @@ CSRF_USE_SESSIONS = True
 
 CSRF_FAILURE_VIEW = 'apps.core.views.general.csrf_failure'
 
+# Recaptcha for login failures
+RECAPTCHA_LOGIN_FAILURE_COUNT = 5
+
+RECAPTCHA_LOGIN_FAILURE_TIMERANGE = 30  # minutes
+
 
 # Facebook, Twitter, KAIST API keys
 
@@ -110,7 +115,15 @@ KAIST_APP_ENABLED = False
 
 KAIST_APP_SECRET = ''
 
-RECAPTCHA_SECRET = ''
+# Invisible Recaptcha API keys used for Signup form
+INVISIBLE_RECAPTCHA_SITEKEY = ''
+
+INVISIBLE_RECAPTCHA_SECRET = ''
+
+# Normal Recaptcha API keys used for Login form
+NORMAL_RECAPTCHA_SITEKEY = ''
+
+NORMAL_RECAPTCHA_SECRET = ''
 
 
 # E-mail settings

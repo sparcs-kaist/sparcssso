@@ -55,12 +55,12 @@ def validate_email(email, exclude=''):
 
 
 # validate reCAPTCHA
-def validate_recaptcha(response):
+def validate_recaptcha(response, secret=settings.INVISIBLE_RECAPTCHA_SECRET):
     if not settings.RECAPTCHA_SECRET:
         return True
 
     data = {
-        'secret': settings.RECAPTCHA_SECRET,
+        'secret': secret,
         'response': response,
     }
     resp = requests.post('https://www.google.com/recaptcha/api/siteverify',

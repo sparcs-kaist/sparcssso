@@ -9,7 +9,7 @@ SPARCS SSO provides integrated login in SPARCS services, such as ARA or OTL.
 * gogi (Developer)
 * todo (Developer)
 * akais (Developer)
-* popiket (Developer)
+* pipoket (Developer)
 * pudding (Designer)
 * zoonoo (Translator)
 * ashe (Translator)

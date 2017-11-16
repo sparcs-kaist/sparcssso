@@ -23,6 +23,12 @@
   <p>{% blocktrans %}You need to login using SPARCS SSO account to use {{ service }} service.{% endblocktrans %}</p>
   {% endif %}
 
+  {% if show_recaptcha %}
+  <div class="alert alert-danger alert-invalid-account">
+      <b>RECAPTCHA!</b>
+  </div>
+  {% endif %}
+
   {% if fail == 1 %}
   <div class="alert alert-danger alert-invalid-account">
     <b>{% trans "Invalid email / password" %}</b>

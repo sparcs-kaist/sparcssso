@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: v0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-22 21:57+0900\n"
+"POT-Creation-Date: 2017-11-16 21:13+0900\n"
 "PO-Revision-Date: 2016-01-01 19:21+0900\n"
 "Last-Translator: Jae-Sung Kim <wotjd1102@kaist.ac.kr>\n"
 "Language-Team: SPARCS SSO Team <sso@sparcs.org>\n"
@@ -129,7 +129,7 @@ msgstr "최근 30일 동안의 활동 로그가 나타납니다."
 
 #: templates/account/login/internal.html:4
 #: templates/account/login/internal.html:18
-#: templates/account/login/main.html:4 templates/account/login/main.html:18
+#: templates/account/login/main.html:4 templates/account/login/main.html:20
 #: templates/base.html:59
 msgid "Login"
 msgstr "로그인"
@@ -147,7 +147,7 @@ msgstr ""
 "로그인 창을 이용하세요."
 
 #: templates/account/login/internal.html:23
-#: templates/account/login/main.html:23
+#: templates/account/login/main.html:25
 #, python-format
 msgid "You need to login using SPARCS SSO account to use %(service)s service."
 msgstr "%(service)s 서비스를 사용하려면 SPARCS SSO 계정이 필요합니다."
@@ -161,7 +161,7 @@ msgid "ID"
 msgstr "아이디"
 
 #: templates/account/login/internal.html:38
-#: templates/account/login/main.html:42 templates/account/signup/main.html:23
+#: templates/account/login/main.html:48 templates/account/signup/main.html:23
 msgid "Password"
 msgstr "비밀번호"
 
@@ -173,50 +173,54 @@ msgstr "LDAP 로그인"
 msgid "Back to Normal Login"
 msgstr "일반 로그인"
 
-#: templates/account/login/main.html:21
+#: templates/account/login/main.html:23
 msgid "Welcome to SPARCS SSO!"
 msgstr "SPARCS SSO에 오신 것을 환영합니다!"
 
-#: templates/account/login/main.html:28
+#: templates/account/login/main.html:30
 msgid "Invalid email / password"
 msgstr "잘못된 이메일 / 비밀번호"
 
-#: templates/account/login/main.html:32 templates/account/profile.html:117
+#: templates/account/login/main.html:34 templates/account/profile.html:117
 msgid "Please grant all requested permission"
 msgstr "요청한 권한을 모두 승인해주세요."
 
-#: templates/account/login/main.html:39 templates/account/profile.html:23
+#: templates/account/login/main.html:38
+msgid "Please fill out the item 'I'm not a robot'"
+msgstr "'로봇이 아닙니다' 항목에 체크해주세요."
+
+#: templates/account/login/main.html:45 templates/account/profile.html:23
 #: templates/account/signup/main.html:18 templates/account/signup/sns.html:26
 #: templates/contact.html:28 templates/contact.html:34
 msgid "Email"
 msgstr "이메일"
 
-#: templates/account/login/main.html:45
+#: templates/account/login/main.html:58
 msgid "Email Login"
 msgstr "이메일로 로그인"
 
-#: templates/account/login/main.html:47 templates/base.html:58
+#: templates/account/login/main.html:60 templates/base.html:58
 msgid "Sign Up"
 msgstr "회원가입"
 
-#: templates/account/login/main.html:48
+#: templates/account/login/main.html:61
 #: templates/account/pw-reset/main.html:25 templates/base.html:60
 msgid "Reset Password"
 msgstr "비밀번호 재설정"
 
-#: templates/account/login/main.html:50
+#: templates/account/login/main.html:63
 msgid "Internal Login"
 msgstr "내부 로그인"
 
-#: templates/account/login/main.html:60
+#: templates/account/login/main.html:73
 msgid "KAIST SSO Login / Signup"
 msgstr "카이스트 통합인증으로 로그인 / 가입"
 
-#: templates/account/login/main.html:63
+#: templates/account/login/main.html:76
 msgid "Facebook Login / Signup"
 msgstr "페이스북으로 로그인 / 가입"
 
-#: templates/account/login/main.html:66
+#: templates/account/login/main.html:79
 msgid "Twitter Login / Signup"
 msgstr "트위터로 로그인 / 가입"
 
@@ -817,7 +821,6 @@ msgid "CSRF Failed"
 msgstr "CSRF 실패"
 
 #: templates/error/csrf.html:9
-#| msgid "Your request has been rejected."
 msgid "Your request has been rejected to protect you."
 msgstr "사용자를 보호하기 위해 요청이 거부되었습니다."
 

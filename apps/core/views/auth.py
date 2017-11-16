@@ -58,7 +58,8 @@ def login_core(request, session_name, template_name, get_user_func):
     if request.method == 'POST':
         if show_recaptcha:
             captcha_data = request.POST.get('g-recaptcha-response', '')
-            captcha_success = validate_recaptcha(captcha_data)
+            captcha_success = validate_recaptcha(captcha_data,
+                    settings.NORMAL_RECAPTCHA_SECRET)
         else:
             captcha_success = True
 

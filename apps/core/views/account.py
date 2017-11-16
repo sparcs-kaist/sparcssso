@@ -1,6 +1,7 @@
 import datetime
 import logging
 
+from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -66,7 +67,9 @@ def signup(request, social=False):
         })
 
     if not social:
-        return render(request, 'account/signup/main.html')
+        return render(request, 'account/signup/main.html', {
+            'recaptcha_sitekey': settings.INVISIBLE_RECAPTCHA_SITEKEY,
+        })
     return render(request, 'account/signup/sns.html', {
         'type': type,
         'profile': profile,

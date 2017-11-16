@@ -12,6 +12,7 @@ from ..backends import (
     anon_required, auth_fb_callback, auth_fb_init,
     auth_kaist_callback, auth_kaist_init, auth_tw_callback,
     auth_tw_init, get_clean_url, get_social_name,
+    validate_recaptcha,
 )
 from ..models import Notice, Service, LoginFailureLog
 
@@ -41,35 +42,48 @@ def login_core(request, session_name, template_name, get_user_func):
         (service and service.scope == 'SPARCS')
     )
 
+    # (pipoket): Check whether there are consecutive login failures.
+    # NOTE: As of now it simply filters failed attempts within configurable
+    #       time-window based on IP address. Would this be appropriate?
+    login_failure_timerange = datetime.timedelta(
+            minutes=settings.RECAPTCHA_LOGIN_FAILURE_TIMERANGE)
+    last_login_failures = LoginFailureLog.objects.filter(
+            ip=ip,
+            time__gte=(current_time - login_failure_timerange))
+    if last_login_failures.count() >= settings.RECAPTCHA_LOGIN_FAILURE_COUNT:
+        show_recaptcha = True
+    else:
+        show_recaptcha = False
+
     if request.method == 'POST':
+        if show_recaptcha:
+            captcha_data = request.POST.get('g-recaptcha-response', '')
+            captcha_success = validate_recaptcha(captcha_data)
+        else:
+            captcha_success = True
+
         user, attempted_username = get_user_func(request.POST)
-        if user:
+        if user and captcha_success:
             request.session.pop('info_signup', None)
             auth.login(request, user)
 
             return redirect(get_clean_url(
                 request.session.pop('next', '/'),
             ))
+        else:
+            if not user:
+                request.session[session_name] = 1
+            else:
+                request.session[session_name] = 3
 
-        request.session[session_name] = 1
-
-        # Assumption: there will ALWAYS BE valid IP address.
-        # Do not log failure when there is no IP address.
+        # (pipoket): Do not log failure when there is no IP address.
+        # Under the assumption of there will ALWAYS BE valid IP address.
+        # NOTE: Will there be cases where IP address is not available?
         if len(ip) != 0:
             log_failure = LoginFailureLog()
             log_failure.ip = ip
             log_failure.username = attempted_username
             log_failure.save()
-
-    last_failures = LoginFailureLog.objects.filter(
-            ip=ip,
-            time__gte=(current_time - datetime.timedelta(minutes=30))
-    )
-    if last_failures.count() >= 5:
-        show_recaptcha = True
-    else:
-        show_recaptcha = False
-
 
     return render(request, template_name, {
         'notice': notice,
@@ -78,6 +92,7 @@ def login_core(request, session_name, template_name, get_user_func):
         'show_internal': show_internal,
         'kaist_enabled': settings.KAIST_APP_ENABLED,
         'show_recaptcha': show_recaptcha,
+        'recaptcha_sitekey': settings.NORMAL_RECAPTCHA_SITEKEY,
     })
 
 

@@ -3,7 +3,9 @@
 
 {% block htitle %}SPARCS SSO {% trans "Login" %}{% endblock %}
 
-{% block header %}{% endblock %}
+{% block header %}
+<script src="https://www.google.com/recaptcha/api.js"></script>
+{% endblock %}
 
 {% block content %}
 <div class="alert-wrap">
@@ -23,12 +25,6 @@
   <p>{% blocktrans %}You need to login using SPARCS SSO account to use {{ service }} service.{% endblocktrans %}</p>
   {% endif %}
 
-  {% if show_recaptcha %}
-  <div class="alert alert-danger alert-invalid-account">
-      <b>RECAPTCHA!</b>
-  </div>
-  {% endif %}
-
   {% if fail == 1 %}
   <div class="alert alert-danger alert-invalid-account">
     <b>{% trans "Invalid email / password" %}</b>
@@ -36,6 +32,10 @@
   {% elif fail == 2 %}
   <div class="alert alert-danger alert-invalid-account">
     <b>{% trans "Please grant all requested permission" %}</b>
+  </div>
+  {% elif fail == 3 %}
+  <div class="alert alert-danger alert-invalid-account">
+    <b>{% trans "Please fill out the item 'I'm not a robot'" %}</b>
   </div>
   {% endif %}
 
@@ -47,6 +47,13 @@
     <div class="form-group col-xs-12">
       <input type="password" class="form-control" name="password" placeholder="{% trans "Password" %}" required="required">
     </div>
+    {% if show_recaptcha %}
+    <div class="form-group col-xs-12">
+        <div class="g-recaptcha" style="display:inline-block;"
+             data-sitekey="{{ recaptcha_sitekey }}">
+        </div>
+    </div>
+    {% endif %}
     <div class="form-group col-xs-12">
       <button type="submit" class="btn btn-default btn-block btn-login">{% trans "Email Login" %}</button>
       <div class="login-extra-links">

@@ -3,12 +3,12 @@
 SPARCS SSO provides integrated login in SPARCS services, such as ARA or OTL.
 
 ### Credits
-* hou (SYSOP, PM)
+* akais (SYSOP, PM)
+* hou (Developer)
 * samjo (Developer)
 * zazang (Developer)
 * gogi (Developer)
 * todo (Developer)
-* akais (Developer)
 * pipoket (Developer)
 * pudding (Designer)
 * zoonoo (Translator)

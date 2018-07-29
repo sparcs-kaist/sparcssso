@@ -827,7 +827,7 @@ msgstr "페이지를 새로고침하지 마세요."
 
 #: templates/error/csrf.html:11
 msgid "Please go the previous page and try again."
-msgstr "이전 페이지로 돌아가서 다시 시도해주세요."
+msgstr "아래의 메인 버튼을 누른 뒤 다시 시도해주세요."
 
 #: templates/main.html:20
 msgid "Welcome to SPARCS Single Sign On!"

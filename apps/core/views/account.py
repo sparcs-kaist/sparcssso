@@ -1,6 +1,7 @@
 import datetime
 import logging
 
+from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -26,14 +27,14 @@ def signup(request, social=False):
 
     if social:
         info_signup = request.session['info_signup']
-        type, profile = info_signup['type'], info_signup['profile']
+        typ, profile = info_signup['type'], info_signup['profile']
 
         email = profile.get('email', '')
         email_warning = email and User.objects.filter(email=email).count()
 
     if request.method == 'POST':
         if social:
-            user = signup_social(type, profile)
+            user = signup_social(typ, profile)
         else:
             captcha_data = request.POST.get('g-recaptcha-response', '')
             result = validate_recaptcha(captcha_data)
@@ -44,7 +45,7 @@ def signup(request, social=False):
         if user is None:
             return redirect('/')
 
-        type_str = get_social_name(type) if social else 'email'
+        type_str = get_social_name(typ) if social else 'email'
         social_uid = profile['userid'] if social else ''
         logger.warning('create', {
             'r': request,
@@ -68,9 +69,10 @@ def signup(request, social=False):
     if not social:
         return render(request, 'account/signup/main.html')
     return render(request, 'account/signup/sns.html', {
-        'type': type,
+        'type': typ,
         'profile': profile,
         'email_warning': email_warning,
+        'captcha_enabled': 'y' if settings.RECAPTCHA_SECRET else '',
     })
 
 

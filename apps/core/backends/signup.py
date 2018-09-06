@@ -38,7 +38,7 @@ def signup_email(post):
 
 
 # signup using social
-def signup_social(type, profile):
+def signup_social(typ, profile):
     while True:
         username = token_hex(10)
         if not User.objects.filter(username=username).count():
@@ -66,11 +66,11 @@ def signup_social(type, profile):
     if 'birthday' in profile:
         user.profile.birthday = profile['birthday']
 
-    if type == 'FB':
+    if typ == 'FB':
         user.profile.facebook_id = profile['userid']
-    elif type == 'TW':
+    elif typ == 'TW':
         user.profile.twitter_id = profile['userid']
-    elif type == 'KAIST':
+    elif typ == 'KAIST':
         user.profile.email_authed = email.endswith('@kaist.ac.kr')
         user.profile.save_kaist_info(profile)
     user.profile.save()

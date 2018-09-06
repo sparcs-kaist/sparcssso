@@ -2,9 +2,9 @@ beautifulsoup4==4.5.3
 bs4==0.0.1
 click==6.7
 Django==1.11.14
-flake8==3.3.0
+flake8==3.5.0
 flake8-commas==0.4.3
-flake8-import-order==0.12
+flake8-import-order==0.18
 flake8-print==2.0.2
 Flask==0.12.1
 httplib2==0.10.3

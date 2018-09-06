@@ -131,7 +131,10 @@ def contact(request):
             send_mail(subject, message, email, settings.TEAM_EMAILS)
             submitted = True
 
-    return render(request, 'contact.html', {'submitted': submitted})
+    return render(request, 'contact.html', {
+        'submitted': submitted,
+        'captcha_enabled': 'y' if settings.RECAPTCHA_SECRET else '',
+    })
 
 
 # csrf failure view

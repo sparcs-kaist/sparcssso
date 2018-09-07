@@ -5,7 +5,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.utils import timezone
 
-from ..models import EmailAuthToken, ResetPWToken
+from apps.core.models import EmailAuthToken, ResetPWToken
 
 
 RESET_PW_MSG_TITLE = '[SPARCS SSO] 비밀번호 재설정 / Reset Password'

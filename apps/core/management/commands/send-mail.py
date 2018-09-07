@@ -6,7 +6,7 @@ from django.core.mail import send_mail
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from ...models import UserLog
+from apps.core.models import UserLog
 
 
 class Command(BaseCommand):

@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from ...models import Service, Statistic
+from apps.core.models import Service, Statistic
 
 
 class Command(BaseCommand):

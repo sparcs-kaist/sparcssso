@@ -7,12 +7,12 @@ from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
 from django.utils import timezone
 
-from ..backends import (
+from apps.core.backends import (
     anon_required, get_social_name, real_user_required,
     signup_email, signup_social, sudo_required,
     validate_recaptcha,
 )
-from ..models import ServiceMap
+from apps.core.models import ServiceMap
 
 
 logger = logging.getLogger('sso.account')

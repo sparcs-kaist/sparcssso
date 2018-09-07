@@ -5,12 +5,12 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.utils import timezone
 
-from ..backends import (
+from apps.core.backends import (
     get_social_name, real_user_required, service_unregister,
     sudo_required, token_issue_email_auth, validate_email,
 )
-from ..forms import UserForm, UserProfileForm
-from ..models import EmailAuthToken, PointLog, ServiceMap, UserLog
+from apps.core.forms import UserForm, UserProfileForm
+from apps.core.models import EmailAuthToken, PointLog, ServiceMap, UserLog
 
 
 logger = logging.getLogger('sso.profile')

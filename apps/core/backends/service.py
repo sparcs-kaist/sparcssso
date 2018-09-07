@@ -5,7 +5,7 @@ from secrets import token_hex
 import requests
 from django.utils import timezone
 
-from ..models import ServiceMap
+from apps.core.models import ServiceMap
 
 
 # Register Service

@@ -7,9 +7,9 @@ from django.contrib.auth.models import User
 from django.http import Http404
 from django.shortcuts import redirect, render
 
-from ..core.backends import dev_required
-from ..core.forms import ServiceForm
-from ..core.models import Service, UserProfile
+from apps.core.backends import dev_required
+from apps.core.forms import ServiceForm
+from apps.core.models import Service, UserProfile
 
 
 logger = logging.getLogger('sso.dev')
@@ -160,7 +160,7 @@ def user(request, uid):
                 'userid': kaist_info['kaist_uid'],
                 'kaist_info': kaist_info,
             })
-        except:
+        except Exception:
             pass
 
         log_msg = 'create' if uid == 'add' else 'update'

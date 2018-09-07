@@ -10,8 +10,8 @@ from django.conf import settings
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.models import User
 
-from .util import parse_gender
-from ..models import UserProfile
+from apps.core.backends.util import parse_gender
+from apps.core.models import UserProfile
 
 
 logger = logging.getLogger('sso.auth')

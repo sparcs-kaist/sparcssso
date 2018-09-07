@@ -2,7 +2,7 @@ from django.conf import settings
 from django.conf.urls import url
 from django.shortcuts import redirect
 
-from .views import account, auth, password, profile
+from apps.core.views import account, auth, password, profile
 
 
 urlpatterns = [

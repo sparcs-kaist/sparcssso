@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from django.shortcuts import redirect
 
-from . import views
+from apps.dev import views
 
 
 urlpatterns = [

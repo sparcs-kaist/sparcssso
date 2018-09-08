@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: v0.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-22 21:57+0900\n"
+"POT-Creation-Date: 2018-09-09 01:00+0900\n"
 "PO-Revision-Date: 2016-01-01 19:21+0900\n"
 "Last-Translator: Jae-Sung Kim <wotjd1102@kaist.ac.kr>\n"
 "Language-Team: SPARCS SSO Team <sso@sparcs.org>\n"
@@ -83,8 +83,8 @@ msgid "Expired or invalid verification token."
 msgstr "만료되거나 올바르지 않은 링크입니다."
 
 #: templates/account/email.html:32
-msgid "This email address is already used."
-msgstr "다른 사람이 사용 중인 이메일 주소입니다."
+msgid "This email address is invalid or already used."
+msgstr "유효하지 않거나 다른 사람이 사용 중인 이메일 주소입니다."
 
 #: templates/account/email.html:36
 msgid "Email updated; check the inbox."
@@ -128,9 +128,8 @@ msgid "You can see your action log up to recent 30 days."
 msgstr "최근 30일 동안의 활동 로그가 나타납니다."
 
 #: templates/account/login/internal.html:4
-#: templates/account/login/internal.html:18
-#: templates/account/login/main.html:4 templates/account/login/main.html:18
-#: templates/base.html:59
+#: templates/account/login/internal.html:18 templates/account/login/main.html:4
+#: templates/account/login/main.html:18 templates/base.html:59
 msgid "Login"
 msgstr "로그인"
 
@@ -199,8 +198,8 @@ msgstr "이메일로 로그인"
 msgid "Sign Up"
 msgstr "회원가입"
 
-#: templates/account/login/main.html:48
-#: templates/account/pw-reset/main.html:25 templates/base.html:60
+#: templates/account/login/main.html:48 templates/account/pw-reset/main.html:25
+#: templates/base.html:60
 msgid "Reset Password"
 msgstr "비밀번호 재설정"
 
@@ -577,8 +576,8 @@ msgid "You NEED to verify your email to use services."
 msgstr "서비스를 사용하기 위해서는 이메일을 인증해야 합니다."
 
 #: templates/account/signup/main.html:19
-msgid "Not Valid or Duplicated Email"
-msgstr "잘못되었거나 이미 가입된 이메일입니다."
+msgid "Invalid, temporary or duplicated email"
+msgstr "임시 이메일이거나 이미 가입된 이메일입니다."
 
 #: templates/account/signup/sns.html:11
 msgid "with Facebook Account"
@@ -817,7 +816,6 @@ msgid "CSRF Failed"
 msgstr "CSRF 실패"
 
 #: templates/error/csrf.html:9
-#| msgid "Your request has been rejected."
 msgid "Your request has been rejected to protect you."
 msgstr "사용자를 보호하기 위해 요청이 거부되었습니다."
 

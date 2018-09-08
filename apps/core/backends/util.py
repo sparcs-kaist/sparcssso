@@ -5,6 +5,8 @@ import requests
 from django.conf import settings
 from django.contrib.auth.models import User
 
+from apps.core.models import EmailDomain
+
 
 social_name_map = {
     'FB': 'facebook',
@@ -39,9 +41,15 @@ def get_social_name(type):
 def validate_email(email, exclude=''):
     if email == exclude:
         return True
-    elif not re.match(r'[^@]+@[^@]+', email):
+
+    m = re.match(r'^([^@]+)@([^@]+)$', email)
+    if not m:
         return False
-    elif email.endswith('@sso.sparcs.org'):
+
+    domain = m.group(2).strip().lower()
+    if domain == 'sso.sparcs.org':
+        return False
+    elif EmailDomain.objects.filter(domain=domain, is_banned=True).exists():
         return False
     return User.objects.filter(email=email).count() == 0
 

@@ -43,6 +43,11 @@ class Notice(models.Model):
     def __str__(self):
         return self.title
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['valid_from', 'valid_to']),
+        ]
+
 
 class Statistic(models.Model):
     """
@@ -50,7 +55,7 @@ class Statistic(models.Model):
     - time: timestamp of statistic
     - data: raw json statistic data
     """
-    time = models.DateTimeField()
+    time = models.DateTimeField(index=True)
     data = models.TextField()
 
     def pretty(self):
@@ -160,6 +165,11 @@ class ServiceMap(models.Model):
     def __str__(self):
         return f'{self.user} - {self.service}'
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['user', 'service']),
+        ]
+
 
 class AccessToken(models.Model):
     """
@@ -176,6 +186,11 @@ class AccessToken(models.Model):
 
     def __str__(self):
         return f'{self.user} - {self.service}'
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['user', 'service']),
+        ]
 
 
 # == User Related Objects ==
@@ -207,15 +222,19 @@ class UserProfile(models.Model):
     point_test = models.IntegerField(default=0)
     email_new = models.EmailField(blank=True, null=True)
     email_authed = models.BooleanField(default=False)
-    test_only = models.BooleanField(default=False)
+    test_only = models.BooleanField(default=False, index=True)
     test_enabled = models.BooleanField(default=False)
-    facebook_id = models.CharField(max_length=50, blank=True, null=True)
-    twitter_id = models.CharField(max_length=50, blank=True, null=True)
-    kaist_id = models.CharField(max_length=50, blank=True, null=True)
+    facebook_id = models.CharField(max_length=50, index=True, blank=True,
+                                   null=True)
+    twitter_id = models.CharField(max_length=50, index=True, blank=True,
+                                  null=True)
+    kaist_id = models.CharField(max_length=50, index=True, blank=True,
+                                null=True)
     kaist_info = models.TextField(blank=True, null=True)
     kaist_info_time = models.DateField(blank=True, null=True)
-    sparcs_id = models.CharField(max_length=50, blank=True, null=True)
-    expire_time = models.DateTimeField(blank=True, null=True)
+    sparcs_id = models.CharField(max_length=50, index=True, blank=True,
+                                 null=True)
+    expire_time = models.DateTimeField(index=True, blank=True, null=True)
 
     @property
     def flags(self):
@@ -306,6 +325,11 @@ class PointLog(models.Model):
     def __str__(self):
         return f'{self.user} / {self.service} - {self.delta}'
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['user', 'time']),
+        ]
+
 
 class UserLog(models.Model):
     """
@@ -320,7 +344,7 @@ class UserLog(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,
                              related_name='user_logs', blank=True, null=True)
     level = models.IntegerField()
-    time = models.DateTimeField(auto_now=True)
+    time = models.DateTimeField(index=True, auto_now=True)
     ip = models.GenericIPAddressField()
     hide = models.BooleanField(default=False)
     text = models.CharField(max_length=500)
@@ -334,6 +358,12 @@ class UserLog(models.Model):
     def __str__(self):
         time_str = localtime(self.time).isoformat()
         return f'{time_str}/{self.level} ({self.user}) {self.text}'
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['user', 'time']),
+            models.Index(fields=['time', 'level']),
+        ]
 
 
 class EmailDomain(models.Model):

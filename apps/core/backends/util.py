@@ -48,6 +48,9 @@ def validate_email(email, exclude=''):
 
 # validate reCAPTCHA
 def validate_recaptcha(response):
+    if not settings.RECAPTCHA_SECRET:
+        return True
+
     data = {
         'secret': settings.RECAPTCHA_SECRET,
         'response': response,

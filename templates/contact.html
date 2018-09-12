@@ -59,11 +59,13 @@
       <textarea class="form-control" rows="6" name="message" style="resize:vertical;" required></textarea>
     </div>
 
+    {% if captcha_enabled %}
     <div class="g-recaptcha"
          data-sitekey="6LfljRkUAAAAADIRSKOygbAdtu4bVln0xbly2ucP"
          data-callback="captchaSubmit"
          data-size="invisible">
     </div>
+    {% endif %}
 
     <div class="form-group col-xs-12">
       <button type="submit" class="btn btn-default">{% trans "Send to SSO Team" %}</button>
@@ -72,6 +74,7 @@
 </div>
 
 <script>
+var captchaEnabled = '{{ captcha_enabled }}';
 var captchaSuccess = 0;
 
 // eslint-disable-next-line no-unused-vars
@@ -83,7 +86,7 @@ var captchaSubmit = function() {
 $('#contact').validator().on('submit', function(e) {
   if (e.isDefaultPrevented()) {
     return;
-  } else if (captchaSuccess !== 1) {
+  } else if (captchaSuccess !== 1 && captchaEnabled) {
     e.preventDefault();
     grecaptcha.execute();
   }

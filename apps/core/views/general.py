@@ -3,8 +3,8 @@ from django.core.mail import send_mail
 from django.shortcuts import redirect, render
 from django.utils import timezone, translation
 
-from ..backends import validate_recaptcha
-from ..models import Document, Notice, Service, Statistic
+from apps.core.backends import validate_recaptcha
+from apps.core.models import Document, Notice, Service, Statistic
 
 
 def _get_document(category, version=''):

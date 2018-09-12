@@ -101,7 +101,7 @@ class Command(BaseCommand):
     def print_logs(self, search_str, limit):
         try:
             limit = int(limit)
-        except:
+        except ValueError:
             limit = 500
 
         log_buffer_files = list(map(

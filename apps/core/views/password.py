@@ -6,10 +6,10 @@ from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
 from django.utils import timezone
 
-from ..backends import (
+from apps.core.backends import (
     real_user_required, sudo_required, token_issue_reset_pw,
 )
-from ..models import ResetPWToken
+from apps.core.models import ResetPWToken
 
 
 logger = logging.getLogger('sso.auth.password')

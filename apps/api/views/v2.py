@@ -18,8 +18,8 @@ from django.utils import timezone
 from django.utils.crypto import constant_time_compare
 from django.views.decorators.csrf import csrf_exempt
 
-from ...core.backends import service_register, validate_email
-from ...core.models import (
+from apps.core.backends import service_register, validate_email
+from apps.core.models import (
     AccessToken, Notice, PointLog, Service, ServiceMap, Statistic,
 )
 
@@ -219,7 +219,7 @@ def logout(request):
         validate = URLValidator()
         try:
             validate(redirect_uri)
-        except:
+        except Exception:
             raise SuspiciousOperation('INVALID_URL')
     else:
         redirect_uri = service.main_url
@@ -254,7 +254,7 @@ def point(request):
     try:
         delta = 0 if not delta else int(delta)
         lower_bound = 0 if not lower_bound else int(lower_bound)
-    except:
+    except Exception:
         raise SuspiciousOperation('INVALID_TYPE')
 
     if delta != 0 and not message:

@@ -7,12 +7,12 @@ from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from ..backends import (
+from apps.core.backends import (
     anon_required, auth_fb_callback, auth_fb_init,
     auth_kaist_callback, auth_kaist_init, auth_tw_callback,
     auth_tw_init, get_clean_url, get_social_name,
 )
-from ..models import Notice, Service
+from apps.core.models import Notice, Service
 
 
 logger = logging.getLogger('sso.auth')

@@ -38,13 +38,13 @@ hr {
 
 
 /* Version */
-.navbar-default.version-nightly .navbar-brand {
+.navbar-default.version-dev .navbar-brand {
     color: #e74c3c;
 }
 
-.navbar-default.version-nightly .navbar-brand:after {
+.navbar-default.version-dev .navbar-brand:after {
     font-size: 80%;
-    content: " (Nightly)";
+    content: " (Dev)";
 }
 
 .navbar-default.version-beta .navbar-brand {
@@ -61,7 +61,7 @@ hr {
     color: #aaa;
 }
 
-.version-detail .version-nightly {
+.version-detail .version-dev {
     color: #e74c3c;
 }
 

@@ -3,9 +3,7 @@ matrix:
   - language: python
     python:
       - "3.6"
-    cache:
-      directories:
-        - $HOME/.pip-cache/
+    cache: pip
     install:
       - pip install -r requirements.txt
     script:

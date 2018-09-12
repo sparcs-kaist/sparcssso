@@ -1,0 +1,23 @@
+matrix:
+  include:
+  - language: python3
+    python:
+      - 3.7
+    cache:
+      directories:
+        - $HOME/.pip-cache/
+    install:
+      - pip install -r requirements.txt
+    script:
+      - flake8 .
+  - language: node_js
+    node_js:
+      - 9
+    cache:
+      directories:
+        - $HOME/.npm
+    install:
+      - npm i
+    script:
+      - npm run lint
+

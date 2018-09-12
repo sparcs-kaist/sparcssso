@@ -1,8 +1,8 @@
 matrix:
   include:
-  - language: python3
+  - language: python
     python:
-      - 3.7
+      - "3.7"
     cache:
       directories:
         - $HOME/.pip-cache/
@@ -12,7 +12,7 @@ matrix:
       - flake8 .
   - language: node_js
     node_js:
-      - 9
+      - "9"
     cache:
       directories:
         - $HOME/.npm

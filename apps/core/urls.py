@@ -1,60 +1,60 @@
 from django.conf import settings
-from django.conf.urls import url
 from django.shortcuts import redirect
+from django.urls import path
 
 from apps.core.views import account, auth, password, profile
 
 
 urlpatterns = [
-    url(r'^$', lambda x: redirect('/account/profile/')),
+    path('', lambda x: redirect('/account/profile/')),
 
     # package: auth
-    url(r'^login/$', auth.login),
-    url(r'^login/internal/$', auth.login_internal),
-    url(r'^logout/$', auth.logout),
+    path('login/', auth.login),
+    path('login/internal/', auth.login_internal),
+    path('logout/', auth.logout),
 
-    url(r'^login/fb/$', auth.init, {'mode': 'LOGIN', 'type': 'FB'}),
-    url(r'^login/tw/$', auth.init, {'mode': 'LOGIN', 'type': 'TW'}),
+    path('login/fb/', auth.init, {'mode': 'LOGIN', 'type': 'FB'}),
+    path('login/tw/', auth.init, {'mode': 'LOGIN', 'type': 'TW'}),
 
-    url(r'^connect/fb/$', auth.init, {'mode': 'CONN', 'type': 'FB'}),
-    url(r'^connect/tw/$', auth.init, {'mode': 'CONN', 'type': 'TW'}),
+    path('connect/fb/', auth.init, {'mode': 'CONN', 'type': 'FB'}),
+    path('connect/tw/', auth.init, {'mode': 'CONN', 'type': 'TW'}),
 
-    url(r'^callback$', auth.callback),
-    url(r'^callback/$', auth.callback),
+    path('callback', auth.callback),
+    path('callback/', auth.callback),
 
 
     # package: account
-    url(r'^signup/$', account.signup),
-    url(r'^signup/social/$', account.signup, {'social': True}),
+    path('signup/', account.signup),
+    path('signup/social/', account.signup, {'social': True}),
 
-    url(r'^deactivate/$', account.deactivate),
+    path('deactivate/', account.deactivate),
 
 
     # package: profile
-    url(r'^profile/$', profile.main),
+    path('profile/', profile.main),
 
-    url(r'^disconnect/fb/$', profile.disconnect, {'type': 'FB'}),
-    url(r'^disconnect/tw/$', profile.disconnect, {'type': 'TW'}),
+    path('disconnect/fb/', profile.disconnect, {'type': 'FB'}),
+    path('disconnect/tw/', profile.disconnect, {'type': 'TW'}),
 
-    url(r'^email/change/$', profile.email),
-    url(r'^email/verify/$', profile.email_resend),
-    url(r'^email/verify/(?P<tokenid>\w+)$', profile.email_verify),
+    path('email/change/', profile.email),
+    path('email/verify/', profile.email_resend),
+    path('email/verify/<str:tokenid>/', profile.email_verify),
 
-    url(r'^log/$', profile.log),
-    url(r'^point/$', profile.point),
-    url(r'^service/$', profile.service),
+    path('log/', profile.log),
+    path('point/', profile.point),
+    path('service/', profile.service),
 
 
     # package: password
-    url(r'^password/change/$', password.change),
-    url(r'^password/reset/$', password.reset_email),
-    url(r'^password/reset/(?P<tokenid>\w+)$', password.reset),
+    path('password/change/', password.change),
+    path('password/reset/', password.reset_email),
+    path('password/reset/<str:tokenid>/', password.reset),
 ]
 
 
 if settings.KAIST_APP_ENABLED:
     urlpatterns += [
-        url(r'^login/kaist/$', auth.init, {'mode': 'LOGIN', 'type': 'KAIST'}),
-        url(r'^connect/kaist/$', auth.init, {'mode': 'CONN', 'type': 'KAIST'}),
-        url(r'^renew/kaist/$', auth.init, {'mode': 'RENEW', 'type': 'KAIST'}),
+        path('login/kaist/', auth.init, {'mode': 'LOGIN', 'type': 'KAIST'}),
+        path('connect/kaist/', auth.init, {'mode': 'CONN', 'type': 'KAIST'}),
+        path('renew/kaist/', auth.init, {'mode': 'RENEW', 'type': 'KAIST'}),
     ]

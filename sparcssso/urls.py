@@ -1,30 +1,30 @@
 from django.conf import settings, urls
-from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.shortcuts import render
+from django.urls import include, path, re_path
 
 from apps.core.views import general
 
 
 urlpatterns = [
-    url(r'^$', general.main),
+    path('', general.main),
 
-    url(r'^lang/(?P<code>\w+)', general.lang),
+    path('lang/<str:code>/', general.lang),
 
-    url(r'^terms/(?P<version>[\w\.]+)?$', general.terms),
-    url(r'^privacy/(?P<version>[\w\.]+)?$', general.privacy),
+    re_path(r'^terms/(?P<version>[\d\.]+)?$', general.terms),
+    re_path(r'^privacy/(?P<version>[\d\.]+)?$', general.privacy),
 
-    url(r'^credits/', general.credits),
-    url(r'^stats/', general.stats),
-    url(r'^help/', general.help),
-    url(r'^contact/', general.contact),
+    path('credits/', general.credits),
+    path('stats/', general.stats),
+    path('help/', general.help),
+    path('contact/', general.contact),
 
-    url(r'^account/', include('apps.core.urls')),
-    url(r'^api/', include('apps.api.urls')),
-    url(r'^dev/', include('apps.dev.urls')),
+    path('account/', include('apps.core.urls')),
+    path('api/', include('apps.api.urls')),
+    path('dev/', include('apps.dev.urls')),
 
-    url(r'^manage/', admin.site.urls),
+    path('manage/', admin.site.urls),
 ]
 
 if settings.DEBUG:

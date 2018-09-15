@@ -1,16 +1,16 @@
-from django.conf.urls import url
 from django.shortcuts import redirect
+from django.urls import path
 
 from apps.dev import views
 
 
 urlpatterns = [
-    url(r'^$', lambda x: redirect('/dev/main/')),
-    url(r'^main/$', views.main),
+    path('', lambda x: redirect('/dev/main/')),
+    path('main/', views.main),
 
-    url(r'^service/(\w+)/$', views.service),
-    url(r'^service/(\w+)/delete/$', views.service_delete),
+    path('service/<str:name>/', views.service),
+    path('service/<str:name>/delete/', views.service_delete),
 
-    url(r'^user/(\w+)/$', views.user),
-    url(r'^user/(\w+)/delete/$', views.user_delete),
+    path('user/<str:uid>/', views.user),
+    path('user/<str:uid>/delete/', views.user_delete),
 ]

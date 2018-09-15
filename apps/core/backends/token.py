@@ -76,7 +76,7 @@ def token_issue_reset_pw(user):
     ResetPWToken.objects.filter(user=user).delete()
     ResetPWToken(tokenid=tokenid, expire_time=tomorrow, user=user).save()
 
-    url = f'{settings.DOMAIN}/account/password/reset/{tokenid}'
+    url = f'{settings.DOMAIN}/account/password/reset/{tokenid}/'
     msg = RESET_PW_MSG_BODY.format(
         name=user.first_name,
         link=url,
@@ -98,7 +98,7 @@ def token_issue_email_auth(user, newbie=False):
     EmailAuthToken(tokenid=tokenid, expire_time=tomorrow, user=user).save()
 
     email = user.profile.email_new if user.profile.email_authed else user.email
-    url = f'{settings.DOMAIN}/account/email/verify/{tokenid}'
+    url = f'{settings.DOMAIN}/account/email/verify/{tokenid}/'
     template = EMAIL_NEWBIE_MSG_BODY if newbie else EMAIL_AUTH_MSG_BODY
     msg = template.format(
         name=user.first_name,

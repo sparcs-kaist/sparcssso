@@ -66,7 +66,7 @@ def service_unregister(map_obj):
             'sign': sign,
         })
         result = r.json()
-    except:
+    except Exception:
         return unknown_error
 
     if result.get('success', False):

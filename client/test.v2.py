@@ -5,8 +5,8 @@ import click
 import requests
 from bs4 import BeautifulSoup
 from flask import Flask, jsonify, request
-
 from sparcsssov2 import Client
+
 # SPARCS SSO V2 Client Test Server Version 1.2
 # VALID ONLY AFTER 2017-05-06
 # Made by SPARCS SSO Team

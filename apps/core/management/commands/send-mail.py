@@ -17,7 +17,7 @@ class Command(BaseCommand):
         try:
             with open(self.timestamp_file, 'r') as f:
                 return float(f.read().strip())
-        except:
+        except Exception:
             return 0.0
 
     def set_timestamp(self, timestamp):

@@ -1,6 +1,5 @@
 import hmac
 import time
-
 from secrets import token_hex
 from urllib.parse import urlencode
 
@@ -75,7 +74,7 @@ class Client:
 
         try:
             return r.json()
-        except:
+        except Exception:
             raise RuntimeError('INVALID_OBJECT')
 
     def get_login_params(self):

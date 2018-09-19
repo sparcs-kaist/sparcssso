@@ -487,8 +487,7 @@ const fetchStats = () => (
     date_from: startDate,
     date_to: endDate,
   }).done((result) => {
-    level = result.level;
-    rawStats = result.stats;
+    ({ level, stats: rawStats } = result);
     if (Object.keys(rawStats).length === 0) {
       $('#stats-display').css('filter', 'blur(5px)');
       $('#stats-display > ul > li').addClass('disabled');
@@ -532,7 +531,9 @@ $(() => {
       ...$('.chart-body-half').toArray(),
     ].forEach((c) => {
       const chart = $(c).highcharts();
-      chart && chart.reflow();
+      if (chart) {
+        chart.reflow();
+      }
     });
   });
 

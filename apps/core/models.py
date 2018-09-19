@@ -285,7 +285,6 @@ class ResetPWToken(models.Model):
         return f'{self.user} - {self.tokenid}'
 
 
-# PointLog: denotes single point log for a (user, service) pair
 class PointLog(models.Model):
     """
     denotes single point log for a user
@@ -335,3 +334,13 @@ class UserLog(models.Model):
     def __str__(self):
         time_str = localtime(self.time).isoformat()
         return f'{time_str}/{self.level} ({self.user}) {self.text}'
+
+
+class EmailDomain(models.Model):
+    """
+    denotes an email domain
+    - domain:    the email domain
+    - is_banned: banned status
+    """
+    domain = models.CharField(max_length=100, unique=True)
+    is_banned = models.BooleanField(default=True)

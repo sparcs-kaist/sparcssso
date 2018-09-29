@@ -12,23 +12,21 @@ def _get_document(category, version=''):
     if not len(docs):
         return None, '', '', ''
 
-    index = 0
+    index_current = next(
+        i for i, doc in enumerate(docs)
+        if doc.date_apply <= timezone.now())
+    index = index_current
     if version:
-        for i, doc in enumerate(docs):
-            if doc.version == version:
-                index = i
-                break
-        else:
+        index = next((i for i, doc in enumerate(docs)
+                      if doc.version == version), None)
+        if index is None:
             return None, '', '', ''
 
     v_prev = docs[index + 1].version if index + 1 < len(docs) else ''
     v_next = docs[index - 1].version if index > 0 else ''
-
-    status = 'old'
-    if docs[index].date_apply > timezone.now():
-        status = 'future'
-    elif docs[0].date_apply >= timezone.now() and index <= 1:
-        status = 'current'
+    status = (
+        'future' if index_current > index else
+        'old' if index_current < index else 'current')
     return docs[index], status, v_prev, v_next
 
 

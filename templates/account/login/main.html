@@ -4,7 +4,7 @@
 {% block htitle %}SPARCS SSO {% trans "Login" %}{% endblock %}
 
 {% block header %}
-<script src="https://www.google.com/recaptcha/api.js"></script>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 {% endblock %}
 
 {% block content %}
@@ -39,7 +39,7 @@
   </div>
   {% endif %}
 
-  <form class="row" action="/account/login/" method="post">
+  <form id="login" class="row" action="/account/login/" method="post">
     {% csrf_token %}
     <div class="form-group col-xs-12">
       <input type="email" class="form-control" name="email" placeholder="{% trans "Email" %}" required="required">
@@ -47,11 +47,14 @@
     <div class="form-group col-xs-12">
       <input type="password" class="form-control" name="password" placeholder="{% trans "Password" %}" required="required">
     </div>
-    {% if show_recaptcha %}
+    {% if recaptcha_sitekey %}
     <div class="form-group col-xs-12">
-        <div class="g-recaptcha" style="display:inline-block;"
-             data-sitekey="{{ recaptcha_sitekey }}">
-        </div>
+      <input id="recaptcha-validate" type="hidden" data-validate="true" required="required">
+      <div class="g-recaptcha"
+           style="display:inline-block"
+           data-sitekey="{{ recaptcha_sitekey }}"
+           data-callback="captchaSubmit">
+      </div>
     </div>
     {% endif %}
     <div class="form-group col-xs-12">
@@ -82,6 +85,15 @@
 </div>
 
 <script>
+if (!'{{ recaptcha_sitekey }}') {
+  $('#recaptcha-validate').val('true');
+}
+// eslint-disable-next-line no-unused-vars
+var captchaSubmit = function() {
+  $('#recaptcha-validate').val('true');
+  $('#login').validator('validate');
+};
+
 $(function() {
   var login = function(type) {
     var form = $(document.createElement('form')).attr({
@@ -107,6 +119,8 @@ $(function() {
   $('.btn-twitter').click(function() {
     login('tw');
   });
+
+  $('#login').validator();
 });
 </script>
 {% endblock %}

@@ -95,10 +95,10 @@ CSRF_USE_SESSIONS = True
 
 CSRF_FAILURE_VIEW = 'apps.core.views.general.csrf_failure'
 
-# Recaptcha for login failures
+# RECAPTCHA for login failures
 RECAPTCHA_LOGIN_FAILURE_COUNT = 5
 
-RECAPTCHA_LOGIN_FAILURE_TIMERANGE = 30  # minutes
+RECAPTCHA_LOGIN_FAILURE_TIME_RANGE = 30  # minutes
 
 
 # Facebook, Twitter, KAIST API keys
@@ -115,15 +115,16 @@ KAIST_APP_ENABLED = False
 
 KAIST_APP_SECRET = ''
 
-# Invisible Recaptcha API keys used for Signup form
-INVISIBLE_RECAPTCHA_SITEKEY = ''
 
-INVISIBLE_RECAPTCHA_SECRET = ''
+# Invisible RECAPTCHA API keys used for normal user verification
+RECAPTCHA_INVISIBLE_SITEKEY = ''
 
-# Normal Recaptcha API keys used for Login form
-NORMAL_RECAPTCHA_SITEKEY = ''
+RECAPTCHA_INVISIBLE_SECRET = ''
 
-NORMAL_RECAPTCHA_SECRET = ''
+# Checkbox RECAPTCHA API keys used for prevent brute-force
+RECAPTCHA_CHECKBOX_SITEKEY = ''
+
+RECAPTCHA_CHECKBOX_SECRET = ''
 
 
 # E-mail settings
@@ -218,7 +219,7 @@ LOGGING = {
 STAT_FILE = os.path.join(BASE_DIR, 'archive/stats.txt')
 
 
-# Local Settings
+# Local settings
 try:
     from .local_settings import *  # noqa: F401, F403
 except ImportError:

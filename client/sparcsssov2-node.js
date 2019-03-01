@@ -6,7 +6,6 @@ const BETA_DOMAIN = 'https://ssobeta.sparcs.org/';
 
 const API_PREFIX = 'api/';
 const VERSION_PREFIX = 'v2/';
-const TIMEOUT = 60;
 
 const URLS = {
   token_require: 'token/require/',
@@ -24,159 +23,154 @@ Made by SPARCS SSO Team - appleseed
 Dependencies: axios ^0.18.0
 */
 
-class Client {
-  constructor(client_id, secret_key, is_beta = false, server_addr = '') {
+export default class Client {
+  constructor(clientId, secretKey, isBeta = false, serverAddr = '') {
     /*
       Initialize SPARCS SSO Client
-      :param client_id: your client id
-      :param secret_key: your secret key
-      :param is_beta: true iff you want to use SPARCS SSO beta server
-      :param server_addr: SPARCS SSO server addr (only for testing)
+      :param clientId: your client id
+      :param secretKey: your secret key
+      :param isBeta: true iff you want to use SPARCS SSO beta server
+      :param serverAddr: SPARCS SSO server addr (only for testing)
     */
-    this.DOMAIN = (is_beta ? BETA_DOMAIN : SERVER_DOMAIN);
-    this.DOMAIN = (server_addr === '' ? this.DOMAIN : server_addr);
+    this.DOMAIN = (isBeta ? BETA_DOMAIN : SERVER_DOMAIN);
+    this.DOMAIN = (serverAddr === '' ? this.DOMAIN : serverAddr);
 
-    const base_url = [this.DOMAIN, API_PREFIX, VERSION_PREFIX].join('');
+    const baseUrl = [this.DOMAIN, API_PREFIX, VERSION_PREFIX].join('');
     this.URLS = {};
     for (const [key, url] of Object.entries(URLS)) {
-      this.URLS[key] = [base_url, url].join('');
+      this.URLS[key] = [baseUrl, url].join('');
     }
 
-    this.client_id = client_id;
-    this.secret_key = Buffer.from(secret_key, 'utf8');
+    this.clientId = clientId;
+    this.secretKey = Buffer.from(secretKey, 'utf8');
   }
 
-  _sign_payload(payload, append_timestamp = true) {
+  _signPayload(payload, appendTimestamp = true) {
     const d = new Date();
     const n = d.getTime();
-    const timestamp = Math.floor(n/1000);
-    if (append_timestamp) {
+    const timestamp = Math.floor(n / 1000);
+    if (appendTimestamp) {
       payload.push(timestamp);
     }
     const msg = Buffer.from(payload.join(''), 'utf8');
-    const sign = crypto.createHmac('md5', this.secret_key).update(msg).digest('hex');
-    return {sign, timestamp};
-  };
+    const sign = crypto.createHmac('md5', this.secretKey).update(msg).digest('hex');
+    return { sign, timestamp };
+  }
 
-  _validate_sign(payload, timestamp, sign) {
-    const {sign_client, time_client} = _sign_payload(payload, false);
-    if (Math.abs(time_client - Number(timestamp)) > 10) {
+  static _validateSign(payload, timestamp, sign) {
+    const { signClient, timeClient } = this._signPayload(payload, false);
+    if (Math.abs(timeClient - Number(timestamp)) > 10) {
       return false;
     }
-    else if (crypto.timingSafeEqual(sign_client, sign)) {
+    if (crypto.timingSafeEqual(signClient, sign)) {
       return false;
     }
     return true;
   }
 
-  _post_data(url, data) {
-    axios.post(url, data)
-    .then((res) => {
+  static async _postData(url, data) {
+    try {
+      const res = await axios.post(url, data);
       return res.data;
-    })
-    .catch((err) => {
+    } catch (err) {
       if (err.response) {
         if (err.response.status === 400) {
           throw new Error('INVALID_REQUEST');
-        }
-        else if (err.response.status === 403) {
+        } else if (err.response.status === 403) {
           throw new Error('NO_PERMISSION');
-        }
-        else if (err.response.status !== 200) {
+        } else if (err.response.status !== 200) {
           throw new Error('UNKNOWN_ERROR');
         }
-      }
-      else if (err.request) {
+      } else if (err.request) {
         throw new Error('NO_RESPONSE');
-      }
-      else {
+      } else {
         throw new Error('REQUEST_SETUP_ERROR');
       }
-    });
+      return undefined;
+    }
   }
 
-  get_login_params() {
+  getLoginParams() {
     /*
       Get login parameters for SPARCS SSO login
       :returns: [url, state] where url is a url to redirect user,
           and state is random string to prevent CSRF
     */
     const state = crypto.randomBytes(10).toString('hex');
-    const state = ;
     const params = {
-      client_id: this.client_id,
-      state: state,
-    }
+      clientId: this.clientId,
+      state,
+    };
     const url = [this.URLS.token_require, Object.entries(params).map(e => e.join('=')).join('&')].join('?');
-    return [url, state]
+    return [url, state];
   }
 
-  get_user_info(code) {
+  getUserInfo(code) {
     /*
-      Exchange a code to user information
+      Exchange a code t;o user information
       :param code: the code that given by SPARCS SSO server
       :returns: a dictionary that contains user information
     */
-    const {sign, timestamp} = this._sign_payload([code]);
+    const { sign, timestamp } = this._signPayload([code]);
     const params = {
-      client_id: this.client_id,
-      code: code,
-      timestamp: timestamp,
-      sign: sign,
-    }
-    return this._post_data(this.URLS.token_info, params);
+      clientId: this.clientId,
+      code,
+      timestamp,
+      sign,
+    };
+    return this._postData(this.URLS.token_info, params);
   }
 
-  get_logout_url(sid, redirect_uri) {
+  getLogoutUrl(sid, redirectUri) {
     /*
       Get a logout url to sign out a user
       :param sid: the user's service id
-      :param redirect_uri: a redirect uri after the user sign out
+      :param redirectUri: a redirect uri after the user sign out
       :returns: the final url to sign out a user
     */
-    const {sign, timestamp} = this._sign_payload([sid, redirect_uri]);
+    const { sign, timestamp } = this._signPayload([sid, redirectUri]);
     const params = {
-      client_id: this.client_id,
-      sid: sid,
-      timestamp: timestamp,
-      redirect_uri: redirect_uri,
-      sign: sign,
-    }
+      clientId: this.clientId,
+      sid,
+      timestamp,
+      redirectUri,
+      sign,
+    };
     return [this.URLS.logout, Object.entries(params).map(e => e.join('=')).join('&')].join('?');
   }
 
-  get_point(sid) {
+  getPoint(sid) {
     /*
       Get a user's point
       :param sid: the user's service id
       :returns: the user's point
     */
-    return this.modify_point(sid, 0, '').point;
+    return this.modifyPoint(sid, 0, '').point;
   }
 
-  modify_point(sid, delta, message, lower_bound = 0) {
+  modifyPoint(sid, delta, message, lowerBound = 0) {
     /*
       Modify a user's point
       :param sid: the user's service id
       :param delta: an increment / decrement point value
       :param message: a message that displayed to the user
-      :param lower_bound: a minimum point value that required
+      :param lowerBound: a minimum point value that required
       :returns: a server response; check the full docs
     */
-    const {sign, timestamp} = this._sign_payload([sid, delta, message, lower_bound]);
+    const { sign, timestamp } = this._signPayload([sid, delta, message, lowerBound]);
     const params = {
-      client_id: this.client_id,
-      sid: sid,
-      delta: delta,
-      message: message,
-      lower_bound: lower_bound,
-      timestamp: timestamp,
-      sign: sign,
+      clientId: this.clientId,
+      sid,
+      delta,
+      message,
+      lowerBound,
+      timestamp,
+      sign,
     };
-    return this._post_data(this.URLS.point, params);
+    return this._postData(this.URLS.point, params);
   }
 
-  get_notice(offset = 0, limit = 3, date_after = 0) {
+  static async getNotice(offset = 0, limit = 3, date_after = 0) {
     /*
       Get some notices from SPARCS SSO
       :param offset: a offset to fetch from
@@ -184,33 +178,34 @@ class Client {
       :param date_after: an oldest date; YYYYMMDD formated string
       :returns: a server response; check the full docs
     */
-    params = {
-      offset: offset,
-      limit: limit,
-      date_after: date_after,
-    }
-    axios.get(self.URLS.notice, { params: params })
-    .then((res) => {
+    const params = {
+      offset,
+      limit,
+      date_after,
+    };
+
+    try {
+      const res = await axios.get(this.URLS.notice, { params });
       return res.data;
-    })
-    .catch((err) => {
+    } catch (err) {
       throw new Error(err.message);
-    });
+    }
   }
 
-  parse_unregister_request({ client_id, sid, timestamp, sign }) {
+  parseUnregisterRequest({
+    clientId, sid, timestamp, sign,
+  }) {
     /*
       Parse unregister request from SPARCS SSO server
       :param data_dict: a data dictionary that the server sent
       :returns: the user's service id
       :raises RuntimeError: raise iff the request is invalid
     */
-    if (client_id !== this.client_id) {
+    if (clientId !== this.clientId) {
+      throw new Error('INVALID_REQUEST');
+    } else if (!this._validateSign([sid], timestamp, sign)) {
       throw new Error('INVALID_REQUEST');
     }
-    else if (!this._validate_sign([sid], timestamp, sign)) {
-      throw new Error('INVALID_REQUEST');
-    }
-    return sid
+    return sid;
   }
 }

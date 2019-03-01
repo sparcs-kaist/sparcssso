@@ -102,7 +102,7 @@ export default class Client {
       state,
     };
     const url = [this.URLS.token_require, Object.entries(params).map(e => e.join('=')).join('&')].join('?');
-    return [url, state];
+    return { url, state };
   }
 
   getUserInfo(code) {

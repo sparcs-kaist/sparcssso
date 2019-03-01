@@ -20,7 +20,7 @@ const URLS = {
 SPARCS SSO V2 Client for NodeJS Version 0.1 (Unstable)
 Made by SPARCS SSO Team - appleseed
 
-Dependencies: axios ^0.18.0
+Dependencies: node ^10.15.2, axios ^0.18.0
 */
 
 export default class Client {
@@ -183,7 +183,6 @@ export default class Client {
       limit,
       date_after,
     };
-
     try {
       const res = await axios.get(this.URLS.notice, { params });
       return res.data;

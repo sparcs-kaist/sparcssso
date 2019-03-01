@@ -3,7 +3,6 @@ const axios = require('axios');
 
 const SERVER_DOMAIN = 'https://sparcssso.kaist.ac.kr/';
 const BETA_DOMAIN = 'https://ssobeta.sparcs.org/';
-const DOMAIN = undefined
 
 const API_PREFIX = 'api/';
 const VERSION_PREFIX = 'v2/';
@@ -39,8 +38,8 @@ class Client {
 
     const base_url = [this.DOMAIN, API_PREFIX, VERSION_PREFIX].join('');
     this.URLS = {};
-    for (var key in URLS) {
-      this.URLS[key] = [base_url, URLS[key]].join('');
+    for (const [key, url] of Object.entries(URLS)) {
+      this.URLS[key] = [base_url, url].join('');
     }
 
     this.client_id = client_id;
@@ -56,15 +55,15 @@ class Client {
     }
     const msg = Buffer.from(payload.join(''), 'utf8');
     const sign = crypto.createHmac('md5', this.secret_key).update(msg).digest('hex');
-    return [sign, timestamp];
+    return {sign, timestamp};
   };
 
   _validate_sign(payload, timestamp, sign) {
-    const result = _sign_payload(payload, false);
-    if (Math.abs(result[1] - Number(timestamp)) > 10) {
+    const {sign_client, time_client} = _sign_payload(payload, false);
+    if (Math.abs(time_client - Number(timestamp)) > 10) {
       return false;
     }
-    else if (crypto.timingSafeEqual(result[0], sign)) {
+    else if (crypto.timingSafeEqual(sign_client, sign)) {
       return false;
     }
     return true;
@@ -78,31 +77,22 @@ class Client {
     .catch((err) => {
       if (err.response) {
         if (err.response.status === 400) {
-          throw 'INVALID_REQUEST';
+          throw new Error('INVALID_REQUEST');
         }
         else if (err.response.status === 403) {
-          throw 'NO_PERMISSION';
+          throw new Error('NO_PERMISSION');
         }
         else if (err.response.status !== 200) {
-          throw 'UNKNOWN_ERROR';
+          throw new Error('UNKNOWN_ERROR');
         }
       }
       else if (err.request) {
-        throw 'NO_RESPONSE';
+        throw new Error('NO_RESPONSE');
       }
       else {
-        throw 'REQUEST_SETUP_ERROR';
+        throw new Error('REQUEST_SETUP_ERROR');
       }
     });
-  }
-
-  _generate_random_hex(len) {
-    const candidates = '0123456789abcdef';
-    var text = '';
-    for (var i = 0; i < len; i++) {
-      text += candidates.charAt(Math.floor(Math.random() * candidates.length));
-    }
-    return text;
   }
 
   get_login_params() {
@@ -111,13 +101,13 @@ class Client {
       :returns: [url, state] where url is a url to redirect user,
           and state is random string to prevent CSRF
     */
-    const state = this._generate_random_hex(20);
+    const state = crypto.randomBytes(10).toString('hex');
+    const state = ;
     const params = {
       client_id: this.client_id,
       state: state,
     }
     const url = [this.URLS.token_require, Object.entries(params).map(e => e.join('=')).join('&')].join('?');
-    console.log([url, state]);
     return [url, state]
   }
 
@@ -127,12 +117,12 @@ class Client {
       :param code: the code that given by SPARCS SSO server
       :returns: a dictionary that contains user information
     */
-    const result = this._sign_payload([code]);
+    const {sign, timestamp} = this._sign_payload([code]);
     const params = {
       client_id: this.client_id,
       code: code,
-      timestamp: result[1],
-      sign: result[0],
+      timestamp: timestamp,
+      sign: sign,
     }
     return this._post_data(this.URLS.token_info, params);
   }
@@ -144,13 +134,13 @@ class Client {
       :param redirect_uri: a redirect uri after the user sign out
       :returns: the final url to sign out a user
     */
-    const result = this._sign_payload([sid, redirect_uri]);
+    const {sign, timestamp} = this._sign_payload([sid, redirect_uri]);
     const params = {
       client_id: this.client_id,
       sid: sid,
-      timestamp: result[1],
+      timestamp: timestamp,
       redirect_uri: redirect_uri,
-      sign: result[0],
+      sign: sign,
     }
     return [this.URLS.logout, Object.entries(params).map(e => e.join('=')).join('&')].join('?');
   }
@@ -173,15 +163,15 @@ class Client {
       :param lower_bound: a minimum point value that required
       :returns: a server response; check the full docs
     */
-    const result = this._sign_payload([sid, delta, message, lower_bound]);
+    const {sign, timestamp} = this._sign_payload([sid, delta, message, lower_bound]);
     const params = {
       client_id: this.client_id,
       sid: sid,
       delta: delta,
       message: message,
       lower_bound: lower_bound,
-      timestamp: result[1],
-      sign: result[0],
+      timestamp: timestamp,
+      sign: sign,
     };
     return this._post_data(this.URLS.point, params);
   }
@@ -204,26 +194,22 @@ class Client {
       return res.data;
     })
     .catch((err) => {
-      throw err;
+      throw new Error(err.message);
     });
   }
 
-  parse_unregister_request(data_dict) {
+  parse_unregister_request({ client_id, sid, timestamp, sign }) {
     /*
       Parse unregister request from SPARCS SSO server
       :param data_dict: a data dictionary that the server sent
       :returns: the user's service id
       :raises RuntimeError: raise iff the request is invalid
     */
-    const client_id = data_dict.client_id;
-    const sid = data_dict.sid;
-    const timestamp = data_dict.timestamp;
-    const sign = data_dict.sign;
     if (client_id !== this.client_id) {
-      throw 'INVALID_REQUEST';
+      throw new Error('INVALID_REQUEST');
     }
     else if (!this._validate_sign([sid], timestamp, sign)) {
-      throw 'INVALID_REQUEST';
+      throw new Error('INVALID_REQUEST');
     }
     return sid
   }

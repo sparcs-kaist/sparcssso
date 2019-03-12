@@ -20,7 +20,7 @@ const URLS = {
 SPARCS SSO V2 Client for NodeJS Version 0.1 (Unstable)
 Made by SPARCS SSO Team - appleseed
 
-Dependencies: node ^10.15.2, axios ^0.18.0
+Dependencies: node ^11.11.0, axios ^0.18.0
 */
 
 class Client {

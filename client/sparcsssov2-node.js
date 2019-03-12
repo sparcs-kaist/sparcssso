@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-//const axios = require('axios');
+const axios = require('axios');
 
 const SERVER_DOMAIN = 'https://sparcssso.kaist.ac.kr/';
 const BETA_DOMAIN = 'https://ssobeta.sparcs.org/';

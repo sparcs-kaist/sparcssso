@@ -98,27 +98,32 @@ class Client {
     */
     const state = crypto.randomBytes(10).toString('hex');
     const params = {
-      clientId: this.clientId,
+      client_id: this.clientId,
       state,
     };
     const url = [this.URLS.token_require, Object.entries(params).map(e => e.join('=')).join('&')].join('?');
     return { url, state };
   }
 
-  getUserInfo(code) {
+  async getUserInfo(code) {
     /*
-      Exchange a code t;o user information
+      Exchange a code to user information
       :param code: the code that given by SPARCS SSO server
       :returns: a dictionary that contains user information
     */
     const { sign, timestamp } = this._signPayload([code]);
     const params = {
-      clientId: this.clientId,
+      client_id: this.clientId,
       code,
       timestamp,
       sign,
     };
-    return this._postData(this.URLS.token_info, params);
+    try {
+      const res = await Client._postData(this.URLS.token_info, params);
+      return res;
+    } catch (err) {
+      return err;
+    }
   }
 
   getLogoutUrl(sid, redirectUri) {
@@ -130,10 +135,10 @@ class Client {
     */
     const { sign, timestamp } = this._signPayload([sid, redirectUri]);
     const params = {
-      clientId: this.clientId,
+      client_id: this.clientId,
       sid,
       timestamp,
-      redirectUri,
+      redirect_uri: redirectUri,
       sign,
     };
     return [this.URLS.logout, Object.entries(params).map(e => e.join('=')).join('&')].join('?');
@@ -159,18 +164,18 @@ class Client {
     */
     const { sign, timestamp } = this._signPayload([sid, delta, message, lowerBound]);
     const params = {
-      clientId: this.clientId,
+      client_id: this.clientId,
       sid,
       delta,
       message,
-      lowerBound,
+      lower_bound: lowerBound,
       timestamp,
       sign,
     };
-    return this._postData(this.URLS.point, params);
+    return Client._postData(this.URLS.point, params);
   }
 
-  static async getNotice(offset = 0, limit = 3, date_after = 0) {
+  static async getNotice(offset = 0, limit = 3, dateAfter = 0) {
     /*
       Get some notices from SPARCS SSO
       :param offset: a offset to fetch from
@@ -181,7 +186,7 @@ class Client {
     const params = {
       offset,
       limit,
-      date_after,
+      date_after: dateAfter,
     };
     try {
       const res = await axios.get(this.URLS.notice, { params });

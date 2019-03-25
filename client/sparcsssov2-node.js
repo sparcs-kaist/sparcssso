@@ -1,26 +1,12 @@
 const crypto = require('crypto');
 const axios = require('axios');
-
-const SERVER_DOMAIN = 'https://sparcssso.kaist.ac.kr/';
-const BETA_DOMAIN = 'https://ssobeta.sparcs.org/';
-
-const API_PREFIX = 'api/';
-const VERSION_PREFIX = 'v2/';
-
-const URLS = {
-  token_require: 'token/require/',
-  token_info: 'token/info/',
-  logout: 'logout/',
-  unregister: 'unregister/',
-  point: 'point/',
-  notice: 'notice/',
-};
+const querystring = require('querystring');
 
 /*
-SPARCS SSO V2 Client for NodeJS Version 0.1 (Unstable)
+SPARCS SSO V2 Client for NodeJS Version 1.0 (verified)
 Made by SPARCS SSO Team - appleseed
 
-Dependencies: node ^11.11.0, axios ^0.18.0
+Dependencies: node ^10, axios ^0.18
 */
 
 class Client {
@@ -32,6 +18,21 @@ class Client {
       :param isBeta: true iff you want to use SPARCS SSO beta server
       :param serverAddr: SPARCS SSO server addr (only for testing)
     */
+    const SERVER_DOMAIN = 'https://sparcssso.kaist.ac.kr/';
+    const BETA_DOMAIN = 'https://ssobeta.sparcs.org/';
+
+    const API_PREFIX = 'api/';
+    const VERSION_PREFIX = 'v2/';
+
+    const URLS = {
+      token_require: 'token/require/',
+      token_info: 'token/info/',
+      logout: 'logout/',
+      unregister: 'unregister/',
+      point: 'point/',
+      notice: 'notice/',
+    };
+
     this.DOMAIN = (isBeta ? BETA_DOMAIN : SERVER_DOMAIN);
     this.DOMAIN = (serverAddr === '' ? this.DOMAIN : serverAddr);
 
@@ -46,9 +47,7 @@ class Client {
   }
 
   _signPayload(payload, appendTimestamp = true) {
-    const d = new Date();
-    const n = d.getTime();
-    const timestamp = Math.floor(n / 1000);
+    const timestamp = Math.floor(new Date().getTime() / 1000);
     if (appendTimestamp) {
       payload.push(timestamp);
     }
@@ -70,7 +69,7 @@ class Client {
 
   static async _postData(url, data) {
     try {
-      const res = await axios.post(url, data);
+      const res = await axios.post(url, querystring.stringify(data));
       return res.data;
     } catch (err) {
       if (err.response) {
@@ -86,7 +85,7 @@ class Client {
       } else {
         throw new Error('REQUEST_SETUP_ERROR');
       }
-      return undefined;
+      throw new Error('UNKNOWN_ERROR');
     }
   }
 
@@ -97,11 +96,12 @@ class Client {
           and state is random string to prevent CSRF
     */
     const state = crypto.randomBytes(10).toString('hex');
+    const { clientId, URLS } = this;
     const params = {
-      client_id: this.clientId,
+      client_id: clientId,
       state,
     };
-    const url = [this.URLS.token_require, Object.entries(params).map(e => e.join('=')).join('&')].join('?');
+    const url = [URLS.token_require, Object.entries(params).map(e => e.join('=')).join('&')].join('?');
     return { url, state };
   }
 
@@ -153,7 +153,7 @@ class Client {
     return this.modifyPoint(sid, 0, '').point;
   }
 
-  modifyPoint(sid, delta, message, lowerBound = 0) {
+  async modifyPoint(sid, delta, message, lowerBound = 0) {
     /*
       Modify a user's point
       :param sid: the user's service id
@@ -172,7 +172,12 @@ class Client {
       timestamp,
       sign,
     };
-    return Client._postData(this.URLS.point, params);
+    try {
+      const r = await Client._postData(this.URLS.point, params);
+      return r;
+    } catch (err) {
+      return err;
+    }
   }
 
   static async getNotice(offset = 0, limit = 3, dateAfter = 0) {

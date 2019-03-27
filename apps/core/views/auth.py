@@ -1,3 +1,4 @@
+import datetime
 import logging
 from urllib.parse import parse_qs, urlparse
 
@@ -11,8 +12,9 @@ from apps.core.backends import (
     anon_required, auth_fb_callback, auth_fb_init,
     auth_kaist_callback, auth_kaist_init, auth_tw_callback,
     auth_tw_init, get_clean_url, get_social_name,
+    validate_recaptcha,
 )
-from apps.core.models import Notice, Service
+from apps.core.models import LoginFailureLog, Notice, Service
 
 
 logger = logging.getLogger('sso.auth')
@@ -28,9 +30,7 @@ def login_core(request, session_name, template_name, get_user_func):
         valid_from__lte=current_time, valid_to__gt=current_time,
     ).first()
 
-    query_dict = parse_qs(urlparse(
-        request.session.get('next', '/'),
-    ).query)
+    query_dict = parse_qs(urlparse(request.session.get('next', '/')).query)
     service_name = query_dict.get('client_id', [''])[0]
     service = Service.objects.filter(name=service_name).first()
 
@@ -40,9 +40,21 @@ def login_core(request, session_name, template_name, get_user_func):
         (service and service.scope == 'SPARCS')
     )
 
+    login_failure_timerange = datetime.timedelta(
+        minutes=settings.RECAPTCHA_LOGIN_FAILURE_TIME_RANGE)
+    last_login_failures = LoginFailureLog.objects.filter(
+        ip=ip, time__gte=(current_time - login_failure_timerange))
+
+    show_recaptcha = last_login_failures.count() >= settings.RECAPTCHA_LOGIN_FAILURE_COUNT
     if request.method == 'POST':
-        user = get_user_func(request.POST)
-        if user:
+        if show_recaptcha:
+            captcha_data = request.POST.get('g-recaptcha-response', '')
+            captcha_success = validate_recaptcha(captcha_data, settings.RECAPTCHA_CHECKBOX_SECRET)
+        else:
+            captcha_success = True
+
+        user, attempted_username = get_user_func(request.POST)
+        if user and captcha_success:
             request.session.pop('info_signup', None)
             auth.login(request, user)
 
@@ -50,7 +62,12 @@ def login_core(request, session_name, template_name, get_user_func):
                 request.session.pop('next', '/'),
             ))
 
-        request.session[session_name] = 1
+        request.session[session_name] = 3 if user else 1
+        if ip:
+            log_failure = LoginFailureLog()
+            log_failure.ip = ip
+            log_failure.username = attempted_username
+            log_failure.save()
 
     return render(request, template_name, {
         'notice': notice,
@@ -58,6 +75,7 @@ def login_core(request, session_name, template_name, get_user_func):
         'fail': request.session.pop(session_name, ''),
         'show_internal': show_internal,
         'kaist_enabled': settings.KAIST_APP_ENABLED,
+        'recaptcha_sitekey': settings.RECAPTCHA_CHECKBOX_SITEKEY if show_recaptcha else '',
     })
 
 
@@ -67,9 +85,8 @@ def login(request):
     def get_user_func(post_dict):
         email = post_dict.get('email', 'null@sso.sparcs.org')
         password = post_dict.get('password', 'unknown')
-        return auth.authenticate(
-            request=request, email=email, password=password,
-        )
+        user = auth.authenticate(request=request, email=email, password=password)
+        return user, email
 
     return login_core(
         request, 'result_login',
@@ -83,9 +100,8 @@ def login_internal(request):
     def get_user_func(post_dict):
         ldap_id = post_dict.get('ldap-id', 'unknown')
         ldap_pw = post_dict.get('ldap-pw', 'unknown')
-        return auth.authenticate(
-            request=request, ldap_id=ldap_id, ldap_pw=ldap_pw,
-        )
+        user = auth.authenticate(request=request, ldap_id=ldap_id, ldap_pw=ldap_pw)
+        return user, ldap_id
 
     return login_core(
         request, 'result_login_internal',

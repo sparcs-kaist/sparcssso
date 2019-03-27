@@ -3,7 +3,9 @@
 
 {% block htitle %}SPARCS SSO {% trans "Login" %}{% endblock %}
 
-{% block header %}{% endblock %}
+{% block header %}
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+{% endblock %}
 
 {% block content %}
 <div class="alert-wrap">
@@ -31,9 +33,13 @@
   <div class="alert alert-danger alert-invalid-account">
     <b>{% trans "Please grant all requested permission" %}</b>
   </div>
+  {% elif fail == 3 %}
+  <div class="alert alert-danger alert-invalid-account">
+    <b>{% trans "Please fill out the item 'I'm not a robot'" %}</b>
+  </div>
   {% endif %}
 
-  <form class="row" action="/account/login/" method="post">
+  <form id="login" class="row" action="/account/login/" method="post">
     {% csrf_token %}
     <div class="form-group col-xs-12">
       <input type="email" class="form-control" name="email" placeholder="{% trans "Email" %}" required="required">
@@ -41,6 +47,16 @@
     <div class="form-group col-xs-12">
       <input type="password" class="form-control" name="password" placeholder="{% trans "Password" %}" required="required">
     </div>
+    {% if recaptcha_sitekey %}
+    <div class="form-group col-xs-12">
+      <input id="recaptcha-validate" type="hidden" data-validate="true" required="required">
+      <div class="g-recaptcha"
+           style="display:inline-block"
+           data-sitekey="{{ recaptcha_sitekey }}"
+           data-callback="captchaSubmit">
+      </div>
+    </div>
+    {% endif %}
     <div class="form-group col-xs-12">
       <button type="submit" class="btn btn-default btn-block btn-login">{% trans "Email Login" %}</button>
       <div class="login-extra-links">
@@ -69,6 +85,15 @@
 </div>
 
 <script>
+if (!'{{ recaptcha_sitekey }}') {
+  $('#recaptcha-validate').val('true');
+}
+// eslint-disable-next-line no-unused-vars
+var captchaSubmit = function() {
+  $('#recaptcha-validate').val('true');
+  $('#login').validator('validate');
+};
+
 $(function() {
   var login = function(type) {
     var form = $(document.createElement('form')).attr({
@@ -94,6 +119,8 @@ $(function() {
   $('.btn-twitter').click(function() {
     login('tw');
   });
+
+  $('#login').validator();
 });
 </script>
 {% endblock %}

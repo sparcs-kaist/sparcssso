@@ -133,7 +133,7 @@ def contact(request):
 
     return render(request, 'contact.html', {
         'submitted': submitted,
-        'captcha_enabled': 'y' if settings.RECAPTCHA_SECRET else '',
+        'recaptcha_sitekey': settings.RECAPTCHA_INVISIBLE_SITEKEY,
     })
 
 

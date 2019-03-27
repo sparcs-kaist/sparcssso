@@ -4,7 +4,7 @@
 {% block app-header %}
 <link rel="stylesheet" type="text/css" href="/static/css/main.css">
 <script src="/static/js/validator.min.js"></script>
-<script src="https://www.google.com/recaptcha/api.js"></script>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 {% endblock %}
 
 {% block content %}
@@ -59,9 +59,9 @@
       <textarea class="form-control" rows="6" name="message" style="resize:vertical;" required></textarea>
     </div>
 
-    {% if captcha_enabled %}
+    {% if recaptcha_sitekey %}
     <div class="g-recaptcha"
-         data-sitekey="6LfljRkUAAAAADIRSKOygbAdtu4bVln0xbly2ucP"
+         data-sitekey="{{ recaptcha_sitekey }}"
          data-callback="captchaSubmit"
          data-size="invisible">
     </div>
@@ -74,7 +74,7 @@
 </div>
 
 <script>
-var captchaEnabled = '{{ captcha_enabled }}';
+var captchaSitekey = '{{ recaptcha_sitekey }}';
 var captchaSuccess = 0;
 
 // eslint-disable-next-line no-unused-vars
@@ -84,9 +84,7 @@ var captchaSubmit = function() {
 };
 
 $('#contact').validator().on('submit', function(e) {
-  if (e.isDefaultPrevented()) {
-    return;
-  } else if (captchaSuccess !== 1 && captchaEnabled) {
+  if (!e.isDefaultPrevented() && captchaSuccess !== 1 && captchaSitekey) {
     e.preventDefault();
     grecaptcha.execute();
   }

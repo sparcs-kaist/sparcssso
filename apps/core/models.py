@@ -344,3 +344,20 @@ class EmailDomain(models.Model):
     """
     domain = models.CharField(max_length=100, unique=True)
     is_banned = models.BooleanField(default=True)
+
+
+class LoginFailureLog(models.Model):
+    """
+    denotes single log of an user for login failure event.
+    used to prevent the system from bruteforcing attack via login form.
+    - ip: origin ip address
+    - username: attmpted username at failure, this can be empty
+    - time: timestamp (indexed for later query)
+    """
+    ip = models.GenericIPAddressField()
+    username = models.CharField(max_length=127)
+    time = models.DateTimeField(auto_now=True, db_index=True)
+
+    def __str__(self):
+        time_str = localtime(self.time).isoformat()
+        return f'{self.username} {self.ip} {time_str}'

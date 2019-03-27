@@ -4,7 +4,7 @@
 {% block htitle %}SPARCS SSO {% trans "Signup" %}{% endblock %}
 
 {% block header %}
-<script src="https://www.google.com/recaptcha/api.js"></script>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 {% endblock %}
 
 {% block content %}
@@ -43,9 +43,9 @@
     <div class="form-group col-xs-12">
       <p>By clicking on the signup button, you agree to <a href="/terms/" target="_blank">SPARCS SSO's terms of use</a> and <a href="/privacy/" target="_blank">privacy policy</a></p>
     </div>
-    {% if captcha_enabled %}
+    {% if recaptcha_sitekey %}
     <div class="g-recaptcha"
-         data-sitekey="6LfljRkUAAAAADIRSKOygbAdtu4bVln0xbly2ucP"
+         data-sitekey="{{ recaptcha_sitekey }}"
          data-callback="captchaSubmit"
          data-size="invisible">
     </div>
@@ -58,7 +58,7 @@
 </div>
 
 <script>
-var captchaEnabled = '{{ captcha_enabled }}';
+var captchaSitekey = '{{ recaptcha_sitekey }}';
 var captchaSuccess = 0;
 
 // eslint-disable-next-line no-unused-vars
@@ -68,9 +68,7 @@ var captchaSubmit = function() {
 };
 
 $('#signup').validator().on('submit', function(e) {
-  if (e.isDefaultPrevented()) {
-    return;
-  } else if (captchaSuccess !== 1 && captchaEnabled) {
+  if (!e.isDefaultPrevented() && captchaSuccess !== 1 && captchaSitekey) {
     e.preventDefault();
     grecaptcha.execute();
   }

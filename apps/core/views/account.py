@@ -67,12 +67,13 @@ def signup(request, social=False):
         })
 
     if not social:
-        return render(request, 'account/signup/main.html')
+        return render(request, 'account/signup/main.html', {
+            'captcha_enabled': 'y' if settings.RECAPTCHA_SECRET else '',
+        })
     return render(request, 'account/signup/sns.html', {
         'type': typ,
         'profile': profile,
         'email_warning': email_warning,
-        'captcha_enabled': 'y' if settings.RECAPTCHA_SECRET else '',
     })
 
 

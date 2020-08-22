@@ -7,6 +7,8 @@ services:
             - db
         volumes:
             - './sparcssso/local_settings.py:/usr/app/sparcssso/sparcssso/local_settings.py:ro'
+            - 'sparcssso_log:/usr/app/sparcssso/archive/buffer'
+            - 'sparcssso_letters:/usr/app/sparcssso/letters'
         environment:
             - 'SSO_DB_NAME=sparcssso'
             - 'SSO_DB_USER=root'
@@ -49,3 +51,5 @@ networks:
 
 volumes:
     sparcssso_db:
+    sparcssso_log:
+    sparcssso_letters:

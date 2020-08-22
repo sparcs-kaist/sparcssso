@@ -24,6 +24,13 @@ RUN apk del .build-deps
 # Copy SPARCS SSO application
 COPY --chown=sparcssso:sparcssso . .
 
+# Add needed directories
+RUN mkdir -p ./archive/buffer ./letters \
+ && chown sparcssso:sparcssso -R ./archive/buffer ./letters
+
+# Commented out VOLUME, as log preserving is not needed for development
+# VOLUME ["./archive/buffer", "./letters"]
+
 # Set user
 USER sparcssso:sparcssso
 

@@ -1,0 +1,40 @@
+# Byte-Compiled / Optimized / DLL Files
+__pycache__/
+*.py[cod]
+
+# Translations
+*.mo
+
+# Django Stuff
+*.log
+
+# SQLite Database File
+*.sqlite3
+
+# Media Files
+media/
+
+# VIM Swap Files
+*.sw[op]
+
+# Local Settings
+local_settings.py
+
+# Virtual Environment
+venv/
+
+# SPARCS SSO Test Server
+client/run
+
+# SPARCS SSO Letters
+letters/
+
+# Cold Archive
+archive/
+
+# Node Modules
+node_modules/
+
+# Other settings
+nginx/
+local_settings.dev.py

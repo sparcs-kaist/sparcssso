@@ -3,9 +3,11 @@ import re
 from urllib.parse import parse_qsl, urlencode
 from xml.etree import ElementTree
 
+import json
 import ldap3
 import oauth2 as oauth
 import requests
+import uuid
 from django.conf import settings
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.models import User
@@ -179,33 +181,25 @@ def auth_tw_callback(tokens, verifier):
 
 
 # KAIST Auth
-kaist_soap_template = (
-    '<soapenv:Envelope'
-    ' xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"'
-    ' xmlns:ser="http://server.com">'
-    '  <soapenv:Header/>'
-    '    <soapenv:Body>'
-    '      <ser:verification>'
-    '        <cookieValue>{}</cookieValue>'
-    '        <publicKeyStr>{}</publicKeyStr>'
-    '    </ser:verification>'
-    '  </soapenv:Body>'
-    '</soapenv:Envelope>'
-)
+def auth_kaist_init(callback_url):
+    state = str(uuid.uuid4())
+    args = {
+        'client_id': 'SPARCS',
+        'state': state,
+        'redirect_url': callback_url
+    }
+    
+    return f'https://iam2.kaist.ac.kr/api/sso/commonLogin?{urlencode(args)}', state
 
 
-def auth_kaist_init():
-    return 'https://ksso.kaist.ac.kr/iamps/requestLogin.do'
+def auth_kaist_callback(token, iam_info_raw):
+    iam_info = json.loads(iam_info_raw)['dataMap']
+    state = iam_info['state']
 
+    if state != token:
+        return None, None, False
 
-def auth_kaist_callback(token):
-    payload = kaist_soap_template.format(token, settings.KAIST_APP_SECRET)
-    r = requests.post('https://iam.kaist.ac.kr/iamps/services/singlauth/',
-                      data=payload, verify=True)
-    raw_info = ElementTree.fromstring(r.text)[0][0][0]
-    k_info = {}
-    for node in raw_info:
-        k_info[node.tag] = node.text
+    k_info = iam_info['USER_INFO']
 
     info = {
         'userid': k_info['kaist_uid'],
@@ -218,4 +212,4 @@ def auth_kaist_callback(token):
     }
     kaist_profile = UserProfile.objects.filter(kaist_id=info['userid'],
                                                test_only=False).first()
-    return kaist_profile, info
+    return kaist_profile, info, True

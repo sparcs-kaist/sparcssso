@@ -6,6 +6,7 @@ from django.contrib import auth
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 
 from apps.core.backends import (
     anon_required, auth_fb_callback, auth_fb_init,
@@ -129,11 +130,13 @@ def init(request, mode, type):
         url, token = auth_tw_init(callback_url)
         request.session['request_token'] = token
     elif type == 'KAIST':
-        url = auth_kaist_init()
+        url, token = auth_kaist_init(callback_url)
+        request.session['request_token'] = token
     return redirect(url)
 
 
 # /callback/
+@csrf_exempt
 def callback(request):
     auth = request.session.pop('info_auth', None)
     if not auth:
@@ -149,8 +152,12 @@ def callback(request):
         verifier = request.GET.get('oauth_verifier')
         profile, info = auth_tw_callback(tokens, verifier)
     elif type == 'KAIST':
-        token = request.COOKIES.get('SATHTOKEN')
-        profile, info = auth_kaist_callback(token)
+        token = request.session.get('request_token')
+        iam_info = request.POST.get('result')
+        profile, info, valid = auth_kaist_callback(token, iam_info)
+
+        if not valid:
+            return redirect('/')
 
     userid = info['userid'] if info else 'unknown'
     logger.info('social', {

@@ -136,6 +136,7 @@ def init(request, mode, type):
 
 
 # /callback/
+@csrf_exempt
 def callback(request):
     auth = request.session.pop('info_auth', None)
     if not auth:

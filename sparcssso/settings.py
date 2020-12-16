@@ -212,3 +212,15 @@ except ImportError:
 
 
 VERSION = get_version_info(DEBUG, ALLOWED_HOSTS)
+
+"""
+AWS SES를 이메일 백엔드로 사용하려면 다음과 같은 설정을 추가합니다.
+
+EMAIL_BACKEND = 'django_ses.SESBackend'
+
+AWS_ACCESS_KEY_ID = 'YOUR-ACCESS-KEY-ID'
+AWS_SECRET_ACCESS_KEY = 'YOUR-SECRET-ACCESS-KEY'
+
+AWS_SES_REGION_NAME = 'ap-northeast-2'
+AWS_SES_REGION_ENDPOINT = 'email.ap-northeast-2.amazonaws.com'
+"""

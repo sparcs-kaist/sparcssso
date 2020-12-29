@@ -22,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'r#f-7qnrv40bl+(wkmin6)u7mez#s$7^+8zo%k^+_sm^vw+95p'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -97,19 +97,19 @@ CSRF_FAILURE_VIEW = 'apps.core.views.general.csrf_failure'
 
 # Facebook, Twitter, KAIST API keys
 
-FACEBOOK_APP_ID = ''
+FACEBOOK_APP_ID = os.environ.get('FACEBOOK_APP_ID', '')
 
-FACEBOOK_APP_SECRET = ''
+FACEBOOK_APP_SECRET = os.environ.get('FACEBOOK_APP_SECRET', '')
 
-TWITTER_APP_ID = ''
+TWITTER_APP_ID = os.environ.get('TWITTER_APP_ID', '')
 
-TWITTER_APP_SECRET = ''
+TWITTER_APP_SECRET = os.environ.get('TWITTER_APP_SECRET', '')
 
-KAIST_APP_ENABLED = False
+KAIST_APP_ENABLED = True if os.environ.get('KAIST_APP_ENABLED', '0') == '1' else False
 
-KAIST_APP_SECRET = ''
+KAIST_APP_SECRET = os.environ.get('KAIST_APP_SECRET', '')
 
-RECAPTCHA_SECRET = ''
+RECAPTCHA_SECRET = os.environ.get('RECAPTCHA_SECRET', '')
 
 
 # E-mail settings

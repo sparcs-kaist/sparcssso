@@ -1,13 +1,12 @@
+import json
 import logging
 import re
+import uuid
 from urllib.parse import parse_qsl, urlencode
-from xml.etree import ElementTree
 
-import json
 import ldap3
 import oauth2 as oauth
 import requests
-import uuid
 from django.conf import settings
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.models import User
@@ -186,9 +185,9 @@ def auth_kaist_init(callback_url):
     args = {
         'client_id': 'SPARCS',
         'state': state,
-        'redirect_url': callback_url
+        'redirect_url': callback_url,
     }
-    
+
     return f'https://iam2.kaist.ac.kr/api/sso/commonLogin?{urlencode(args)}', state
 
 

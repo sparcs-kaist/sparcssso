@@ -5,8 +5,8 @@ from django.conf import settings
 from django.contrib import auth
 from django.shortcuts import redirect, render
 from django.utils import timezone
-from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
 from apps.core.backends import (
     anon_required, auth_fb_callback, auth_fb_init,

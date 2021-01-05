@@ -172,7 +172,7 @@ if SENTRY_DSN != '':
     sentry_sdk.init(
         dsn=SENTRY_DSN,
         integrations=[DjangoIntegration()],
-        send_default_pii=True
+        send_default_pii=True,
     )
 else:
     print('SENTRY_DSN not provided. Metrics will not be sent.')

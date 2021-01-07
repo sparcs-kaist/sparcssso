@@ -31,10 +31,18 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL,
                           document_root=settings.MEDIA_ROOT)
 
-urls.handler400 = lambda r: render(r, 'error/400.html', status=400)
-urls.handler403 = lambda r: render(r, 'error/403.html', status=403)
-urls.handler404 = lambda r: render(r, 'error/404.html', status=404)
-urls.handler500 = lambda r: render(r, 'error/500.html', status=500)
+
+def build_handler(status: int):
+    def handler(request, **kwargs):
+        print(status)
+        return render(request, f'error/{status}.html', status=status)
+    return handler
+
+
+urls.handler400 = build_handler(400)
+urls.handler403 = build_handler(403)
+urls.handler404 = build_handler(404)
+urls.handler500 = build_handler(500)
 
 admin.site.site_header = 'SPARCS SSO Administration'
 admin.site.site_title = 'SPARCS SSO Admin'

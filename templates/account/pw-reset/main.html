@@ -9,7 +9,7 @@
 <div class="wrap-content-xs">
   <h1>{% trans "Password Reset" %}</h1>
   <p>{% trans "Please enter a new password." %}</p>
-  <form class="row" action="/account/password/reset/{{ tokenid }}" method="post" data-toggle="validator">
+  <form class="row" action="/account/password/reset/{{ tokenid }}/" method="post" data-toggle="validator">
     {% csrf_token %}
     <div class="form-group col-xs-12 text-left">
       <label class="control-label">{% trans "New Password" %}</label>

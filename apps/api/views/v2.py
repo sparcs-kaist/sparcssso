@@ -169,9 +169,12 @@ def token_info(request):
     if request.method != 'POST':
         return build_suspicious_api_response('INVALID_METHOD')
 
-    service, [code], timestamp = check_sign(
-        request.POST, ['code'],
-    )
+    try:
+        service, [code], timestamp = check_sign(
+            request.POST, ['code'],
+        )
+    except SuspiciousOperation as exc:
+        return build_suspicious_api_response(str(exc))
 
     token = AccessToken.objects.filter(tokenid=code).first()
     if not token:

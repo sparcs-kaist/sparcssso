@@ -79,6 +79,13 @@ def check_sign(data, keys):
     return service, extracted, timestamp
 
 
+def build_suspicious_api_response(code: str, status_code: int = 400):
+    # TODO: Add to log
+    return HttpResponse(json.dumps({
+        'code': code
+    }, ensure_ascii=False), status=status_code)
+
+
 # /token/require/
 @login_required
 def token_require(request):
@@ -160,7 +167,7 @@ def token_require(request):
 @csrf_exempt
 def token_info(request):
     if request.method != 'POST':
-        raise SuspiciousOperation('INVALID_METHOD')
+        return build_suspicious_api_response('INVALID_METHOD')
 
     service, [code], timestamp = check_sign(
         request.POST, ['code'],
@@ -168,11 +175,11 @@ def token_info(request):
 
     token = AccessToken.objects.filter(tokenid=code).first()
     if not token:
-        raise SuspiciousOperation('INVALID_CODE')
+        return build_suspicious_api_response('INVALID_CODE')
     elif token.service.name != service.name:
-        raise SuspiciousOperation('TOKEN_SERVICE_MISMATCH')
+        return build_suspicious_api_response('TOKEN_SERVICE_MISMATCH')
     elif token.expire_time < timezone.now():
-        raise SuspiciousOperation('TOKEN_EXPIRED')
+        return build_suspicious_api_response('TOKEN_EXPIRED')
 
     logger.info('login.done', {
         'r': request,

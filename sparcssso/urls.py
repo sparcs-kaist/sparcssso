@@ -34,7 +34,6 @@ if settings.DEBUG:
 
 def build_handler(status: int):
     def handler(request, **kwargs):
-        print(status)
         return render(request, f'error/{status}.html', status=status)
     return handler
 

@@ -119,7 +119,7 @@ class Service(models.Model):
     - icon:               icon of this service
     """
 
-    name = models.CharField(max_length=20, primary_key=True)
+    name = models.CharField(max_length=40, primary_key=True)
     is_shown = models.BooleanField(default=True)
     alias = models.CharField(max_length=30)
     scope = models.CharField(max_length=6, choices=SERVICE_SCOPE,

@@ -9,6 +9,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'ssodev.sparcs.org',
+    'localhost'
 ]
 
 VERSION = get_version_info(DEBUG, ALLOWED_HOSTS)

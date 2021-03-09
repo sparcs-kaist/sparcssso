@@ -16,20 +16,6 @@ VERSION = get_version_info(DEBUG, ALLOWED_HOSTS)
 
 DOMAIN = 'https://sparcssso.kaist.ac.kr'
 
-# Database
-# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': environ.get('SSO_DB_NAME'),
-        'USER': environ.get('SSO_DB_USER'),
-        'PASSWORD': environ.get('SSO_DB_PASSWORD'),
-        'HOST': environ.get('SSO_DB_HOST'),
-        'PORT': environ.get('SSO_DB_PORT', '3306'),
-    },
-}
-
 LOGGING['loggers']['django.request'] = {  # noqa: F405
     'handlers': ['mail'],
     'level': 'ERROR',

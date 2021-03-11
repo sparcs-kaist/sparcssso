@@ -11,6 +11,9 @@ ALLOWED_HOSTS = [
     'ssodev.sparcs.org',
 ]
 
+if os.environ.get('SSO_LOCAL', '0') == '1':
+    ALLOWED_HOSTS += ['localhost']
+
 VERSION = get_version_info(DEBUG, ALLOWED_HOSTS)
 
 DOMAIN = 'http://ssodev.sparcs.org'

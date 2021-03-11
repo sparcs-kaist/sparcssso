@@ -7,6 +7,8 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect, render
 from django.utils.decorators import available_attrs
 
+from apps.core.backends.sudo import sudo_password_needed, sudo_renew
+
 
 def _user_required(test_func, raise_error=False, redirect_to=''):
     def decorator(view_func):
@@ -56,9 +58,8 @@ def sudo_required(view_func):
         if not user.has_usable_password():
             return view_func(request, *args, **kwargs)
 
-        timestamp = int(request.session.get('sudo_timestamp', '0'))
-        if time.time() - timestamp < 10 * 60:
-            request.session['sudo_timestamp'] = time.time()
+        if not sudo_password_needed(request.session):
+            sudo_renew(request.session)
             return view_func(request, *args, **kwargs)
 
         fail = False
@@ -73,7 +74,7 @@ def sudo_required(view_func):
             })
 
             if success:
-                request.session['sudo_timestamp'] = time.time()
+                sudo_renew(request.session)
                 return redirect(request.get_full_path())
 
             fail = True

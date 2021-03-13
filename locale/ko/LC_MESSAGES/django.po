@@ -717,7 +717,7 @@ msgstr "최대한 빨리 답변드리겠습니다."
 
 #: templates/contact.html:17
 msgid "DO NOT send PASSWORD or other SENSITIVE DATA using this form"
-msgstr "절대 비빌번호나 민감한 정보를 전송하지 마세요."
+msgstr "절대 비밀번호나 민감한 정보를 전송하지 마세요."
 
 #: templates/contact.html:21
 msgid "Your message is successfully sent! Thank you for your feedback!"

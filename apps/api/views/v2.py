@@ -182,7 +182,7 @@ class TokenRequireView(APIView):
 class TokenInfoView(APIView):
     # /token/info/
     @csrf_exempt
-    def get(self, request):
+    def post(self, request):
         try:
             service, [code], timestamp = check_sign(request.data, ['code'])
         except SuspiciousOperation as exc:

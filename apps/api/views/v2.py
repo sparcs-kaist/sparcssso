@@ -17,6 +17,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.utils.crypto import constant_time_compare
+from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets, decorators, status
 from rest_framework.permissions import IsAuthenticated
@@ -101,10 +102,8 @@ def build_suspicious_api_response(code: str, status_code: int = 400):
     }, ensure_ascii=False), status=status_code)
 
 
+@method_decorator(login_required, name='get')
 class TokenRequireView(APIView):
-    # /token/require/
-    permission_classes = [IsAuthenticated]
-
     def get(self, request):
         client_id = request.query_params.get('client_id', '')
         state = request.query_params.get('state', '')

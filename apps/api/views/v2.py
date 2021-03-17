@@ -1,4 +1,5 @@
 import hmac
+from enum import Enum
 import json
 import logging
 import re
@@ -17,7 +18,12 @@ from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.utils.crypto import constant_time_compare
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework import viewsets, decorators, status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
+from apps.api.serializers import NoticeFilterSerializer, NoticeSerializer
 from apps.core.backends import service_register, validate_email
 from apps.core.models import (
     AccessToken, Notice, PointLog, Service, ServiceMap, Statistic,
@@ -26,6 +32,15 @@ from apps.core.models import (
 
 logger = logging.getLogger('sso.service')
 TIMEOUT = 60
+
+
+class TokenFailReason(Enum):
+    INVALID_CALL = 'INVALID_CALL'
+    INVALID_SERVICE = 'INVALID_SERVICE'
+    INVALID_SIGN = 'INVALID_SIGN'
+    INVALID_STATE = 'INVALID_STATE'
+    INVALID_TIMESTAMP = 'INVALID_TIMESTAMP'
+    INVALID_URL = 'INVALID_URL'
 
 
 def date2str(obj):
@@ -59,7 +74,7 @@ def check_sign(data, keys):
     client_id = data.get('client_id', '')
     service = Service.objects.filter(name=client_id).first()
     if not service:
-        raise SuspiciousOperation('INVALID_SERVICE')
+        raise SuspiciousOperation(TokenFailReason.INVALID_SERVICE)
 
     timestamp = data.get('timestamp', '0')
     timestamp = int(timestamp) if timestamp.isdigit() else 0
@@ -67,14 +82,14 @@ def check_sign(data, keys):
     sign = data.get('sign', '')
 
     if abs(time.time() - timestamp) >= TIMEOUT:
-        raise SuspiciousOperation('INALID_TIMESTAMP')
+        raise SuspiciousOperation(TokenFailReason.INVALID_TIMESTAMP)
 
     sign_server = hmac.new(
         service.secret_key.encode(),
         (''.join(extracted) + str(timestamp)).encode(),
     ).hexdigest()
     if not constant_time_compare(sign, sign_server):
-        raise SuspiciousOperation('INVALID_SIGN')
+        raise SuspiciousOperation(TokenFailReason.INVALID_SIGN)
 
     return service, extracted, timestamp
 
@@ -86,133 +101,129 @@ def build_suspicious_api_response(code: str, status_code: int = 400):
     }, ensure_ascii=False), status=status_code)
 
 
-# /token/require/
-@login_required
-def token_require(request):
-    client_id = request.GET.get('client_id', '')
-    state = request.GET.get('state', '')
+class TokenRequireView(APIView):
+    # /token/require/
+    permission_classes = [IsAuthenticated]
 
-    service = Service.objects.filter(name=client_id).first()
-    if not service:
-        raise SuspiciousOperation('INVALID_SERVICE')
+    def get(self, request):
+        client_id = request.query_params.get('client_id', '')
+        state = request.query_params.get('state', '')
 
-    if len(state) < 8:
-        raise SuspiciousOperation('INVALID_STATE')
+        service = Service.objects.filter(name=client_id).first()
+        if not service:
+            raise SuspiciousOperation(TokenFailReason.INVALID_SERVICE)
 
-    user = request.user
-    profile = user.profile
-    flags = user.profile.flags
+        if len(state) < 8:
+            raise SuspiciousOperation(TokenFailReason.INVALID_STATE)
 
-    reason = 0
-    if flags['sysop']:
-        reason = 1
-    elif service.scope == 'SPARCS' and not flags['sparcs']:
-        reason = 2
-    elif service.scope == 'TEST' and not flags['test']:
-        reason = 3
-    elif service.scope != 'TEST' and flags['test-only']:
-        reason = 4
-    elif not (profile.email_authed or profile.facebook_id or
-              profile.twitter_id or profile.kaist_id):
-        reason = 5
+        user = request.user
+        profile = user.profile
+        flags = user.profile.flags
 
-    if reason:
-        return render(request, 'api/denied.html', {
-            'reason': reason,
-            'alias': service.alias,
-        })
+        reason = 0
+        if flags['sysop']:
+            reason = 1
+        elif service.scope == 'SPARCS' and not flags['sparcs']:
+            reason = 2
+        elif service.scope == 'TEST' and not flags['test']:
+            reason = 3
+        elif service.scope != 'TEST' and flags['test-only']:
+            reason = 4
+        elif not (profile.email_authed or profile.facebook_id or
+                  profile.twitter_id or profile.kaist_id):
+            reason = 5
 
-    AccessToken.objects.filter(user=user, service=service).delete()
-    m = ServiceMap.objects.filter(user=user, service=service).first()
-    if not m or m.unregister_time:
-        m_new = service_register(user, service)
-        log_msg = 'success' if m_new else 'fail'
-        logger.warning(f'register.{log_msg}', {
-            'r': request,
-            'extra': [
-                ('app', service.name),
-                ('sid', m_new.sid if m_new else ''),
-            ],
-        })
-        if not m_new:
-            left = service.cooltime - (timezone.now() - m.unregister_time).days
-            return render(request, 'api/cooltime.html', {
-                'service': service,
-                'left': left,
+        if reason:
+            return render(request, 'api/denied.html', {
+                'reason': reason,
+                'alias': service.alias,
             })
 
-    while True:
-        tokenid = token_hex(10)
-        if not AccessToken.objects.filter(tokenid=tokenid).count():
-            break
+        AccessToken.objects.filter(user=user, service=service).delete()
+        m = ServiceMap.objects.filter(user=user, service=service).first()
+        if not m or m.unregister_time:
+            m_new = service_register(user, service)
+            log_msg = 'success' if m_new else 'fail'
+            logger.warning(f'register.{log_msg}', {
+                'r': request,
+                'extra': [
+                    ('app', service.name),
+                    ('sid', m_new.sid if m_new else ''),
+                ],
+            })
+            if not m_new:
+                left = service.cooltime - (timezone.now() - m.unregister_time).days
+                return render(request, 'api/cooltime.html', {
+                    'service': service,
+                    'left': left,
+                })
 
-    token = AccessToken(
-        tokenid=tokenid, user=user, service=service,
-        expire_time=timezone.now() + timedelta(seconds=TIMEOUT),
-    )
-    token.save()
-    logger.info('login.try', {
-        'r': request,
-        'hide': True,
-        'extra': [('app', client_id)],
-    })
+        while True:
+            token_id = token_hex(10)
+            if not AccessToken.objects.filter(tokenid=token_id).count():
+                break
 
-    return redirect(service.login_callback_url + '?' + urlencode({
-        'code': token.tokenid,
-        'state': state,
-    }))
-
-
-# /token/info/
-@csrf_exempt
-def token_info(request):
-    if request.method != 'POST':
-        return build_suspicious_api_response('INVALID_METHOD')
-
-    try:
-        service, [code], timestamp = check_sign(
-            request.POST, ['code'],
+        token = AccessToken(
+            tokenid=token_id, user=user, service=service,
+            expire_time=timezone.now() + timedelta(seconds=TIMEOUT),
         )
-    except SuspiciousOperation as exc:
-        return build_suspicious_api_response(str(exc))
+        token.save()
+        logger.info('login.try', {
+            'r': request,
+            'hide': True,
+            'extra': [('app', client_id)],
+        })
 
-    token = AccessToken.objects.filter(tokenid=code).first()
-    if not token:
-        return build_suspicious_api_response('INVALID_CODE')
-    elif token.service.name != service.name:
-        return build_suspicious_api_response('TOKEN_SERVICE_MISMATCH')
-    elif token.expire_time < timezone.now():
-        return build_suspicious_api_response('TOKEN_EXPIRED')
+        return redirect(service.login_callback_url + '?' + urlencode({
+            'code': token.tokenid,
+            'state': state,
+        }))
 
-    logger.info('login.done', {
-        'r': request,
-        'uid': token.user.username,
-        'extra': [('app', service.name)],
-    })
-    token.delete()
 
-    user = token.user
-    profile = user.profile
-    m = ServiceMap.objects.get(user=user, service=service)
+class TokenInfoView(APIView):
+    # /token/info/
+    @csrf_exempt
+    def get(self, request):
+        try:
+            service, [code], timestamp = check_sign(request.data, ['code'])
+        except SuspiciousOperation as exc:
+            return build_suspicious_api_response(str(exc))
 
-    resp = {
-        'uid': user.username,
-        'sid': m.sid,
-        'email': user.email,
-        'first_name': user.first_name,
-        'last_name': user.last_name,
-        'gender': profile.gender,
-        'birthday': date2str(profile.birthday),
-        'flags': extract_flag(profile.flags),
-        'facebook_id': profile.facebook_id,
-        'twitter_id': profile.twitter_id,
-        'kaist_id': profile.kaist_id,
-        'kaist_info': profile.kaist_info,
-        'kaist_info_time': date2str(profile.kaist_info_time),
-        'sparcs_id': profile.sparcs_id,
-    }
+        token = AccessToken.objects.filter(tokenid=code).first()
+        if not token:
+            return build_suspicious_api_response('INVALID_CODE')
+        elif token.service.name != service.name:
+            return build_suspicious_api_response('TOKEN_SERVICE_MISMATCH')
+        elif token.expire_time < timezone.now():
+            return build_suspicious_api_response('TOKEN_EXPIRED')
 
-    return HttpResponse(json.dumps(resp), content_type='application/json')
+        logger.info('login.done', {
+            'r': request,
+            'uid': token.user.username,
+            'extra': [('app', service.name)],
+        })
+        token.delete()
+
+        user = token.user
+        profile = user.profile
+        m = ServiceMap.objects.get(user=user, service=service)
+
+        return Response({
+            'uid': user.username,
+            'sid': m.sid,
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'gender': profile.gender,
+            'birthday': date2str(profile.birthday),
+            'flags': extract_flag(profile.flags),
+            'facebook_id': profile.facebook_id,
+            'twitter_id': profile.twitter_id,
+            'kaist_id': profile.kaist_id,
+            'kaist_info': profile.kaist_info,
+            'kaist_info_time': date2str(profile.kaist_info_time),
+            'sparcs_id': profile.sparcs_id,
+        })  # TODO: Use serializer
 
 
 # /logout/
@@ -308,35 +319,38 @@ def point(request):
 
 
 # /notice/
-def notice(request):
-    offset = request.GET.get('offset', '0')
-    offset = int(offset) if offset.isdigit() else 0
-    limit = request.GET.get('limit', '3')
-    limit = int(limit) if limit.isdigit() else 0
-    date_after = request.GET.get('date_after', '0')
-    date_after = int(date_after) if date_after.isdigit() else 0
+class NoticeView(APIView):
+    def get(self, request):
+        query_serializer = NoticeFilterSerializer(data=request.query_params)
+        query_serializer.is_valid(raise_exception=True)
 
-    if not date_after:
-        date_after = timezone.now()
-    else:
-        date_after = datetime.fromtimestamp(date_after, timezone.utc)
+        date_after = query_serializer.data.get('date_after')
+        if date_after == 0:
+            date_after = timezone.now()
+        else:
+            date_after = datetime.fromtimestamp(date_after, timezone.utc)
 
-    notices = Notice.objects.filter(valid_to__gt=date_after)
-    notices = notices[offset:offset + limit]
-    notices_dict = list(map(lambda x: x.to_dict(), notices))
-    return HttpResponse(
-        json.dumps({'notices': notices_dict}),
-        content_type='application/json',
-    )
+        offset = query_serializer.data.get('offset')
+        limit = query_serializer.data.get('limit')
+
+        notices = Notice.objects.filter(valid_to__gt=date_after)
+        notices = notices[offset:offset+limit]
+
+        notice_serializer = NoticeSerializer(notices, many=True)
+
+        return Response({
+            'notices': notice_serializer.data
+        })
 
 
 # /email/
-def email(request):
-    email = request.GET.get('email', '')
-    exclude = request.GET.get('exclude', '')
-    if validate_email(email, exclude):
-        return HttpResponse(status=200)
-    return HttpResponse(status=400)
+class EmailView(APIView):
+    def get(self, request):
+        email = request.query_params.get('email', '')
+        exclude = request.query_params.get('exclude', '')
+
+        email_valid = validate_email(email, exclude)
+        return Response({}, status=status.HTTP_200_OK if email_valid else status.HTTP_400_BAD_REQUEST)
 
 
 # /stats/

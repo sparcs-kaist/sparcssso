@@ -37,5 +37,5 @@ requests==2.20.0
 s3transfer==0.3.3
 sentry-sdk==0.19.5
 six==1.15.0
-urllib3==1.26.2
+urllib3==1.26.3
 Werkzeug==0.12.1

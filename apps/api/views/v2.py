@@ -1,10 +1,10 @@
 import hmac
-from enum import Enum
 import json
 import logging
 import re
 import time
 from datetime import datetime, timedelta
+from enum import Enum
 from secrets import token_hex
 from urllib.parse import urlencode
 
@@ -19,8 +19,7 @@ from django.utils import timezone
 from django.utils.crypto import constant_time_compare
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework import viewsets, decorators, status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -98,7 +97,7 @@ def check_sign(data, keys):
 def build_suspicious_api_response(code: str, status_code: int = 400):
     # TODO: Add to log
     return HttpResponse(json.dumps({
-        'code': code
+        'code': code,
     }, ensure_ascii=False), status=status_code)
 
 
@@ -338,7 +337,7 @@ class NoticeView(APIView):
         notice_serializer = NoticeSerializer(notices, many=True)
 
         return Response({
-            'notices': notice_serializer.data
+            'notices': notice_serializer.data,
         })
 
 

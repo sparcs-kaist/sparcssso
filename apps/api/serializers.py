@@ -1,4 +1,4 @@
-from rest_framework import serializers, fields
+from rest_framework import fields, serializers
 
 from apps.core.models import Notice
 

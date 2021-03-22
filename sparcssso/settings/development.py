@@ -9,7 +9,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'ssodev.sparcs.org',
-    'localhost'
+    'localhost',
 ]
 
 if os.environ.get('SSO_LOCAL', '0') == '1':

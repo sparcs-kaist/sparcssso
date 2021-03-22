@@ -1,5 +1,3 @@
-from os import environ
-
 from sparcssso.version import get_version_info
 
 from .common import *  # noqa: F401, F403

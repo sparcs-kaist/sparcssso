@@ -1,12 +1,12 @@
 from django.contrib.auth.decorators import login_required
-from rest_framework import viewsets, status
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.core.backends import token_issue_email_auth, real_user_required
-from apps.web.serializers.profile import UserViewSerializer, UserProfileEditSerializer
+from apps.core.backends import real_user_required, token_issue_email_auth
+from apps.web.serializers.profile import UserProfileEditSerializer, UserViewSerializer
 
 
 class ProfileView(APIView):
@@ -27,7 +27,7 @@ class ProfileView(APIView):
 @login_required
 def email_send(request):
     # TODO: Edge cases
-    user, profile = request.user, request.user.profile
+    user = request.user
     token_issue_email_auth(user)
     return Response({}, status=status.HTTP_200_OK)
 

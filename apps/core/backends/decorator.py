@@ -1,5 +1,4 @@
 import logging
-import time
 from functools import wraps
 
 from django.contrib.auth.hashers import check_password

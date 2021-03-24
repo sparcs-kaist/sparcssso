@@ -1,13 +1,30 @@
 matrix:
   include:
   - language: python
+    services:
+      - mysql
     python:
       - "3.6"
     cache: pip
+    env:
+      - SSO_ENV=development
+      - SECRET_KEY=test_secret_key
+      - KAIST_APP_ENABLED=0
+      - SSO_DB_HOST=localhost
+      - SSO_DB_NAME=sso_test
+      - SSO_DB_USER=root
+      - SSO_DB_PASSWORD=
+      - SSO_DB_PORT=3306
+    before_install:
+      - sudo cp $TRAVIS_BUILD_DIR/_travis/mysql.cnf /etc/mysql/conf.d/
+      - sudo service mysql restart
+      - mysql -e 'CREATE DATABASE sso_test CHARACTER SET utf8 COLLATE utf8_general_ci;'
     install:
       - pip install -r requirements.txt
+      - python manage.py migrate
     script:
       - flake8 .
+      - pytest tests/
   - language: node_js
     node_js:
       - "9"

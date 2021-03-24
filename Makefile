@@ -3,3 +3,6 @@ test:
 
 test_coverage:
 	pytest --cov=. tests/
+
+lint:
+	flake8 .

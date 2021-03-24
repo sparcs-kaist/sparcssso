@@ -1,13 +1,13 @@
 from django.test import TestCase
-
-from tests.conftest import RequestSettingMixin
+from tests.conftest import FixtureServiceSet, FixtureUserSet, RequestSettingMixin
 
 
 class ApiTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        # TODO: Add API service & user setup
+        cls.users = FixtureUserSet()
+        cls.services = FixtureServiceSet(cls.users.admin)
 
     def tearDown(self):
         super().tearDown()

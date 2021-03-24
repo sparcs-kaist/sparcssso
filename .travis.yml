@@ -1,7 +1,7 @@
 matrix:
   include:
   - language: python
-    sevices:
+    services:
       - mysql
     python:
       - "3.6"
@@ -16,7 +16,9 @@ matrix:
       - SSO_DB_PASSWORD=
       - SSO_DB_PORT=3306
     before_install:
-      - mysql -e 'CREATE DATABASE sso_test;'
+      - sudo cp $TRAVIS_BUILD_DIR/_travis/mysql.cnf /etc/mysql/conf.d/
+      - sudo service mysql restart
+      - mysql -e 'CREATE DATABASE sso_test CHARACTER SET utf8 COLLATE utf8_general_ci;'
     install:
       - pip install -r requirements.txt
       - python manage.py migrate

@@ -6,7 +6,6 @@ from rest_framework.test import APIClient
 
 from apps.core.models import SERVICE_TEST, Service, UserProfile
 
-
 KAIST_USER_INFO = '{"kaist_uid": "00111222", "mail": "jungnoh@kaist.ac.kr", "ku_sex": "M", "ku_acad_prog_code": "0",' \
                   '"ku_kaist_org_id": "1000", "ku_kname": "홍길", "ku_person_type": "Student",' \
                   '"ku_person_type_kor": "학생", "ku_psft_user_status_kor": "학", "ku_born_date": "2000-08-01",' \
@@ -89,6 +88,6 @@ class FixtureUserSet(object):
 
 class FixtureServiceSet(object):
     def __init__(self, admin: User):
-        self.test = ensure_service("test", "Test Service", admin, secret_key="SECRET__")
-        self.sparcs = ensure_service("sparcs", "SPARCS Service", admin, secret_key="SPARCS__")
-        self.public = ensure_service("public", "Public Service", admin, secret_key="PUBLIC__")
+        self.test = ensure_service("test", "Test Service", admin, secret_key="SECRET__", scope="TEST")
+        self.sparcs = ensure_service("sparcs", "SPARCS Service", admin, secret_key="SPARCS__", scope="SPARCS")
+        self.public = ensure_service("public", "Public Service", admin, secret_key="PUBLIC__", scope="PUBLIC")

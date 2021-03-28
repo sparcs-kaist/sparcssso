@@ -20,10 +20,11 @@ from django.utils.crypto import constant_time_compare
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.api.serializers import NoticeFilterSerializer, NoticeSerializer
+from apps.api.serializers import NoticeFilterSerializer, NoticeSerializer, TokenInfoQuerySerializer
 from apps.core.backends import service_register, validate_email
 from apps.core.models import (
     AccessToken, Notice, PointLog, Service, ServiceMap, Statistic,
@@ -96,9 +97,9 @@ def check_sign(data, keys):
 
 def build_suspicious_api_response(code: str, status_code: int = 400):
     # TODO: Add to log
-    return HttpResponse(json.dumps({
+    return Response({
         'code': code,
-    }, ensure_ascii=False), status=status_code)
+    }, status=status_code)
 
 
 @method_decorator(login_required, name='get')
@@ -135,7 +136,7 @@ class TokenRequireView(APIView):
             return render(request, 'api/denied.html', {
                 'reason': reason,
                 'alias': service.alias,
-            })
+            }, status=status.HTTP_403_FORBIDDEN)
 
         AccessToken.objects.filter(user=user, service=service).delete()
         m = ServiceMap.objects.filter(user=user, service=service).first()
@@ -181,9 +182,12 @@ class TokenRequireView(APIView):
 class TokenInfoView(APIView):
     # /token/info/
     @csrf_exempt
-    def post(self, request):
+    def post(self, request: Request):
+        req_body = TokenInfoQuerySerializer(data=request.data)
+        req_body.is_valid(raise_exception=True)
+        req_body = req_body.validated_data
         try:
-            service, [code], timestamp = check_sign(request.data, ['code'])
+            service, [code], timestamp = check_sign(req_body, ['code'])
         except SuspiciousOperation as exc:
             return build_suspicious_api_response(str(exc))
 

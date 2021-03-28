@@ -84,7 +84,7 @@ class FixtureUserSet(object):
         self.kaist = ensure_user(
             "kaist", ("KAIST", "user"), "jungnoh@kaist.ac.kr",
             kaist_id="jungnoh", kaist_info=KAIST_USER_INFO, kaist_info_time=datetime.datetime(2018, 10, 29, 12, 1, 0),
-            birthday=datetime.date(2000, 9, 1)
+            birthday=datetime.date(2000, 9, 1),
         )
 
 

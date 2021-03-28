@@ -2,6 +2,7 @@ import datetime
 from typing import Tuple
 
 from django.contrib.auth.models import User
+from django.db.models import Q
 from rest_framework.test import APIClient
 
 from apps.core.models import SERVICE_TEST, Service, UserProfile
@@ -32,13 +33,13 @@ class RequestSettingMixin:
 
 
 def ensure_user(username: str, name: Tuple[str, str], email: str, is_staff=False, **kwargs) -> User:
-    user, _ = User.objects.get_or_create(
-        username=username,
-        first_name=name[0],
-        last_name=name[1],
-        email=email,
-        is_staff=is_staff,
-    )
+    user, _ = User.objects.filter(Q(username=username) | Q(email=email)).update_or_create(defaults={
+        "username": username,
+        "first_name": name[0],
+        "last_name": name[1],
+        "email": email,
+        "is_staff": is_staff,
+    })
     UserProfile.objects.update_or_create(defaults={
         "gender": "*H",
         "email_authed": True,
@@ -68,7 +69,7 @@ def ensure_service(name: str, alias: str, admin_user: User, **kwargs) -> Service
 
 class FixtureUserSet(object):
     def __init__(self):
-        self.admin = ensure_user("admin", ("Admin", "Admin"), "admin@sparcs.org")
+        self.admin = ensure_user("admin", ("Admin", "Admin"), "admin@sparcs.org", is_staff=True)
         self.basic = ensure_user(
             "user", ("User", "User"), "user@domain.com",
             gender="*F", birthday=datetime.date(2000, 8, 1),
@@ -83,6 +84,7 @@ class FixtureUserSet(object):
         self.kaist = ensure_user(
             "kaist", ("KAIST", "user"), "jungnoh@kaist.ac.kr",
             kaist_id="jungnoh", kaist_info=KAIST_USER_INFO, kaist_info_time=datetime.datetime(2018, 10, 29, 12, 1, 0),
+            birthday=datetime.date(2000, 9, 1)
         )
 
 

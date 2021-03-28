@@ -82,7 +82,6 @@ def check_sign(data, keys):
 
     sign = data.get('sign', '')
 
-    print(time.time(), timestamp)
     if abs(time.time() - timestamp) >= TIMEOUT:
         raise SuspiciousOperation(TokenFailReason.INVALID_TIMESTAMP)
 

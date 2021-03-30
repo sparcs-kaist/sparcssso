@@ -27,7 +27,7 @@ class TestTokenRequire(RequestSettingMixin, ApiTestCase):
     def test_unauthorized_access(self):
         response = self.http_request(None, "get", "api/v2/token/require")
         assert response.status_code == status.HTTP_302_FOUND
-    
+
     def test_invalid_state(self):
         response = self.http_request(
             self.users.basic, "get", "api/v2/token/require", querystring="client_id=public&state=1234",

@@ -13,3 +13,10 @@ class NoticeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notice
         fields = ['valid_from', 'valid_to', 'title', 'text']
+
+
+class TokenInfoQuerySerializer(serializers.Serializer):
+    client_id = serializers.CharField(required=True)
+    timestamp = serializers.CharField(required=True)
+    sign = serializers.CharField(required=True)
+    code = serializers.CharField(required=True)

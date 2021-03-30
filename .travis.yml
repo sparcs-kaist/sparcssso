@@ -22,6 +22,7 @@ matrix:
     install:
       - pip install -r requirements.txt
       - python manage.py migrate
+      - mkdir -p archive/buffer/
     script:
       - flake8 .
       - pytest tests/

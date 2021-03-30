@@ -189,7 +189,10 @@ class TokenInfoView(APIView):
         try:
             service, [code], timestamp = check_sign(req_body, ['code'])
         except SuspiciousOperation as exc:
-            return build_suspicious_api_response(str(exc))
+            if isinstance(exc.args[0], TokenFailReason):
+                return build_suspicious_api_response(exc.args[0].value)
+            else:
+                return build_suspicious_api_response(str(exc))
 
         token = AccessToken.objects.filter(tokenid=code).first()
         if not token:

@@ -1,7 +1,8 @@
+import hashlib
 import hmac
 import re
 from datetime import timedelta
-from typing import Optional
+from typing import Optional, Union
 
 from django.test import TestCase
 from django.utils import timezone
@@ -27,6 +28,13 @@ class TestTokenRequire(RequestSettingMixin, ApiTestCase):
         response = self.http_request(None, "get", "api/v2/token/require")
         assert response.status_code == status.HTTP_302_FOUND
 
+    def test_invalid_state(self):
+        response = self.http_request(
+            self.users.basic, "get", "api/v2/token/require", querystring="client_id=public&state=1234",
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        # print(str(response.content, "utf-8"))
+
     def test_bad_method(self):
         response = self.http_request(None, "post", "api/v2/token/require")
         assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
@@ -37,19 +45,19 @@ class TestTokenRequire(RequestSettingMixin, ApiTestCase):
 
     def test_query_validation(self):
         response = self.http_request(self.users.basic, "get", "api/v2/token/require")
-        assert response.status_code == 400
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
 
         response = self.http_request(self.users.basic, "get", "api/v2/token/require", querystring="client_id=1029")
-        assert response.status_code == 400
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
 
         response = self.http_request(self.users.basic, "get", "api/v2/token/require", querystring="state=1029")
-        assert response.status_code == 400
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     def test_successful_response(self):
         response = self.http_request(
             self.users.basic, "get", "api/v2/token/require", querystring="client_id=public&state=12341234",
         )
-        assert response.status_code == 302
+        assert response.status_code == status.HTTP_302_FOUND
         redirect_url = response.url
         assert redirect_url.startswith(self.services.public.login_callback_url)
 
@@ -87,9 +95,10 @@ class TestTokenRequire(RequestSettingMixin, ApiTestCase):
 
 
 class TestTokenView(RequestSettingMixin, ApiTestCase):
-    def _send_request(self, service: Service, code: str, timestamp: int, mac: Optional[str] = None):
+    def _send_request(self, service: Service, code: str, timestamp: Union[int, str], mac: Optional[str] = None):
         if not mac:
-            mac = hmac.new(service.secret_key.encode(), (code + str(timestamp)).encode()).hexdigest()
+            mac = hmac.new(service.secret_key.encode(), (code + str(timestamp)).encode(),
+                           digestmod=hashlib.md5).hexdigest()
         return self.http_request(None, "post", "api/v2/token/info", data={
             "client_id": service.name,
             "code": code,
@@ -102,7 +111,7 @@ class TestTokenView(RequestSettingMixin, ApiTestCase):
             response = self.http_request(
                 user, "get", "api/v2/token/require", querystring="client_id=public&state=12341234",
             )
-            assert response.status_code == 302
+            assert response.status_code == status.HTTP_302_FOUND
             redirect_url = response.url
             url_matches = re.compile(r"\?code=([0-9a-f]+)&state=(.*)").findall(redirect_url)
             response_code = url_matches[0][0]
@@ -122,3 +131,77 @@ class TestTokenView(RequestSettingMixin, ApiTestCase):
             if response.data.get("kaist_id") is not None:
                 assert response.data.get("kaist_info_time") == user.profile.kaist_info_time.strftime("%Y-%m-%d")
             assert response.data.get("sparcs_id") == user.profile.sparcs_id
+
+    def test_token_service_mismatch(self):
+        response = self.http_request(
+            self.users.basic, "get", "api/v2/token/require", querystring="client_id=public&state=asdf1234",
+        )
+        url_matches = re.compile(r"\?code=([0-9a-f]+)&state=(.*)").findall(response.url)
+        response = self._send_request(self.services.sparcs, url_matches[0][0], int(timezone.now().timestamp()))
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data.get("code") == "TOKEN_SERVICE_MISMATCH"
+
+    def test_invalid_service(self):
+        response = self.http_request(
+            self.users.basic, "get", "api/v2/token/require", querystring="client_id=public&state=asdf1234",
+        )
+        url_matches = re.compile(r"\?code=([0-9a-f]+)&state=(.*)").findall(response.url)
+        timestamp = int(timezone.now().timestamp())
+        mac = hmac.new(self.services.public.secret_key.encode(), (url_matches[0][0] + str(timestamp)).encode(),
+                       digestmod=hashlib.md5).hexdigest()
+        response = self.http_request(None, "post", "api/v2/token/info", data={
+            "client_id": "foo",
+            "code": url_matches[0][0],
+            "timestamp": str(timestamp),
+            "sign": mac,
+        })
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data.get("code") == "INVALID_SERVICE"
+
+    def test_invalid_sign(self):
+        response = self.http_request(
+            self.users.basic, "get", "api/v2/token/require", querystring="client_id=public&state=12341234",
+        )
+        url_matches = re.compile(r"\?code=([0-9a-f]+)&state=(.*)").findall(response.url)
+        timestamp = int(timezone.now().timestamp())
+        mac = hmac.new((self.services.public.secret_key + "1").encode(), (url_matches[0][0] + str(timestamp)).encode(),
+                       digestmod=hashlib.md5).hexdigest()
+        response = self.http_request(None, "post", "api/v2/token/info", data={
+            "client_id": self.services.public.name,
+            "code": url_matches[0][0],
+            "timestamp": str(timestamp),
+            "sign": mac,
+        })
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data.get("code") == "INVALID_SIGN"
+
+    def test_token_expired(self):
+        response = self.http_request(
+            self.users.basic, "get", "api/v2/token/require", querystring="client_id=public&state=12341234",
+        )
+        assert response.status_code == status.HTTP_302_FOUND
+        redirect_url = response.url
+        url_matches = re.compile(r"\?code=([0-9a-f]+)&state=(.*)").findall(redirect_url)
+        response_code = url_matches[0][0]
+
+        token = AccessToken.objects.get(tokenid=response_code)
+        token.expire_time -= timedelta(minutes=1)
+        token.save()
+
+        response = self._send_request(self.services.public, response_code, int(timezone.now().timestamp()))
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data.get("code") == "TOKEN_EXPIRED"
+
+    def test_bad_timestamp(self):
+        response = self.http_request(
+            self.users.basic, "get", "api/v2/token/require", querystring="client_id=public&state=12341234",
+        )
+        assert response.status_code == status.HTTP_302_FOUND
+        redirect_url = response.url
+        url_matches = re.compile(r"\?code=([0-9a-f]+)&state=(.*)").findall(redirect_url)
+        response_code = url_matches[0][0]
+        response = self._send_request(self.services.public, response_code, "foo")
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data.get("code") == "INVALID_TIMESTAMP"

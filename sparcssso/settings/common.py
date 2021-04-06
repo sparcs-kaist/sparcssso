@@ -93,7 +93,7 @@ RECAPTCHA_SECRET = os.environ.get('RECAPTCHA_SECRET', '')
 
 # E-mail settings
 EMAIL_HOST = 'localhost'
-EMAIL_PORT = 1025
+EMAIL_PORT = int(os.environ.get('SSO_EMAIL_PORT', '25'))
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators

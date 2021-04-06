@@ -2,6 +2,8 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.shortcuts import redirect, render
 from django.utils import timezone, translation
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 from apps.core.backends import validate_recaptcha
 from apps.core.models import Document, Notice, Service, Statistic
@@ -125,8 +127,25 @@ def contact(request):
         )
 
         if name and email and topic and title and message and result:
+            print(message)
+            html_message = None
+            if request.user is not None:
+                if not request.user.is_anonymous:
+                    html_message = render_to_string('test.html', {
+                        'user_login': True,
+                        'name': name,
+                        'email': email,
+                        'topic': topic,
+                        'title': title,
+                        'message': message,
+                        'user_id': request.user.id
+                    })
+                else:
+                    html_message = None
+                    message = message + "\n\n로그인을 하지 않아 유저 정보 확인이 불가능합니다."
+
             subject = f'[SPARCS SSO Report - {topic}] {title} (by {name})'
-            send_mail(subject, message, email, settings.TEAM_EMAILS)
+            send_mail(subject, message, email, settings.TEAM_EMAILS, html_message=html_message)
             submitted = True
 
     return render(request, 'contact.html', {

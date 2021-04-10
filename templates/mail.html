@@ -12,10 +12,27 @@
     {% block app-header %} {% endblock %}
   </head>
   <body>
-    <div>
-        <p>{{ message|linebreaks }}</p>
+    <p>{{ message|linebreaks }}</p>
+    <p class="lead">유저 정보</p>
+    {% if user_login %}
+        <p><small>유저 로그인 중</small></p>
+        <ul class="list-group">
+        {% if email_authed %}
+            <li class="list-group-item">유저 이메일 인증 성공</li>
+        {% else %}
+            <li class="list-group-item">아직 이메일 인증 하지 못했음</li>
+        {% endif %}
+        <li class="list-group-item">A second item</li>
+        <li class="list-group-item">A third item</li>
+        <li class="list-group-item">A fourth item</li>
+        <li class="list-group-item">And a fifth one</li>
+    </ul>
         <a class="btn btn-primary" href="http://localhost:8000/manage/auth/user/{{user_id}}/change/" role="button"> 유저 세부정보 확인 및 변경</a>
-    </div>
+    {% else %}
+        <p><small>유저가 로그인을 하지 않아 정보 확인 불가</small></p>
+    {% endif %}
+
+
   </body>
 </html>
 

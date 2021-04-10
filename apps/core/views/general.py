@@ -127,22 +127,26 @@ def contact(request):
         )
 
         if name and email and topic and title and message and result:
-            print(message)
             html_message = None
             if request.user is not None:
                 if not request.user.is_anonymous:
-                    html_message = render_to_string('test.html', {
+                    html_message = render_to_string('mail.html', {
                         'user_login': True,
                         'name': name,
                         'email': email,
-                        'topic': topic,
-                        'title': title,
                         'message': message,
-                        'user_id': request.user.id
+                        'user_id': request.user.id,
+                        'email_authed': request.user.profile.email_authed,
+                        'facebook_id': request.user.profile.facebook_id,
+                        'twitter_id': request.user.profile.twitter_id,
+                        'kaist_id': request.user.profile.kaist_id
                     })
                 else:
-                    html_message = None
-                    message = message + "\n\n로그인을 하지 않아 유저 정보 확인이 불가능합니다."
+                    html_message = render_to_string('mail.html', {
+                        'user_login': False,
+                        'message': message
+                    })
+                    # message = message + "\n\n로그인을 하지 않아 유저 정보 확인이 불가능합니다."
 
             subject = f'[SPARCS SSO Report - {topic}] {title} (by {name})'
             send_mail(subject, message, email, settings.TEAM_EMAILS, html_message=html_message)

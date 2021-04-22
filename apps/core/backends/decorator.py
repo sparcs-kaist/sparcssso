@@ -4,14 +4,13 @@ from functools import wraps
 from django.contrib.auth.hashers import check_password
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect, render
-from django.utils.decorators import available_attrs
 
 from apps.core.backends.sudo import sudo_password_needed, sudo_renew
 
 
 def _user_required(test_func, raise_error=False, redirect_to=''):
     def decorator(view_func):
-        @wraps(view_func, assigned=available_attrs(view_func))
+        @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
             if test_func(request.user):
                 return view_func(request, *args, **kwargs)
@@ -50,7 +49,7 @@ def real_user_required(view_func):
 
 # sudo mode is required
 def sudo_required(view_func):
-    @wraps(view_func, assigned=available_attrs(view_func))
+    @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
         logger = logging.getLogger('sso.auth')
         user = request.user

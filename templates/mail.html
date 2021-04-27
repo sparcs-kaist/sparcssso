@@ -10,29 +10,32 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
     {% block app-header %} {% endblock %}
+    <style>
+        li {list-style-type: none;}
+    </style>
   </head>
   <body>
     <p>{{ message|linebreaks }}</p>
-    <p class="lead">유저 정보</p>
+    <br>
+    <h4 style="font-weight:600; margin-top:10px">유저 정보</h4>
     {% if user_login %}
-        <p><small>유저 로그인 중</small></p>
-        <ul class="list-group">
-        {% if email_authed %}
-            <li class="list-group-item">유저 이메일 인증 성공</li>
-        {% else %}
-            <li class="list-group-item">아직 이메일 인증 하지 못했음</li>
-        {% endif %}
-        <li class="list-group-item">A second item</li>
-        <li class="list-group-item">A third item</li>
-        <li class="list-group-item">A fourth item</li>
-        <li class="list-group-item">And a fifth one</li>
-    </ul>
+        <p style="margin-bottom:15px">유저 로그인 중</p>
+        <ul style="-webkit-padding-start: 0;">
+            <li style="display: inline;">이메일 인증 여부 : </li>
+            {% if email_authed %}
+                <li style="display: inline;">유저 이메일 인증 성공</li>
+            {% else %}
+                <li style="display: inline;">아직 이메일 인증 하지 못했음</li>
+            {% endif %}
+            <li>유저의 실제 로그인 이메일 : {{ email }}</li>
+            <li>페이스북 연동 : {{ facebook_id }}</li>
+            <li>트위터 연동 : {{ twitter_id }}</li>
+            <li>KAIST SSO 연동 : {{ kaist_id }}</li>
+        </ul>
         <a class="btn btn-primary" href="http://localhost:8000/manage/auth/user/{{user_id}}/change/" role="button"> 유저 세부정보 확인 및 변경</a>
     {% else %}
-        <p><small>유저가 로그인을 하지 않아 정보 확인 불가</small></p>
+        <p>유저가 로그인을 하지 않아 정보 확인 불가</p>
     {% endif %}
-
-
   </body>
 </html>
 

@@ -132,8 +132,7 @@ def contact(request):
                 if not request.user.is_anonymous:
                     html_message = render_to_string('mail.html', {
                         'user_login': True,
-                        'name': name,
-                        'email': email,
+                        'email': request.user.email,
                         'message': message,
                         'user_id': request.user.id,
                         'email_authed': request.user.profile.email_authed,
@@ -146,7 +145,6 @@ def contact(request):
                         'user_login': False,
                         'message': message
                     })
-                    # message = message + "\n\n로그인을 하지 않아 유저 정보 확인이 불가능합니다."
 
             subject = f'[SPARCS SSO Report - {topic}] {title} (by {name})'
             send_mail(subject, message, email, settings.TEAM_EMAILS, html_message=html_message)

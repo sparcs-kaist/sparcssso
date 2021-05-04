@@ -1,12 +1,11 @@
 from django.conf import settings
 from django.core.mail import send_mail
 from django.shortcuts import redirect, render
-from django.utils import timezone, translation
 from django.template.loader import render_to_string
-from django.utils.html import strip_tags
+from django.utils import timezone, translation
 
 from apps.core.backends import validate_recaptcha
-from apps.core.models import Document, Notice, Service, Statistic, InquiryMail
+from apps.core.models import Document, InquiryMail, Notice, Service, Statistic
 
 
 def _get_document(category, version=''):
@@ -139,14 +138,14 @@ def contact(request):
                         'email_authed': request.user.profile.email_authed,
                         'facebook_id': request.user.profile.facebook_id,
                         'twitter_id': request.user.profile.twitter_id,
-                        'kaist_id': request.user.profile.kaist_id
+                        'kaist_id': request.user.profile.kaist_id,
                     })
                     mail_data = InquiryMail(userInfo=request.user.profile, name=name, email=email, topic=topic,
                                             title=title, content=message)
                 else:
                     html_mail = render_to_string('mail.html', {
                         'user_login': False,
-                        'message': message
+                        'message': message,
                     })
                     mail_data = InquiryMail(name=name, email=email, topic=topic, title=title, content=message)
 

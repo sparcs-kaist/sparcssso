@@ -348,7 +348,7 @@ class EmailDomain(models.Model):
 class InquiryMail(models.Model):
     """
     denotes contact mail sent to sso@sparcs.org
-    - userInfo: UserProfile object
+    - user:     User object
     - name:     name in contact form
     - topic:    topic; bugs / suggestions / accounts / etc
     - title:    title in contact form
@@ -364,8 +364,7 @@ class InquiryMail(models.Model):
         (ACCOUNTS, 'Accounts'),
         (ETC, 'etc'),
     )
-    userInfo = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='inquiry_mail', blank=True,
-                                 null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='inquiry_mail', blank=True, null=True)
     name = models.CharField(max_length=40)
     email = models.EmailField(blank=True, null=True)
     topic = models.CharField(max_length=11, choices=TOPIC, default=ETC)

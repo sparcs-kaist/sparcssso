@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
 from apps.core.backends import validate_recaptcha
-from apps.core.models import Document, Notice, Service, Statistic
+from apps.core.models import Document, Notice, Service, Statistic, InquiryMail
 
 
 def _get_document(category, version=''):
@@ -127,10 +127,11 @@ def contact(request):
         )
 
         if name and email and topic and title and message and result:
-            html_message = None
+            html_mail = None
+            mail_data = None
             if request.user is not None:
                 if not request.user.is_anonymous:
-                    html_message = render_to_string('mail.html', {
+                    html_mail = render_to_string('mail.html', {
                         'user_login': True,
                         'email': request.user.email,
                         'message': message,
@@ -140,15 +141,19 @@ def contact(request):
                         'twitter_id': request.user.profile.twitter_id,
                         'kaist_id': request.user.profile.kaist_id
                     })
+                    mail_data = InquiryMail(userInfo=request.user.profile, name=name, email=email, topic=topic,
+                                            title=title, content=message)
                 else:
-                    html_message = render_to_string('mail.html', {
+                    html_mail = render_to_string('mail.html', {
                         'user_login': False,
                         'message': message
                     })
+                    mail_data = InquiryMail(name=name, email=email, topic=topic, title=title, content=message)
 
             subject = f'[SPARCS SSO Report - {topic}] {title} (by {name})'
-            send_mail(subject, message, email, settings.TEAM_EMAILS, html_message=html_message)
+            send_mail(subject, message, email, settings.TEAM_EMAILS, html_message=html_mail)
             submitted = True
+            mail_data.save()
 
     return render(request, 'contact.html', {
         'submitted': submitted,

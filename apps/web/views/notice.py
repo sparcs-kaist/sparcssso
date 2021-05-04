@@ -12,7 +12,7 @@ class NoticeViewSet(viewsets.ViewSet):
 
     def list(self, request):
         current_time = timezone.now()
-        notices = self.queryset.queryset.filter(
+        notices = self.queryset.filter(
             valid_from__lte=current_time,
             valid_to__gt=current_time,
         ).order_by('-valid_from')

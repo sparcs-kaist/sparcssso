@@ -1,10 +1,11 @@
 from django.conf import settings
 from django.core.mail import send_mail
 from django.shortcuts import redirect, render
+from django.template.loader import render_to_string
 from django.utils import timezone, translation
 
-from apps.core.backends import validate_recaptcha
-from apps.core.models import Document, Notice, Service, Statistic
+from apps.core.backends import logging, validate_recaptcha
+from apps.core.models import Document, InquiryMail, Notice, Service, Statistic
 
 
 def _get_document(category, version=''):
@@ -114,6 +115,7 @@ def help(request):
 # /contact/
 def contact(request):
     submitted = False
+    mail_submitted = False
     if request.method == 'POST':
         name = request.POST.get('name', '')
         email = request.POST.get('email', '')
@@ -125,12 +127,43 @@ def contact(request):
         )
 
         if name and email and topic and title and message and result:
-            subject = f'[SPARCS SSO Report - {topic}] {title} (by {name})'
-            send_mail(subject, message, email, settings.TEAM_EMAILS)
             submitted = True
+            html_mail = None
+            if request.user is not None:
+                if not request.user.is_anonymous:
+                    html_mail = render_to_string('mail.html', {
+                        'user_login': True,
+                        'email': request.user.email,
+                        'message': message,
+                        'user_id': request.user.id,
+                        'email_authed': request.user.profile.email_authed,
+                        'facebook_id': request.user.profile.facebook_id,
+                        'twitter_id': request.user.profile.twitter_id,
+                        'kaist_id': request.user.profile.kaist_id,
+                    })
+                    InquiryMail.objects.create(user=request.user, name=name, email=email, topic=topic,
+                                               title=title, content=message)
+                else:
+                    html_mail = render_to_string('mail.html', {
+                        'user_login': False,
+                        'message': message,
+                    })
+                    InquiryMail.objects.create(name=name, email=email, topic=topic, title=title, content=message)
+
+            subject = f'[SPARCS SSO Report - {topic}] {title} (by {name})'
+
+            try:
+                send_mail(subject, message, email, settings.TEAM_EMAILS, html_message=html_mail)
+                mail_submitted = True
+            except Exception as e:
+                logger = logging.getLogger('sso.inquiry')
+                logger.error('mail.fail', {
+                    'extra': [('exception', e)],
+                })
 
     return render(request, 'contact.html', {
         'submitted': submitted,
+        'mail_submitted': mail_submitted,
         'captcha_enabled': 'y' if settings.RECAPTCHA_SECRET else '',
     })
 

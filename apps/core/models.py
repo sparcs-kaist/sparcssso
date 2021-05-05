@@ -5,7 +5,6 @@ from django.db import models
 from django.utils import timezone
 from django.utils.timezone import localtime
 
-
 SERVICE_PUBLIC = 'PUBLIC'
 SERVICE_SPARCS = 'SPARCS'
 SERVICE_TEST = 'TEST'
@@ -344,3 +343,32 @@ class EmailDomain(models.Model):
     """
     domain = models.CharField(max_length=100, unique=True)
     is_banned = models.BooleanField(default=True)
+
+
+class InquiryMail(models.Model):
+    """
+    denotes contact mail sent to sso@sparcs.org
+    - user:       User object
+    - name:       name in contact form
+    - topic:      topic; bugs / suggestions / accounts / etc
+    - title:      title in contact form
+    - content:    message content
+    - created_at: creation datetime
+    """
+    BUG_REPORT = 'bugs'
+    SUGGESTIONS = 'suggestions'
+    ACCOUNTS = 'accounts'
+    ETC = 'etc'
+    TOPIC = (
+        (BUG_REPORT, 'Bug Report'),
+        (SUGGESTIONS, 'Suggestions'),
+        (ACCOUNTS, 'Accounts'),
+        (ETC, 'etc'),
+    )
+    created_at = models.DateTimeField(null=False, default=timezone.now)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='inquiry_mail', blank=True, null=True)
+    name = models.CharField(max_length=40)
+    email = models.EmailField(blank=True, null=True)
+    topic = models.CharField(max_length=11, choices=TOPIC, default=ETC)
+    title = models.CharField(max_length=100)
+    content = models.TextField()

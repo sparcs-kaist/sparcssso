@@ -3,7 +3,7 @@ from django.contrib.auth import admin as uadmin
 from django.contrib.auth.models import User
 
 from apps.core.models import (
-    AccessToken, Document, EmailAuthToken, EmailDomain, Notice,
+    AccessToken, Document, EmailAuthToken, EmailDomain, InquiryMail, Notice,
     PointLog, ResetPWToken, Service, ServiceMap,
     Statistic, UserLog, UserProfile,
 )
@@ -185,3 +185,10 @@ class EmailDomainAdmin(admin.ModelAdmin):
     list_display = ('domain', 'is_banned')
     search_fields = ('domain', )
     ordering = ('domain', )
+
+
+@admin.register(InquiryMail)
+class InquiryMailAdmin(admin.ModelAdmin):
+    list_display = ('id', 'created_at', 'user', 'topic', 'title')
+    fields = ('created_at', 'user', 'name', 'email', 'topic', 'title', 'content')
+    readonly_fields = fields

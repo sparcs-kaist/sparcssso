@@ -22,6 +22,7 @@ class Migration(migrations.Migration):
                 ('topic', models.CharField(choices=[('bugs', 'Bug Report'), ('suggestions', 'Suggestions'), ('accounts', 'Accounts'), ('etc', 'etc')], default='etc', max_length=11)),
                 ('title', models.CharField(max_length=100)),
                 ('content', models.TextField()),
+                ('created_at', models.DateTimeField(default=django.utils.timezone.now)),
                 ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='inquiry_mail', to=settings.AUTH_USER_MODEL)),
             ],
         ),

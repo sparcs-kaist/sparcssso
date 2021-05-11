@@ -11,7 +11,6 @@ from django.conf import settings
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.models import User
 
-from apps.core.backends.util import parse_gender
 from apps.core.models import UserProfile
 
 
@@ -103,7 +102,7 @@ def auth_fb_callback(code, callback_url):
         'code': code,
     }
     token_info = requests.get(
-        'https://graph.facebook.com/oauth/access_token?',
+        'https://graph.facebook.com/v10.0/oauth/access_token?',
         params=args, verify=True).json()
     if 'access_token' not in token_info:
         return None, None
@@ -113,26 +112,26 @@ def auth_fb_callback(code, callback_url):
     args = {
         'access_token': access_token,
     }
-    grant_info = requests.get('https://graph.facebook.com/v2.5/me/permissions',
+    grant_info = requests.get('https://graph.facebook.com/v10.0/me/permissions',
                               params=args, verify=True).json()
+
     for data in grant_info['data']:
         if data['status'] == 'declined':
             return None, None
 
     # get facebook profile
     args = {
-        'fields': 'email,first_name,last_name,gender,birthday',
+        'fields': 'email,first_name,last_name',
         'access_token': access_token,
     }
-    fb_info = requests.get('https://graph.facebook.com/v2.5/me',
+    fb_info = requests.get('https://graph.facebook.com/v10.0/me',
                            params=args, verify=True).json()
+
     info = {
         'userid': fb_info['id'],
         'email': fb_info.get('email'),
         'first_name': fb_info.get('first_name'),
         'last_name': fb_info.get('last_name'),
-        'gender': parse_gender(fb_info.get('gender')),
-        'birthday': fb_info.get('birthday'),
     }
     fb_profile = UserProfile.objects.filter(facebook_id=info['userid'],
                                             test_only=False).first()

@@ -1,5 +1,5 @@
 import logging
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, urljoin, urlparse
 
 from django.conf import settings
 from django.contrib import auth
@@ -122,7 +122,7 @@ def init(request, mode, type):
         return redirect('/account/profile/')
 
     request.session['info_auth'] = {'mode': mode, 'type': type}
-    callback_url = request.build_absolute_uri('/account/callback/')
+    callback_url = urljoin(settings.DOMAIN, '/account/callback/')
 
     if type == 'FB':
         url = auth_fb_init(callback_url)
@@ -145,7 +145,7 @@ def callback(request):
     mode, type = auth['mode'], auth['type']
     if type == 'FB':
         code = request.GET.get('code')
-        callback_url = request.build_absolute_uri('/account/callback/')
+        callback_url = urljoin(settings.DOMAIN, '/account/callback/')
         profile, info = auth_fb_callback(code, callback_url)
     elif type == 'TW':
         tokens = request.session.get('request_token')

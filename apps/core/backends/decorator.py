@@ -57,7 +57,7 @@ def sudo_required(view_func):
             return view_func(request, *args, **kwargs)
 
         if not sudo_password_needed(request.session):
-            sudo_renew(request.session)
+            sudo_renew(request)
             return view_func(request, *args, **kwargs)
 
         fail = False
@@ -70,9 +70,8 @@ def sudo_required(view_func):
                 'r': request,
                 'extra': [('path', request.path)],
             })
-
             if success:
-                sudo_renew(request.session)
+                sudo_renew(request)
                 return redirect(request.get_full_path())
 
             fail = True

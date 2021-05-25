@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from rest_framework.test import APIClient
 
-from apps.core.models import SERVICE_TEST, Service, UserProfile
+from apps.core.models import SERVICE_TEST, Service, UserProfile, Notice
 
 KAIST_USER_INFO = '{"kaist_uid": "00111222", "mail": "jungnoh@kaist.ac.kr", "ku_sex": "M", "ku_acad_prog_code": "0",' \
                   '"ku_kaist_org_id": "1000", "ku_kname": "홍길", "ku_person_type": "Student",' \
@@ -67,6 +67,16 @@ def ensure_service(name: str, alias: str, admin_user: User, **kwargs) -> Service
     )
 
 
+def ensure_notice(title: str, valid_from: datetime, valid_to: datetime, text: str) -> Notice:
+    notice, _ = Notice.objects.filter(title=title, valid_from=valid_from, valid_to=valid_to).update_or_create(defaults={
+        "title": title,
+        "valid_from": valid_from,
+        "valid_to": valid_to,
+        "text": text,
+    })
+    return notice
+
+
 class FixtureUserSet(object):
     def __init__(self):
         self.admin = ensure_user("admin", ("Admin", "Admin"), "admin@sparcs.org", is_staff=True)
@@ -93,3 +103,8 @@ class FixtureServiceSet(object):
         self.test = ensure_service("test", "Test Service", admin, secret_key="SECRET__", scope="TEST")
         self.sparcs = ensure_service("sparcs", "SPARCS Service", admin, secret_key="SPARCS__", scope="SPARCS")
         self.public = ensure_service("public", "Public Service", admin, secret_key="PUBLIC__", scope="PUBLIC")
+
+
+# class FixtureNoticeSet(object):
+#     def __init__(self):
+#         self.notice = ensure_notice("notice", )

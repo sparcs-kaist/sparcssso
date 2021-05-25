@@ -13,6 +13,7 @@ from apps.core.backends import (
     auth_kaist_callback, auth_kaist_init, auth_tw_callback,
     auth_tw_init, get_clean_url, get_social_name,
 )
+from apps.core.constants import SocialConnectResult
 from apps.core.models import Notice, Service
 
 
@@ -138,58 +139,61 @@ def init(request, mode, type):
 # /callback/
 @csrf_exempt
 def callback(request):
-    auth = request.session.pop('info_auth', None)
-    if not auth:
+    info_auth = request.session.pop('info_auth', None)
+    if not info_auth:
         return redirect('/')
 
-    mode, type = auth['mode'], auth['type']
-    if type == 'FB':
+    mode, site = info_auth['mode'], info_auth['type']
+    if site == 'FB':
         code = request.GET.get('code')
         callback_url = urljoin(settings.DOMAIN, '/account/callback/')
         profile, info = auth_fb_callback(code, callback_url)
-    elif type == 'TW':
+    elif site == 'TW':
         tokens = request.session.get('request_token')
         verifier = request.GET.get('oauth_verifier')
         profile, info = auth_tw_callback(tokens, verifier)
-    elif type == 'KAIST':
+    elif site == 'KAIST':
         token = request.session.get('request_token')
         iam_info = request.POST.get('result')
         profile, info, valid = auth_kaist_callback(token, iam_info)
-
         if not valid:
             return redirect('/')
+    else:
+        # Should not reach here!
+        return redirect('/')
 
-    userid = info['userid'] if info else 'unknown'
+    uid = info['userid'] if info else 'unknown'
     logger.info('social', {
         'r': request,
         'hide': True,
         'extra': [
-            ('type', get_social_name(type)),
-            ('uid', userid),
+            ('type', get_social_name(site)),
+            ('uid', uid),
         ],
     })
     user = profile.user if profile else None
 
     if mode == 'LOGIN':
-        response = callback_login(request, type, user, info)
+        response = callback_login(request, site, user, info)
     elif mode == 'CONN':
-        response = callback_conn(request, type, user, info)
+        response = callback_conn(request, site, user, info)
     elif mode == 'RENEW':
-        response = callback_renew(request, type, user, info)
+        response = callback_renew(request, site, user, info)
 
+    # TODO: Find out what this is for
     response.delete_cookie('SATHTOKEN')
     return response
 
 
 # from /callback/
-def callback_login(request, type, user, info):
+def callback_login(request, site, user, info):
     if not user and not info:
         request.session['result_login'] = 2
         return redirect('/account/login/')
 
     # no such user; go to signup page
     if not user:
-        request.session['info_signup'] = {'type': type, 'profile': info}
+        request.session['info_signup'] = {'type': site, 'profile': info}
         response = redirect('/account/signup/social/')
         return response
 
@@ -201,7 +205,7 @@ def callback_login(request, type, user, info):
 
     # normal login
     request.session.pop('info_signup', None)
-    if type == 'KAIST':
+    if site == 'KAIST':
         user.profile.save_kaist_info(info)
 
     auth.login(request, user)
@@ -210,30 +214,30 @@ def callback_login(request, type, user, info):
 
 
 # from /callback/
-def callback_conn(request, type, user, info):
-    result_con = 0
+def callback_conn(request, site, user, info):
+    result_code = SocialConnectResult.CONNECT_SUCCESS
     profile = request.user.profile
     if not user and not info:
-        result_con = 3
+        result_code = SocialConnectResult.PERMISSION_NEEDED
     elif user:
-        result_con = 1
-    elif type == 'FB' and not profile.facebook_id:
+        result_code = SocialConnectResult.ALREADY_CONNECTED
+    elif site == 'FB' and not profile.facebook_id:
         profile.facebook_id = info['userid']
-    elif type == 'TW' and not profile.twitter_id:
+    elif site == 'TW' and not profile.twitter_id:
         profile.twitter_id = info['userid']
-    elif type == 'KAIST' and not profile.kaist_id:
+    elif site == 'KAIST' and not profile.kaist_id:
         profile.save_kaist_info(info)
     else:
         return redirect('/account/profile/')
 
     profile.save()
-    request.session['result_con'] = result_con
+    request.session['result_con'] = result_code.value
 
-    log_msg = 'success' if result_con == 0 else 'fail'
+    log_msg = 'success' if result_code == SocialConnectResult.CONNECT_SUCCESS else 'fail'
     profile_logger.warning(f'social.connect.{log_msg}', {
         'r': request,
         'extra': [
-            ('type', get_social_name(type)),
+            ('type', get_social_name(site)),
             ('uid', info['userid'] if info else 'unknown'),
         ],
     })
@@ -241,24 +245,24 @@ def callback_conn(request, type, user, info):
 
 
 # from /callback/
-def callback_renew(request, type, user, info):
-    if type != 'KAIST':
+def callback_renew(request, site, user, info):
+    if site != 'KAIST':
         return redirect('/account/profile/')
 
-    result_con = 0
+    result_code = SocialConnectResult.CONNECT_SUCCESS
     profile = user.profile
     if profile.kaist_id != info['userid']:
-        result_con = 2
+        result_code = SocialConnectResult.KAIST_IDENTITY_MISMATCH
     else:
         user.profile.save_kaist_info(info)
 
-    request.session['result_con'] = result_con
+    request.session['result_con'] = result_code.value
 
-    log_msg = 'success' if result_con == 0 else 'fail'
+    log_msg = 'success' if result_code == SocialConnectResult.CONNECT_SUCCESS else 'fail'
     profile_logger.warning(f'social.update.{log_msg}', {
         'r': request,
         'extra': [
-            ('type', get_social_name(type)),
+            ('type', get_social_name(site)),
             ('uid', info['userid'] if info else 'unknown'),
         ],
     })

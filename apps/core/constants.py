@@ -21,3 +21,16 @@ class SocialConnectResult(Enum):
     RENEW_UNNECESSARY = 7
     # Account is test only
     TEST_ONLY = 8
+
+
+class EmailVerificationResult(Enum):
+    # Code for 'Your email has been verified'
+    SUCCESS = 1
+    # Code for 'Expired or invalid verification token'
+    TOKEN_INVAILD = 2
+    # Code for 'This email address is invalid or already used'
+    EMAIL_IN_USE = 3
+    # Code for 'Email updated; check the inbox'
+    UPDATED = 4
+    # Code for 'Verification email has been sent'
+    SENT = 5

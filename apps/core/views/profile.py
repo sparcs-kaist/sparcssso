@@ -11,7 +11,7 @@ from apps.core.backends import (
     get_social_name, real_user_required, service_unregister,
     sudo_required, token_issue_email_auth, validate_email,
 )
-from apps.core.constants import SocialConnectResult
+from apps.core.constants import EmailVerificationResult, SocialConnectResult
 from apps.core.forms import UserForm, UserProfileForm
 from apps.core.models import EmailAuthToken, PointLog, ServiceMap, UserLog
 
@@ -122,9 +122,9 @@ def email(request):
                 'extra': [('email', email_new)],
             })
             token_issue_email_auth(user)
-            request.session['result_email'] = 4
+            request.session['result_email'] = EmailVerificationResult.UPDATED.value
         else:
-            request.session['result_email'] = 3
+            request.session['result_email'] = EmailVerificationResult.EMAIL_IN_USE.value
 
     result_email = request.session.pop('result_email', -1)
     return render(request, 'account/email.html', {
@@ -143,7 +143,7 @@ def email_resend(request):
         return redirect('/account/email/change/')
 
     token_issue_email_auth(user)
-    request.session['result_email'] = 5
+    request.session['result_email'] = EmailVerificationResult.SENT.value
 
     return redirect('/account/email/change/')
 
@@ -155,11 +155,11 @@ def email_verify(request, tokenid):
     user, profile = request.user, request.user.profile
     token = EmailAuthToken.objects.filter(tokenid=tokenid).first()
     if not token:
-        request.session['result_email'] = 2
+        request.session['result_email'] = EmailVerificationResult.TOKEN_INVAILD.value
         return redirect('/account/email/change/')
     elif token.expire_time < timezone.now():
         token.delete()
-        request.session['result_email'] = 2
+        request.session['result_email'] = EmailVerificationResult.TOKEN_INVAILD.value
         return redirect('/account/email/change/')
     elif token.user != user:
         return redirect('/account/email/change/')
@@ -185,7 +185,7 @@ def email_verify(request, tokenid):
     user.save()
     token.delete()
 
-    request.session['result_email'] = 1
+    request.session['result_email'] = EmailVerificationResult.SUCCESS.value
     return redirect('/account/email/change/')
 
 

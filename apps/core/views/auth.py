@@ -3,6 +3,7 @@ from urllib.parse import parse_qs, urljoin, urlparse
 
 from django.conf import settings
 from django.contrib import auth
+from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
@@ -107,30 +108,31 @@ def logout(request):
 
 # /login/{fb,tw,kaist}/, /connect/{fb,tw,kaist}/, /renew/kaist/
 @require_POST
-def init(request, mode, type):
+def init(request, mode, site):
     if request.method != 'POST':
         return redirect('/')
 
-    # disable login for authed user
-    # disable connect / renew for non authed user
-    is_authed = request.user.is_authenticated
-    if (mode == 'LOGIN' and is_authed) or \
-       (mode in ['CONN', 'RENEW'] and not is_authed):
+    # disable login for authenticated user
+    # disable connect / renew for non authenticated user
+    is_authenticated = request.user.is_authenticated
+    if (mode == 'LOGIN' and is_authenticated) or \
+       (mode in ['CONN', 'RENEW'] and not is_authenticated):
         return redirect('/')
 
     # disable manual connect / renew for test user
     if mode in ['CONN', 'RENEW'] and request.user.profile.test_only:
-        return redirect('/account/profile/')
+        result_code = SocialConnectResult.TEST_ONLY
+        return HttpResponseRedirect(f'/account/profile/?connect_site={site}&connect_result={result_code.name}')
 
-    request.session['info_auth'] = {'mode': mode, 'type': type}
+    request.session['info_auth'] = {'mode': mode, 'type': site}
     callback_url = urljoin(settings.DOMAIN, '/account/callback/')
 
-    if type == 'FB':
+    if site == 'FB':
         url = auth_fb_init(callback_url)
-    elif type == 'TW':
+    elif site == 'TW':
         url, token = auth_tw_init(callback_url)
         request.session['request_token'] = token
-    elif type == 'KAIST':
+    elif site == 'KAIST':
         url, token = auth_kaist_init(callback_url)
         request.session['request_token'] = token
     return redirect(url)
@@ -228,7 +230,7 @@ def callback_conn(request, site, user, info):
     elif site == 'KAIST' and not profile.kaist_id:
         profile.save_kaist_info(info)
     else:
-        return redirect('/account/profile/')
+        result_code = SocialConnectResult.SITE_INVALID
 
     profile.save()
     request.session['result_con'] = result_code.value
@@ -241,13 +243,14 @@ def callback_conn(request, site, user, info):
             ('uid', info['userid'] if info else 'unknown'),
         ],
     })
-    return redirect('/account/profile/')
+    return HttpResponseRedirect(f'/account/profile/?connect_site={site}&connect_result={result_code.name}')
 
 
 # from /callback/
 def callback_renew(request, site, user, info):
     if site != 'KAIST':
-        return redirect('/account/profile/')
+        result_code = SocialConnectResult.RENEW_UNNECESSARY
+        return HttpResponseRedirect(f'/account/profile/?connect_site={site}&connect_result={result_code.name}')
 
     result_code = SocialConnectResult.CONNECT_SUCCESS
     profile = user.profile
@@ -266,4 +269,4 @@ def callback_renew(request, site, user, info):
             ('uid', info['userid'] if info else 'unknown'),
         ],
     })
-    return redirect('/account/profile/')
+    return HttpResponseRedirect(f'/account/profile/?connect_site={site}&connect_result={result_code.name}')

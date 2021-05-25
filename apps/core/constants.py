@@ -15,3 +15,9 @@ class SocialConnectResult(Enum):
     ONLY_CONNECTION = 4
     # Code for 'Your social network account has been disconnected'
     DISCONNECT_SUCCESS = 5
+    # Invalid site code (not one of 'TW', 'FB', 'KAIST')
+    SITE_INVALID = 6
+    # Renewing is not applicable for the given site (renewing only makes sense for KAIST)
+    RENEW_UNNECESSARY = 7
+    # Account is test only
+    TEST_ONLY = 8

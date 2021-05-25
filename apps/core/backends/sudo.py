@@ -11,11 +11,12 @@ def sudo_password_needed(session: SessionBase) -> bool:
     Check whether password reentry is necessary for sudo actions
     """
     timestamp = int(session.get(SUDO_SESSION_KEY, '0'))
-    return time.time() - timestamp < SUDO_TIMEOUT_SEC
+    time_diff = time.time() - timestamp
+    return time_diff >= SUDO_TIMEOUT_SEC or time_diff < 0
 
 
-def sudo_renew(session: SessionBase) -> None:
+def sudo_renew(request) -> None:
     """
     Renew sudo session timeout
     """
-    session[SUDO_SESSION_KEY] = time.time()
+    request.session[SUDO_SESSION_KEY] = time.time()

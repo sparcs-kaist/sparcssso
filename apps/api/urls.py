@@ -10,7 +10,7 @@ from apps.api.views import v2
 # /versions/
 def versions(request):
     resp = {
-        'versions': ['v2', ],
+        'versions': ['v2'],
         'timestamp': int(time.time()),
     }
     return HttpResponse(json.dumps(resp), content_type='application/json')

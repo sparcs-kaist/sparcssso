@@ -31,7 +31,7 @@ class Command(BaseCommand):
         try:
             domains_raw = requests.get(DATA_URL).text.split('\n')
             domains = [x for x in [y.strip() for y in domains_raw] if x]
-        except Exception as e:
+        except Exception:
             raise CommandError(f'cannot fetch data from {DATA_URL}')
 
         if options['clean']:

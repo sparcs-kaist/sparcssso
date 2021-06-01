@@ -19,7 +19,6 @@ class ProfileView(APIView):
     def post(self, request):
         serializer = UserProfileEditSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        print(serializer.validated_data)
         pass
 
 

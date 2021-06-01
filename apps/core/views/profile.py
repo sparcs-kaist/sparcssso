@@ -89,7 +89,7 @@ def disconnect(request, site):
         result_code = SocialConnectResult.ONLY_CONNECTION
     else:
         profile.save()
-        logger.warning(f'social.disconnect', {
+        logger.warning('social.disconnect', {
             'r': request,
             'extra': [
                 ('type', get_social_name(site)),

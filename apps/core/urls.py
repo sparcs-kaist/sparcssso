@@ -13,11 +13,11 @@ urlpatterns = [
     path('login/internal/', auth.login_internal),
     path('logout/', auth.logout),
 
-    path('login/fb/', auth.init, {'mode': 'LOGIN', 'type': 'FB'}),
-    path('login/tw/', auth.init, {'mode': 'LOGIN', 'type': 'TW'}),
+    path('login/fb/', auth.init, {'mode': 'LOGIN', 'site': 'FB'}),
+    path('login/tw/', auth.init, {'mode': 'LOGIN', 'site': 'TW'}),
 
-    path('connect/fb/', auth.init, {'mode': 'CONN', 'type': 'FB'}),
-    path('connect/tw/', auth.init, {'mode': 'CONN', 'type': 'TW'}),
+    path('connect/fb/', auth.init, {'mode': 'CONN', 'site': 'FB'}),
+    path('connect/tw/', auth.init, {'mode': 'CONN', 'site': 'TW'}),
 
     path('callback', auth.callback),
     path('callback/', auth.callback),
@@ -33,8 +33,8 @@ urlpatterns = [
     # package: profile
     path('profile/', profile.main),
 
-    path('disconnect/fb/', profile.disconnect, {'type': 'FB'}),
-    path('disconnect/tw/', profile.disconnect, {'type': 'TW'}),
+    path('disconnect/fb/', profile.disconnect, {'site': 'FB'}),
+    path('disconnect/tw/', profile.disconnect, {'site': 'TW'}),
 
     path('email/change/', profile.email),
     path('email/verify/', profile.email_resend),

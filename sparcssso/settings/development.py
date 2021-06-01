@@ -17,7 +17,7 @@ if os.environ.get('SSO_LOCAL', '0') == '1':
 
 VERSION = get_version_info(DEBUG, ALLOWED_HOSTS)
 
-DOMAIN = 'http://ssodev.sparcs.org'
+DOMAIN = 'https://ssodev.sparcs.org'
 
 LOG_DIR = os.path.join(BASE_DIR, 'archive/logs/')  # noqa: F405
 LOG_BUFFER_DIR = os.path.join(BASE_DIR, 'archive/buffer/')  # noqa: F405

@@ -2,13 +2,16 @@ import logging
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 
 from apps.core.backends import (
     get_social_name, real_user_required, service_unregister,
     sudo_required, token_issue_email_auth, validate_email,
 )
+from apps.core.constants import EmailVerificationResult, SocialConnectResult
 from apps.core.forms import UserForm, UserProfileForm
 from apps.core.models import EmailAuthToken, PointLog, ServiceMap, UserLog
 
@@ -60,20 +63,20 @@ def main(request):
 
 
 # /disconnect/{fb,tw}/
+@require_POST
 @login_required
-def disconnect(request, type):
-    if request.method != 'POST':
-        return redirect('/account/profile/')
-
+def disconnect(request, site):
     uid = ''
     profile = request.user.profile
     if profile.test_only:
-        return redirect('/account/profile/')
+        result_code = SocialConnectResult.TEST_ONLY
+        return HttpResponseRedirect(f'/account/profile/?connect_site={site}&connect_result={result_code.name}')
 
-    if type == 'FB':
+    result_code = SocialConnectResult.DISCONNECT_SUCCESS
+    if site == 'FB':
         uid = profile.facebook_id
         profile.facebook_id = ''
-    elif type == 'TW':
+    elif site == 'TW':
         uid = profile.twitter_id
         profile.twitter_id = ''
 
@@ -83,21 +86,18 @@ def disconnect(request, type):
         profile.kaist_id
     )
     if not profile.user.has_usable_password() and not has_social:
-        request.session['result_con'] = 4
-        return redirect('/account/profile/')
-
-    profile.save()
-
-    logger.warning(f'social.disconnect', {
-        'r': request,
-        'extra': [
-            ('type', get_social_name(type)),
-            ('uid', uid),
-        ],
-    })
-
-    request.session['result_con'] = 5
-    return redirect('/account/profile/')
+        result_code = SocialConnectResult.ONLY_CONNECTION
+    else:
+        profile.save()
+        logger.warning('social.disconnect', {
+            'r': request,
+            'extra': [
+                ('type', get_social_name(site)),
+                ('uid', uid),
+            ],
+        })
+    request.session['result_con'] = result_code.value
+    return HttpResponseRedirect(f'/account/profile/?connect_site={site}&connect_result={result_code.name}')
 
 
 # /email/change/
@@ -122,9 +122,9 @@ def email(request):
                 'extra': [('email', email_new)],
             })
             token_issue_email_auth(user)
-            request.session['result_email'] = 4
+            request.session['result_email'] = EmailVerificationResult.UPDATED.value
         else:
-            request.session['result_email'] = 3
+            request.session['result_email'] = EmailVerificationResult.EMAIL_IN_USE.value
 
     result_email = request.session.pop('result_email', -1)
     return render(request, 'account/email.html', {
@@ -143,7 +143,7 @@ def email_resend(request):
         return redirect('/account/email/change/')
 
     token_issue_email_auth(user)
-    request.session['result_email'] = 5
+    request.session['result_email'] = EmailVerificationResult.SENT.value
 
     return redirect('/account/email/change/')
 
@@ -155,11 +155,11 @@ def email_verify(request, tokenid):
     user, profile = request.user, request.user.profile
     token = EmailAuthToken.objects.filter(tokenid=tokenid).first()
     if not token:
-        request.session['result_email'] = 2
+        request.session['result_email'] = EmailVerificationResult.TOKEN_INVAILD.value
         return redirect('/account/email/change/')
     elif token.expire_time < timezone.now():
         token.delete()
-        request.session['result_email'] = 2
+        request.session['result_email'] = EmailVerificationResult.TOKEN_INVAILD.value
         return redirect('/account/email/change/')
     elif token.user != user:
         return redirect('/account/email/change/')
@@ -185,7 +185,7 @@ def email_verify(request, tokenid):
     user.save()
     token.delete()
 
-    request.session['result_email'] = 1
+    request.session['result_email'] = EmailVerificationResult.SUCCESS.value
     return redirect('/account/email/change/')
 
 

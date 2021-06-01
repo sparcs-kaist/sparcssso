@@ -155,14 +155,14 @@ def point_modify():
     })
 
 
-@app.route('/unregister/accept', methods=['POST', ])
+@app.route('/unregister/accept', methods=['POST'])
 def unregister_accept():
     return jsonify({
         'success': True,
     })
 
 
-@app.route('/unregister/deny', methods=['POST', ])
+@app.route('/unregister/deny', methods=['POST'])
 def unregister_deny():
     return jsonify({
         'success': False,

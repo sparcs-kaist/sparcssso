@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 def get_version_info(debug, allowed_hosts):
-    log_re = re.compile('^([\da-f]{40}) ([^\(]+) .+$')
+    log_re = re.compile(r'^([\da-f]{40}) ([^\(]+) .+$')
     try:
         proc = subprocess.run(
             'git log -1 --pretty="%H %ci%d"',

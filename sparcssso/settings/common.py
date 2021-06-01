@@ -154,7 +154,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # Admins & Logging
-TEAM_EMAILS = ['sso@sparcs.org', ]
+TEAM_EMAILS = ['sso@sparcs.org']
 
 ADMINS = (('SSO SYSOP', 'sso.sysop@sparcs.org'),)
 
@@ -190,4 +190,4 @@ if SENTRY_DSN != '':
         send_default_pii=True,
     )
 else:
-    print('SENTRY_DSN not provided. Metrics will not be sent.')
+    print('SENTRY_DSN not provided. Metrics will not be sent.')  # noqa: T001

@@ -32,14 +32,20 @@ class RequestSettingMixin:
         return request_func[method](url, data=data, format='json', **kwargs)
 
 
-def ensure_user(username: str, name: Tuple[str, str], email: str, is_staff=False, **kwargs) -> User:
-    user, _ = User.objects.filter(Q(username=username) | Q(email=email)).update_or_create(defaults={
+def ensure_user(username: str, name: Tuple[str, str], email: str, is_staff=False, password=None, **kwargs) -> User:
+    user_defaults = {
         "username": username,
         "first_name": name[0],
         "last_name": name[1],
         "email": email,
         "is_staff": is_staff,
-    })
+    }
+    user, _ = User.objects.filter(Q(username=username) | Q(email=email)).update_or_create(defaults=user_defaults)
+    if password is None:
+        user.set_unusable_password()
+    else:
+        user.set_password(password)
+    user.save()
     UserProfile.objects.update_or_create(defaults={
         "gender": "*H",
         "email_authed": True,

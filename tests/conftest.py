@@ -105,6 +105,13 @@ class FixtureServiceSet(object):
         self.public = ensure_service("public", "Public Service", admin, secret_key="PUBLIC__", scope="PUBLIC")
 
 
-# class FixtureNoticeSet(object):
-#     def __init__(self):
-#         self.notice = ensure_notice("notice", )
+class FixtureNoticeSet(object):
+    def __init__(self):
+        self.notice1 = ensure_notice("notice", datetime.datetime(2020, 6, 1, 19, 27, 40),
+                                    datetime.datetime(2020, 7, 12, 00, 00, 00), "TestNotice1")
+        self.notice2 = ensure_notice("notice", datetime.datetime(2021, 6, 1, 19, 27, 40),
+                                     datetime.datetime(2021, 6, 2, 00, 00, 00), "TestNotice2")
+        self.notice3 = ensure_notice("notice", datetime.datetime(2021, 6, 1, 19, 27, 40),
+                                     datetime.datetime(2021, 7, 12, 00, 00, 00), "TestNotice3")
+        self.notice4 = ensure_notice("notice", datetime.datetime(2021, 6, 1, 19, 27, 40),
+                                     datetime.datetime(2021, 7, 12, 00, 00, 00), "TestNotice4")

@@ -62,6 +62,8 @@ class ServiceMapAdmin(admin.ModelAdmin):
     actions = None
     list_display = ('sid', 'user', 'service',
                     'register_time', 'unregister_time')
+    readonly_fields = ('user', 'service', 'sid')
+    search_fields = ('user__email', 'service__name', 'service__alias')
 
     def has_add_permission(self, request, obj=None):
         return False

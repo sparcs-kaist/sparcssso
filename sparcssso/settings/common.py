@@ -181,6 +181,8 @@ LOGGING = {
     },
 }
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 
 SENTRY_DSN = os.environ.get('SENTRY_DSN', '')
 if SENTRY_DSN != '':

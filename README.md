@@ -22,7 +22,7 @@ SPARCS SSO provides integrated login in SPARCS services, such as ARA or OTL.
 ### Tech
 
 SPARCS SSO uses following program / framework / libraries:
-* Python 3.6.0
+* Python 3.9.5
 * Django 3.1.8
 * Django REST Framework 3.12.4
 * MySQL (or MariaDB)

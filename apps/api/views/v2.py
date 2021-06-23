@@ -85,9 +85,11 @@ def check_sign(data, keys):
     if abs(time.time() - timestamp) >= TIMEOUT:
         raise SuspiciousOperation(TokenFailReason.INVALID_TIMESTAMP)
 
+    # TODO: Use a safer hash
     sign_server = hmac.new(
         service.secret_key.encode(),
         (''.join(extracted) + str(timestamp)).encode(),
+        'md5',
     ).hexdigest()
     if not constant_time_compare(sign, sign_server):
         raise SuspiciousOperation(TokenFailReason.INVALID_SIGN)

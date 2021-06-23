@@ -4,7 +4,7 @@ matrix:
     services:
       - mysql
     python:
-      - "3.6"
+      - "3.9"
     cache: pip
     env:
       - SSO_ENV=development

@@ -54,7 +54,7 @@ urlpatterns = [
 
 if settings.KAIST_APP_ENABLED:
     urlpatterns += [
-        path('login/kaist/', auth.init, {'mode': 'LOGIN', 'type': 'KAIST'}),
-        path('connect/kaist/', auth.init, {'mode': 'CONN', 'type': 'KAIST'}),
-        path('renew/kaist/', auth.init, {'mode': 'RENEW', 'type': 'KAIST'}),
+        path('login/kaist/', auth.init, {'mode': 'LOGIN', 'site': 'KAIST'}),
+        path('connect/kaist/', auth.init, {'mode': 'CONN', 'site': 'KAIST'}),
+        path('renew/kaist/', auth.init, {'mode': 'RENEW', 'site': 'KAIST'}),
     ]

@@ -57,6 +57,7 @@ def service_unregister(map_obj):
     sign = hmac.new(
         service.secret_key.encode(),
         ''.join([sid, str(timestamp)]).encode(),
+        'md5',
     ).hexdigest()
     try:
         r = requests.post(service.unregister_url, data={

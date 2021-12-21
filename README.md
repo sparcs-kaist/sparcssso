@@ -4,7 +4,8 @@ SPARCS SSO provides integrated login in SPARCS services, such as ARA or OTL.
 
 ### Credits
 * appleseed (SYSOP, PM, ~2020)
-* jungnoh (SYSOP, PM, 2021~)
+* jungnoh (SYSOP, PM, 2021)
+* night (SYSOP, PM, 2022~)
 * akais (Developer)
 * hou (Developer)
 * samjo (Developer)

@@ -59,12 +59,21 @@
     <button class="btn btn-login btn-block btn-kaist" {% if not kaist_enabled %}disabled{% endif %}>
       {% trans "KAIST SSO Login / Signup" %}
     </button>
+    {% if social_enabled %}
     <button class="btn btn-login btn-block btn-facebook">
       <img src="/static/img/fb.png" alt="Facebook Logo">{% trans "Facebook Login / Signup" %}
     </button>
     <button class="btn btn-login btn-block btn-twitter">
       <img src="/static/img/tw-white.png" alt="Twitter Logo">{% trans "Twitter Login / Signup" %}
     </button>
+    {% else %}
+      {% if show_disabled_button %}
+      <button class="btn btn-login btn-block btn-disabled">
+        {% trans "Social Login N/A for" %} {{ app_name }}
+      </button>
+      {% endif %}
+    {% endif %}
+    <div style="height: 10px"></div>
   </div>
 </div>
 

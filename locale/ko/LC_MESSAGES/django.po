@@ -219,6 +219,10 @@ msgstr "페이스북으로 로그인 / 가입"
 msgid "Twitter Login / Signup"
 msgstr "트위터로 로그인 / 가입"
 
+#: templates/account/login/main.html:71
+msgid "Social Login N/A for"
+msgstr "소셜 로그인 비활성화 앱:"
+
 #: templates/account/logout.html:4
 msgid "SPARCS SSO Logout"
 msgstr "SPARCS SSO 로그아웃"

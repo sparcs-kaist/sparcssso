@@ -23,8 +23,12 @@ profile_logger = logging.getLogger('sso.profile')
 
 
 def login_core(request, session_name, template_name, get_user_func):
+
+    parsed_nexturl = None
     if 'next' in request.GET:
         request.session['next'] = request.GET['next']
+        parsed_nexturl = parse_qs(urlparse(request.GET['next']).query)
+
 
     current_time = timezone.now()
     notice = Notice.objects.filter(
@@ -55,12 +59,36 @@ def login_core(request, session_name, template_name, get_user_func):
 
         request.session[session_name] = 1
 
+    social_enabled = True
+    show_disabled_button = True
+    app_name = 'UNKNOWN'
+
+    if not parsed_nexturl is None:
+        social_enabled = True if not parsed_nexturl.get('social_enabled', '1')[0] == '0' else False
+        show_disabled_button = True if not parsed_nexturl.get('show_disabled_button', '1')[0] == '0' else False
+        app_name = parsed_nexturl.get('app_name', ['UNKNOWN'])[0]
+
+    service_settings_map = [
+        {'name': 'OTL APP', 'social_enabled': False, 'show_disabled_button': False}
+    ]
+
+    for setting in service_settings_map:
+        if setting['name'] == app_name:
+            if parsed_nexturl.get('social_enabled', None) is None:
+                social_enabled = setting['social_enabled']
+            if parsed_nexturl.get('show_disabled_button', None) is None:
+                show_disabled_button = setting['show_disabled_button']
+
+
     return render(request, template_name, {
         'notice': notice,
         'service': service.alias if service else '',
         'fail': request.session.pop(session_name, ''),
         'show_internal': show_internal,
         'kaist_enabled': settings.KAIST_APP_ENABLED,
+        'social_enabled': social_enabled,
+        'show_disabled_button': show_disabled_button,
+        'app_name': app_name,
     })
 
 

@@ -166,6 +166,15 @@ nav.navbar.navbar-default {
     color: white;
 }
 
+.btn-disabled, .btn-disabled:hover,
+.btn-disabled:focus, .btn-disabled:active {
+    background-color: rgba(168, 38, 38, 0.25);
+    border-color: rgba(168, 38, 38, 0.25);
+    color: #a82626;
+    font-weight: 600;
+    cursor: not-allowed;
+}
+
 
 /* Profile */
 .social-icon img {

@@ -37,3 +37,6 @@ node_modules/
 
 # Environment Variables
 .env
+/django_env/
+/sso.ini
+.idea

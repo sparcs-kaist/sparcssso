@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import querystring from "querystring";
 
-import axios from "axios";
+import axios, {AxiosError} from "axios";
 
 /*
 SPARCS SSO V2 Client for NodeJS Version 1.0 (verified)
@@ -33,7 +33,7 @@ export default class Client {
   private readonly URLS: Record<string, string> = {};
   private readonly DOMAIN: string;
 
-  constructor(clientId, secretKey, isBeta = false, serverAddr = "") {
+  constructor(clientId: string, secretKey: string, isBeta = false, serverAddr = "") {
     /*
       Initialize SPARCS SSO Client
       :param clientId: your client id
@@ -76,7 +76,7 @@ export default class Client {
     return { sign, timestamp };
   }
 
-  private _validateSign(payload, timestamp, sign) {
+  private _validateSign(payload: (string | number)[], timestamp: number, sign: Buffer) {
     const clientSign = this._signPayload(payload, false);
     if (Math.abs(clientSign.timestamp - Number(timestamp)) > 10) {
       return false;
@@ -88,23 +88,25 @@ export default class Client {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static async _postData<ResponseType = any>(url, data): Promise<ResponseType> {
+  static async _postData<ResponseType = any>(url: string, data: any): Promise<ResponseType> {
     try {
       const res = await axios.post(url, querystring.stringify(data));
       return res.data as ResponseType;
     } catch (err) {
-      if (err.response) {
-        if (err.response.status === 400) {
-          throw new Error("INVALID_REQUEST");
-        } else if (err.response.status === 403) {
-          throw new Error("NO_PERMISSION");
-        } else if (err.response.status !== 200) {
-          throw new Error("UNKNOWN_ERROR");
+      if (err instanceof AxiosError) {
+        if (err.response) {
+          if (err.response.status === 400) {
+            throw new Error("INVALID_REQUEST");
+          } else if (err.response.status === 403) {
+            throw new Error("NO_PERMISSION");
+          } else if (err.response.status !== 200) {
+            throw new Error("UNKNOWN_ERROR");
+          }
+        } else if (err.request) {
+          throw new Error("NO_RESPONSE");
+        } else {
+          throw new Error("REQUEST_SETUP_ERROR");
         }
-      } else if (err.request) {
-        throw new Error("NO_RESPONSE");
-      } else {
-        throw new Error("REQUEST_SETUP_ERROR");
       }
       throw new Error("UNKNOWN_ERROR");
     }
@@ -126,7 +128,7 @@ export default class Client {
     return { url, state };
   }
 
-  async getUserInfo(code): Promise<UserInformation> {
+  async getUserInfo(code: string | number): Promise<UserInformation> {
     /*
       Exchange a code to user information
       :param code: the code that given by SPARCS SSO server
@@ -140,14 +142,13 @@ export default class Client {
       sign,
     };
     try {
-      const res = await Client._postData<UserInformation>(this.URLS.token_info, params);
-      return res;
+      return await Client._postData<UserInformation>(this.URLS.token_info, params);
     } catch (err) {
-      return err;
+      throw err;
     }
   }
 
-  getLogoutUrl(sid, redirectUri) {
+  getLogoutUrl(sid: string, redirectUri: string) {
     /*
       Get a logout url to sign out a user
       :param sid: the user's service id
@@ -165,7 +166,7 @@ export default class Client {
     return [this.URLS.logout, Object.entries(params).map(e => e.join("=")).join("&")].join("?");
   }
 
-  async getPoint(sid): Promise<number> {
+  async getPoint(sid: string): Promise<number> {
     /*
       Get a user's point
       :param sid: the user's service id
@@ -175,7 +176,7 @@ export default class Client {
     return response.point as number;
   }
 
-  async modifyPoint(sid, delta, message, lowerBound = 0) {
+  async modifyPoint(sid: string, delta: number, message: string, lowerBound: number = 0) {
     /*
       Modify a user's point
       :param sid: the user's service id
@@ -218,13 +219,13 @@ export default class Client {
       const res = await axios.get(this.URLS.notice, { params });
       return res.data;
     } catch (err) {
-      throw new Error(err.message);
+      throw err;
     }
   }
 
   parseUnregisterRequest({
     clientId, sid, timestamp, sign,
-  }) {
+  }: {clientId: string, sid: string, timestamp: number, sign: Buffer}) {
     /*
       Parse unregister request from SPARCS SSO server
       :param data_dict: a data dictionary that the server sent

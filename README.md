@@ -19,7 +19,7 @@ SPARCS SSO provides integrated login in SPARCS services, such as ARA or OTL.
 * zoonoo (Translator)
 * ashe (Translator)
 
-TO BE UPDATED
+TO BE UPDATED (to SPARCS ONE)
 
 ### Tech
 

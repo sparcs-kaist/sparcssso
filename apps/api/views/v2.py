@@ -109,6 +109,7 @@ class TokenRequireView(APIView):
     def get(self, request):
         client_id = request.query_params.get('client_id', '')
         state = request.query_params.get('state', '')
+        preferred_url = request.query_params.get('preferred_url', None)
 
         service = Service.objects.filter(name=client_id).first()
         if not service:
@@ -175,7 +176,13 @@ class TokenRequireView(APIView):
             'extra': [('app', client_id)],
         })
 
-        return redirect(service.login_callback_url + '?' + urlencode({
+        redirect_url = service.login_callback_url
+        allowed_redirect_urls = ["https://otl.sparcs.org/session/login/callback/", "https://otl.kaist.ac.kr/session/login/callback/"]
+
+        if preferred_url in allowed_redirect_urls:
+            redirect_url = preferred_url
+
+        return redirect(redirect_url + '?' + urlencode({
             'code': token.tokenid,
             'state': state,
         }))

@@ -185,6 +185,7 @@ class TokenRequireView(APIView):
         return redirect(redirect_url + '?' + urlencode({
             'code': token.tokenid,
             'state': state,
+	    'preferred_url': preferred_url
         }))
 
 

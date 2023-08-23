@@ -177,7 +177,7 @@ class TokenRequireView(APIView):
         })
 
         redirect_url = service.login_callback_url
-        allowed_redirect_urls = ["https://otl.sparcs.org/session/login/callback/", "https://otl.kaist.ac.kr/session/login/callback/", "https://otl-stage.sparcsandbox.com/login/callback"]
+        allowed_redirect_urls = ["https://otl.sparcs.org/session/login/callback/", "https://otl.kaist.ac.kr/session/login/callback/", "https://otl-stage.sparcsandbox.com/session/login/callback"]
 
         if preferred_url in allowed_redirect_urls:
             redirect_url = preferred_url

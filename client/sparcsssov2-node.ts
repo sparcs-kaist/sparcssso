@@ -78,7 +78,7 @@ export default class Client {
 
   private _validateSign(payload: (string | number)[], timestamp: number, sign: Buffer) {
     const clientSign = this._signPayload(payload, false);
-    if (Math.abs(clientSign.timestamp - Number(timestamp)) > 10) {
+    if (Math.abs(clientSign.timestamp - timestamp) > 10) {
       return false;
     }
     if (crypto.timingSafeEqual(Buffer.from(clientSign.sign, "utf-8"), sign)) {

@@ -92,6 +92,10 @@ RECAPTCHA_SECRET = os.environ.get('RECAPTCHA_SECRET', '')
 
 KAIST_V2_HOSTNAME = os.environ.get('KAIST_V2_HOSTNAME', 'sso.kaist.ac.kr')
 
+KAIST_V2_CLIENT_ID = os.environ.get('KAIST_V2_CLIENT_ID', 'kaist-sparcs')
+
+KAIST_V2_CLIENT_SECRET = os.environ.get('KAIST_V2_CLIENT_SECRET', '')
+
 
 # E-mail settings
 EMAIL_HOST = 'localhost'

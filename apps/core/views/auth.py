@@ -135,6 +135,8 @@ def logout(request):
     auth.logout(request)
     return render(request, 'account/logout.html')
 
+def get_init_callback_url():
+    return urljoin(settings.DOMAIN, '/account/callback/')
 
 # /login/{fb,tw,kaist}/, /connect/{fb,tw,kaist}/, /renew/kaist/
 @require_POST
@@ -155,7 +157,7 @@ def init(request, mode, site):
         return HttpResponseRedirect(f'/account/profile/?connect_site={site}&connect_result={result_code.name}')
 
     request.session['info_auth'] = {'mode': mode, 'type': site}
-    callback_url = urljoin(settings.DOMAIN, '/account/callback/')
+    callback_url = get_init_callback_url()
 
     if site == 'FB':
         url = auth_fb_init(callback_url)
@@ -194,9 +196,9 @@ def callback(request):
         if not valid:
             return redirect('/')
     elif site == 'KAISTV2':
+        callback_url = get_init_callback_url()
         token = request.session.get('request_token')
-        iam_info = request.POST.get('result')
-        profile, info, valid = auth_kaist_v2_callback(token, iam_info)
+        profile, info, valid = auth_kaist_v2_callback(token, callback_url)
         if not valid:
             return redirect('/')
     else:

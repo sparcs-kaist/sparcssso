@@ -216,7 +216,7 @@ def auth_kaist_callback(token, iam_info_raw):
 def auth_kaist_v2_init(callback_url: str):
     state = str(uuid.uuid4())
     args = {
-        'client_id': 'kaist-sparcs',
+        'client_id': settings.KAIST_V2_CLIENT_ID,
         'redirect_url': callback_url,
         'state': state,
         'nonce': state,
@@ -224,5 +224,31 @@ def auth_kaist_v2_init(callback_url: str):
 
     return f'https://${settings.KAIST_V2_HOSTNAME}/auth/user/single/login/authorize?{urlencode(args)}', state
 
-def auth_kaist_v2_callback(token: str, iam_info_raw: str):
-    pass # TODO
+def auth_kaist_v2_callback(token: str, redirect_url: str):
+    request_url = f"https://${settings.KAIST_V2_HOSTNAME}/auth/api/single/auth"
+    data = {
+        'client_id': settings.KAIST_V2_CLIENT_ID,
+        'client_secret': settings.KAIST_V2_CLIENT_SECRET,
+        'code': token,
+        'redirect_url': redirect_url,
+    }
+    response = requests.post(request_url, data=data, headers={
+        "Content-Type": "application/x-www-form-urlencoded"
+    })
+
+    response_data = response.json()
+    if 'errorCode' in response_data:
+        logger.warn('kaistv2.error', {
+            'error_code': response_data['errorCode'],
+            'error': response_data['error'],
+        })
+        return None, None, False
+    
+    nonce = response_data['nonce']
+    if nonce != token:
+        return None, None, False
+
+    user_data = response_data['userInfo']
+
+    # TODO: Parse user_data, match v1 format, load UserProfile
+    return user_data, None, True

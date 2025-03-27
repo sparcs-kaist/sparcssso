@@ -208,6 +208,10 @@ msgid "Internal Login"
 msgstr "내부 로그인"
 
 #: templates/account/login/main.html:60
+msgid "KAIST SSO Login / Signup (Old)"
+msgstr "카이스트 통합인증으로 로그인 / 가입 (구 SSO)"
+
+#: templates/account/login/main.html:63
 msgid "KAIST SSO Login / Signup"
 msgstr "카이스트 통합인증으로 로그인 / 가입"
 

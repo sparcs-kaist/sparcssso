@@ -56,11 +56,11 @@
   <hr/>
 
   <div class="login-social-wrap">
-    <button id="login-social-kaist-v1" class="btn btn-login btn-block btn-kaist" {% if not kaist_enabled %}disabled{% endif %}>
+    <button id="login-social-kaist-v2" class="btn btn-login btn-block btn-kaist" {% if not kaist_v2_enabled %}disabled{% endif %}>
       {% trans "KAIST SSO Login / Signup" %}
     </button>
-    <button id="login-social-kaist-v2" class="btn btn-login btn-block btn-kaist" {% if not kaist_v2_enabled %}disabled{% endif %}>
-      {% trans "KAIST SSO Login / Signup (V2)" %}
+    <button id="login-social-kaist-v1" class="btn btn-login btn-block btn-kaist" {% if not kaist_enabled %}disabled{% endif %}>
+      {% trans "KAIST SSO Login / Signup (Old)" %}
     </button>
     {% if social_enabled %}
     <button class="btn btn-login btn-block btn-facebook">

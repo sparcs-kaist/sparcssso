@@ -3,7 +3,7 @@ from urllib.parse import parse_qs, urljoin, urlparse
 
 from django.conf import settings
 from django.contrib import auth
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
@@ -12,7 +12,7 @@ from django.views.decorators.http import require_POST
 from apps.core.backends import (
     anon_required, auth_fb_callback, auth_fb_init,
     auth_kaist_init, auth_kaist_callback,
-    auth_kaist_v2_callback,
+    auth_kaist_v2_init, auth_kaist_v2_callback,
     auth_tw_init, auth_tw_callback,
     get_clean_url, get_social_name,
 )
@@ -82,10 +82,6 @@ def login_core(request, session_name, template_name, get_user_func):
             if parsed_nexturl.get('show_disabled_button', None) is None:
                 show_disabled_button = setting['show_disabled_button']
 
-    if settings.KAIST_APP_V2_ENABLED:
-        request.session['kaist_v2_login_state'] = str(uuid.uuid4())
-        request.session['kaist_v2_login_nonce'] = str(uuid.uuid4())
-
     return render(request, template_name, {
         'notice': notice,
         'service': service.alias if service else '',
@@ -93,14 +89,9 @@ def login_core(request, session_name, template_name, get_user_func):
         'show_internal': show_internal,
         'kaist_enabled': settings.KAIST_APP_ENABLED,
         'kaist_v2_enabled': settings.KAIST_APP_V2_ENABLED,
-        'kaist_v2_hostname': settings.KAIST_APP_V2_HOSTNAME,
-        'kaist_v2_client_id': settings.KAIST_APP_V2_CLIENT_ID,
-        'kaist_v2_login_state': request.session['kaist_v2_login_state'],
-        'kaist_v2_login_nonce': request.session['kaist_v2_login_nonce'],
         'social_enabled': social_enabled,
         'show_disabled_button': show_disabled_button,
         'app_name': app_name,
-        'kaist_v2_login_callback_url': get_init_callback_url('KAISTV2')
     })
 
 
@@ -151,7 +142,7 @@ def get_init_callback_url(site: str):
     else:
         return urljoin(settings.DOMAIN, '/account/callback/')
 
-# /login/{fb,tw,kaist}/, /connect/{fb,tw,kaist}/, /renew/kaist/
+# /login/{fb,tw,kaist,kaistv2}/, /connect/{fb,tw,kaist,kaistv2}/, /renew/kaist/
 @require_POST
 def init(request, mode, site):
     if request.method != 'POST':
@@ -180,6 +171,12 @@ def init(request, mode, site):
     elif site == 'KAIST':
         url, token = auth_kaist_init(callback_url)
         request.session['request_token'] = token
+    elif site == 'KAISTV2':
+        response_body, state, nonce = auth_kaist_v2_init(request, callback_url)
+        request.session['kaist_v2_login_state'] = state
+        request.session['kaist_v2_login_nonce'] = nonce
+        return JsonResponse(response_body)
+
     return redirect(url)
 
 

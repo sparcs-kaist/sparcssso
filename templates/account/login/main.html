@@ -82,53 +82,20 @@
 
 <script>
 $(function() {
-  var login = function(type) {
-    var form = $(document.createElement('form')).attr({
-      method: 'post',
-      action: '/account/login/' + type + '/',
-    });
-    $(document.createElement('input')).attr({
-      type: 'hidden',
-      name: 'csrfmiddlewaretoken',
-      value: '{{ csrf_token }}',
-    }).appendTo(form);
-    form.appendTo(document.body).submit();
-  };
-
   $('#login-social-kaist-v1').click(function() {
-    login('kaist');
+    authLogin("kaist");
   });
 
   $('#login-social-kaist-v2').click(function() {
-    var form = $(document.createElement('form')).attr({
-      method: 'post',
-      action: 'https://{{ kaist_v2_hostname }}/auth/user/single/login/authorize',
-    });
-
-    const body = {
-      'client_id': '{{ kaist_v2_client_id }}',
-      'redirect_uri': '{{ kaist_v2_login_callback_url }}',
-      'state': '{{ kaist_v2_login_state }}',
-      'nonce': '{{ kaist_v2_login_nonce }}',
-    }
-
-    for (const [name, value] of Object.entries(body)) {
-      $(document.createElement('input')).attr({
-        type: 'hidden',
-        name,
-        value,
-      }).appendTo(form);
-    }
-
-    form.appendTo(document.body).submit();
+    authLogin("kaist-v2");
   });
 
   $('.btn-facebook').click(function() {
-    login('fb');
+    authLogin('fb');
   });
 
   $('.btn-twitter').click(function() {
-    login('tw');
+    authLogin('tw');
   });
 });
 </script>

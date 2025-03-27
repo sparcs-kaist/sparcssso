@@ -7,5 +7,56 @@
 <script src="/static/js/validator.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 
+<script>
+  const buildAndSubmitForm = (url, values) => {
+    const form = $(document.createElement('form')).attr({
+      method: "post",
+      action: url,
+    });
+
+    const valuesWithCsrf = {
+      ...values,
+      csrfmiddlewaretoken: "{{ csrf_token }}",
+    };
+
+    for (const [name, value] of Object.entries(valuesWithCsrf)) {
+      const el = $(document.createElement("input")).attr({ type: "hidden", name, value });
+      el.appendTo(form);
+    }
+
+    form.appendTo(document.body).submit();
+  }
+
+  const authInitCommon = (action, service) => {
+    buildAndSubmitForm(`/account/${action}/${service}/`, {});
+  };
+
+  const authInitKaistV2 = (action) => {
+    fetch(`/account/${action}/kaistv2/`, {
+      method: "POST",
+      body: new URLSearchParams({
+        csrfmiddlewaretoken: "{{ csrf_token }}",
+      })
+    })
+      .catch((err) => {
+        console.error(err);
+        alert("An error occured while initializing KAIST v2 SSO flow");
+      })
+      .then((response) => response.json())
+      .then((response) => {
+        buildAndSubmitForm(response.action, response.body);
+      });
+  }
+
+  const authInit = (action, service) => {
+    if (service === "kaist-v2") authInitKaistV2(action);
+    else authInitCommon();
+  }
+
+  const authLogin = (service) => authInit("login", service);
+
+</script>
+
+
 {% block header %}{% endblock %}
 {% endblock %}

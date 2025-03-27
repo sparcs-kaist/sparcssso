@@ -179,7 +179,7 @@ def auth_tw_callback(tokens, verifier):
 
 
 # KAIST Auth
-def auth_kaist_init(callback_url):
+def auth_kaist_init(callback_url: str):
     state = str(uuid.uuid4())
     args = {
         'client_id': 'SPARCS',
@@ -211,6 +211,23 @@ def auth_kaist_callback(token: str, iam_info_raw: str):
     kaist_profile = UserProfile.objects.filter(kaist_id=info['userid'],
                                                test_only=False).first()
     return kaist_profile, info, True
+
+
+def auth_kaist_v2_init(request, callback_url: str):
+    state = str(uuid.uuid4())
+    nonce = str(uuid.uuid4())
+    
+    return {
+        'body': {
+            'client_id': settings.KAIST_APP_V2_CLIENT_ID,
+            'redirect_uri': callback_url,
+            'state': state,
+            'nonce': nonce,
+        },
+        'action': f"https://{settings.KAIST_APP_V2_HOSTNAME}/auth/user/single/login/authorize",
+    }, state, nonce
+
+
 
 def auth_kaist_v2_callback(request: str, redirect_url: str):
     if request.POST.get("code") is None:

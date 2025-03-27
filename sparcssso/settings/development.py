@@ -23,3 +23,5 @@ LOG_DIR = os.path.join(BASE_DIR, 'archive/logs/')  # noqa: F405
 LOG_BUFFER_DIR = os.path.join(BASE_DIR, 'archive/buffer/')  # noqa: F405
 
 STAT_FILE = os.path.join(BASE_DIR, 'archive/stats.txt')  # noqa: F405
+
+KAIST_V2_HOSTNAME = 'ssodev.kaist.ac.kr'

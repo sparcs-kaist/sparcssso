@@ -57,4 +57,6 @@ if settings.KAIST_APP_ENABLED:
         path('login/kaist/', auth.init, {'mode': 'LOGIN', 'site': 'KAIST'}),
         path('connect/kaist/', auth.init, {'mode': 'CONN', 'site': 'KAIST'}),
         path('renew/kaist/', auth.init, {'mode': 'RENEW', 'site': 'KAIST'}),
+        path('login/kaistv2/', auth.init, {'mode': 'LOGIN', 'site': 'KAISTV2'}),
+        # TODO: connect, renew for v2 (필요 없을수도 있음)
     ]

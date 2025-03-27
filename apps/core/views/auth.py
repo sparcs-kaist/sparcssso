@@ -11,8 +11,10 @@ from django.views.decorators.http import require_POST
 
 from apps.core.backends import (
     anon_required, auth_fb_callback, auth_fb_init,
-    auth_kaist_callback, auth_kaist_init, auth_tw_callback,
-    auth_tw_init, get_clean_url, get_social_name,
+    auth_kaist_init, auth_kaist_callback,
+    auth_kaist_v2_init, auth_kaist_v2_callback,
+    auth_tw_init, auth_tw_callback,
+    get_clean_url, get_social_name,
 )
 from apps.core.constants import SocialConnectResult
 from apps.core.models import Notice, Service
@@ -163,6 +165,9 @@ def init(request, mode, site):
     elif site == 'KAIST':
         url, token = auth_kaist_init(callback_url)
         request.session['request_token'] = token
+    elif site == 'KAISTV2':
+        url, token = auth_kaist_v2_init(callback_url)
+        request.session['request_token'] = token
     return redirect(url)
 
 
@@ -186,6 +191,12 @@ def callback(request):
         token = request.session.get('request_token')
         iam_info = request.POST.get('result')
         profile, info, valid = auth_kaist_callback(token, iam_info)
+        if not valid:
+            return redirect('/')
+    elif site == 'KAISTV2':
+        token = request.session.get('request_token')
+        iam_info = request.POST.get('result')
+        profile, info, valid = auth_kaist_v2_callback(token, iam_info)
         if not valid:
             return redirect('/')
     else:

@@ -211,3 +211,18 @@ def auth_kaist_callback(token, iam_info_raw):
     kaist_profile = UserProfile.objects.filter(kaist_id=info['userid'],
                                                test_only=False).first()
     return kaist_profile, info, True
+
+# Note: state == nonce
+def auth_kaist_v2_init(callback_url: str):
+    state = str(uuid.uuid4())
+    args = {
+        'client_id': 'kaist-sparcs',
+        'redirect_url': callback_url,
+        'state': state,
+        'nonce': state,
+    }
+
+    return f'https://${settings.KAIST_V2_HOSTNAME}/auth/user/single/login/authorize?{urlencode(args)}', state
+
+def auth_kaist_v2_callback(token: str, iam_info_raw: str):
+    pass # TODO

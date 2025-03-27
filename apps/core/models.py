@@ -181,22 +181,24 @@ class AccessToken(models.Model):
 class UserProfile(models.Model):
     """
     denotes additional information of single user
-    - user:            user object
-    - gender:          gender; *H / *M / *F / *E or others
-    - birthday:        birthday
-    - point:           point for public services
-    - point_test:      point for test services
-    - email_new:       new email before auth
-    - email_authed:    email authed state
-    - test_only:       indicate test only account
-    - test_enabled:    test mode state
-    - facebook_id:     facebook unique id
-    - twitter_id:      twitter unique id
-    - kaist_id:        kaist uid
-    - kaist_info:      additional kaist info
-    - kaist_info_time: kaist info updated time
-    - sparcs_id:       sparcs id iff sparcs member
-    - expire_time:     expire time for permanent deletion
+    - user:               user object
+    - gender:             gender; *H / *M / *F / *E or others
+    - birthday:           birthday
+    - point:              point for public services
+    - point_test:         point for test services
+    - email_new:          new email before auth
+    - email_authed:       email authed state
+    - test_only:          indicate test only account
+    - test_enabled:       test mode state
+    - facebook_id:        facebook unique id
+    - twitter_id:         twitter unique id
+    - kaist_id:           kaist uid
+    - kaist_info:         additional kaist info
+    - kaist_info_time:    kaist info updated time
+    - kaist_v2_info:      additional kaist info
+    - kaist_v2_info_time: kaist info updated time
+    - sparcs_id:          sparcs id iff sparcs member
+    - expire_time:        expire time for permanent deletion
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE,
                                 related_name='profile')
@@ -213,6 +215,8 @@ class UserProfile(models.Model):
     kaist_id = models.CharField(max_length=50, blank=True, null=True)
     kaist_info = models.TextField(blank=True, null=True)
     kaist_info_time = models.DateField(blank=True, null=True)
+    kaist_v2_info = models.TextField(blank=True, null=True)
+    kaist_v2_info_time = models.DateField(blank=True, null=True)
     sparcs_id = models.CharField(max_length=50, blank=True, null=True)
     expire_time = models.DateTimeField(blank=True, null=True)
 
@@ -248,6 +252,12 @@ class UserProfile(models.Model):
         self.kaist_id = info['userid']
         self.kaist_info = json.dumps(info['kaist_info'])
         self.kaist_info_time = timezone.now()
+        self.save()
+
+    def save_kaist_v2_info(self, info):
+        self.kaist_id = info['userid']
+        self.kaist_v2_info = json.dumps(info['kaist_info_v2'])
+        self.kaist_v2_info_time = timezone.now()
         self.save()
 
     def __str__(self):

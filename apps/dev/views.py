@@ -163,6 +163,15 @@ def user(request, uid):
         except Exception:
             pass
 
+        try:
+            kaist_info = json.loads(request.POST.get('kaist_v2_info', ''))
+            profile.save_kaist_v2_info({
+                'userid': kaist_info['kaist_uid'],
+                'kaist_info': kaist_info,
+            })
+        except Exception:
+            pass
+
         log_msg = 'create' if uid == 'add' else 'update'
         logger.warning(f'account.{log_msg}', {
             'r': request,

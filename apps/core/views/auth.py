@@ -276,6 +276,8 @@ def callback_login(request, site, user, info):
     request.session.pop('info_signup', None)
     if site == 'KAIST':
         user.profile.save_kaist_info(info)
+    elif site == 'KAISTV2':
+        user.profile.save_kaist_v2_info(info)
 
     auth.login(request, user)
     nexturl = request.session.pop('next', '/')
@@ -296,6 +298,8 @@ def callback_conn(request, site, user, info):
         profile.twitter_id = info['userid']
     elif site == 'KAIST' and not profile.kaist_id:
         profile.save_kaist_info(info)
+    elif site == 'KAISTV2' and not profile.kaist_id:
+        profile.save_kaist_v2_info(info)
     else:
         result_code = SocialConnectResult.SITE_INVALID
 
@@ -315,7 +319,7 @@ def callback_conn(request, site, user, info):
 
 # from /callback/
 def callback_renew(request, site, user, info):
-    if site != 'KAIST':
+    if site != 'KAIST' and site != 'KAISTV2':
         result_code = SocialConnectResult.RENEW_UNNECESSARY
         return HttpResponseRedirect(f'/account/profile/?connect_site={site}&connect_result={result_code.name}')
 
@@ -324,7 +328,10 @@ def callback_renew(request, site, user, info):
     if profile.kaist_id != info['userid']:
         result_code = SocialConnectResult.KAIST_IDENTITY_MISMATCH
     else:
-        user.profile.save_kaist_info(info)
+        if site == 'KAIST':
+            user.profile.save_kaist_info(info)
+        else:
+            user.profile.save_kaist_v2_info(info)
 
     request.session['result_con'] = result_code.value
 

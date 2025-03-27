@@ -64,7 +64,10 @@ def signup_social(typ, profile):
 
     user.profile = UserProfile(gender=profile.get('gender', '*H'))
     if 'birthday' in profile:
-        user.profile.birthday = profile['birthday']
+        if profile['birthday'].strip() == "":
+            user.profile.birthday = None
+        else:
+            user.profile.birthday = profile['birthday']
 
     if typ == 'FB':
         user.profile.facebook_id = profile['userid']
@@ -73,5 +76,8 @@ def signup_social(typ, profile):
     elif typ == 'KAIST':
         user.profile.email_authed = email.endswith('@kaist.ac.kr')
         user.profile.save_kaist_info(profile)
+    elif typ == 'KAISTV2':
+        user.profile.email_authed = email.endswith('@kaist.ac.kr')
+        user.profile.save_kaist_v2_info(profile)
     user.profile.save()
     return user

@@ -100,7 +100,7 @@ def login_core(request, session_name, template_name, get_user_func):
         'social_enabled': social_enabled,
         'show_disabled_button': show_disabled_button,
         'app_name': app_name,
-        'login_callback_url': get_init_callback_url(),
+        'kaist_v2_login_callback_url': get_init_callback_url('KAISTV2')
     })
 
 
@@ -145,8 +145,11 @@ def logout(request):
     auth.logout(request)
     return render(request, 'account/logout.html')
 
-def get_init_callback_url():
-    return urljoin(settings.DOMAIN, '/account/callback/')
+def get_init_callback_url(site: str):
+    if site == "KAISTV2":
+        return urljoin(settings.DOMAIN, '/api/idp/kaist/callback')
+    else:
+        return urljoin(settings.DOMAIN, '/account/callback/')
 
 # /login/{fb,tw,kaist}/, /connect/{fb,tw,kaist}/, /renew/kaist/
 @require_POST
@@ -167,7 +170,7 @@ def init(request, mode, site):
         return HttpResponseRedirect(f'/account/profile/?connect_site={site}&connect_result={result_code.name}')
 
     request.session['info_auth'] = {'mode': mode, 'type': site}
-    callback_url = get_init_callback_url()
+    callback_url = get_init_callback_url(site)
 
     if site == 'FB':
         url = auth_fb_init(callback_url)
@@ -203,7 +206,7 @@ def callback(request):
         if not valid:
             return redirect('/')
     elif site == 'KAISTV2':
-        callback_url = get_init_callback_url()
+        callback_url = get_init_callback_url(site)
         state = request.session.get('kaist_v2_login_state')
         nonce = request.session.get('kaist_v2_login_nonce')
         profile, info, valid = auth_kaist_v2_callback(state, nonce, callback_url)

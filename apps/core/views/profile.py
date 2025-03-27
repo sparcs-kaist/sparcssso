@@ -59,6 +59,7 @@ def main(request):
         'result_prof': result_prof,
         'result_con': result_con,
         'kaist_enabled': settings.KAIST_APP_ENABLED,
+        'kaist_v2_enabled': settings.KAIST_APP_V2_ENABLED,
     })
 
 

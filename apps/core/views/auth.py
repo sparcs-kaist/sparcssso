@@ -183,16 +183,22 @@ def init(request, mode, site):
 @csrf_exempt
 @require_POST
 def callback_kaist_v2(request):
-    redirect_url = get_init_callback_url("KAISTV2")
+    SITE = "KAISTV2"
+    info_auth = request.session.pop('info_auth', None)
+    if not info_auth:
+        return redirect('/')
+
+    mode = info_auth['mode']
+
+    redirect_url = get_init_callback_url(SITE)
     profile, info, valid = auth_kaist_v2_callback(request, redirect_url)
     
-    print(profile, info, valid)
     if not valid:
         return redirect('/')
 
     state = request.session.delete('kaist_v2_login_state')
     nonce = request.session.delete('kaist_v2_login_nonce')
-    return
+    return callback_inner(request, mode, SITE, profile, info)
 
 
 # /callback/
@@ -221,6 +227,10 @@ def callback(request):
         # Should not reach here!
         return redirect('/')
 
+    return callback_inner(request, mode, site, profile, info)
+
+
+def callback_inner(request, mode, site, profile, info):
     uid = info['userid'] if info else 'unknown'
     logger.info('social', {
         'r': request,

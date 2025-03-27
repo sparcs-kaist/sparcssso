@@ -41,8 +41,11 @@
           buildInputs = [
             pythonEnv
             setupVenvScript
-            pkgs.mysql84
-          ];
+          ] ++ (with pkgs; [
+            mysql84
+            zlib
+            zlib.dev
+          ]);
 
           shellHook = ''
             # Create .envrc if it doesn't exist

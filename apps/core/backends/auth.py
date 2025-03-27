@@ -216,20 +216,20 @@ def auth_kaist_callback(token, iam_info_raw):
 def auth_kaist_v2_init(callback_url: str):
     state = str(uuid.uuid4())
     args = {
-        'client_id': settings.KAIST_V2_CLIENT_ID,
+        'client_id': settings.KAIST_APP_V2_CLIENT_ID,
         'redirect_url': callback_url,
         'state': state,
         'nonce': state,
     }
 
-    return f'https://${settings.KAIST_V2_HOSTNAME}/auth/user/single/login/authorize?{urlencode(args)}', state
+    return f'https://{settings.KAIST_APP_V2_HOSTNAME}/auth/user/single/login/authorize?{urlencode(args)}', state
 
-def auth_kaist_v2_callback(token: str, redirect_url: str):
-    request_url = f"https://${settings.KAIST_V2_HOSTNAME}/auth/api/single/auth"
+def auth_kaist_v2_callback(state: str, nonce: str, redirect_url: str):
+    request_url = f"https://{settings.KAIST_APP_V2_HOSTNAME}/auth/api/single/auth"
     data = {
-        'client_id': settings.KAIST_V2_CLIENT_ID,
-        'client_secret': settings.KAIST_V2_CLIENT_SECRET,
-        'code': token,
+        'client_id': settings.KAIST_APP_V2_CLIENT_ID,
+        'client_secret': settings.KAIST_APP_V2_CLIENT_SECRET,
+        'code': state,
         'redirect_url': redirect_url,
     }
     response = requests.post(request_url, data=data, headers={
@@ -244,8 +244,7 @@ def auth_kaist_v2_callback(token: str, redirect_url: str):
         })
         return None, None, False
     
-    nonce = response_data['nonce']
-    if nonce != token:
+    if nonce != response_data['nonce']:
         return None, None, False
 
     user_data = response_data['userInfo']

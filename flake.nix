@@ -25,15 +25,8 @@
             ${pythonEnv}/bin/python -m venv ./.venv
           fi
 
-          if [ -f ./requirements.txt ]; then
-            echo "Installing packages from requirements.txt..."
-            ./.venv/bin/pip install -r requirements.txt
-          else
-            echo "No requirements.txt found. Creating an empty one."
-            touch requirements.txt
-          fi
-
-          echo "Python environment is ready!"
+          echo "Installing packages from requirements.txt..."
+          ./.venv/bin/pip install -r requirements.txt
         '';
 
       in
@@ -89,6 +82,7 @@
             fi
 
             alias django='python manage.py'
+            alias dc='DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose'
           '';
         };
       }

@@ -201,3 +201,6 @@ if SENTRY_DSN != '':
     )
 else:
     print('SENTRY_DSN not provided. Metrics will not be sent.')  # noqa: T001
+
+# TODO: KAIST v2 SSO redirect url 변경 후 True 로 revert
+APPEND_SLASH = False

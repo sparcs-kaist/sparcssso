@@ -212,30 +212,55 @@ def auth_kaist_callback(token: str, iam_info_raw: str):
                                                test_only=False).first()
     return kaist_profile, info, True
 
-def auth_kaist_v2_callback(state: str, nonce: str, redirect_url: str):
+def auth_kaist_v2_callback(request: str, redirect_url: str):
+    if request.POST.get("code") is None:
+        print("auth_kaist_v2_callback: Code not found")
+        return None, None, False
+    request_code = request.POST.get("code")
+
+    if request.POST.get("state") is None:
+        print("auth_kaist_v2_callback: State not found")
+        return None, None, False
+    request_state = request.POST.get("state")
+
+    if request_state != request.session.get('kaist_v2_login_state'):
+        print("auth_kaist_v2_callback: State mismatch")
+        return None, None, False
+    
     request_url = f"https://{settings.KAIST_APP_V2_HOSTNAME}/auth/api/single/auth"
     data = {
         'client_id': settings.KAIST_APP_V2_CLIENT_ID,
         'client_secret': settings.KAIST_APP_V2_CLIENT_SECRET,
-        'code': state,
-        'redirect_url': redirect_url,
+        'code': request_code,
+        'redirect_uri': redirect_url,
     }
     response = requests.post(request_url, data=data, headers={
         "Content-Type": "application/x-www-form-urlencoded"
     })
 
     response_data = response.json()
-    if 'errorCode' in response_data:
-        logger.warn('kaistv2.error', {
-            'error_code': response_data['errorCode'],
-            'error': response_data['error'],
-        })
+    if "errorCode" in response_data:
+        print(f"auth_kaist_v2_callback: Error {response_data['errorCode']}: {response_data['error']}")
         return None, None, False
     
-    if nonce != response_data['nonce']:
+    request_nonce = request.session.get('kaist_v2_login_nonce')
+    if request_nonce != response_data['nonce']:
+        print("auth_kaist_v2_callback: Nonce mismatch")
         return None, None, False
 
     user_data = response_data['userInfo']
+    user_name_parts = [v.strip() for v in user_data.get("user_eng_nm").split(",") if v.strip() != ""]
 
-    # TODO: Parse user_data, match v1 format, load UserProfile
-    return user_data, None, True
+    info = {
+        'userid': user_data["kaist_uid"],
+        'email': user_data.get("email"),
+        'first_name': user_name_parts[1] if len(user_name_parts) > 1 else "",
+        'last_name': user_name_parts[0] if len(user_name_parts) > 0 else "",
+        'gender': '*H',
+        'birthday': "",
+        'kaist_info_v2': user_data,
+    }
+    kaist_profile = UserProfile.objects.filter(kaist_id=info['userid'],
+                                               test_only=False).first()
+
+    return kaist_profile, info, True

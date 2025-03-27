@@ -1,10 +1,12 @@
 import json
 import time
 
+from django.conf import settings
 from django.http import HttpResponse
 from django.urls import path
 
 from apps.api.views import v2
+from apps.core.views import auth
 
 
 # /versions/
@@ -28,3 +30,8 @@ urlpatterns = [
     path('v2/email/', v2.EmailView.as_view()),
     path('v2/stats/', v2.stats),
 ]
+
+if settings.KAIST_APP_V2_ENABLED:
+    urlpatterns += [
+        path('idp/kaist/callback', auth.callback_kaist_v2)
+    ]

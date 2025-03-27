@@ -59,8 +59,3 @@ if settings.KAIST_APP_ENABLED:
         path('renew/kaist/', auth.init, {'mode': 'RENEW', 'site': 'KAIST'}),
     ]
 
-if settings.KAIST_APP_V2_ENABLED:
-    urlpatterns += [
-        path('login/kaistv2/', auth.init, {'mode': 'LOGIN', 'site': 'KAISTV2'}),
-        # TODO: connect, renew for v2 (필요 없을수도 있음)
-    ]

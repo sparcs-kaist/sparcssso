@@ -7,17 +7,22 @@ from .common import *  # noqa: F401, F403
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+DOMAIN = os.environ.get('SSO_DOMAIN', 'https://ssodev.sparcs.org')
+
 ALLOWED_HOSTS = [
     'ssodev.sparcs.org',
     'localhost',
 ]
+
+_DOMAIN_WITHOUT_SCHEME = DOMAIN.replace("https://", "").replace("http://", "")
+if _DOMAIN_WITHOUT_SCHEME not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS += [_DOMAIN_WITHOUT_SCHEME]
 
 if os.environ.get('SSO_LOCAL', '0') == '1':
     ALLOWED_HOSTS += ['localhost']
 
 VERSION = get_version_info(DEBUG, ALLOWED_HOSTS)
 
-DOMAIN = os.environ.get('SSO_DOMAIN', 'https://ssodev.sparcs.org')
 
 LOG_DIR = os.path.join(BASE_DIR, 'archive/logs/')  # noqa: F405
 LOG_BUFFER_DIR = os.path.join(BASE_DIR, 'archive/buffer/')  # noqa: F405

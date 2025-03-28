@@ -138,7 +138,7 @@ def logout(request):
 
 def get_init_callback_url(site: str):
     if site == "KAISTV2":
-        return urljoin(settings.DOMAIN, '/api/idp/kaist/callback')
+        return urljoin(settings.DOMAIN, '/api/idp/kaist/callback/')
     else:
         return urljoin(settings.DOMAIN, '/account/callback/')
 

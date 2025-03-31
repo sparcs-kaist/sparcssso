@@ -4,6 +4,7 @@ import re
 import uuid
 from urllib.parse import parse_qsl, urlencode
 
+from django.http import HttpResponseBadRequest
 import ldap3
 import oauth2 as oauth
 import requests
@@ -179,7 +180,7 @@ def auth_tw_callback(tokens, verifier):
 
 
 # KAIST Auth
-def auth_kaist_init(callback_url):
+def auth_kaist_init(callback_url: str):
     state = str(uuid.uuid4())
     args = {
         'client_id': 'SPARCS',
@@ -190,7 +191,7 @@ def auth_kaist_init(callback_url):
     return f'https://iam2.kaist.ac.kr/api/sso/commonLogin?{urlencode(args)}', state
 
 
-def auth_kaist_callback(token, iam_info_raw):
+def auth_kaist_callback(token: str, iam_info_raw: str):
     iam_info = json.loads(iam_info_raw)['dataMap']
     state = iam_info['state']
 
@@ -210,4 +211,74 @@ def auth_kaist_callback(token, iam_info_raw):
     }
     kaist_profile = UserProfile.objects.filter(kaist_id=info['userid'],
                                                test_only=False).first()
+    return kaist_profile, info, True
+
+
+def auth_kaist_v2_init(request, callback_url: str):
+    state = str(uuid.uuid4())
+    nonce = str(uuid.uuid4())
+    
+    return {
+        'body': {
+            'client_id': settings.KAIST_APP_V2_CLIENT_ID,
+            'redirect_uri': callback_url,
+            'state': state,
+            'nonce': nonce,
+        },
+        'action': f"https://{settings.KAIST_APP_V2_HOSTNAME}/auth/user/single/login/authorize",
+    }, state, nonce
+
+
+
+def auth_kaist_v2_callback(request: str, redirect_url: str):
+    if request.POST.get("code") is None:
+        raise HttpResponseBadRequest("auth_kaist_v2_callback: Code not found")
+        return None, None, False
+    request_code = request.POST.get("code")
+
+    if request.POST.get("state") is None:
+        print("auth_kaist_v2_callback: State not found")
+        return None, None, False
+    request_state = request.POST.get("state")
+
+    if request_state != request.session.get('kaist_v2_login_state'):
+        print("auth_kaist_v2_callback: State mismatch")
+        return None, None, False
+    
+    request_url = f"https://{settings.KAIST_APP_V2_HOSTNAME}/auth/api/single/auth"
+    data = {
+        'client_id': settings.KAIST_APP_V2_CLIENT_ID,
+        'client_secret': settings.KAIST_APP_V2_CLIENT_SECRET,
+        'code': request_code,
+        'redirect_uri': redirect_url,
+    }
+    response = requests.post(request_url, data=data, headers={
+        "Content-Type": "application/x-www-form-urlencoded"
+    })
+
+    response_data = response.json()
+    if "errorCode" in response_data:
+        print(f"auth_kaist_v2_callback: Error {response_data['errorCode']}: {response_data['error']}")
+        return None, None, False
+    
+    request_nonce = request.session.get('kaist_v2_login_nonce')
+    if request_nonce != response_data['nonce']:
+        print("auth_kaist_v2_callback: Nonce mismatch")
+        return None, None, False
+
+    user_data = response_data['userInfo']
+    user_name_parts = [v.strip() for v in user_data.get("user_eng_nm").split(",") if v.strip() != ""]
+
+    info = {
+        'userid': user_data["kaist_uid"],
+        'email': user_data.get("email"),
+        'first_name': user_name_parts[1] if len(user_name_parts) > 1 else "",
+        'last_name': user_name_parts[0] if len(user_name_parts) > 0 else "",
+        'gender': '*H',
+        'birthday': "",
+        'kaist_info_v2': user_data,
+    }
+    kaist_profile = UserProfile.objects.filter(kaist_id=info['userid'],
+                                               test_only=False).first()
+
     return kaist_profile, info, True

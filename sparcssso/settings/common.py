@@ -90,6 +90,14 @@ KAIST_APP_SECRET = os.environ.get('KAIST_APP_SECRET', '')
 
 RECAPTCHA_SECRET = os.environ.get('RECAPTCHA_SECRET', '')
 
+KAIST_APP_V2_ENABLED = True if os.environ.get('KAIST_APP_V2_ENABLED', '0') == '1' else False
+
+KAIST_APP_V2_HOSTNAME = os.environ.get('KAIST_APP_V2_HOSTNAME', 'sso.kaist.ac.kr')
+
+KAIST_APP_V2_CLIENT_ID = os.environ.get('KAIST_APP_V2_CLIENT_ID', 'kaist-sparcs')
+
+KAIST_APP_V2_CLIENT_SECRET = os.environ.get('KAIST_APP_V2_CLIENT_SECRET', '')
+
 
 # E-mail settings
 EMAIL_HOST = 'localhost'
@@ -193,3 +201,5 @@ if SENTRY_DSN != '':
     )
 else:
     print('SENTRY_DSN not provided. Metrics will not be sent.')  # noqa: T001
+
+APPEND_SLASH = True

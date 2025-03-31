@@ -3,7 +3,7 @@ from urllib.parse import parse_qs, urljoin, urlparse
 
 from django.conf import settings
 from django.contrib import auth
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponseForbidden, HttpResponseBadRequest
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
@@ -11,11 +11,14 @@ from django.views.decorators.http import require_POST
 
 from apps.core.backends import (
     anon_required, auth_fb_callback, auth_fb_init,
-    auth_kaist_callback, auth_kaist_init, auth_tw_callback,
-    auth_tw_init, get_clean_url, get_social_name,
+    auth_kaist_init, auth_kaist_callback,
+    auth_kaist_v2_init, auth_kaist_v2_callback,
+    auth_tw_init, auth_tw_callback,
+    get_clean_url, get_social_name,
 )
 from apps.core.constants import SocialConnectResult
 from apps.core.models import Notice, Service
+import uuid
 
 
 logger = logging.getLogger('sso.auth')
@@ -79,13 +82,13 @@ def login_core(request, session_name, template_name, get_user_func):
             if parsed_nexturl.get('show_disabled_button', None) is None:
                 show_disabled_button = setting['show_disabled_button']
 
-
     return render(request, template_name, {
         'notice': notice,
         'service': service.alias if service else '',
         'fail': request.session.pop(session_name, ''),
         'show_internal': show_internal,
         'kaist_enabled': settings.KAIST_APP_ENABLED,
+        'kaist_v2_enabled': settings.KAIST_APP_V2_ENABLED,
         'social_enabled': social_enabled,
         'show_disabled_button': show_disabled_button,
         'app_name': app_name,
@@ -133,8 +136,13 @@ def logout(request):
     auth.logout(request)
     return render(request, 'account/logout.html')
 
+def get_init_callback_url(site: str):
+    if site == "KAISTV2":
+        return urljoin(settings.DOMAIN, '/api/idp/kaist/callback/')
+    else:
+        return urljoin(settings.DOMAIN, '/account/callback/')
 
-# /login/{fb,tw,kaist}/, /connect/{fb,tw,kaist}/, /renew/kaist/
+# /login/{fb,tw,kaist,kaistv2}/, /connect/{fb,tw,kaist,kaistv2}/, /renew/kaist/
 @require_POST
 def init(request, mode, site):
     if request.method != 'POST':
@@ -153,7 +161,7 @@ def init(request, mode, site):
         return HttpResponseRedirect(f'/account/profile/?connect_site={site}&connect_result={result_code.name}')
 
     request.session['info_auth'] = {'mode': mode, 'type': site}
-    callback_url = urljoin(settings.DOMAIN, '/account/callback/')
+    callback_url = get_init_callback_url(site)
 
     if site == 'FB':
         url = auth_fb_init(callback_url)
@@ -163,7 +171,36 @@ def init(request, mode, site):
     elif site == 'KAIST':
         url, token = auth_kaist_init(callback_url)
         request.session['request_token'] = token
+    elif site == 'KAISTV2':
+        response_body, state, nonce = auth_kaist_v2_init(request, callback_url)
+        request.session['kaist_v2_login_state'] = state
+        request.session['kaist_v2_login_nonce'] = nonce
+        return JsonResponse(response_body)
+
     return redirect(url)
+
+
+@csrf_exempt
+@require_POST
+def callback_kaist_v2(request):
+    SITE = "KAISTV2"
+    info_auth = request.session.pop('info_auth', None)
+    if not info_auth:
+        raise HttpResponseForbidden('No info_auth in session')
+        return redirect('/')
+
+    mode = info_auth['mode']
+
+    redirect_url = get_init_callback_url(SITE)
+    profile, info, valid = auth_kaist_v2_callback(request, redirect_url)
+    
+    if not valid:
+        raise HttpResponseBadRequest('Invalid')
+        return redirect('/')
+
+    state = request.session.delete('kaist_v2_login_state')
+    nonce = request.session.delete('kaist_v2_login_nonce')
+    return callback_inner(request, mode, SITE, profile, info)
 
 
 # /callback/
@@ -192,6 +229,10 @@ def callback(request):
         # Should not reach here!
         return redirect('/')
 
+    return callback_inner(request, mode, site, profile, info)
+
+
+def callback_inner(request, mode, site, profile, info):
     uid = info['userid'] if info else 'unknown'
     logger.info('social', {
         'r': request,
@@ -237,6 +278,8 @@ def callback_login(request, site, user, info):
     request.session.pop('info_signup', None)
     if site == 'KAIST':
         user.profile.save_kaist_info(info)
+    elif site == 'KAISTV2':
+        user.profile.save_kaist_v2_info(info)
 
     auth.login(request, user)
     nexturl = request.session.pop('next', '/')
@@ -257,6 +300,8 @@ def callback_conn(request, site, user, info):
         profile.twitter_id = info['userid']
     elif site == 'KAIST' and not profile.kaist_id:
         profile.save_kaist_info(info)
+    elif site == 'KAISTV2' and not profile.kaist_id:
+        profile.save_kaist_v2_info(info)
     else:
         result_code = SocialConnectResult.SITE_INVALID
 
@@ -276,7 +321,7 @@ def callback_conn(request, site, user, info):
 
 # from /callback/
 def callback_renew(request, site, user, info):
-    if site != 'KAIST':
+    if site != 'KAIST' and site != 'KAISTV2':
         result_code = SocialConnectResult.RENEW_UNNECESSARY
         return HttpResponseRedirect(f'/account/profile/?connect_site={site}&connect_result={result_code.name}')
 
@@ -285,7 +330,10 @@ def callback_renew(request, site, user, info):
     if profile.kaist_id != info['userid']:
         result_code = SocialConnectResult.KAIST_IDENTITY_MISMATCH
     else:
-        user.profile.save_kaist_info(info)
+        if site == 'KAIST':
+            user.profile.save_kaist_info(info)
+        else:
+            user.profile.save_kaist_v2_info(info)
 
     request.session['result_con'] = result_code.value
 

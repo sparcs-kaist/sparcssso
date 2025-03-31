@@ -1,0 +1,36 @@
+version: '3'
+services:
+  nginx-proxy:
+    image: nginx:alpine
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/certs:/etc/nginx/certs
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+  db:
+    image: 'mysql:5.7'
+    restart: always
+    environment:
+      - 'MYSQL_DATABASE=sparcssso'
+      - 'MYSQL_ROOT_PASSWORD=unsafe-password'
+    command:
+      - '--character-set-server=utf8mb4'
+      - '--collation-server=utf8mb4_unicode_ci'
+    volumes:
+      - 'sparcssso_db:/var/lib/mysql'
+    ports:
+      - '33306:3306'
+    networks:
+      sparcssso:
+        aliases:
+          - db
+    
+
+networks:
+  sparcssso:
+
+volumes:
+  sparcssso_db:

@@ -1,0 +1,19 @@
+use flake;
+
+export SSO_DB_NAME=sparcssso
+export SSO_DB_USER=root
+export SSO_DB_PASSWORD=unsafe-password
+export SSO_DB_HOST=127.0.0.1
+export SSO_DB_PORT=33306
+
+export SSO_ENV=development
+export SECRET_KEY=foobar
+export SENTRY_DSN=
+export FACEBOOK_APP_ID=
+export FACEBOOK_APP_SECRET=
+export TWITTER_APP_ID=
+export TWITTER_APP_SECRET=
+# 0 or 1
+export KAIST_APP_ENABLED=0
+export KAIST_APP_SECRET=
+export RECAPTCHA_SECRET=

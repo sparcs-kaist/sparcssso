@@ -40,3 +40,6 @@ node_modules/
 /django_env/
 /sso.ini
 .idea
+.venv
+.direnv
+.envrc

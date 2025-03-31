@@ -166,16 +166,25 @@
         <img class="{% if not profile.kaist_id %}disabled{% endif %}" src="/static/img/kaist.png" alt="KAIST">
       </div>
       {% if not profile.kaist_id %}
-      <form class="social-form" action="/account/connect/kaist/" method="post">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-primary" {% if not kaist_enabled %}disabled{% endif %}>{% trans "Connect" %}</button>
-      </form>
+        {% if kaist_v2_enabled %}
+          <button id="btn-kaist-v2-connect" class="btn btn-primary">{% trans "Connect" %}</button>
+        {% else %}
+          <form class="social-form" action="/account/connect/kaist/" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary" {% if not kaist_enabled %}disabled{% endif %}>{% trans "Connect" %}</button>
+          </form>
+        {% endif %}
       {% else %}
-      <form class="social-form" action="/account/renew/kaist/" method="post">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-warning" {% if not kaist_enabled %}disabled{% endif %}>{% trans "Renew" %}</button>
-        <p class="text-info">{% trans "Renewed at" %} {{ profile.kaist_info_time|date:'Y-m-d' }}</p>
-      </form>
+        {% if kaist_v2_enabled %}
+          <button id="btn-kaist-v2-renew" type="submit" class="btn btn-warning">{% trans "Renew" %}</button>
+          <p class="text-info">{% trans "Renewed at" %} {{ profile.kaist_v2_info_time|date:'Y-m-d' }}</p>
+        {% else %}
+          <form class="social-form" action="/account/renew/kaist/" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-warning" {% if not kaist_enabled %}disabled{% endif %}>{% trans "Renew" %}</button>
+            <p class="text-info">{% trans "Renewed at" %} {{ profile.kaist_info_time|date:'Y-m-d' }}</p>
+          </form>
+        {% endif %}
       {% endif %}
     </div>
   </div>
@@ -243,6 +252,14 @@ $(function() {
     changeMonth: true,
     changeYear: true,
     yearRange: '1930:-00',
+  });
+
+  $('#btn-kaist-v2-connect').click(() => {
+    authConnect("kaist-v2");
+  });
+
+  $('#btn-kaist-v2-renew').click(() => {
+    authRenew("kaist-v2");
   });
 });
 </script>

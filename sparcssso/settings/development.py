@@ -7,10 +7,10 @@ from .common import *  # noqa: F401, F403
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-DOMAIN = os.environ.get('SSO_DOMAIN', 'https://ssodev.sparcs.org')
+DOMAIN = os.environ.get('SSO_DOMAIN', 'https://sso.dev.sparcs.org')
 
 ALLOWED_HOSTS = [
-    'ssodev.sparcs.org',
+    'sso.dev.sparcs.org',
     'localhost',
 ]
 

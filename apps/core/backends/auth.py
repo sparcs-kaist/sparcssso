@@ -4,6 +4,7 @@ import re
 import uuid
 from urllib.parse import parse_qsl, urlencode
 
+from django.http import HttpResponseBadRequest
 import ldap3
 import oauth2 as oauth
 import requests
@@ -231,7 +232,7 @@ def auth_kaist_v2_init(request, callback_url: str):
 
 def auth_kaist_v2_callback(request: str, redirect_url: str):
     if request.POST.get("code") is None:
-        print("auth_kaist_v2_callback: Code not found")
+        raise HttpResponseBadRequest("auth_kaist_v2_callback: Code not found")
         return None, None, False
     request_code = request.POST.get("code")
 

@@ -50,7 +50,7 @@
 
   const authInit = (action, service) => {
     if (service === "kaist-v2") authInitKaistV2(action);
-    else authInitCommon();
+    else authInitCommon(action, service);
   }
 
   const authLogin = (service) => authInit("login", service);

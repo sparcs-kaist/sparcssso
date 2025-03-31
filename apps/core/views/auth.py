@@ -3,7 +3,7 @@ from urllib.parse import parse_qs, urljoin, urlparse
 
 from django.conf import settings
 from django.contrib import auth
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponseForbidden, HttpResponseBadRequest
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
@@ -186,6 +186,7 @@ def callback_kaist_v2(request):
     SITE = "KAISTV2"
     info_auth = request.session.pop('info_auth', None)
     if not info_auth:
+        raise HttpResponseForbidden('No info_auth in session')
         return redirect('/')
 
     mode = info_auth['mode']
@@ -194,6 +195,7 @@ def callback_kaist_v2(request):
     profile, info, valid = auth_kaist_v2_callback(request, redirect_url)
     
     if not valid:
+        raise HttpResponseBadRequest('Invalid')
         return redirect('/')
 
     state = request.session.delete('kaist_v2_login_state')

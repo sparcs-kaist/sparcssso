@@ -96,8 +96,11 @@ KAIST_APP_V2_HOSTNAME = os.environ.get('KAIST_APP_V2_HOSTNAME', 'sso.kaist.ac.kr
 
 KAIST_APP_V2_CLIENT_ID = os.environ.get('KAIST_APP_V2_CLIENT_ID', 'kaist-sparcs')
 
-KAIST_APP_V2_CLIENT_SECRET = os.environ.get('KAIST_APP_V2_CLIENT_SECRET', '')
+# KAIST_APP_V2_CLIENT_SECRET is required for KAIST_APP_V2_ENABLED, if not throw error
+KAIST_APP_V2_CLIENT_SECRET = os.environ.get('KAIST_APP_V2_CLIENT_SECRET')
 
+if KAIST_APP_V2_ENABLED and KAIST_APP_V2_CLIENT_SECRET is None:
+    raise ValueError('[INIT ERROR] KAIST_APP_V2_CLIENT_SECRET is required for KAIST_APP_V2_ENABLED')
 
 # E-mail settings
 EMAIL_HOST = 'localhost'

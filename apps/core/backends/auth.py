@@ -262,10 +262,10 @@ def auth_kaist_v2_callback(request: str, redirect_url: str):
         return None, None, False
     
     request_nonce = request.session.get('kaist_v2_login_nonce')
-    # TODO: in production, nonce is not returned?
-    # if request_nonce != response_data['nonce']:
-    #     print("auth_kaist_v2_callback: Nonce mismatch")
-    #     return None, None, False
+
+    if request_nonce != response_data['nonce']:
+        print("auth_kaist_v2_callback: Nonce mismatch")
+        return None, None, False
 
     user_data = response_data['userInfo']
     user_name_parts = [v.strip() for v in user_data.get("user_eng_nm").split(",") if v.strip() != ""]

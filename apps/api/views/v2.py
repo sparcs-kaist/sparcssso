@@ -236,6 +236,8 @@ class TokenInfoView(APIView):
             'twitter_id': profile.twitter_id,
             'kaist_id': profile.kaist_id,
             'kaist_info': profile.kaist_info,
+            'kaist_v2_info': profile.kaist_v2_info,
+            'kaist_v2_info_time': date2str(profile.kaist_v2_info_time),
             'kaist_info_time': date2str(profile.kaist_info_time),
             'sparcs_id': profile.sparcs_id,
         })  # TODO: Use serializer

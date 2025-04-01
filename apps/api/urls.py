@@ -33,5 +33,5 @@ urlpatterns = [
 
 if settings.KAIST_APP_V2_ENABLED:
     urlpatterns += [
-        path('idp/kaist/callback', auth.callback_kaist_v2)
+        path('idp/kaist/callback/', auth.callback_kaist_v2)
     ]

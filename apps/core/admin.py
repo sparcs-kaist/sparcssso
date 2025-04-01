@@ -98,7 +98,7 @@ class UserAdmin(uadmin.UserAdmin):
             }),
             ('SNS', {
                 'fields': ('facebook_id', 'twitter_id',
-                           'kaist_id', 'kaist_info_time', 'kaist_info'),
+                           'kaist_id', 'kaist_info_time', 'kaist_info', 'kaist_v2_info_time', 'kaist_v2_info'),
             }),
             ('Dev / Debug', {
                 'fields': ('sparcs_id', 'test_only', 'test_enabled'),

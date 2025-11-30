@@ -164,10 +164,10 @@ def user(request, uid):
             pass
 
         try:
-            kaist_info = json.loads(request.POST.get('kaist_v2_info', ''))
+            kaist_v2_info = json.loads(request.POST.get('kaist_v2_info', ''))
             profile.save_kaist_v2_info({
-                'userid': kaist_info['kaist_uid'],
-                'kaist_info': kaist_info,
+                'userid': kaist_v2_info['kaist_uid'],
+                'kaist_info_v2': kaist_v2_info,
             })
         except Exception:
             pass

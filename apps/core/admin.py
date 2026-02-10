@@ -73,6 +73,8 @@ class ServiceAdmin(admin.ModelAdmin):
         "cooltime",
     )
 
+    autocomplete_fields = ("admin_user",)
+
 
 @admin.register(ServiceMap)
 class ServiceMapAdmin(admin.ModelAdmin):
